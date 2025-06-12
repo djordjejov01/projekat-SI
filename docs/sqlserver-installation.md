@@ -1,4 +1,4 @@
-# Kako postaviti development sredinu za Microsoft SQL Server
+# Kako postaviti razvojno okruženje za Microsoft SQL Server
 
 ## Preduslovi
 
@@ -6,7 +6,6 @@ Pre nego što instalirate Microsoft SQL Server, preporučuje se sledeće:
 
 1. Windows operativni sistem (SQL Server radi i na Linuxu, ali za razvoj je najčešće korišćen na Windows-u)
 2. Administrator privilegije (za instalaciju servera)
-3. Stabilna internet konekcija (za preuzimanje i aktivaciju)
 
 ---
 
