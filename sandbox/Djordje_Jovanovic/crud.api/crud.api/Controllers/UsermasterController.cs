@@ -69,7 +69,7 @@ namespace crud.api.Controllers
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
 
-                // Vraćamo 201 Created sa lokacijom novog korisnika
+                
                 return CreatedAtAction(nameof(GetById), new { id = user.userId }, user);
             }
             catch (Exception ex)
