@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { VideoGameListComponent } from './video-game-list';
+import { VideoGameFormComponent } from './video-game-form';
 
-describe('VideoGameList', () => {
-  let component: VideoGameListComponent;
-  let fixture: ComponentFixture<VideoGameListComponent>;
+describe('VideoGameForm', () => {
+  let component: VideoGameFormComponent;
+  let fixture: ComponentFixture<VideoGameFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [VideoGameListComponent]
+      imports: [VideoGameFormComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(VideoGameListComponent);
+    fixture = TestBed.createComponent(VideoGameFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
