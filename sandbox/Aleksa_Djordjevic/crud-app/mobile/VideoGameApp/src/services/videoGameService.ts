@@ -1,6 +1,8 @@
 import axios from 'axios';
+import { Platform } from "react-native"
 
-const API_URL = 'http://localhost:5222/api/VideoGames'; // prilagodi URL tvom backend-u
+const API_URL = 'http://192.168.0.11:5222/api/VideoGames' 
+// const API_URL = Platform.OS == "web" ? "http://localhost:5222/api/VideoGames" : "http://192.168.0.11:5222/api/VideoGames"
 
 export interface VideoGame {
   id?: number;

@@ -15,7 +15,7 @@ export default function VideoGameListScreen({ navigation }: Props) {
 
   const loadGames = () => {
     getAll()
-      .then(response => setGames(response.data))
+      .then(response => {console.log('📦 Igre iz baze:', response.data); setGames(response.data);})
       .catch(() => Alert.alert('Greška', 'Nije moguće učitati igre'));
   };
 
