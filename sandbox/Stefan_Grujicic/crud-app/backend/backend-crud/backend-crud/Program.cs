@@ -7,23 +7,31 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-builder.Services.AddControllers();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend",
-        policy =>
-        {
-            policy.WithOrigins("http://localhost:4200")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        });
-});
-var app = builder.Build();
+    options.AddPolicy("AllowSpecificOrigins", policy =>
+        policy.WithOrigins("http://localhost:4200",
+                           "https://localhost:4200",
+                           "http://localhost:8081",
+                           "https://localhost:8081",
+                           "http://192.168.1.5:8081",
+                           "https://192.168.1.5:8081",
+                           "http://192.168.1.5:8081",
+                           "https://192.168.1.5:7035",
+                           "http://localhost:7035",
+                           "https://localhost:7035")
+              .AllowAnyHeader()
+              .AllowAnyMethod());
 
-app.UseCors("AllowFrontend");
+});
+builder.Services.AddControllers();
+var app = builder.Build();
+app.UseCors("AllowSpecificOrigins");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
