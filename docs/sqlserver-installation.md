@@ -1,4 +1,4 @@
-# Kako postaviti development sredinu za Microsoft SQL Server
+# Kako postaviti razvojno okruženje za Microsoft SQL Server
 
 ## Preduslovi
 
