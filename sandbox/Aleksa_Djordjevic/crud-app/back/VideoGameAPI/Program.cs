@@ -13,7 +13,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: MyAllowSpecificOrigins,
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200","http://localhost:8081") // Frontend origin
+            policy.WithOrigins("http://localhost:4200","http://localhost:8081") 
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -34,7 +34,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-// DODAJ OVO - UseCors middleware poziv PRE UseAuthorization i MapControllers
 app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthorization();
