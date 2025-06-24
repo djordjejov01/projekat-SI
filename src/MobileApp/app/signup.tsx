@@ -11,6 +11,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function SignUpScreen() {
   const [fullName, setFullName] = useState('');
@@ -32,38 +33,77 @@ export default function SignUpScreen() {
     );
   };
 
-  const handleSubmit = () => {
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleSubmit = async () => {
     if (!fullName || !email || !password || !confirmPassword) {
       Alert.alert('All fields are required');
       return;
     }
+
+    if (!validateEmail(email)) {
+      Alert.alert('Invalid email address');
+      return;
+    }
+
     if (!validatePassword(password)) {
       Alert.alert('Password must meet all the listed requirements');
       return;
     }
+
     if (password !== confirmPassword) {
       Alert.alert('Passwords do not match');
       return;
     }
+
     if (!acceptedTerms) {
       Alert.alert('Terms Required', 'You must accept the Privacy Policy and Terms of Use');
       return;
     }
 
-    Alert.alert(
-  'Success',
-  'Account created successfully!',
-  [
-    {
-      text: 'OK',
-      onPress: () => {
-        router.replace('/login');
-      },
-    },
-  ],
-  { cancelable: false }
-);
+    try {
 
+      const usersRaw = await AsyncStorage.getItem('users');
+      const users = usersRaw ? JSON.parse(usersRaw) : [];
+
+      const emailExists = users.some((user: any) => user.email.toLowerCase() === email.toLowerCase());
+      if (emailExists) {
+        Alert.alert('Error', 'Email is already registered');
+        return;
+      }
+
+      const newUser = {
+        fullName,
+        email,
+        password,
+        promoOptIn,
+        acceptedTerms,
+      };
+
+      users.push(newUser);
+
+      await AsyncStorage.setItem('users', JSON.stringify(users));
+
+      Alert.alert(
+        'Success',
+        'Account created successfully!',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              router.replace('/login');
+            },
+          },
+        ],
+        { cancelable: false }
+      );
+    } catch (error) {
+      Alert.alert('Error', 'Something went wrong');
+      console.log('Error saving user:', error);
+    }
   };
 
   return (
@@ -147,6 +187,9 @@ export default function SignUpScreen() {
           </Link>
         </Text>
       </View>
+      <TouchableOpacity onPress={() => router.push('/users')}>
+  <Text>Show All Users</Text>
+</TouchableOpacity>
     </ScrollView>
   );
 }
@@ -208,19 +251,13 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-
+    marginBottom: 12,
   },
   checkboxText: {
     marginLeft: 10,
     fontSize: 13,
     flex: 1,
     flexWrap: 'wrap',
-  },
-  terms: {
-    fontSize: 12,
-    color: '#555',
-    marginBottom: 40,
-    lineHeight: 18,
   },
   link: {
     color: '#007AFF',
@@ -232,7 +269,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginBottom: 30,
-    marginTop:15,
+    marginTop: 15,
   },
   buttonText: {
     color: '#fff',
