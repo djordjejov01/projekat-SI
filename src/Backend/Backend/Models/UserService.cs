@@ -95,7 +95,36 @@ namespace Backend.Models
 
         public async Task<UserDto> LoginAsync(LoginDto loginDto)
         {
-            
+            //trazi korisnika po email
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
+            if (user == null)
+            {
+                throw new Exception("Korisnik sa datim emailom ne postoji.");
+            }
+
+            //provera lozinke(uporedi hash)
+            string hashedInputPassword = HashPassword(loginDto.Password);
+            if (user.Password != hashedInputPassword)
+            {
+                throw new Exception("Pogrešna lozinka.");
+            }
+
+            //Proveri IsActive (Dobavljac mora biti odobren)
+            if (user.Role == UserRole.Supplier && !user.IsActive)
+            {
+                throw new Exception("Dobavljač još nije odobren od strane admina.");
+            }
+
+            //Mapiraj User -> UserDto i vrati rezultat
+            var userDto = new UserDto
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                Email = user.Email,
+                Role = user.Role.ToString(),
+                IsActive = user.IsActive
+            };
+            return userDto;
         }
 
         public async Task<bool> ApproveSupplierAsync(int userId)
