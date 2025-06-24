@@ -129,7 +129,29 @@ namespace Backend.Models
 
         public async Task<bool> ApproveSupplierAsync(int userId)
         {
-            
+            // Pronadji korisnika po ID-u
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (user == null)
+            {
+                throw new Exception("Korisnik nije pronađen.");
+            }
+
+            // Proveri da li je dobavljac
+            if (user.Role != UserRole.Supplier)
+            {
+                throw new Exception("Korisnik nije dobavljač.");
+            }
+
+            // Proveri da li je vec aktivan
+            if (user.IsActive)
+            {
+                throw new Exception("Dobavljač je već odobren.");
+            }
+
+            // Setuj IsActive = true
+            user.IsActive = true;
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 } 
