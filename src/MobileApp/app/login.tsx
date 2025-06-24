@@ -8,7 +8,6 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -21,25 +20,25 @@ export default function LoginScreen() {
       return;
     }
 
+    const isValidEmail = email.includes('@');
+    const isValidPassword = password.length >= 6;
+
+    if (!isValidEmail) {
+      Alert.alert('Login Failed', 'Invalid email format');
+      return;
+    }
+
+    if (!isValidPassword) {
+      Alert.alert('Login Failed', 'Password must be at least 6 characters');
+      return;
+    }
+
     try {
-      const usersRaw = await AsyncStorage.getItem('users');
-      const users = usersRaw ? JSON.parse(usersRaw) : [];
+      // Ovdje možeš napraviti proveru korisnika iz AsyncStorage ili API-ja
 
-      const matchedUser = users.find(
-        (u: any) => u.email === email && u.password === password
-      );
-
-      if (matchedUser) {
-        router.replace('/(tabs)');
-      } else {
-        const exists = users.find((u: any) => u.email === email);
-        if (exists) {
-          Alert.alert('Login Failed', 'Incorrect password');
-        } else {
-          Alert.alert('Login Failed', 'Email not found');
-        }
-      }
-    } catch (err) {
+      // Za sada simulacija uspešnog login-a
+      router.replace('/(tabs)');
+    } catch (error) {
       Alert.alert('Error', 'Something went wrong');
     }
   };
@@ -60,7 +59,7 @@ export default function LoginScreen() {
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
-          placeholder="Password"
+          placeholder="••••••••"
           secureTextEntry={!showPassword}
           onChangeText={setPassword}
           value={password}
@@ -72,6 +71,10 @@ export default function LoginScreen() {
         </TouchableOpacity>
       </View>
 
+      <TouchableOpacity>
+        <Text style={styles.forgot}>Forgot your password?</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginText}>Log in</Text>
       </TouchableOpacity>
@@ -81,6 +84,16 @@ export default function LoginScreen() {
         onPress={() => router.push('/signup')}
       >
         <Text style={styles.signupText}>Sign up</Text>
+      </TouchableOpacity>
+
+      <View style={styles.orContainer}>
+        <View style={styles.line} />
+        <Text style={styles.orText}>OR</Text>
+        <View style={styles.line} />
+      </View>
+
+      <TouchableOpacity style={styles.altButton}>
+        <Text style={{ fontSize: 16 }}>Continue with email</Text>
       </TouchableOpacity>
     </View>
   );
@@ -94,7 +107,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   title: {
-    fontSize: 32,
+    fontSize: 35,
     fontWeight: '700',
     marginBottom: 30,
     textAlign: 'center',
@@ -116,7 +129,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 14,
     height: 50,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   passwordInput: {
     flex: 1,
@@ -126,6 +139,12 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     fontWeight: '600',
     padding: 6,
+  },
+  forgot: {
+    color: '#FF3B30',
+    alignSelf: 'flex-end',
+    marginBottom: 24,
+    fontSize: 14,
   },
   loginButton: {
     backgroundColor: '#0047FF',
@@ -145,10 +164,34 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
+    marginBottom: 20,
   },
   signupText: {
     color: '#0047FF',
     fontWeight: '600',
     fontSize: 16,
+  },
+  orContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 16,
+  },
+  orText: {
+    marginHorizontal: 10,
+    fontWeight: '600',
+    fontSize: 14,
+    color: '#555',
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#ccc',
+  },
+  altButton: {
+    borderWidth: 1,
+    borderColor: '#000',
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
   },
 });
