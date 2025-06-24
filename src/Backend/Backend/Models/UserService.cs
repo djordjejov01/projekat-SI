@@ -19,7 +19,10 @@ namespace Backend.Models
 
         public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
         {
-            
+            // Provera jacine lozinke
+            if (!IsPasswordStrong(registerDto.Password))
+                throw new Exception("Lozinka mora imati najmanje 8 karaktera, jedno veliko slovo, jedno malo slovo, jedan broj i jedan specijalni karakter.");
+
             // Proverava da li vec postoji korisnik sa tim Email ili UserName
             if (await _context.Users.AnyAsync(u => u.Email == registerDto.Email || u.Username == registerDto.Username))
             {
@@ -64,7 +67,20 @@ namespace Backend.Models
             };
             return userDto;
         }
-
+        private bool IsPasswordStrong(string password)
+        {
+            if (string.IsNullOrEmpty(password) || password.Length < 8)
+                return false;
+            if (!password.Any(char.IsUpper))
+                return false;
+            if (!password.Any(char.IsLower))
+                return false;
+            if (!password.Any(char.IsDigit))
+                return false;
+            if (!password.Any(ch => "!@#$%^&*-_+=./?".Contains(ch)))
+                return false;
+            return true;
+        }
 
         // Pomocna metoda za hešovanje lozinke (SHA256)
         private string HashPassword(string password)
