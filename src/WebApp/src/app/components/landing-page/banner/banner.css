@@ -1,0 +1,60 @@
+/**/
+main{
+    display: flex;
+    justify-content: center;
+    margin-top: 100px;
+    gap:100px;
+}
+/**/
+#leftside{
+    display: flex;
+    flex-direction: column;
+    gap:20px;
+}
+#title{
+    font-size: 70px;
+    font-weight: bold;
+    margin: 0;
+    max-width: 650px;
+
+}
+#desc{
+    max-width: 450px;
+    font-size: 25px;
+    margin: 0;
+}
+
+#gs{
+    background-color: #636AE8;
+    color:white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+#lm
+{
+    color:#636AE8;
+    background-color: transparent;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+#lm:hover{
+    background-color: rgb(237, 237, 237);
+}
+
+
+#buttons{
+    display: flex;
+    gap:20px;
+}
+
+#gs:hover, #lm:hover{
+    cursor: pointer;
+}

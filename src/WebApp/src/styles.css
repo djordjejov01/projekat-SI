@@ -2,3 +2,6 @@
 @import "tailwindcss";
 @plugin "tailwindcss-primeui";
 
+*{
+    margin:0;
+}

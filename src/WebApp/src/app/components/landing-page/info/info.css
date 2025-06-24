@@ -1,0 +1,17 @@
+/**/
+main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 150px;
+    gap:80px;
+}
+/**/
+#cards{
+    display: flex;
+    gap:50px;
+}
+h1{
+    font-size: 40px;
+    font-weight: bold;
+}

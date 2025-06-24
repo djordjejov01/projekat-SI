@@ -1,0 +1,48 @@
+p{
+    margin:0;
+}
+/**/
+header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    gap:50px;
+}
+#logo{
+    max-width: 120px;
+}
+
+#logo:hover{
+    cursor: pointer;
+}
+/**/
+#leftside{
+    padding-left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: bold;
+    justify-content: flex-start;
+    font-size: 18px;
+}
+
+#leftside p:hover{
+    cursor: pointer;
+}
+/**/
+#rightside{
+    display: flex;
+    align-items: center;
+    color:#636AE8;
+    gap:10px;
+    font-weight: bold;
+    padding-right: 40px;
+    justify-content: center;
+    padding-left: 20px;
+    font-size: 18px;
+}
+
+#login:hover, #register:hover{
+    cursor: pointer;
+}
