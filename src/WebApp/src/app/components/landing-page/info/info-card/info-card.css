@@ -1,0 +1,31 @@
+main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap:10px;
+    box-shadow: 0px 0px 45px 2px rgb(214, 214, 214);
+    border-radius: 10px;
+    padding: 20px;
+    transition: 0.3s;
+    flex-wrap: wrap;
+}
+
+main:hover{
+    scale: 1.08;
+    transition: 0.3s;
+}
+
+img{
+    max-width: 50px;
+}
+
+p{
+    max-width: 350px;
+    text-align: center;
+}
+h1{
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+}
