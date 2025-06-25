@@ -18,12 +18,15 @@ h2{
 }
 
 p{
-    margin-top: 100px;
+    margin-top: 50px;
     font-weight: bold;
     margin-bottom: 20px;
 }
 
 img{
-    margin-top: 50px;
+    margin-top: 30px;
     max-width: 200px;
+}
+h2:hover, img:hover{
+    cursor: pointer;
 }

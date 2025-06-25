@@ -2,6 +2,7 @@
 main{
     display: flex;
     justify-content: center;
+    align-items: center;
     margin-top: 100px;
     gap:100px;
 }
@@ -43,10 +44,12 @@ main{
     padding: 10px;
     padding-left: 30px;
     padding-right: 30px;
+    transition: 0.3s;
 }
 
 #lm:hover{
-    background-color: rgb(237, 237, 237);
+    background-color: rgb(230, 230, 230);
+    transition: 0.3s;
 }
 
 
@@ -57,4 +60,11 @@ main{
 
 #gs:hover, #lm:hover{
     cursor: pointer;
+    
+}
+
+img{
+    border-radius: 10px;
+    max-height: 430px;
+    scale: 1.15;
 }
