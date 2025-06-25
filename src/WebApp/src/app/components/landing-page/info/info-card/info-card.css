@@ -8,6 +8,7 @@ main{
     border-radius: 10px;
     padding: 20px;
     transition: 0.3s;
+    flex-wrap: wrap;
 }
 
 main:hover{
@@ -26,4 +27,5 @@ p{
 h1{
     font-size: 20px;
     font-weight: bold;
+    text-align: center;
 }

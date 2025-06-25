@@ -2,9 +2,13 @@
 main{
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
     background-color: #636AE8;
     margin-top: 120px;
+    flex-wrap: wrap;
+    width: 100%;
+
 }
 
 button{
@@ -28,6 +32,7 @@ h1{
     color:white;
     margin-top: 60px;
     font-weight: bold;
+    text-align: center;
 }
 
 p{
@@ -35,4 +40,5 @@ p{
     color:white;
     margin-top: 20px;
     font-weight: bold;
+    text-align: center;
 }
