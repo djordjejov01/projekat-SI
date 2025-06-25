@@ -10,8 +10,11 @@ namespace Backend.Models.Dto
         [Required, EmailAddress]
         public string Email { get; set; }
 
-        [Required, MinLength(6)]
+        [Required, MinLength(8)]
         public string Password { get; set; }
+
+        [Required, MinLength(8)]
+        public string ConfirmPassword { get; set; }
 
         [Required]
         public string? Role { get; set; }
