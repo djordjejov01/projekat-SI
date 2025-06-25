@@ -1,0 +1,168 @@
+<section class="form-container">
+  <div class="form-and-sidebar">
+    <div class="left">
+      <img src="/assets/logo91.png" alt="logo" />
+      <p-knob
+        [(ngModel)]="progress"
+        [size]="150"
+        [readonly]="true"
+        valueTemplate="{value}%"
+      />
+    </div>
+
+    <div class="right">
+      <form
+        action=""
+        class="register-form"
+        [formGroup]="registerForm"
+        (ngSubmit)="onFormSubmit()"
+      >
+        <div class="form-header">
+          <h1>Create Your SyncUp Account</h1>
+          <p>
+            Join SyncUp to streamline your event management or resource
+            provisioning. Please provide your details to get started.
+          </p>
+        </div>
+
+        <div class="form-inputs">
+          <div class="input-wrapper">
+            <p>I am a/an</p>
+            <p-floatlabel class="w-full md:w-56" variant="on">
+              <p-select
+                [options]="roles"
+                name="role"
+                formControlName="role"
+                placeholder=" "
+                inputId="roles"
+                class="w-full md:w-56 h-10"
+                (onChange)="onSelectedRole($event)"
+              />
+              <label for="roles">Select Role</label>
+            </p-floatlabel>
+          </div>
+
+          <div
+            class="input-wrapper"
+            *ngIf="registerForm.get('role').value === 'Organizer'"
+          >
+            <p>Organization Name</p>
+            <p-floatlabel class="w-full md:w-56" variant="on">
+              <input
+                type="text"
+                pInputText
+                placeholder=" "
+                formControlName="username"
+                inputId="organizationName"
+                class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+              />
+              <label for="organizationName">Enter Organization Name</label>
+            </p-floatlabel>
+          </div>
+
+          <div
+            class="input-wrapper"
+            *ngIf="registerForm.get('role').value === 'Supplier'"
+          >
+            <p>Supplier Name</p>
+            <p-floatlabel class="w-full md:w-56" variant="on">
+              <input
+                type="text"
+                pInputText
+                placeholder=" "
+                formControlName="username"
+                inputId="supplierName"
+                class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+              />
+              <label for="supplierName">Enter Supplier Name</label>
+            </p-floatlabel>
+          </div>
+
+          <div class="input-wrapper">
+            <p>Email</p>
+            <p-floatlabel class="w-full md:w-56" variant="on">
+              <input
+                type="text"
+                pInputText
+                placeholder=" "
+                formControlName="email"
+                inputId="email"
+                class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+              />
+              <label for="email">Enter Your Email</label>
+            </p-floatlabel>
+          </div>
+
+          <div class="passwords">
+            <div class="input-wrapper">
+              <p>Password</p>
+              <p-floatlabel
+                class="w-full md:w-56"
+                variant="on"
+                inputId="password"
+              >
+                <p-password formControlName="password" [toggleMask]="true">
+                  <ng-template #header>
+                    <div class="font-semibold text-xm mb-4">
+                      Pick a password
+                    </div>
+                  </ng-template>
+                  <ng-template #footer>
+                    <p-divider />
+                    <ul class="pl-2 ml-2 my-0 leading-normal">
+                      <li>At least one lowercase</li>
+                      <li>At least one uppercase</li>
+                      <li>At least one numeric</li>
+                      <li>Minimum 8 characters</li>
+                    </ul>
+                  </ng-template>
+                </p-password>
+                <label for="password">Enter Your Password</label>
+              </p-floatlabel>
+            </div>
+
+            <div class="input-wrapper">
+              <p>Confirm Password</p>
+              <p-floatlabel
+                class="w-full md:w-56"
+                variant="on"
+                inputId="confirm"
+              >
+                <p-password formControlName="confirm" [toggleMask]="true">
+                  <ng-template #header>
+                    <div class="font-semibold text-xm mb-4">
+                      Confirm Password
+                    </div>
+                  </ng-template>
+                  <ng-template #footer>
+                    <p-divider />
+                    <ul class="pl-2 ml-2 my-0 leading-normal">
+                      <li>At least one lowercase</li>
+                      <li>At least one uppercase</li>
+                      <li>At least one numeric</li>
+                      <li>Minimum 8 characters</li>
+                    </ul>
+                  </ng-template>
+                </p-password>
+                <label for="confirm">Enter Your Password</label>
+              </p-floatlabel>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="bg-violet-400 text-white rounded-md px-4 py-2 hover:bg-violet-500"
+        >
+          Register Account
+        </button>
+
+        <div class="have-account">
+          <p class="text-violet-400" routerLink="/Login">
+            Allready have and account? Sign in
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
