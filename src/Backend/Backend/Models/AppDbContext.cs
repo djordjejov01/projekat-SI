@@ -9,6 +9,7 @@ namespace Backend.Models
         }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<UserRoles> UserRoles {  get; set; }
 
         // ovde dodajem i ostale Dbset(Events...)
     }

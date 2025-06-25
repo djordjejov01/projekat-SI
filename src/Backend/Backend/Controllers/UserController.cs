@@ -1,5 +1,6 @@
-using Backend.Models;
 using Backend.Models.Dto;
+using Backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -69,7 +70,8 @@ namespace Backend.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-
+        
+        
         [HttpPost("approve-supplier/{userId}")]
         public async Task<IActionResult> ApproveSupplier(int userId)
         {

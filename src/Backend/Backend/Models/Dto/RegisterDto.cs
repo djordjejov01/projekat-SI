@@ -17,6 +17,7 @@ namespace Backend.Models.Dto
         public string ConfirmPassword { get; set; }
 
         [Required]
+        //pri izboru role mozda ne postoji
         public string? Role { get; set; }
     }
 }
