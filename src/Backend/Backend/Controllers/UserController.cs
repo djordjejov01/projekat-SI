@@ -23,6 +23,9 @@ namespace Backend.Controllers
             if (string.IsNullOrWhiteSpace(registerDto.Role))
                 return BadRequest(new { message = "Role je obavezan za web registraciju." });
 
+            if (registerDto.Password != registerDto.ConfirmPassword)
+                return BadRequest(new { message = "Lozinka i potvrda lozinke se ne poklapaju." });
+
             try
             {
                 var user = await _userService.RegisterAsync(registerDto);
@@ -39,6 +42,9 @@ namespace Backend.Controllers
         public async Task<IActionResult> MobileRegister([FromBody] RegisterDto registerDto)
         {
             registerDto.Role = "Guest";
+            if (registerDto.Password != registerDto.ConfirmPassword)
+                return BadRequest(new { message = "Lozinka i potvrda lozinke se ne poklapaju." });
+
             try
             {
                 var user = await _userService.RegisterAsync(registerDto);
