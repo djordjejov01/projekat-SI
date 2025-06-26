@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { Link } from 'expo-router';
 import { router } from 'expo-router';
+import { Animated } from 'react-native';
+
 import {
   View,
   Text,
@@ -59,11 +61,6 @@ export default function SignUpScreen() {
       return;
     }
 
-    if (!acceptedTerms) {
-      Alert.alert('Terms Required', 'You must accept the Privacy Policy and Terms of Use');
-      return;
-    }
-
     try {
 
       const usersRaw = await AsyncStorage.getItem('users');
@@ -105,6 +102,36 @@ export default function SignUpScreen() {
       console.log('Error saving user:', error);
     }
   };
+  
+  type CriteriaKey = 'length' | 'upperLower' | 'number' | 'special';
+
+ const criteria: Record<CriteriaKey, boolean> = {
+  length: password.length >= 8,
+  upperLower: /[A-Z]/.test(password) && /[a-z]/.test(password),
+  number: /[0-9]/.test(password),
+  special: /[!@#$%^&*(),.?":{}|<>_\-+=]/.test(password),
+};
+
+const fadeAnims: Record<CriteriaKey, Animated.Value> = {
+  length: useRef(new Animated.Value(0.3)).current,
+  upperLower: useRef(new Animated.Value(0.3)).current,
+  number: useRef(new Animated.Value(0.3)).current,
+  special: useRef(new Animated.Value(0.3)).current,
+};
+
+
+
+useEffect(() => {
+  (Object.keys(criteria) as CriteriaKey[]).forEach((key) => {
+    Animated.timing(fadeAnims[key], {
+      toValue: criteria[key] ? 1 : 0.3,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  });
+}, [password]);
+
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -113,6 +140,7 @@ export default function SignUpScreen() {
       <TextInput
         style={styles.input}
         placeholder="John Doe"
+        placeholderTextColor='#888'
         value={fullName}
         onChangeText={setFullName}
       />
@@ -120,6 +148,7 @@ export default function SignUpScreen() {
       <TextInput
         style={styles.input}
         placeholder="john.doe@gmail.com"
+        placeholderTextColor='#888'
         keyboardType="email-address"
         autoCapitalize="none"
         value={email}
@@ -130,6 +159,7 @@ export default function SignUpScreen() {
         <TextInput
           style={styles.passwordInput}
           placeholder="Password"
+          placeholderTextColor='#888'
           secureTextEntry={!showPassword}
           value={password}
           onChangeText={setPassword}
@@ -141,16 +171,26 @@ export default function SignUpScreen() {
 
       <Text style={styles.requirementsTitle}>Password must:</Text>
       <View style={styles.requirements}>
-        <Text style={styles.reqItem}>• At least 8 characters</Text>
-        <Text style={styles.reqItem}>• Uppercase and lowercase letters</Text>
-        <Text style={styles.reqItem}>• At least one number</Text>
-        <Text style={styles.reqItem}>• One special character</Text>
-      </View>
+      <Animated.Text style={[styles.reqItem, { opacity: fadeAnims.length }]}>
+        • At least 8 characters
+      </Animated.Text>
+      <Animated.Text style={[styles.reqItem, { opacity: fadeAnims.upperLower }]}>
+        • Uppercase and lowercase letters
+      </Animated.Text>
+      <Animated.Text style={[styles.reqItem, { opacity: fadeAnims.number }]}>
+        • At least one number
+      </Animated.Text>
+      <Animated.Text style={[styles.reqItem, { opacity: fadeAnims.special }]}>
+        • One special character
+      </Animated.Text>
+    </View>
+
 
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
           placeholder="Confirm Password"
+          placeholderTextColor='#888'
           secureTextEntry={!showConfirmPassword}
           value={confirmPassword}
           onChangeText={setConfirmPassword}
@@ -162,19 +202,6 @@ export default function SignUpScreen() {
         </TouchableOpacity>
       </View>
 
-      <View style={styles.checkboxContainer}>
-        <Switch value={promoOptIn} onValueChange={setPromoOptIn} />
-        <Text style={styles.checkboxText}>I want to receive offers and discounts.</Text>
-      </View>
-
-      <View style={styles.checkboxContainer}>
-        <Switch value={acceptedTerms} onValueChange={setAcceptedTerms} />
-        <Text style={styles.checkboxText}>
-          I accept the <Text style={styles.link}>Privacy Policy</Text> and{' '}
-          <Text style={styles.link}>Terms of Use</Text>.
-        </Text>
-      </View>
-
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Create Account</Text>
       </TouchableOpacity>
@@ -182,14 +209,13 @@ export default function SignUpScreen() {
       <View style={{ alignItems: 'center' }}>
         <Text style={styles.loginLink}>
           Already have an account?{' '}
-          <Link href="/login">
+         <Link href="/login" asChild>
+          <TouchableOpacity>
             <Text style={styles.link}>Log In</Text>
-          </Link>
+          </TouchableOpacity>
+        </Link>
         </Text>
       </View>
-      <TouchableOpacity onPress={() => router.push('/users')}>
-  <Text>Show All Users</Text>
-</TouchableOpacity>
     </ScrollView>
   );
 }
