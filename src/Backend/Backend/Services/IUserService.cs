@@ -1,7 +1,7 @@
 using Backend.Models.Dto;
 using System.Threading.Tasks;
 
-namespace Backend.Models
+namespace Backend.Services
 {
     public interface IUserService
     {

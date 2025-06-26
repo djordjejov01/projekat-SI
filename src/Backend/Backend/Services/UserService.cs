@@ -5,8 +5,9 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 using System.Linq;
+using Backend.Models;
 
-namespace Backend.Models
+namespace Backend.Services
 {
     public class UserService : IUserService
     {
@@ -40,7 +41,7 @@ namespace Backend.Models
             }
 
             //Postavlja isActive(Dobavljac: false, Organizator/Admin: true)
-            bool isActive = (role == UserRole.Supplier) ? false : true;
+            bool isActive = role == UserRole.Supplier ? false : true;
 
             // Upisuje korisnika u bazu
             var user = new User
@@ -85,9 +86,9 @@ namespace Backend.Models
         // Pomocna metoda za hešovanje lozinke (SHA256)
         private string HashPassword(string password)
         {
-            using (var sha256 = System.Security.Cryptography.SHA256.Create())
+            using (var sha256 = SHA256.Create())
             {
-                var bytes = System.Text.Encoding.UTF8.GetBytes(password);
+                var bytes = Encoding.UTF8.GetBytes(password);
                 var hash = sha256.ComputeHash(bytes);
                 return Convert.ToBase64String(hash);
             }
