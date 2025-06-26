@@ -1,0 +1,36 @@
+/**/
+main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 60px;
+    flex-wrap: wrap;
+}
+
+h1{
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+}
+
+h2{
+    margin-top: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+p{
+    margin-top: 50px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+img{
+    margin-top: 30px;
+    max-width: 200px;
+}
+h2:hover, img:hover{
+    cursor: pointer;
+}
