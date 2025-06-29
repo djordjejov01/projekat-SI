@@ -51,3 +51,7 @@
     gap: 2rem;
 }
 
+.login-form p,img {
+    cursor: pointer;
+}
+

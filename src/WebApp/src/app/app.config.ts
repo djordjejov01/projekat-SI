@@ -8,12 +8,15 @@ import { MyPreset } from './myPreset';
 
 
 import { routes } from './app.routes';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes),
     provideAnimationsAsync(),
+    MessageService,
+    ConfirmationService,
     providePrimeNG({
       theme: {
         preset: MyPreset,

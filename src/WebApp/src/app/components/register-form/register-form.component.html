@@ -2,7 +2,7 @@
 
   <div class="form-and-sidebar">
 
-    <form action="" class="register-form"  [formGroup]="registerForm"  (ngSubmit)="onFormSubmit()">
+    <form action="" class="register-form"  [formGroup]="registerForm">
 
       <div class="form-header">
 
@@ -16,7 +16,7 @@
           
         </div>
 
-        <img src="/assets/logo91.png" alt="logo" />
+        <img src="/assets/logo91.png" alt="logo" routerLink="/Home"/>
 
       </div>
 
@@ -110,14 +110,16 @@
 
       </div>
 
-      <button  type="submit"  class="bg-violet-400 text-white rounded-md px-4 py-2 hover:bg-violet-500">
+      <p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }"/>
+      <p-confirmdialog />
+      <button type="button" class="bg-violet-400 text-white rounded-md px-4 py-2 hover:bg-violet-500"  (click)="submitForm()">
         Register Account
       </button>
 
       <div class="have-account">
 
         <p class="text-violet-400" routerLink="/Login">
-          Allready have and account? Sign in
+          Already have an account? Sign in
         </p>
 
       </div>
