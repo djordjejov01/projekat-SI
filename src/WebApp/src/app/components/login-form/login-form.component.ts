@@ -12,6 +12,7 @@ import { ExitFormConformation } from '../../Services/exitConformation.service';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { RouterLink } from '@angular/router';
+import { LoginDto } from '../../Models/LoginDto';
 
 @Component({
   selector: 'app-login-form',
@@ -24,8 +25,7 @@ export class LoginForm implements OnInit,IDeactivate{
 
   constructor(private messageService: MessageService,private exitFormConformation : ExitFormConformation) {}
 
-  email : string | undefined;
-  password : string | undefined;
+  userToLogin : LoginDto | undefined;
   loginForm : FormGroup;
 
 
@@ -40,10 +40,14 @@ export class LoginForm implements OnInit,IDeactivate{
   {
     if(this.loginForm.valid)
       {
-        const formData = this.loginForm.value;
+        //const formData = this.loginForm.value;
+        this.userToLogin = new LoginDto(
+        this.loginForm.get('email').value,
+        this.loginForm.get('password').value
+        )
+        console.log('New user to login: ', this.userToLogin)
         //API LOGIC HERE
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Login Request Sent', life: 3000});
-        console.log(formData)
         this.loginForm.reset()
       } 
       else
@@ -77,10 +81,17 @@ export class LoginForm implements OnInit,IDeactivate{
 
   canExit () : boolean | Observable<boolean> | Promise<boolean>{
     
-    this.email = this.loginForm.get('email').value;
-    this.password = this.loginForm.get('password').value;
+    // this.email = this.loginForm.get('email').value;
+    // this.password = this.loginForm.get('password').value;
 
-    return ( this.email || this.password) ?  this.exitFormConformation.confirmExit() :  true;
+    this.userToLogin = new LoginDto(
+      this.loginForm.get('email').value,
+      this.loginForm.get('password').value
+    )
+
+    return ( 
+      this.userToLogin.getEmail() ||
+      this.userToLogin.getPassword()) ? this.exitFormConformation.confirmExit() : true;
 
   }
 

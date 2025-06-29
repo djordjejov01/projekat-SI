@@ -16,6 +16,7 @@ import { IDeactivate } from '../../Interfaces/IDeactivate';
 import { Observable } from 'rxjs';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ExitFormConformation } from '../../Services/exitConformation.service';
+import { RegisterDto } from '../../Models/RegisterDto';
 
 @Component({
   selector: 'app-register-form',
@@ -28,11 +29,7 @@ export class RegisterForm implements OnInit,IDeactivate{
   constructor(private messageService: MessageService,private exitFormConformation : ExitFormConformation) {}
 
   roles: String[] | undefined;
-  selectedRole : string | undefined;
-  username : string | undefined;
-  email : string | undefined;
-  password : string | undefined;
-  confirm : string | undefined;
+  userToRegister : RegisterDto | undefined;
 
   registerForm : FormGroup;
 
@@ -53,21 +50,23 @@ export class RegisterForm implements OnInit,IDeactivate{
     
   }
 
-  onSelectedRole(selectObj : any){
-    this.selectedRole = selectObj.value;
-    console.log(this.selectedRole)
-  }
-  
-
   submitForm()
   {
     
     if(this.registerForm.valid)
       {
-        const formData = this.registerForm.value;
+        //const formData = this.registerForm.value;
+        this.userToRegister = new RegisterDto(
+        this.registerForm.get('username').value,
+        this.registerForm.get('email').value,
+        this.registerForm.get('password').value,
+        this.registerForm.get('confirm').value,
+        this.registerForm.get('role').value
+        )
+
+        console.log('New user to register: ' , this.userToRegister)
         //API LOGIC HERE
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Account Sucessfully Registered', life: 3000});
-        console.log(formData)
         this.registerForm.reset()
       } 
     else
@@ -122,13 +121,20 @@ export class RegisterForm implements OnInit,IDeactivate{
 
     canExit() : boolean | Observable<boolean> | Promise<boolean>
     {
-      this.selectedRole = this.registerForm.get('role').value;
-      this.username = this.registerForm.get('username').value;
-      this.email = this.registerForm.get('email').value;
-      this.password = this.registerForm.get('password').value;
-      this.confirm = this.registerForm.get('confirm').value
+      this.userToRegister = new RegisterDto(
+        this.registerForm.get('username').value,
+        this.registerForm.get('email').value,
+        this.registerForm.get('password').value,
+        this.registerForm.get('confirm').value,
+        this.registerForm.get('role').value
+      )
 
-      return (this.selectedRole || this.username || this.email || this.password || this.confirm) ?  this.exitFormConformation.confirmExit() :  true;
+      return (
+        this.userToRegister.getRole()      ||
+        this.userToRegister.getUsername()  ||
+        this.userToRegister.getEmail()     ||
+        this.userToRegister.getPassword()  ||
+        this.userToRegister.getConfirmPassword()) ?  this.exitFormConformation.confirmExit() :  true;
     }
 
 }
