@@ -21,8 +21,9 @@ namespace Backend.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            if (string.IsNullOrWhiteSpace(registerDto.Role))
-                return BadRequest(new { message = "Role je obavezan za web registraciju." });
+            // Provera validacije modela
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
             if (registerDto.Password != registerDto.ConfirmPassword)
                 return BadRequest(new { message = "Lozinka i potvrda lozinke se ne poklapaju." });

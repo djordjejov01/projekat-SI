@@ -19,10 +19,10 @@ namespace Backend.Models
         public string Password { get; set; } // hashed
 
         [Required, MaxLength(50)]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } //posle registracije korisnik dodaje FirstName
 
         [Required, MaxLength(50)]
-        public string LastName { get; set; }
+        public string LastName { get; set; } //posle registracije korisnik dodaje LastName
 
         [Required]
         public UserRole Role { get; set; } // enum tip

@@ -34,11 +34,8 @@ namespace Backend.Services
             string hashedPassword = HashPassword(registerDto.Password);
 
             // Dodeljuje ulogu (na osnovu registerDto.Role)
-            UserRole role;
-            if (!Enum.TryParse(registerDto.Role, true, out role))
-            {
-                role = UserRole.MobileUser; // fallback
-            }
+            UserRole role = registerDto.Role;
+            
 
             //Postavlja isActive(Dobavljac: false, Organizator/Admin: true)
             bool isActive = role == UserRole.Supplier ? false : true;
@@ -63,7 +60,7 @@ namespace Backend.Services
                 UserId = user.UserId,
                 Username = user.Username,
                 Email = user.Email,
-                Role = user.Role.ToString(),
+                Role = user.Role,
                 IsActive = user.IsActive
             };
             return userDto;
@@ -122,7 +119,7 @@ namespace Backend.Services
                 UserId = user.UserId,
                 Username = user.Username,
                 Email = user.Email,
-                Role = user.Role.ToString(),
+                Role = user.Role,
                 IsActive = user.IsActive
             };
             return userDto;

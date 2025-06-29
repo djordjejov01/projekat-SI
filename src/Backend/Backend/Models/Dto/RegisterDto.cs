@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace Backend.Models.Dto
 {
@@ -17,7 +18,7 @@ namespace Backend.Models.Dto
         public string ConfirmPassword { get; set; }
 
         [Required]
-        //pri izboru role mozda ne postoji
-        public string? Role { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public UserRole Role { get; set; }
     }
 }
