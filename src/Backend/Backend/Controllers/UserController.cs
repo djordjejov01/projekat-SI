@@ -38,25 +38,6 @@ namespace Backend.Controllers
             }
         }
 
-        // MOBILNA registracija (role se automatski postavlja na Guest)
-        [HttpPost("mobile-register")]
-        public async Task<IActionResult> MobileRegister([FromBody] RegisterDto registerDto)
-        {
-            registerDto.Role = "Guest";
-            if (registerDto.Password != registerDto.ConfirmPassword)
-                return BadRequest(new { message = "Lozinka i potvrda lozinke se ne poklapaju." });
-
-            try
-            {
-                var user = await _userService.RegisterAsync(registerDto);
-                return Ok(user);
-            }
-            catch (System.Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-        }
-
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
@@ -70,8 +51,8 @@ namespace Backend.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        
-        
+
+
         [HttpPost("approve-supplier/{userId}")]
         public async Task<IActionResult> ApproveSupplier(int userId)
         {
@@ -86,4 +67,4 @@ namespace Backend.Controllers
             }
         }
     }
-} 
+}
