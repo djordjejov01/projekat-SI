@@ -8,7 +8,7 @@ namespace Backend.Models
         Admin,
         Organizer,
         Supplier,
-        Guest
+        MobileUser
     }
 
     public class UserRoles

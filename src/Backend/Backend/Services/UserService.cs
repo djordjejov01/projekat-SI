@@ -37,7 +37,7 @@ namespace Backend.Services
             UserRole role;
             if (!Enum.TryParse(registerDto.Role, true, out role))
             {
-                role = UserRole.Guest; // fallback
+                role = UserRole.MobileUser; // fallback
             }
 
             //Postavlja isActive(Dobavljac: false, Organizator/Admin: true)

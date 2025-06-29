@@ -37,7 +37,7 @@ namespace Backend.Migrations
                 (0, 'Admin'),
                 (1, 'Organizer'),
                 (2, 'Supplier'),
-                (3, 'Guest');
+                (3, 'MobileUser');
             ");
 
             migrationBuilder.CreateTable(
