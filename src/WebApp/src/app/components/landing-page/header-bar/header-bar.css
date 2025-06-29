@@ -8,6 +8,7 @@ header{
     justify-content: space-between;
     margin-top: 10px;
     gap:50px;
+    flex-wrap: wrap;
 }
 #logo{
     max-width: 120px;
@@ -25,6 +26,7 @@ header{
     font-weight: bold;
     justify-content: flex-start;
     font-size: 18px;
+    flex-wrap: wrap;
 }
 
 #leftside p:hover{
@@ -46,8 +48,30 @@ header{
     justify-content: center;
     padding-left: 20px;
     font-size: 18px;
+    flex-wrap: wrap;
 }
 
 #login:hover, #register:hover{
     cursor: pointer;
+}
+
+
+@media screen and (width <= 665px) {
+    header{
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap:10px;
+    }
+    #rightside, #leftside, img{
+        padding: 0;
+    }
+}
+@media screen and (width <= 410px) {
+    #leftside{
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap:10px;
+    }
 }

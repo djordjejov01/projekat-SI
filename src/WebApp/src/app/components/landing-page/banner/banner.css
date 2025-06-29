@@ -5,19 +5,20 @@ main{
     align-items: center;
     margin-top: 100px;
     gap:100px;
+    flex-wrap: wrap;
 }
 /**/
 #leftside{
     display: flex;
     flex-direction: column;
     gap:20px;
+    flex-wrap: wrap;
 }
 #title{
     font-size: 70px;
     font-weight: bold;
     margin: 0;
     max-width: 650px;
-
 }
 #desc{
     max-width: 450px;
@@ -67,4 +68,44 @@ img{
     border-radius: 10px;
     max-height: 430px;
     scale: 1.15;
+}
+
+@media screen and (width <= 1175px) {
+    #leftside{
+        justify-content: center;
+        align-items: center;
+    }
+    #title, #desc{
+            text-align: center;
+    }
+    img{
+        border-radius: 10px;
+        scale: 0.95;
+    }
+}
+
+@media screen and (width <= 450px) {
+    #leftside{
+        justify-content: center;
+        align-items: center;
+    }
+    #title{
+        font-size: 40px;
+    }
+
+    #desc{
+        font-size: 18px;
+    }
+}
+@media screen and (width <= 320px) {
+    #title{
+        font-size: 30px;
+    }
+
+    #desc{
+        font-size: 14px;
+    }
+    button{
+        font-size: 10px;
+    }
 }
