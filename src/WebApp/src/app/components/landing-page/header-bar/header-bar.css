@@ -56,6 +56,16 @@ header{
 }
 
 
+select{
+    box-shadow: 0px 0px 5px 3px rgb(214, 214, 214);
+    padding-right:13px;
+    padding-left:5px;
+    border-radius: 10px;
+    margin-right: 10px;
+}
+
+
+
 @media screen and (width <= 665px) {
     header{
         flex-direction: column;

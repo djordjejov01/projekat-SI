@@ -5,10 +5,13 @@
         <p>About us</p>
         <p>Contact us</p>
     </div>
-
     <div id="rightside">
-        <p id="login" routerLink="/Login">Login</p>
+        <select (change)="changeLanguage($event)">
+            <option value="sr">Srpski</option>
+            <option value="en">English</option>
+        </select>
+        <p id="login" routerLink="/Login">{{ 'LOGIN' | translate }}</p>
         <p>/</p>
-        <p id="register" routerLink="/Register">Register</p>
+        <p id="register" routerLink="/Register">{{ 'REGISTER' | translate }}</p>
     </div>
 </header>
