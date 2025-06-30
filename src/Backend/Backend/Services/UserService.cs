@@ -75,12 +75,12 @@ namespace Backend.Services
                 return false;
             if (!password.Any(char.IsDigit))
                 return false;
-            if (!password.Any(ch => "!@#$%^&*-_+=./?".Contains(ch)))
-                return false;
+            /*if (!password.Any(ch => "!@#$%^&*-_+=./?".Contains(ch)))
+                return false;*/
             return true;
         }
 
-        // Pomocna metoda za hešovanje lozinke (SHA256)
+        // Pomocna metoda za hesovanje lozinke (SHA256)
         private string HashPassword(string password)
         {
             using (var sha256 = SHA256.Create())
