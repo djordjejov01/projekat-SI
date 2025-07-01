@@ -9,8 +9,9 @@ import { CommonModule } from '@angular/common';
 })
 export class MenuBarComponent {
   selectedIndex = 0;
-  items = [{ title: 'Events', image: './assets/calendar.svg', imageWhite: './assets/calendarWhite.svg'},
-      { title: 'Calendar', image: './assets/calendar.svg', imageWhite: './assets/calendarWhite.svg' },
+  items = [{ title: 'Overview', image: './assets/eye.svg', imageWhite: './assets/eyeWhite.svg'},
+    { title: 'Events', image: './assets/calendar.svg', imageWhite: './assets/calendarWhite.svg'},
+      { title: 'Calendar', image: './assets/cal.svg', imageWhite: './assets/calWhite.svg' },
       { title: 'Create Event', image: './assets/plus.svg', imageWhite: './assets/plusWhite.svg' },
       { title: 'My profile', image: './assets/profile.svg', imageWhite: './assets/profileWhite.svg' }]
   selectItem(index: number)
