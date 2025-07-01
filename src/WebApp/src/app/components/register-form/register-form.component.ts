@@ -17,16 +17,33 @@ import { Observable } from 'rxjs';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ExitFormConformation } from '../../Services/exitConformation.service';
 import { RegisterDto } from '../../Models/RegisterDto';
+import { ApiService } from '../../Services/api.service';
+import { UserDto } from '../../Models/UserDto';
 
 @Component({
   selector: 'app-register-form',
-  imports: [SelectModule,ReactiveFormsModule,CommonModule,FloatLabelModule,InputTextModule,PasswordModule,DividerModule,KnobModule,FormsModule,RouterLink,ToastModule,ConfirmDialog],
+  imports: [
+    SelectModule,
+    ReactiveFormsModule,
+    CommonModule,
+    FloatLabelModule,
+    InputTextModule,
+    PasswordModule,
+    DividerModule,
+    KnobModule,
+    FormsModule,
+    RouterLink,
+    ToastModule,
+    ConfirmDialog],
   templateUrl: './register-form.component.html',
   styleUrls: ['./register-form.component.css']
 })
 export class RegisterForm implements OnInit,IDeactivate{
 
-  constructor(private messageService: MessageService,private exitFormConformation : ExitFormConformation) {}
+  constructor(
+    private messageService: MessageService,
+    private exitFormConformation : ExitFormConformation,
+    private apiService : ApiService) {}
 
   roles: String[] | undefined;
   userToRegister : RegisterDto | undefined;
@@ -54,8 +71,7 @@ export class RegisterForm implements OnInit,IDeactivate{
   {
     
     if(this.registerForm.valid)
-      {
-        //const formData = this.registerForm.value;
+    {
         this.userToRegister = new RegisterDto(
         this.registerForm.get('username').value,
         this.registerForm.get('email').value,
@@ -64,11 +80,30 @@ export class RegisterForm implements OnInit,IDeactivate{
         this.registerForm.get('role').value
         )
 
-        console.log('New user to register: ' , this.userToRegister)
         //API LOGIC HERE
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Account Sucessfully Registered', life: 3000});
-        this.registerForm.reset()
-      } 
+        this.apiService.register(this.userToRegister).subscribe({
+          next: (response : UserDto) => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: `User ${response.getUsername()} Successfully Registered`,
+              life: 3000});
+
+            this.registerForm.reset()
+          },
+
+          error: (errorResponse) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000 });
+          }
+        });
+
+        console.log('New user to register: ' , this.userToRegister)
+        
+    } 
     else
     {
 
@@ -102,17 +137,18 @@ export class RegisterForm implements OnInit,IDeactivate{
 
               case this.registerForm.controls['confirm']:
               {
-                if (this.registerForm.controls['confirm'].errors?.['required']) warningString += "  * Conformation is required\n";
-                else if (this.registerForm.controls['confirm'].errors?.['pattern']) warningString += "  * Conformation must match the pattern\n";
+                if (this.registerForm.controls['confirm'].errors?.['required']) warningString += "  * Confirmation is required\n";
+                else if (this.registerForm.controls['confirm'].errors?.['pattern']) warningString += "  * Confirmation must match the pattern\n";
               } break;
 
               default: warningString += "  * Somthing went wrong\n";
             }
         }
 
-        if(this.registerForm.errors?.['passwordsDontMatch']) warningString += "  * Password and Conformation must match\n";
+        if(this.registerForm.errors?.['passwordsDontMatch']) warningString += "  * Password and Confirmation must match\n";
 
        this.messageService.add({ severity: 'warn', summary: 'Warn Message', detail: warningString , life: 3000 });
+       return;
 
     }
 

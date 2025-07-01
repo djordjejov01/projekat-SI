@@ -13,6 +13,8 @@ import { ToastModule } from 'primeng/toast';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { RouterLink } from '@angular/router';
 import { LoginDto } from '../../Models/LoginDto';
+import { ApiService } from '../../Services/api.service';
+import { UserDto } from '../../Models/UserDto';
 
 @Component({
   selector: 'app-login-form',
@@ -23,7 +25,10 @@ import { LoginDto } from '../../Models/LoginDto';
 export class LoginForm implements OnInit,IDeactivate{
 
 
-  constructor(private messageService: MessageService,private exitFormConformation : ExitFormConformation) {}
+  constructor(
+    private messageService: MessageService,
+    private exitFormConformation : ExitFormConformation,
+    private apiService : ApiService) {}
 
   userToLogin : LoginDto | undefined;
   loginForm : FormGroup;
@@ -40,15 +45,32 @@ export class LoginForm implements OnInit,IDeactivate{
   {
     if(this.loginForm.valid)
       {
-        //const formData = this.loginForm.value;
         this.userToLogin = new LoginDto(
         this.loginForm.get('email').value,
         this.loginForm.get('password').value
         )
-        console.log('New user to login: ', this.userToLogin)
+        
         //API LOGIC HERE
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Login Request Sent', life: 3000});
-        this.loginForm.reset()
+        this.apiService.login(this.userToLogin).subscribe({
+          next: (response : UserDto) => {
+            this.messageService.add({ 
+            severity: 'success',
+            summary: 'Success',
+            detail: `Successfully logged in as ${response.getUsername()}`,
+            life: 3000});
+            this.loginForm.reset()
+          },
+          error: (errorResponse) => {
+             this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000 });
+          }
+        })
+       
+
+        console.log('New user to login: ', this.userToLogin)
       } 
       else
       {
@@ -74,15 +96,13 @@ export class LoginForm implements OnInit,IDeactivate{
           }
 
         this.messageService.add({ severity: 'warn', summary: 'Warn Message', detail: warningString , life: 3000 });
+        return;
 
       }
 
   }
 
   canExit () : boolean | Observable<boolean> | Promise<boolean>{
-    
-    // this.email = this.loginForm.get('email').value;
-    // this.password = this.loginForm.get('password').value;
 
     this.userToLogin = new LoginDto(
       this.loginForm.get('email').value,
