@@ -1,20 +1,29 @@
+using Backend.Models;
 using Backend.Models.Dto;
 using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+
+
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly IConfiguration _config;
 
-        public UserController(IUserService userService)
+        public UserController(IUserService userService, IConfiguration config)
         {
             _userService = userService;
+            _config = config;
         }
 
         // WEB registracija (role je obavezan)
@@ -45,6 +54,35 @@ namespace Backend.Controllers
             try
             {
                 var user = await _userService.LoginAsync(loginDto);
+                var claims = new[]
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Email, user.Email),    
+                    new Claim(ClaimTypes.Role, user.Role.ToString()),
+
+
+                };
+
+                // 3) Create key & creds
+                var key = new SymmetricSecurityKey(
+                              Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+                var credsSigning = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                // 4) Create the token
+                var token = new JwtSecurityToken(
+                    issuer: _config["Jwt:Issuer"],
+                    audience: _config["Jwt:Audience"],
+                    claims: claims,
+                    expires: DateTime.UtcNow.AddHours(2),
+                    signingCredentials: credsSigning
+                );
+
+                // 5) Return the serialized token
+                return Ok(new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(token)
+                });
                 return Ok(user);
             }
             catch (System.Exception ex)
