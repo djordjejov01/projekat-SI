@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TranslateService, TranslateModule, TranslatePipe, TranslateDirective } from '@ngx-translate/core';
-
+import { OrganizerPageComponent } from './components/organizer-page/organizer-page.component';
 
 @Component({
   selector: 'app-root',

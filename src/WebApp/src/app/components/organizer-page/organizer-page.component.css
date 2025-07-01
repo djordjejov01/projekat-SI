@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Rubik+Wet+Paint&display=swap');
+*{
+    font-family: "Archivo",'Courier New', Courier, monospace, sans-serif;
+}
+
+#prof{
+    display: flex;
+    align-items: center;
+}
+#pfp{
+    max-width: 30px;
+    border-radius: 50%;
+    background-color: rgb(214, 178, 248);
+}
+main{
+display: flex;
+flex-direction: column;
+}
+#head{
+    display: flex;
+    justify-content: space-between;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid rgb(232, 232, 232);
+}
+#right{
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    gap:10px;
+}
+#logo{
+    max-width: 120px;
+    margin-left: 25px;
+}
+#page{
+    display: flex;
+}
+#show{
+    display: flex;
+    flex-direction: column;
+    margin-left: 30px;
+    margin-top:40px;
+}
