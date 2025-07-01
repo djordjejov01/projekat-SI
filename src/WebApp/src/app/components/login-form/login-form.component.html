@@ -1,26 +1,26 @@
 <section class="form-container">
+  
   <div class="form-and-header">
-    <img src="/assets/logo91.png" alt="logo" />
+
+    <img src="/assets/logo91.png" alt="logo" routerLink="/Home"/>
     <h1>Log <span class="text-violet-400">In</span></h1>
 
     <form action="" class="login-form" [formGroup]="loginForm">
+
       <div class="form-inputs">
+
         <div class="input-wrapper">
+
           <p>Email</p>
           <p-floatlabel class="w-full md:w-56" variant="on">
-            <input
-              type="text"
-              pInputText
-              placeholder=" "
-              formControlName="email"
-              inputId="email"
-              class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-            />
+            <input  type="text"  pInputText  placeholder=" "  formControlName="email"  inputId="email"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
             <label for="email">Enter Your Email</label>
           </p-floatlabel>
+
         </div>
 
         <div class="input-wrapper">
+
           <p>Password</p>
           <p-floatlabel class="w-full md:w-56" variant="on" inputId="password">
             <p-password formControlName="password" [toggleMask]="true">
@@ -39,15 +39,24 @@
             </p-password>
             <label for="password">Enter Your Password</label>
           </p-floatlabel>
+
         </div>
+        
       </div>
 
-      <button
-        type="submit"
-        class="bg-violet-400 text-white rounded-md px-4 py-2 hover:bg-violet-500"
-      >
+
+      
+      <p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }"/>
+      <p-confirmdialog />
+      <button type="button" class="bg-violet-400 text-white rounded-md px-4 py-2 hover:bg-violet-500" (click)="submitForm()">
         Log In
       </button>
+      <p class="text-violet-400" routerLink="/Register">
+          Dont have an account? Register
+      </p>
+
     </form>
+
   </div>
+
 </section>

@@ -6,6 +6,6 @@ import { LoginForm } from './components/login-form/login-form.component';
 export const routes: Routes = [
     {path: '', component: LandingPage},
     {path: 'Home', component: LandingPage},
-    {path: 'Register', component: RegisterForm},
-    {path: 'Login', component: LoginForm}
+    {path: 'Register', component: RegisterForm, canDeactivate: [(comp: RegisterForm) => comp.canExit()]},
+    {path: 'Login', component: LoginForm, canDeactivate: [(comp: LoginForm) => comp.canExit()]}
 ];
