@@ -1,4 +1,27 @@
 {
   "LOGIN": "Prijava",
-  "REGISTER": "Registracija"
+  "REGISTER": "Registracija",
+  "HOME" : "Početna",
+  "ABOUTUS": "O nama",
+  "ContactUs": "Kontakt",
+  "TITLE1" : "Pojednostavite svoje događaje, sa lakoćom.",
+  "DESC1" : "SyncUp omogućava administratorima, organizatorima i dobavljačima da upravljaju događajima, resursima i saradnjama sa nenadmašnom efikasnošću i pregledom",
+  "GS" : "Započni",
+  "LM" : "Saznaj više",
+  "INFOTITLE" : "Ko ima benefite?",
+  "INFOTITLE2" : "Kako SyncUp Radi",
+  "T1" : "Za Administratore",
+  "T2" : "Za Organizatore",
+  "T3" : "Za Dobavljače",
+  "T4" : "1. Napravi Svoj Događaj",
+  "T5" : "2. Odredi Resurse i Dobavljače",
+  "T6" : "3. Upravljaj i Sarađuj",
+  "D1": "Ostvarite sveobuhvatan nadzor nad svim korisnicima, ulogama i aktivnostima platforme, osiguravajući usklađenost i efikasnost.",
+  "D2": "Bez napora kreirajte, upravljajte i pratite sve svoje događaje, od raspodele resursa do rasporeda u realnom vremenu.",
+  "D3": "Prikažite svoje resurse, upravljajte dostupnošću i pojednostavite zahteve, poboljšavajući angažovanje na događajima.",
+  "D4": "Definišite sve parametre događaja, od tipa, lokacije, datuma, do kapaciteta i detaljnih opisa.",
+  "D5": "Lako definišite potrebne resurse, izaberite željene dobavljače i integrišite mape lokacija.",
+  "D6": "Nadgledajte rasporede, pratite aktivnosti i olakšajte saradnju u realnom vremenu sa svim zainteresovanim stranama.",
+  "PROMOTITLE": "Spremni da organizujete svoje događaje?",
+  "PROMODESC": "Pridružite se hiljadama profesionalaca za organizaciju događaja koji koriste SyncUp za besprekorno izvođenje."
 }

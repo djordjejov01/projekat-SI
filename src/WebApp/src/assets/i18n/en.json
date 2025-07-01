@@ -1,4 +1,27 @@
 {
   "LOGIN": "Login",
-  "REGISTER": "Register"
+  "REGISTER": "Register",
+  "HOME" : "Home",
+  "ABOUTUS": "About us",
+  "ContactUs": "Contact us",
+  "TITLE1" : "Streamline Your Events, Seamlessly.",
+  "DESC1" : "SyncUp empowers admins, organizers, and suppliers to manage events, resources, and collaborations with unparalleled efficiency and insight.",
+  "GS" : "Get Started",
+  "LM" : "Learn More",
+  "INFOTITLE" : "Who Benefits?",
+  "INFOTITLE2" : "How SyncUp Works",
+  "T1" : "For Admins",
+  "T2" : "For Organizers",
+  "T3" : "For Suppliers",
+  "T4" : "1. Create Your Event",
+  "T5" : "2. Assign Resources & Suppliers",
+  "T6" : "3. Manage & Collaborate",
+  "D1" : "Gain comprehensive oversight of all users, roles, and platform activities, ensuring compliance and efficiency.",
+  "D2" : "Effortlessly create, manage, and track all your events, from resource allocation to real-time schedules.",
+  "D3" : "Showcase your resources, manage availability, and streamline requests, enhancing your event engagements.",
+  "D4" : "Define all event parameters from type, location, date, to capacity and detailed descriptions.",
+  "D5" : "Easily define necessary resources, select preferred suppliers, and integrate location maps.",
+  "D6" : "Oversee schedules, track activities, and facilitate real-time collaboration with all stakeholders.",
+  "PROMOTITLE": "Ready to Sync Up Your Events?",
+  "PROMODESC": "Join thousands of event professionals leveraging SyncUp for flawless execution."
 }

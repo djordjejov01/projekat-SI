@@ -1,8 +1,9 @@
 import { Component, Input } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-info-card',
-  imports: [],
+  imports: [TranslateModule],
   templateUrl: './info-card.html',
   styleUrl: './info-card.css'
 })
