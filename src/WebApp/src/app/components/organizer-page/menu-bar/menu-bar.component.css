@@ -1,0 +1,22 @@
+#bar{
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    border-right: 2px solid rgb(232, 232, 232);
+    gap:10px;
+    border-bottom: 2px solid rgb(232, 232, 232);
+    border-bottom-right-radius: 10px;
+}
+
+#menu{
+    margin-top: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    margin-left: 25px;
+    margin-right: 25px;
+    gap:5px;
+}
+#item4{
+margin-top: 150px;
+}
