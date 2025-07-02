@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Backend.Models;
+﻿using Backend.Models;
 using Backend.Models.Dto;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Controllers
 {
@@ -16,10 +17,12 @@ namespace Backend.Controllers
             _context = context;
         }
 
-        
+        [Authorize(Roles = "MobileUser")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EventListDto>>> GetFavorites(int userId)
+        public async Task<ActionResult<IEnumerable<EventListDto>>> GetFavorites(/*int UserId*/)
         {
+            // Izvuci userId iz tokena
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             // U realnoj aplikaciji userId bi izvlačio iz tokena, ovde ga šalješ kao query parametar
             var favoriteEvents = await _context.FavoriteEvents
                 .Where(f => f.UserId == userId)
@@ -38,10 +41,13 @@ namespace Backend.Controllers
             return Ok(favoriteEvents);
         }
 
-        
+        [Authorize(Roles = "MobileUser")]
         [HttpPost("{eventId}")]
-        public async Task<IActionResult> AddFavorite(int eventId, int userId)
+        public async Task<IActionResult> AddFavorite(int eventId/*, int userId*/)
         {
+
+            // Izvuci userId iz tokena
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             // Proveri da li vec postoji
             var exists = await _context.FavoriteEvents.AnyAsync(f => f.UserId == userId && f.EventId == eventId);
             if (exists)
@@ -59,10 +65,12 @@ namespace Backend.Controllers
             return StatusCode(201);
         }
 
-        
+        [Authorize(Roles = "MobileUser")]
         [HttpDelete("{eventId}")]
-        public async Task<IActionResult> RemoveFavorite(int eventId, int userId)
+        public async Task<IActionResult> RemoveFavorite(int eventId/*, int userId*/)
         {
+            // Izvuci userId iz tokena
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var favorite = await _context.FavoriteEvents
                 .FirstOrDefaultAsync(f => f.UserId == userId && f.EventId == eventId);
 
