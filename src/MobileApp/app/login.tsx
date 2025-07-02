@@ -55,20 +55,30 @@ export default function LoginScreen() {
     }
 
     const isValidEmail = email.includes('@');
-    const isValidPassword = password.length >= 6;
-
+    
+    
     if (!isValidEmail) {
       Alert.alert('Login Failed', 'Invalid email format');
       return;
     }
+    const criteria = {
+      length: password.length >= 8,
+      upperLower: /[A-Z]/.test(password) && /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>_\-+=]/.test(password),
+    };
+
+    const isValidPassword = Object.values(criteria).every(Boolean);
 
     if (!isValidPassword) {
-      Alert.alert('Login Failed', 'Password must be at least 6 characters');
+      Alert.alert('Login Failed', 'Invalid password.');
       return;
     }
 
+
+ 
     try {
-      const response = await fetch('http://192.168.1.3:5216/api/User/login', {
+      const response = await fetch('http://192.168.188.32:5216/api/User/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
