@@ -13,6 +13,6 @@
         public string OrganizerName { get; set; }
         public int AttendingCount { get; set; }
         public bool IsFavorite { get; set; }
-        public List<AgendaItemDto> Agenda { get; set; }
+        public List<EventActivityDto> Agenda { get; set; }
     }
 }
