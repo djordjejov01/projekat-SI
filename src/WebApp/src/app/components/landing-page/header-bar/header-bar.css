@@ -55,6 +55,10 @@ header{
     cursor: pointer;
 }
 
+select,option{
+    cursor: pointer;
+}
+
 
 @media screen and (width <= 665px) {
     header{
