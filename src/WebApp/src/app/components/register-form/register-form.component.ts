@@ -9,24 +9,44 @@ import { DividerModule } from 'primeng/divider';
 import { KnobModule } from 'primeng/knob';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { CustomValidators } from '../../Validators/custom.validators';
+import { ToastModule } from 'primeng/toast';
+import { MessageService} from 'primeng/api';
+import { IDeactivate } from '../../Interfaces/IDeactivate';
+import { Observable } from 'rxjs';
+import { ConfirmDialog } from 'primeng/confirmdialog';
+import { ExitFormConformation } from '../../Services/exitConformation.service';
+import { RegisterDto } from '../../Models/RegisterDto';
+import { ApiService } from '../../Services/api.service';
+import { UserDto } from '../../Models/UserDto';
 
 @Component({
   selector: 'app-register-form',
-  imports: [SelectModule,ReactiveFormsModule,CommonModule,FloatLabelModule,InputTextModule,PasswordModule,DividerModule,KnobModule,FormsModule,RouterLink],
+  imports: [
+    SelectModule,
+    ReactiveFormsModule,
+    CommonModule,
+    FloatLabelModule,
+    InputTextModule,
+    PasswordModule,
+    DividerModule,
+    KnobModule,
+    FormsModule,
+    RouterLink,
+    ToastModule,
+    ConfirmDialog],
   templateUrl: './register-form.component.html',
   styleUrls: ['./register-form.component.css']
 })
-export class RegisterForm implements OnInit{
+export class RegisterForm implements OnInit,IDeactivate{
 
-  value: string | undefined;
+  constructor(
+    private messageService: MessageService,
+    private exitFormConformation : ExitFormConformation,
+    private apiService : ApiService) {}
 
   roles: String[] | undefined;
-  progress : number = 0;
-  private progressInterval: any;
-  selectedRole : string | undefined;
-  username : string | undefined;
-  email : string | undefined;
-  password : string | undefined;
+  userToRegister : RegisterDto | undefined;
 
   registerForm : FormGroup;
 
@@ -39,63 +59,118 @@ export class RegisterForm implements OnInit{
     this.registerForm = new FormGroup({
       role: new FormControl(null, Validators.required),
       username: new FormControl('', Validators.required),
-      email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', Validators.required),
-      confirm: new FormControl('',Validators.required)
+      email: new FormControl('', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]),
+      password: new FormControl('', [Validators.required,Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/)]),
+      confirm: new FormControl('',[Validators.required,Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/)])
     
-    })
-
-    this.registerForm.valueChanges.subscribe(()=>{
-      this.updateProgress();
-    })
+    }, CustomValidators.passwordsMatch)
     
   }
 
-  show(){
-    console.log(this.selectedRole)
-  }
+  submitForm()
+  {
+    
+    if(this.registerForm.valid)
+    {
+        this.userToRegister = new RegisterDto(
+        this.registerForm.get('username').value,
+        this.registerForm.get('email').value,
+        this.registerForm.get('password').value,
+        this.registerForm.get('confirm').value,
+        this.registerForm.get('role').value
+        )
 
-  onFormSubmit(){
-    console.log(this.registerForm?.value)
-  }
+        //API LOGIC HERE
+        this.apiService.register(this.userToRegister).subscribe({
+          next: (response : UserDto) => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: `User ${response.getUsername()} Successfully Registered`,
+              life: 3000});
 
-  onSelectedRole(selectObj : any){
-    this.selectedRole = selectObj.value;
-    console.log(this.selectedRole)
-  }
+            this.registerForm.reset()
+          },
 
-  updateProgress(){
-    const controls = this.registerForm.controls;
-    const total = Object.keys(controls).length;
+          error: (errorResponse) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000 });
+          }
+        });
 
-    let validCount = 0;
-    for(let key in controls){
-      if(controls[key].valid && controls[key].value) validCount++;
+        console.log('New user to register: ' , this.userToRegister)
+        
+    } 
+    else
+    {
+
+      let warningString : string = 'Form Fields not Valid:\n';
+
+        for(let key in this.registerForm.controls)
+          {
+            switch(this.registerForm.controls[key])
+            {
+              case this.registerForm.controls['role']: 
+              {
+                if (this.registerForm.controls['role'].errors?.['required']) warningString += " * Role is required\n";
+              } break;
+
+              case this.registerForm.controls['username']: 
+              {
+                if (this.registerForm.controls['username'].errors?.['required']) warningString += " * Name is required\n";
+              } break;
+
+              case this.registerForm.controls['email']:
+              {
+                if (this.registerForm.controls['email'].errors?.['required']) warningString += "  * Email is required\n";
+                else if (this.registerForm.controls['email'].errors?.['pattern']) warningString += "  * Email is not valid\n";
+              } break;
+
+              case this.registerForm.controls['password']:
+              {
+                if (this.registerForm.controls['password'].errors?.['required']) warningString += " * Password is required\n";
+                else if (this.registerForm.controls['password'].errors?.['pattern']) warningString += " * Password must match the pattern\n";
+              } break;
+
+              case this.registerForm.controls['confirm']:
+              {
+                if (this.registerForm.controls['confirm'].errors?.['required']) warningString += "  * Confirmation is required\n";
+                else if (this.registerForm.controls['confirm'].errors?.['pattern']) warningString += "  * Confirmation must match the pattern\n";
+              } break;
+
+              default: warningString += "  * Somthing went wrong\n";
+            }
+        }
+
+        if(this.registerForm.errors?.['passwordsDontMatch']) warningString += "  * Password and Confirmation must match\n";
+
+       this.messageService.add({ severity: 'warn', summary: 'Warn Message', detail: warningString , life: 3000 });
+       return;
+
     }
 
-
-    let newProgress = (validCount / total) * 100;
-
-     if (this.progressInterval) {
-        clearInterval(this.progressInterval);
-      }
-
-    this.progressInterval = setInterval(()=>{
-      if(this.progress < newProgress) {
-        this.progress += 1;
-        if(this.progress >= newProgress){
-          this.progress = newProgress;
-          clearInterval(this.progressInterval)
-        }
-      }
-      else if( this.progress > newProgress){
-        this.progress -= 1;
-        if(this.progress <= newProgress){
-          this.progress = newProgress;
-          clearInterval(this.progressInterval)
-        }
-      }
-    }, 50)
   }
+
+
+    canExit() : boolean | Observable<boolean> | Promise<boolean>
+    {
+      this.userToRegister = new RegisterDto(
+        this.registerForm.get('username').value,
+        this.registerForm.get('email').value,
+        this.registerForm.get('password').value,
+        this.registerForm.get('confirm').value,
+        this.registerForm.get('role').value
+      )
+
+      return (
+        this.userToRegister.getRole()      ||
+        this.userToRegister.getUsername()  ||
+        this.userToRegister.getEmail()     ||
+        this.userToRegister.getPassword()  ||
+        this.userToRegister.getConfirmPassword()) ?  this.exitFormConformation.confirmExit() :  true;
+    }
 
 }

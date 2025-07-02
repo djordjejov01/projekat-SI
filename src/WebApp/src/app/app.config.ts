@@ -19,6 +19,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 
 
 import { routes } from './app.routes';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -36,6 +37,9 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes),
     provideAnimationsAsync(),
+    provideHttpClient(),
+    MessageService,
+    ConfirmationService,
     providePrimeNG({
       theme: {
         preset: MyPreset,
