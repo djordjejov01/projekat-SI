@@ -4,7 +4,7 @@ import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/images/SyncUpLogo.png')} style={styles.icon} />
+      <Image source={require('../assets/images/SyncUpLogo.png')} style={styles.icon} />
       <Text style={styles.subtitle}>Discover the World at Your Fingertips</Text>
 
       <Link href="/login" asChild>
