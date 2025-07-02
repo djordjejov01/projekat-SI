@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Rubik+Wet+Paint&display=swap');
 *{
     font-family: "Archivo",'Courier New', Courier, monospace, sans-serif;
+    flex-wrap: wrap;
 }
 
 #prof{
@@ -19,9 +20,9 @@ flex-direction: column;
 #head{
     display: flex;
     justify-content: space-between;
-    padding-top: 5px;
     padding-bottom: 5px;
     border-bottom: 2px solid rgb(232, 232, 232);
+    margin-top: 10px;
 }
 #right{
     display: flex;
@@ -43,4 +44,7 @@ flex-direction: column;
     margin-top:40px;
     justify-content: center;
     align-items: center;
+}
+img:hover{
+    cursor: pointer;
 }

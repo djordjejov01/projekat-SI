@@ -5,7 +5,8 @@
     [title]="item.title"
     [image]="selectedIndex === i ? item.imageWhite : item.image"
     [isSelected]="selectedIndex === i"
-    (clicked)="selectItem(i)">
+    (clicked)="selectItem(i)"
+    [id] = "'item' + i">
   </app-menu-item>
     </div>
 </div>
