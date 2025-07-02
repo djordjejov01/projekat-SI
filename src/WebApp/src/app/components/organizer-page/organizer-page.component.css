@@ -36,15 +36,29 @@ flex-direction: column;
 }
 #page{
     display: flex;
+    justify-content: space-between;
 }
 #show{
-    display: flex;
-    flex-direction: column;
-    margin-left: 30px;
-    margin-top:40px;
-    justify-content: center;
-    align-items: center;
+    padding-left: 30px;
+    padding-top:40px;
 }
 img:hover{
     cursor: pointer;
+}
+hr{
+    color: rgb(232, 232, 232);
+}
+
+@media screen and (width <= 1529px) {
+    #page{
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap:10px;
+    }
+    #show{
+        padding:0;
+        padding-left:10px;
+        padding-right: 10px;
+    }
 }

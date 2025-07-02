@@ -29,7 +29,20 @@
 #fr{
     display: flex;
     justify-content: space-between;
+    gap:550px;
 }
+
+@media screen and (width <= 890px) {
+    #fr{
+    gap:150px;
+}
+}
+@media screen and (width <= 500px) {
+    #fr{
+    gap:0px;
+}
+}
+
 img{
     max-width: 120px;
     border-radius: 10px;

@@ -1,5 +1,8 @@
 main{
     max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
 }
 
 h2{
@@ -10,6 +13,7 @@ h2{
 #track{
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
 }
 #track button{
     color: white;
@@ -28,6 +32,7 @@ h2{
     margin-top: 50px;
     display: flex;
     justify-content: space-evenly;
+    flex-wrap: wrap;
 }
 
 #events{
@@ -35,11 +40,16 @@ h2{
     display: flex;
     flex-direction: column;
     gap:20px;
+    padding-bottom: 20px;
+    flex-wrap: wrap;
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
 }
 
-#leftside{
-    min-width: 800px;
-}
+
 #rightside{
     display: flex;
     flex-direction: column;
@@ -93,5 +103,10 @@ h2{
 #linija{
     width: 2px;
     height: 100%;
-    background-color: gray;
+    background-color: rgb(232, 232, 232);
+}
+#ls{
+    display: flex;
+    gap:10px;
+    flex-wrap: nowrap;
 }
