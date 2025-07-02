@@ -7,7 +7,10 @@ import { OrganizerPageComponent } from './components/organizer-page/organizer-pa
 export const routes: Routes = [
     {path: '', component: LandingPage},
     {path: 'Home', component: LandingPage},
-    {path: 'Register', component: RegisterForm},
-    {path: 'Login', component: LoginForm},
-    {path: 'organizer', component: OrganizerPageComponent}
+<<<<<<< src/WebApp/src/app/app.routes.ts
+=======
+    {path: 'organizer', component: OrganizerPageComponent},
+    {path: 'Register', component: RegisterForm, canDeactivate: [(comp: RegisterForm) => comp.canExit()]},
+    {path: 'Login', component: LoginForm, canDeactivate: [(comp: LoginForm) => comp.canExit()]}
+>>>>>>> src/WebApp/src/app/app.routes.ts
 ];
