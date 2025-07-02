@@ -8,12 +8,46 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+WebBrowser.maybeCompleteAuthSession();
+import { useEffect } from 'react';
+import * as AuthSession from 'expo-auth-session';
+
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  
+  const redirectUri = AuthSession.makeRedirectUri({
+  });
 
+  
+  
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    clientId: '872083620944-8kpmch9eccq4i4n773tq4qtiu8o1bi3g.apps.googleusercontent.com',
+    redirectUri,
+  });
+  
+    useEffect(() => {
+    if (response?.type === 'success' && response.authentication?.accessToken) {
+    fetchUserInfo(response.authentication.accessToken);
+}
+  }, [response]);
+
+  const fetchUserInfo = async (token: string) => {
+    try {
+      const res = await fetch('https://www.googleapis.com/userinfo/v2/me', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const user = await res.json();
+      console.log('User Info:', user);
+      router.replace('./(tabs)/event');
+    } catch (err) {
+      Alert.alert('Error', 'Failed to get user info');
+    }
+  };
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please fill in both fields');
@@ -34,10 +68,22 @@ export default function LoginScreen() {
     }
 
     try {
-      // Ovdje možeš napraviti proveru korisnika iz AsyncStorage ili API-ja
+      const response = await fetch('http://192.168.1.3:5216/api/User/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
 
-      // Za sada simulacija uspešnog login-a
-      router.replace('/(tabs)');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Login failed');
+    }
+
+      const data = await response.json();
+      console.log('Login success:', data); 
+      router.replace('./(tabs)/events');
     } catch (error) {
       Alert.alert('Error', 'Something went wrong');
     }
@@ -92,9 +138,14 @@ export default function LoginScreen() {
         <View style={styles.line} />
       </View>
 
-      <TouchableOpacity style={styles.altButton}>
-        <Text style={{ fontSize: 16 }}>Continue with email</Text>
+      <TouchableOpacity
+      style={[styles.altButton, { marginTop: 10 }]}
+      onPress={() => promptAsync()}
+      disabled={!request}
+      >
+      <Text style={{ fontSize: 16 }}>Continue with Google</Text>
       </TouchableOpacity>
+
     </View>
   );
 }
