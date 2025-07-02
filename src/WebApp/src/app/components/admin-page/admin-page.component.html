@@ -35,33 +35,33 @@
 
     <app-statistic-card
         [cardTitle]="'Total Users'"
-        [statValue]="25"
+        [statValue]="users.length"
         [statDesc]="'Registered accounts'"
-        [statPercent]="12"
+        [statPercent]="registeredTotalUsersStat()"
         [imgUrl]="'./assets/lucide-Users-Outlined.svg'">
     </app-statistic-card>
 
     <app-statistic-card
         [cardTitle]="'Active Users'"
-        [statValue]="6"
+        [statValue]="getActiveCountLast30()"
         [statDesc]="'Currently logged in or active recently'"
-        [statPercent]="5"
+        [statPercent]="activeUsersStat()"
         [imgUrl]="'./assets/lucide-UserCheck-Outlined.svg'">
     </app-statistic-card>
 
     <app-statistic-card
         [cardTitle]="'New Registrations'"
-        [statValue]="0"
+        [statValue]="getRegisterCountLast30()"
         [statDesc]="'This month'"
-        [statPercent]="-3"
+        [statPercent]="newRegistrationsStat()"
         [imgUrl]="'./assets/lucide-CalendarDays-Outlined.svg'">
     </app-statistic-card>
 
     <app-statistic-card
         [cardTitle]="'Dormant Accounts'"
-        [statValue]="11"
+        [statValue]="getDormantCountLast30()"
         [statDesc]="'No activity for 90+ days'"
-        [statPercent]="-8"
+        [statPercent]="dormantAccountStat()"
         [imgUrl]="'./assets/lucide-UserMinus-Outlined.svg'">
     </app-statistic-card>
 </section>

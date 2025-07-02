@@ -12,8 +12,15 @@
     
     <div class="bottom">
         <i class="pi"
-        [ngClass]="{'better pi-arrow-up-right' : statPercent > 0, 'worse pi-arrow-down-right' : statPercent < 0}"></i>
-        <p [ngClass]="{'better' : statPercent > 0, 'worse' : statPercent < 0}">{{ statPercent }}% compared to previous period</p>
+        [ngClass]="{
+            'pi-arrow-up-right' : statPercent > 0,
+            'pi-arrow-down-right' : statPercent < 0 ,
+            'better' : (statPercent > 0 && cardTitle !== 'Dormant Accounts') || (statPercent < 0 && cardTitle === 'Dormant Accounts'),
+            'worse' : (statPercent < 0 && cardTitle !== 'Dormant Accounts') || (statPercent > 0 && cardTitle === 'Dormant Accounts')}"></i>
+        <p 
+        [ngClass]="{
+         'better' : (statPercent > 0 && cardTitle !== 'Dormant Accounts') || (statPercent < 0 && cardTitle === 'Dormant Accounts'),
+         'worse' : (statPercent < 0 && cardTitle !== 'Dormant Accounts') || (statPercent > 0 && cardTitle === 'Dormant Accounts')}">{{ statPercent }}% compared to previous period</p>
     </div>
 
 </div>
