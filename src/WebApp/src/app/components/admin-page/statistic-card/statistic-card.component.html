@@ -1,0 +1,19 @@
+<div class="container">
+
+    <div class="top">
+        <p>{{ cardTitle }}</p>
+        <img [src]='imgUrl' alt="Users Icon">
+    </div>
+
+    <div class="content">
+        <h1>{{ statValue }}</h1>
+        <p>{{ statDesc }}</p>
+    </div>
+    
+    <div class="bottom">
+        <i class="pi"
+        [ngClass]="{'better pi-arrow-up-right' : statPercent > 0, 'worse pi-arrow-down-right' : statPercent < 0}"></i>
+        <p [ngClass]="{'better' : statPercent > 0, 'worse' : statPercent < 0}">{{ statPercent }}% compared to previous period</p>
+    </div>
+
+</div>
