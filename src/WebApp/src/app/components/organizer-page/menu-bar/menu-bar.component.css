@@ -20,3 +20,10 @@
 #item4{
 margin-top: 150px;
 }
+
+@media screen and (width <= 1529px) {
+#bar{
+    border-left: 2px solid rgb(232, 232, 232);
+    border-bottom-left-radius: 10px;
+}
+}
