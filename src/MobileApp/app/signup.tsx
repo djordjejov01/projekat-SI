@@ -20,8 +20,6 @@ export default function SignUpScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [promoOptIn, setPromoOptIn] = useState(false);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -62,46 +60,36 @@ export default function SignUpScreen() {
     }
 
     try {
+    const response = await fetch('http://192.168.188.32:5216/api/User/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: fullName,
+        email: email,
+        password: password,
+        confirmPassword: confirmPassword,
+        role:'MobileUser'
+      }),
+    });
 
-      const usersRaw = await AsyncStorage.getItem('users');
-      const users = usersRaw ? JSON.parse(usersRaw) : [];
-
-      const emailExists = users.some((user: any) => user.email.toLowerCase() === email.toLowerCase());
-      if (emailExists) {
-        Alert.alert('Error', 'Email is already registered');
-        return;
-      }
-
-      const newUser = {
-        fullName,
-        email,
-        password,
-        promoOptIn,
-        acceptedTerms,
-      };
-
-      users.push(newUser);
-
-      await AsyncStorage.setItem('users', JSON.stringify(users));
-
-      Alert.alert(
-        'Success',
-        'Account created successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              router.replace('/login');
-            },
-          },
-        ],
-        { cancelable: false }
-      );
-    } catch (error) {
-      Alert.alert('Error', 'Something went wrong');
-      console.log('Error saving user:', error);
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Registration failed');
     }
-  };
+
+    Alert.alert('Success', 'Account created successfully!', [
+      {
+        text: 'OK',
+        onPress: () => router.replace('/login'),
+      },
+    ]);
+  } catch (error: any) {
+    console.error('Registration error:', error);
+    Alert.alert('Error', error.message || 'Something went wrong');
+  }
+};
   
   type CriteriaKey = 'length' | 'upperLower' | 'number' | 'special';
 
