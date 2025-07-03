@@ -45,5 +45,16 @@
   "U4" : "Minimum 8 characters",
   "Log" : "Log",
   "In" : "In",
-  "NOACC" : "Dont have an account? Register"
+  "NOACC" : "Dont have an account? Register",
+  "CACC" : "Create Your SyncUp Account",
+  "CDESC" : "Join SyncUp to streamline your event management or resource provisioning. Please provide your details to get started.",
+  "IAM" : "I am a/an",
+  "S1" : "Select Role",
+  "USERNAME" : "Username",
+  "EUSER" : "Enter Username",
+  "CONF" : "Confirm Password",
+  "RACC" : "Register Account",
+  "YESACC" : "Already have an account? Sign in",
+  "ORGANIZER" : "Organizer",
+  "Supplier" : "Supplier"
 }

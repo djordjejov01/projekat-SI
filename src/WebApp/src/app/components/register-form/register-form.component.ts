@@ -19,6 +19,7 @@ import { ExitFormConformation } from '../../Services/exitConformation.service';
 import { RegisterDto } from '../../Models/RegisterDto';
 import { ApiService } from '../../Services/api.service';
 import { UserDto } from '../../Models/UserDto';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-register-form',
@@ -34,7 +35,8 @@ import { UserDto } from '../../Models/UserDto';
     FormsModule,
     RouterLink,
     ToastModule,
-    ConfirmDialog],
+    ConfirmDialog,
+    TranslateModule],
   templateUrl: './register-form.component.html',
   styleUrls: ['./register-form.component.css']
 })
@@ -43,18 +45,19 @@ export class RegisterForm implements OnInit,IDeactivate{
   constructor(
     private messageService: MessageService,
     private exitFormConformation : ExitFormConformation,
-    private apiService : ApiService) {}
-
-  roles: String[] | undefined;
+    private apiService : ApiService,
+    private translate : TranslateService) {}
+    
+    changeLanguage(event: Event) {
+  const selectElement = event.target as HTMLSelectElement;
+  const lang = selectElement.value;
+  this.translate.use(lang);
+}
   userToRegister : RegisterDto | undefined;
 
   registerForm : FormGroup;
 
   ngOnInit(): void {
-    this.roles = [
-      'Organizer',
-      'Supplier'
-    ]
 
     this.registerForm = new FormGroup({
       role: new FormControl(null, Validators.required),

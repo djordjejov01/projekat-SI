@@ -45,5 +45,16 @@
   "U4" : "Minimum 8 karaktera",
   "Log" : "Prij",
   "In" : "ava",
-  "NOACC" : "Nemate nalog? Registrujte se"
+  "NOACC" : "Nemate nalog? Registrujte se",
+  "CACC" : "Napravi svoj SyncUp nalog",
+  "CDESC" : "Pridružite se SyncUp-u da biste pojednostavili upravljanje događajima i obezbeđivanje resursa. Molimo vas da navedete svoje podatke da biste započeli.",
+  "IAM" : "Ja sam",
+  "S1" : "Izaberite ulogu",
+  "USERNAME" : "Korisničko ime",
+  "EUSER" : "Unesite korisničko ime",
+  "CONF" : "Potvrdi šifru",
+  "RACC" : "Registruj Nalog",
+  "YESACC" : "Već imate nalog? Prijavite se",
+  "ORGANIZER" : "Organizator",
+  "Supplier" : "Dobavljač"
 }

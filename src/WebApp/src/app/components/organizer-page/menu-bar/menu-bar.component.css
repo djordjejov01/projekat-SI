@@ -9,6 +9,7 @@
 }
 
 #menu{
+    position: sticky;
     margin-top: 20px;
     margin-bottom: 10px;
     display: flex;
@@ -18,7 +19,7 @@
     gap:5px;
 }
 #item4{
-margin-top: 150px;
+    margin-top: 50px;
 }
 
 @media screen and (width <= 1529px) {
