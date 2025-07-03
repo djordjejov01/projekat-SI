@@ -19,7 +19,7 @@ header{
 }
 /**/
 #leftside{
-    padding-left: 20px;
+    padding-left: 25px;
     display: flex;
     align-items: center;
     gap: 15px;
@@ -52,6 +52,10 @@ header{
 }
 
 #login:hover, #register:hover{
+    cursor: pointer;
+}
+
+select,option{
     cursor: pointer;
 }
 

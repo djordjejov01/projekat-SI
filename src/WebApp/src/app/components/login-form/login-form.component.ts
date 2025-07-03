@@ -14,7 +14,17 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 import { RouterLink } from '@angular/router';
 import { LoginDto } from '../../Models/LoginDto';
 import { ApiService } from '../../Services/api.service';
-import { UserDto } from '../../Models/UserDto';
+import { jwtDecode } from "jwt-decode";
+
+interface JwtPayload {
+  sub: string;
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': string;
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'?: string;
+  'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'?: string;
+  exp: number;
+  iss?: string;
+  aud?: string;
+}
 
 @Component({
   selector: 'app-login-form',
@@ -41,6 +51,18 @@ export class LoginForm implements OnInit,IDeactivate{
     })
   }
 
+  getDecodedToken() : JwtPayload | null{
+    const token = localStorage.getItem('access_token');
+    if(!token) return null;
+
+    try{
+      return jwtDecode(token);
+    }catch(error){
+      console.error('Failed to decode token', error);
+      return null;
+    }
+  }
+
   submitForm()
   {
     if(this.loginForm.valid)
@@ -52,11 +74,16 @@ export class LoginForm implements OnInit,IDeactivate{
         
         //API LOGIC HERE
         this.apiService.login(this.userToLogin).subscribe({
-          next: (response : UserDto) => {
+          next: (response : string) => {
+
+            localStorage.setItem('access_token', response);
+            console.log(localStorage.getItem('access_token'))
+            console.log(this.getDecodedToken())
+
             this.messageService.add({ 
             severity: 'success',
             summary: 'Success',
-            detail: `Successfully logged in as ${response.getUsername()}`,
+            detail: `Successfully logged in`,
             life: 3000});
             this.loginForm.reset()
           },

@@ -23,6 +23,6 @@ namespace Backend.Models
         public int? NumberOfPeople { get; set; }
         public int TicketPrice { get; set; }
         public User Organizer { get; set; }
-
+        public string ImageUrl { get; set; }
     }
 }

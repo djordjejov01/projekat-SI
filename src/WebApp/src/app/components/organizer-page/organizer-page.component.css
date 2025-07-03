@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Rubik+Wet+Paint&display=swap');
+*{
+    font-family: "Archivo",'Courier New', Courier, monospace, sans-serif;
+    flex-wrap: wrap;
+}
+
+#prof{
+    display: flex;
+    align-items: center;
+}
+#pfp{
+    max-width: 30px;
+    border-radius: 50%;
+    background-color: rgb(214, 178, 248);
+}
+main{
+display: flex;
+flex-direction: column;
+}
+#head{
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 5px;
+    border-bottom: 2px solid rgb(232, 232, 232);
+    margin-top: 10px;
+}
+#right{
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    gap:10px;
+}
+#logo{
+    max-width: 120px;
+    margin-left: 25px;
+}
+#page{
+    display: flex;
+    justify-content: space-between;
+}
+#show{
+    padding-left: 30px;
+    padding-top:40px;
+}
+img:hover{
+    cursor: pointer;
+}
+hr{
+    color: rgb(232, 232, 232);
+}
+
+@media screen and (width <= 1529px) {
+    #page{
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap:10px;
+    }
+    #show{
+        padding:0;
+        padding-left:10px;
+        padding-right: 10px;
+    }
+}

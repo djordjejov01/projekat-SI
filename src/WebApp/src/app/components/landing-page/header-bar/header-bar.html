@@ -1,15 +1,20 @@
 <header>
     <div id="leftside">
         <img src="./assets/logo91.png" alt="syncup logo" id="logo">
-        <p routerLink="/Home">Home</p>
+        <p routerLink="/Home">{{ 'HOME' | translate }}</p>
+        <p>{{ 'ABOUTUS' | translate }}</p>
+        <p>{{ 'ContactUs' | translate }}</p>
+        <p routerLink="/organizer">Organizer</p>
         <p routerLink="/Admin">Admin</p>
-        <p>About us</p>
-        <p>Contact us</p>
     </div>
-
     <div id="rightside">
-        <p id="login" routerLink="/Login">Login</p>
+        <select (change)="changeLanguage($event)">
+            <option value="sr">Srpski</option>
+            <option value="en">English</option>
+        </select>
+        <p>|</p>
+        <p id="login" routerLink="/Login">{{ 'LOGIN' | translate }}</p>
         <p>/</p>
-        <p id="register" routerLink="/Register">Register</p>
+        <p id="register" routerLink="/Register">{{ 'REGISTER' | translate }}</p>
     </div>
 </header>

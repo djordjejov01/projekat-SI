@@ -16,7 +16,8 @@ namespace Backend.Models
         public DbSet<EventResource> EventResources { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<UserTicket> UserTickets { get; set; }
+        public DbSet<FavoriteEvent> FavoriteEvents { get; set; }
 
-        // ovde dodajem i ostale Dbset(Events...)
+        
     }
 } 

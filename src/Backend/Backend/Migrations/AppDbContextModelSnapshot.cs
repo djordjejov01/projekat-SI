@@ -37,6 +37,10 @@ namespace Backend.Migrations
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("text");
@@ -126,6 +130,29 @@ namespace Backend.Migrations
                     b.ToTable("EventResources");
                 });
 
+            modelBuilder.Entity("Backend.Models.FavoriteEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("FavoriteEvents");
+                });
+
             modelBuilder.Entity("Backend.Models.Resource", b =>
                 {
                     b.Property<int>("ResourceID")
@@ -202,6 +229,9 @@ namespace Backend.Migrations
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LastLoginTime")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -295,6 +325,25 @@ namespace Backend.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("Supplier");
+                });
+
+            modelBuilder.Entity("Backend.Models.FavoriteEvent", b =>
+                {
+                    b.HasOne("Backend.Models.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Event");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Backend.Models.Resource", b =>
