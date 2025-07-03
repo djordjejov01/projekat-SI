@@ -61,10 +61,7 @@ namespace Backend.Controllers
                     new Claim(ClaimTypes.Email, user.Email),    
                     new Claim(ClaimTypes.Role, user.Role.ToString()),
 
-
                 };
-
-                // 3) Create key & creds
                 var key = new SymmetricSecurityKey(
                               Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
                 var credsSigning = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -77,8 +74,6 @@ namespace Backend.Controllers
                     expires: DateTime.UtcNow.AddHours(2),
                     signingCredentials: credsSigning
                 );
-
-                // 5) Return the serialized token
                 return Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token)
