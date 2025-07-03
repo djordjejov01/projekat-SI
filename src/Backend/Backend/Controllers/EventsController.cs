@@ -19,7 +19,27 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "MobileUser")]
-        [HttpGet("events")] //get upcoming events
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<EventListDto>>> GetAllEvents()
+        {
+            var events = await _context.Events
+                .OrderBy(e => e.StartDate)
+                .Select(e => new EventListDto
+                {
+                    Id = e.EventID,
+                    Title = e.Title,
+                    Location = e.Location,
+                    StartDate = e.StartDate,
+                    ImageUrl = e.ImageUrl,
+                    AttendingCount = _context.UserTickets.Count(ut => ut.Ticket.EventID == e.EventID)
+                })
+                .ToListAsync();
+
+            return Ok(events);
+        }
+
+        [Authorize(Roles = "MobileUser")]
+        [HttpGet("upcomingEvents")] //get upcoming events
         public async Task<ActionResult<IEnumerable<EventListDto>>> GetUpcomingEvents()
         {
             var now = DateTime.UtcNow;
