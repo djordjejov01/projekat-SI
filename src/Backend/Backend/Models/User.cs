@@ -28,6 +28,7 @@ namespace Backend.Models
         public UserRole Role { get; set; } // enum tip
 
         public DateTime CreationTime { get; set; } = DateTime.UtcNow;
+        public DateTime? LastLoginTime { get; set; }
 
         public bool IsActive { get; set; }
     }
