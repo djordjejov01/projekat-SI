@@ -50,7 +50,6 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddSwaggerGen(c =>
 {
-    // 1) Define the security scheme
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme.\n\n" +
@@ -63,7 +62,6 @@ builder.Services.AddSwaggerGen(c =>
         BearerFormat = "JWT"
     });
 
-    // 2) Require it for all operations (so the lock icon appears)
     c.AddSecurityRequirement(new OpenApiSecurityRequirement {
         {
             new OpenApiSecurityScheme {
@@ -72,7 +70,7 @@ builder.Services.AddSwaggerGen(c =>
                     Id   = "Bearer"
                 }
             },
-            new string[] {} // no specific scopes required
+            new string[] {}
         }
     });
 });
