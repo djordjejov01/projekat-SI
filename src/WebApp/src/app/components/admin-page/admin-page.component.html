@@ -1,0 +1,67 @@
+<header>
+
+    <nav>
+
+        <div class="logo-and-nav">
+
+            <img src="./assets/logo91.png" alt="logo">
+            <ul>
+                <li [ngClass]="{'active-link' : currentPage === 'Dashboard'}">Dashboard</li>
+                <li>Settings</li>
+            </ul>
+
+        </div>
+
+        <div class="user-actions">
+            <button>Logout</button>
+            <i class="pi pi-bell"></i>
+
+            <div class="pfp">
+                <img src="./assets/user-example-pfp.jpg" alt="Profile Picture">
+            </div>
+        </div>
+
+    </nav>
+
+
+    <div class="title">
+        <h1>Admin Overview</h1>
+        <p>Comprehensive dashboard for managing and monitoring user activity across SyncUp.</p>
+    </div>
+
+</header>
+
+<section class="cards">
+
+    <app-statistic-card
+        [cardTitle]="'Total Users'"
+        [statValue]="users.length"
+        [statDesc]="'Registered accounts'"
+        [statPercent]="registeredTotalUsersStat()"
+        [imgUrl]="'./assets/lucide-Users-Outlined.svg'">
+    </app-statistic-card>
+
+    <app-statistic-card
+        [cardTitle]="'Active Users'"
+        [statValue]="getActiveCountLast30()"
+        [statDesc]="'Currently logged in or active recently'"
+        [statPercent]="activeUsersStat()"
+        [imgUrl]="'./assets/lucide-UserCheck-Outlined.svg'">
+    </app-statistic-card>
+
+    <app-statistic-card
+        [cardTitle]="'New Registrations'"
+        [statValue]="getRegisterCountLast30()"
+        [statDesc]="'This month'"
+        [statPercent]="newRegistrationsStat()"
+        [imgUrl]="'./assets/lucide-CalendarDays-Outlined.svg'">
+    </app-statistic-card>
+
+    <app-statistic-card
+        [cardTitle]="'Dormant Accounts'"
+        [statValue]="getDormantCountLast30()"
+        [statDesc]="'No activity for 90+ days'"
+        [statPercent]="dormantAccountStat()"
+        [imgUrl]="'./assets/lucide-UserMinus-Outlined.svg'">
+    </app-statistic-card>
+</section>
