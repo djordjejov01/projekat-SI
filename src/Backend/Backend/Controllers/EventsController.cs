@@ -64,7 +64,7 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "MobileUser")]
-        [HttpGet("events/{id}")] //detalji o dogadjaju
+        [HttpGet("Details")] //detalji o dogadjaju
         public async Task<ActionResult<EventDetailsDto>> GetEventDetails(int id)
         {
             // Ucitaj dogadjaj sa organizatorom

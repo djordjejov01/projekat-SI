@@ -42,8 +42,8 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "MobileUser")]
-        [HttpPost("{eventId}")]
-        public async Task<IActionResult> AddFavorite(int eventId/*, int userId*/)
+        [HttpPost]
+        public async Task<IActionResult> AddFavorite([FromBody] int eventId/*, int userId*/)
         {
 
             // Izvuci userId iz tokena
@@ -66,8 +66,8 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "MobileUser")]
-        [HttpDelete("{eventId}")]
-        public async Task<IActionResult> RemoveFavorite(int eventId/*, int userId*/)
+        [HttpDelete]
+        public async Task<IActionResult> RemoveFavorite([FromBody] int eventId/*, int userId*/)
         {
             // Izvuci userId iz tokena
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
