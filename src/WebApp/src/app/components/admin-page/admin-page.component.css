@@ -1,0 +1,78 @@
+header{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem 5rem;
+}
+
+header h1{
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-and-nav{
+    display: flex;
+    gap: 5rem;
+}
+
+.logo-and-nav ul{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.logo-and-nav img{
+    max-height: 44px;
+}
+
+.user-actions{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-actions button{
+    padding: 0.25rem 0.75rem;
+    border: 1px solid #EBEBEAFF;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.user-actions i{
+    color: #8C8D8BFF;
+}
+
+.pfp{
+    background-color: #CED0F8FF;
+    border-radius: 9999px;
+}
+
+.pfp img{
+    width: 32px;
+    height: 32px;
+    border-radius: 9999px;
+}
+
+.title p{
+    color: #8C8D8BFF;
+}
+
+.cards{
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.active-link{
+    color: #636AE8;
+    font-weight: bold;
+}
+
