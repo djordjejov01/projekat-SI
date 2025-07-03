@@ -14,6 +14,10 @@ interface UserDtoResponse{
   isActive: boolean;
 }
 
+interface TokenResponse{
+    token : string;
+}
+
 @Injectable({
     providedIn: "root"
 })
@@ -43,20 +47,9 @@ export class ApiService{
         );
     }
 
-    login(data : LoginDto): Observable<UserDto>{
-        return this.http.post<UserDtoResponse>(`${this.apiUrl}/User/login`,data).pipe(
-
-            map(data => {
-                console.log('Raw backend response Login:', data);
-                return new UserDto(
-                data.userId,
-                data.username,
-                data.email,
-                data.role,
-                data.isActive
-            );
-        }),
-
+    login(data : LoginDto): Observable<string>{
+        return this.http.post<TokenResponse>(`${this.apiUrl}/User/login`,data).pipe(
+            map(data => data.token),
             catchError(this.handleError)
         );
     }

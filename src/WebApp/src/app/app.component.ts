@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { TranslateService, TranslateModule, TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { OrganizerPageComponent } from './components/organizer-page/organizer-page.component';
@@ -9,15 +9,22 @@ import { OrganizerPageComponent } from './components/organizer-page/organizer-pa
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
+
   title = 'WebApp';
-   constructor(private translate: TranslateService) {
+
+    constructor(private translate: TranslateService) {
     translate.addLangs(['sr', 'en']);
     translate.setDefaultLang('sr');
     translate.use('sr');
   }
 
+  ngOnInit(): void {
+    localStorage.removeItem('access_token');
+  }
+
   changeLanguage(lang: string) {
     this.translate.use(lang);
   }
+
 }
