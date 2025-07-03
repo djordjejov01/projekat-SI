@@ -23,5 +23,16 @@
   "D5" : "Easily define necessary resources, select preferred suppliers, and integrate location maps.",
   "D6" : "Oversee schedules, track activities, and facilitate real-time collaboration with all stakeholders.",
   "PROMOTITLE": "Ready to Sync Up Your Events?",
-  "PROMODESC": "Join thousands of event professionals leveraging SyncUp for flawless execution."
+  "PROMODESC": "Join thousands of event professionals leveraging SyncUp for flawless execution.",
+  "LOGOUT" : "Logout",
+  "OVERVIEW" : "Overview",
+  "EVENTS" : "Events",
+  "CALENDAR" : "Calendar",
+  "CREATE" : "Create Event",
+  "MYPROFILE" : "My profile",
+  "UPEV" : "Upcoming Events",
+  "ADDEV" : "Add Event",
+  "TE" : "Total Events",
+  "UA" : "Upcoming Attendees",
+  "MANAGE" : "Manage"
 }

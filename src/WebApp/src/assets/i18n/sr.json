@@ -23,5 +23,16 @@
   "D5": "Lako definišite potrebne resurse, izaberite željene dobavljače i integrišite mape lokacija.",
   "D6": "Nadgledajte rasporede, pratite aktivnosti i olakšajte saradnju u realnom vremenu sa svim zainteresovanim stranama.",
   "PROMOTITLE": "Spremni da organizujete svoje događaje?",
-  "PROMODESC": "Pridružite se hiljadama profesionalaca za organizaciju događaja koji koriste SyncUp za besprekorno izvođenje."
+  "PROMODESC": "Pridružite se hiljadama profesionalaca za organizaciju događaja koji koriste SyncUp za besprekorno izvođenje.",
+  "LOGOUT": "Odjavi se",
+  "OVERVIEW" : "Pregled",
+  "EVENTS" : "Događaji",
+  "CALENDAR" : "Kalendar",
+  "CREATE" : "Napravi novi događaj",
+  "MYPROFILE" : "Moj profil",
+  "UPEV" : "Predstojeći Događaji",
+  "ADDEV" : "Dodaj Događaj",
+  "TE" : "Ukupan broj Događaja",
+  "UA" : "Broj Učesnika",
+  "MANAGE" : "Uredi"
 }
