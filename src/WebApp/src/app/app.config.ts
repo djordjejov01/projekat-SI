@@ -4,19 +4,17 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 import { MyPreset } from './myPreset';
-import { provideHttpClient } from '@angular/common/http';
-
-
-
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { routes } from './app.routes';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { AuthInterceptor } from './Services/AuthInterceptor.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes),
     provideAnimationsAsync(),
-    provideHttpClient(),
+    provideHttpClient(withInterceptorsFromDi()),
     MessageService,
     ConfirmationService,
     providePrimeNG({
@@ -26,6 +24,11 @@ export const appConfig: ApplicationConfig = {
           darkModeSelector: ".my-app-dark"
         }
         }
-      })
+      }),
+      {
+        provide: HTTP_INTERCEPTORS,
+        useClass: AuthInterceptor,
+        multi: true
+      }
   ]
 };
