@@ -34,5 +34,16 @@
   "ADDEV" : "Dodaj Događaj",
   "TE" : "Ukupan broj Događaja",
   "UA" : "Broj Učesnika",
-  "MANAGE" : "Uredi"
+  "MANAGE" : "Uredi",
+  "EMAILPH" : "Unesite svoju Email adresu",
+  "Password" : "Šifra",
+  "PASSPH" : "Unesite svoju šifru",
+  "PICK" : "Odaberite šifru",
+  "U1" : "Najmanje 1 malo slovo",
+  "U2" : "Najmanje 1 veliko slovo",
+  "U3" : "Najmanje 1 broj",
+  "U4" : "Minimum 8 karaktera",
+  "Log" : "Prij",
+  "In" : "ava",
+  "NOACC" : "Nemate nalog? Registrujte se"
 }

@@ -34,5 +34,16 @@
   "ADDEV" : "Add Event",
   "TE" : "Total Events",
   "UA" : "Upcoming Attendees",
-  "MANAGE" : "Manage"
+  "MANAGE" : "Manage",
+  "EMAILPH" : "Enter Your Email",
+  "Password" : "Password",
+  "PASSPH" : "Enter Your Password",
+  "PICK" : "Pick a password",
+  "U1" : "At least one lowercase",
+  "U2" : "At least one uppercase",
+  "U3" : "At least one numeric",
+  "U4" : "Minimum 8 characters",
+  "Log" : "Log",
+  "In" : "In",
+  "NOACC" : "Dont have an account? Register"
 }

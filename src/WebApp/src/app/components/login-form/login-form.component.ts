@@ -15,6 +15,7 @@ import { RouterLink } from '@angular/router';
 import { LoginDto } from '../../Models/LoginDto';
 import { ApiService } from '../../Services/api.service';
 import { jwtDecode } from "jwt-decode";
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 interface JwtPayload {
   sub: string;
@@ -28,7 +29,7 @@ interface JwtPayload {
 
 @Component({
   selector: 'app-login-form',
-  imports: [ReactiveFormsModule,FloatLabelModule,InputTextModule,CommonModule,PasswordModule,DividerModule,ToastModule,ConfirmDialog,RouterLink],
+  imports: [ReactiveFormsModule,FloatLabelModule,InputTextModule,CommonModule,PasswordModule,DividerModule,ToastModule,ConfirmDialog,RouterLink, TranslateModule],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.css'
 })
@@ -38,7 +39,8 @@ export class LoginForm implements OnInit,IDeactivate{
   constructor(
     private messageService: MessageService,
     private exitFormConformation : ExitFormConformation,
-    private apiService : ApiService) {}
+    private apiService : ApiService,
+    private translate : TranslateService) {}
 
   userToLogin : LoginDto | undefined;
   loginForm : FormGroup;
@@ -50,7 +52,11 @@ export class LoginForm implements OnInit,IDeactivate{
       password: new FormControl('', Validators.required),
     })
   }
-
+    changeLanguage(event: Event) {
+  const selectElement = event.target as HTMLSelectElement;
+  const lang = selectElement.value;
+  this.translate.use(lang);
+}
   getDecodedToken() : JwtPayload | null{
     const token = localStorage.getItem('access_token');
     if(!token) return null;
