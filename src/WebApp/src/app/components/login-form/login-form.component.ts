@@ -52,11 +52,14 @@ export class LoginForm implements OnInit,IDeactivate{
         
         //API LOGIC HERE
         this.apiService.login(this.userToLogin).subscribe({
-          next: (response : UserDto) => {
+          next: (response : string) => {
+
+            console.log(response)
+
             this.messageService.add({ 
             severity: 'success',
             summary: 'Success',
-            detail: `Successfully logged in as ${response.getUsername()}`,
+            detail: `Successfully logged in}`,
             life: 3000});
             this.loginForm.reset()
           },
