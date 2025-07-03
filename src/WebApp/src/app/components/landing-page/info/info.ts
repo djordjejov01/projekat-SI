@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { InfoCard } from './info-card/info-card';
 import { Input } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-info',
-  imports: [InfoCard],
+  imports: [TranslateModule,InfoCard],
   templateUrl: './info.html',
   styleUrl: './info.css'
 })

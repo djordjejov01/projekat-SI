@@ -22,7 +22,7 @@ namespace Backend.Services
         public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
         {
             if (!IsPasswordStrong(registerDto.Password))
-                throw new Exception("Lozinka mora imati najmanje 8 karaktera, jedno veliko slovo, jedno malo slovo, jedan broj i jedan specijalni karakter.");
+                throw new Exception("Lozinka mora imati najmanje 8 karaktera, jedno veliko slovo, jedno malo slovo i jedan broj.");
 
             if (await _context.Users.AnyAsync(u => u.Email == registerDto.Email || u.Username == registerDto.Username))
             {
