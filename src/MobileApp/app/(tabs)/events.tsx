@@ -1,42 +1,61 @@
-import React, { useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { AntDesign } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFavorites } from '../context/FavoriteContext';
-
-const events = [
-  {
-    id: '1',
-    title: 'Summer Music Fest',
-    date: 'Aug 10, 2025 - 7:00 PM',
-    location: 'Central Park',
-    image: 'https://images.unsplash.com/photo-1542751110-97427bbecf20',
-    attendees: '150+ Attending',
-  },
-  {
-    id: '2',
-    title: 'Tech Meetup',
-    date: 'Sep 5, 2025 - 6:00 PM',
-    location: 'Downtown Hub',
-    image: 'https://images.unsplash.com/photo-1542751110-97427bbecf20',
-    attendees: '200+ Attending',
-  },
-  {
-    id: '3',
-    title: 'Art Walk',
-    date: 'Sep 20, 2025 - 4:00 PM',
-    location: 'City Gallery',
-    image: 'https://images.unsplash.com/photo-1542751110-97427bbecf20',
-    attendees: '85+ Attending',
-  },
-];
 
 export default function EventsScreen() {
   const router = useRouter();
   const { favorites, toggleFavorite } = useFavorites();
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoading(true);
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+          Alert.alert('Error', 'Token not found. Please log in again.');
+          return;
+        }
+
+        const response = await fetch('http://192.168.33.108:5216/api/Events', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch events: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setEvents(data);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+        Alert.alert('Error', 'Could not load events.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   const renderItem = ({ item }: any) => {
-    const isFavorite = favorites.includes(item.id);
+    const isFavorite = favorites.includes(item.id.toString());
 
     return (
       <TouchableOpacity
@@ -48,14 +67,18 @@ export default function EventsScreen() {
           })
         }
       >
-        <Image source={{ uri: item.image }} style={styles.image} />
+        <Image source={{ uri: item.imageUrl }} style={styles.image} />
         <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.info}>{item.date}</Text>
-        <Text style={styles.info}>{'📍'} {item.location}</Text>
+        <Text style={styles.info}>
+  🕒 {new Date(item.startDate).toLocaleDateString('sr-RS')} | {new Date(item.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h
+        </Text>
+        <Text style={styles.info}>📍 {item.location}</Text>
 
         <View style={styles.row}>
-          <Text style={styles.attending}>{item.attendees}</Text>
-          <TouchableOpacity onPress={() => toggleFavorite(item.id)}>
+          <Text style={styles.attending}>
+            {item.attendingCount || 0}+ Attending
+          </Text>
+          <TouchableOpacity onPress={() => toggleFavorite(item.id.toString())}>
             <AntDesign
               name={isFavorite ? 'heart' : 'hearto'}
               size={20}
@@ -67,13 +90,27 @@ export default function EventsScreen() {
     );
   };
 
+  if (loading) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { justifyContent: 'center', alignItems: 'center' },
+        ]}
+      >
+        <ActivityIndicator size="large" color="#007AFF" />
+        <Text style={{ marginTop: 10 }}>Loading events...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Upcoming Events</Text>
       <FlatList
         data={events}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={{ gap: 16, paddingBottom: 80 }}
         showsVerticalScrollIndicator={false}
       />

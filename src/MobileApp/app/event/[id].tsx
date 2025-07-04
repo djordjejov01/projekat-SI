@@ -1,82 +1,125 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFavorites } from '../context/FavoriteContext';
 
 type Event = {
-  id: string;
+  id: number;
   title: string;
-  date: string;
-  time: string;
+  imageUrl: string;
   location: string;
-  duration: string;
-  organizer: string;
-  image: string;
+  startDate: string;
+  endDate: string;
   description: string;
-  schedule: { time: string; title: string }[];
-  performers: { name: string; color: string }[];
+  organizerId: number;
+  organizerName: string;
+  attendingCount: number;
+  isFavorite: boolean;
+  agenda: {
+    title: string;
+    description: string;
+    startTime: string;
+    endTime: string;
+  }[];
 };
-
-const mockEvents: Event[] = [
-  {
-    id: '1',
-    title: 'Summer Music Fest 2025',
-    date: 'Saturday, August 10, 2025',
-    time: '7:00 PM',
-    location: 'Central Park, New York',
-    duration: '5h',
-    organizer: 'SyncUp Events Inc.',
-    image: 'https://images.unsplash.com/photo-1542751110-97427bbecf20',
-    description:
-      'Held annually in the heart of the city, the Summer Music Fest is a celebration of music, community, and summer vibes. Featuring world-renowned performers, food trucks, art installations, and interactive experiences, it\'s the ultimate summer event.\n\nJoin thousands of fans as you dance to the beats of top DJs, explore various stages, and enjoy a unique mix of genres. This year\'s lineup promises to deliver unforgettable moments and surprises.',
-    schedule: [
-      { time: '7:00 PM', title: 'Opening Ceremony & Local Talent Showcase' },
-      { time: '7:30 PM', title: 'Main Stage: DJ Electro' },
-      { time: '8:10 PM', title: 'Acoustic Tent: Chillout Session with Lush Echo' },
-      { time: '9:10 PM', title: 'Late Night Groove: DJ Spark' },
-    ],
-    performers: [
-      { name: 'DJ Electro', color: '#D1FAE5' },
-      { name: 'Vocal Harmony', color: '#FDE68A' },
-      { name: 'Dr. Arya Sharma', color: '#FECACA' },
-    ],
-  },
-];
 
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-
   const { favorites, toggleFavorite } = useFavorites();
 
-  const event = mockEvents.find((e) => e.id === id);
+  const [event, setEvent] = useState<Event | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Da izbegnemo greške tipa, proveravamo da li id postoji i koristi se kao string
   const currentId = typeof id === 'string' ? id : '';
+
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        const response = await fetch(`http://192.168.33.108:5216/api/Events/Details?id=${currentId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) throw new Error('Failed to load event');
+
+        const data = await response.json();
+        setEvent(data);
+      } catch (err) {
+        console.error(err);
+        setError('Došlo je do greške pri učitavanju događaja.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvent();
+  }, [id]);
 
   const isFavorite = favorites.includes(currentId);
 
-  if (!event) {
+  const calculateDuration = (start: string, end: string) => {
+    const diff = (new Date(end).getTime() - new Date(start).getTime()) / (1000 * 60 * 60);
+    return `${diff.toFixed(1)}h`;
+  };
+
+  if (loading) {
     return (
       <View style={styles.center}>
-        <Text style={{ fontSize: 18 }}>Event not found</Text>
+        <ActivityIndicator size="large" color="#2563EB" />
+        <Text style={{ marginTop: 10 }}>Učitavanje...</Text>
+      </View>
+    );
+  }
+
+  if (error || !event) {
+    return (
+      <View style={styles.center}>
+        <Text style={{ fontSize: 16 }}>{error || 'Događaj nije pronađen.'}</Text>
       </View>
     );
   }
 
   return (
     <ScrollView style={styles.container}>
-      <Image source={{ uri: event.image }} style={styles.image} />
+      <Image source={{ uri: event.imageUrl }} style={styles.image} />
 
       <Text style={styles.title}>{event.title}</Text>
-      <Text style={styles.date}>{event.date}</Text>
+      <Text style={styles.date}>
+        {new Date(event.startDate).toLocaleDateString('sr-RS', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}
+      </Text>
 
       <View style={styles.infoCard}>
-        <Text style={styles.info}>🕒 {event.time}</Text>
+        <Text style={styles.info}>
+          🕒{' '}
+          {new Date(event.startDate).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
+        </Text>
         <Text style={styles.info}>📍 {event.location}</Text>
-        <Text style={styles.info}>⏱ Duration: {event.duration}</Text>
-        <Text style={styles.info}>🏢 Organizer: {event.organizer}</Text>
+        <Text style={styles.info}>
+          ⏱ Trajanje: {calculateDuration(event.startDate, event.endDate)}
+        </Text>
+        <Text style={styles.info}>🏢 Organizator: {event.organizerName}</Text>
       </View>
 
       <View style={styles.actions}>
@@ -91,35 +134,38 @@ export default function EventDetailScreen() {
             color={isFavorite ? '#FF2D55' : '#2563EB'}
           />
           <Text style={[styles.favoriteText, { color: isFavorite ? '#FF2D55' : '#2563EB' }]}>
-            {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+            {isFavorite ? 'Ukloni iz favorita' : 'Dodaj u favorite'}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.buyBtn} activeOpacity={0.7}>
-          <Text style={styles.buyText}>Buy Tickets</Text>
+          <Text style={styles.buyText}>Kupi kartu</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.sectionTitle}>About the Event</Text>
+      <Text style={styles.sectionTitle}>O događaju</Text>
       <Text style={styles.description}>{event.description}</Text>
 
-      <Text style={styles.sectionTitle}>Event Schedule</Text>
-      {event.schedule.map((item, index) => (
+      <Text style={styles.sectionTitle}>Raspored događaja</Text>
+      {event.agenda.map((item, index) => (
         <View key={index} style={styles.scheduleItem}>
-          <Text style={styles.scheduleTime}>{item.time}</Text>
+          <Text style={styles.scheduleTime}>
+            {new Date(item.startTime).toLocaleTimeString([], {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </Text>
           <Text style={styles.scheduleTitle}>{item.title}</Text>
         </View>
       ))}
 
-      <Text style={styles.sectionTitle}>Speakers & Performers</Text>
-      {event.performers.map((p, index) => (
-        <View key={index} style={[styles.performerItem, { backgroundColor: p.color }]}>
-          <Text>{p.name}</Text>
-        </View>
-      ))}
+      <Text style={styles.sectionTitle}>Govornici / Izvođači</Text>
+      <View style={[styles.performerItem, { backgroundColor: '#FDE68A' }]}>
+        <Text>{event.organizerName}</Text>
+      </View>
 
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()} activeOpacity={0.7}>
-        <Text style={styles.backText}>← Back to Events</Text>
+        <Text style={styles.backText}>← Nazad na događaje</Text>
       </TouchableOpacity>
     </ScrollView>
   );
