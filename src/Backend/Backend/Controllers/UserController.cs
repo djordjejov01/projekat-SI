@@ -26,11 +26,9 @@ namespace Backend.Controllers
             _config = config;
         }
 
-        // WEB registracija (role je obavezan)
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
-            // Provera validacije modela
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
