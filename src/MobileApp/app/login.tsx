@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import {
   View,
@@ -10,30 +10,27 @@ import {
 } from 'react-native';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
-WebBrowser.maybeCompleteAuthSession();
-import { useEffect } from 'react';
 import * as AuthSession from 'expo-auth-session';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  
-  const redirectUri = AuthSession.makeRedirectUri({
-  });
 
-  
-  
+  const redirectUri = AuthSession.makeRedirectUri({});
+
   const [request, response, promptAsync] = Google.useAuthRequest({
     clientId: '872083620944-8kpmch9eccq4i4n773tq4qtiu8o1bi3g.apps.googleusercontent.com',
     redirectUri,
   });
-  
-    useEffect(() => {
+
+  useEffect(() => {
     if (response?.type === 'success' && response.authentication?.accessToken) {
-    fetchUserInfo(response.authentication.accessToken);
-}
+      fetchUserInfo(response.authentication.accessToken);
+    }
   }, [response]);
 
   const fetchUserInfo = async (token: string) => {
@@ -43,11 +40,12 @@ export default function LoginScreen() {
       });
       const user = await res.json();
       console.log('User Info:', user);
-      router.replace('./(tabs)/event');
+      router.replace('./(tabs)/events');
     } catch (err) {
       Alert.alert('Error', 'Failed to get user info');
     }
   };
+
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please fill in both fields');
@@ -55,12 +53,12 @@ export default function LoginScreen() {
     }
 
     const isValidEmail = email.includes('@');
-    
-    
+
     if (!isValidEmail) {
       Alert.alert('Login Failed', 'Invalid email format');
       return;
     }
+
     const criteria = {
       length: password.length >= 8,
       upperLower: /[A-Z]/.test(password) && /[a-z]/.test(password),
@@ -75,27 +73,31 @@ export default function LoginScreen() {
       return;
     }
 
-
- 
     try {
-      const response = await fetch('http://192.168.188.32:5216/api/User/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
+      const response = await fetch('http://192.168.33.108:5216/api/User/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Login failed');
-    }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Login failed');
+      }
 
       const data = await response.json();
-      console.log('Login success:', data); 
-      router.replace('./(tabs)/events');
-    } catch (error) {
-      Alert.alert('Error', 'Something went wrong');
+
+      if (data.token) {
+        await AsyncStorage.setItem('token', data.token); 
+        console.log('Login successful. Token:', data.token);
+        router.replace('./(tabs)/events');
+      } else {
+        Alert.alert('Error', 'No token received from server.');
+      }
+    } catch (error: any) {
+      Alert.alert('Login Error', error.message || 'Something went wrong');
     }
   };
 
@@ -149,13 +151,12 @@ export default function LoginScreen() {
       </View>
 
       <TouchableOpacity
-      style={[styles.altButton, { marginTop: 10 }]}
-      onPress={() => promptAsync()}
-      disabled={!request}
+        style={[styles.altButton, { marginTop: 10 }]}
+        onPress={() => promptAsync()}
+        disabled={!request}
       >
-      <Text style={{ fontSize: 16 }}>Continue with Google</Text>
+        <Text style={{ fontSize: 16 }}>Continue with Google</Text>
       </TouchableOpacity>
-
     </View>
   );
 }
