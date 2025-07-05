@@ -8,9 +8,9 @@ import { OrganizerPageComponent } from './components/organizer-page/organizer-pa
 
 export const routes: Routes = [
     {path: '', component: LandingPage},
-    {path: 'Home', component: LandingPage},
+    {path: 'home', component: LandingPage},
     {path: 'organizer', component: OrganizerPageComponent},
-    {path: 'Register', component: RegisterForm, canDeactivate: [(comp: RegisterForm) => comp.canExit()]},
-    {path: 'Login', component: LoginForm, canDeactivate: [(comp: LoginForm) => comp.canExit()]},
-    {path: 'Admin', component: AdminPage}
+    {path: 'register', component: RegisterForm, canDeactivate: [(comp: RegisterForm) => comp.canExit()]},
+    {path: 'login', component: LoginForm, canDeactivate: [(comp: LoginForm) => comp.canExit()]},
+    {path: 'admin', component: AdminPage}
 ];

@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { User } from '../../Models/User';
 import { Users } from '../../Services/user.list';
 import { CommonModule } from '@angular/common';
@@ -17,17 +17,21 @@ import { Tag } from 'primeng/tag';
 import { Table } from 'primeng/table';
 import { InputIcon } from 'primeng/inputicon';
 import { IconField } from 'primeng/iconfield';
+import { MessageService } from 'primeng/api';
+import { AuthService } from '../../Services/auth.service';
+import { ToastModule } from 'primeng/toast';
+import { Toast } from 'primeng/toast';
 
 
 
 @Component({
   selector: 'app-admin-page',
   imports: [CommonModule,StatisticCard,ChartModule,TableModule, ButtonModule,
-    CommonModule, MultiSelectModule, InputTextModule, DropdownModule, FormsModule,Tag,IconField, InputIcon,TableModule],
+    CommonModule, MultiSelectModule, InputTextModule, DropdownModule, FormsModule,Tag,IconField, InputIcon,TableModule,ToastModule,Toast],
   templateUrl: './admin-page.component.html',
   styleUrl: './admin-page.component.css'
 })
-export class AdminPage implements OnInit{
+export class AdminPage implements OnInit,AfterViewInit{
 
   //PAGE
   users : User[] | undefined;
@@ -61,7 +65,10 @@ export class AdminPage implements OnInit{
 ];
 
 
-  constructor(private cd: ChangeDetectorRef) {}
+  constructor(
+    private cd: ChangeDetectorRef,
+    private messageService : MessageService,
+    private authService : AuthService) {}
 
   @HostListener('window:resize')
     onResize() {
@@ -80,16 +87,16 @@ export class AdminPage implements OnInit{
 
 
   ngOnInit(): void {
-    
+
     //API CALL INSTEAD DUMMY DATA
     this.users = Users.map((data)=>{
       return new User(
         data.id,
         data.username,
         data.email,
-        data.password,
-        data.first_name,
-        data.last_name,
+        // data.password,
+        // data.first_name,
+        // data.last_name,
         data.role,
         new Date(data.creation_time),
         data.isActive,
@@ -103,6 +110,30 @@ export class AdminPage implements OnInit{
     this.initBarChart()
     this.initDoughnutChart()
     console.log(this.users)
+
+  }
+
+
+  ngAfterViewInit(): void {
+    
+    const shouldShowWelcome = sessionStorage.getItem('showWelcome') === 'true';
+      if(shouldShowWelcome){
+        const name = this.authService.getUserName();
+
+        if(name){
+
+          console.log('Showing welcome toast');
+
+          this.messageService.add({
+          severity: 'success',
+          summary: 'Welcome',
+          detail: `Welcome back, ${name}!`,
+          life: 3000
+        });
+        }
+
+         sessionStorage.removeItem('showWelcome');
+      }
 
   }
 

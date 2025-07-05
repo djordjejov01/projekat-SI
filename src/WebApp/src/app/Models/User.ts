@@ -4,13 +4,13 @@ export class User{
         private userId : number,
         private username : string,
         private email : string,
-        private password : string,
-        private firstName : string,
-        private lastName : string,
         private role : string,
         private creationTime : Date,
         private isActive : boolean,
-        private lastLogin : Date | null
+        private lastLogin : Date | null,
+        private password? : string,
+        private firstName? : string,
+        private lastName? : string,
     ){}
 
     getUserId() : number{

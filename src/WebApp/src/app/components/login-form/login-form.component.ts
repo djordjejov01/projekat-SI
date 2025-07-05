@@ -14,17 +14,10 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 import { RouterLink } from '@angular/router';
 import { LoginDto } from '../../Models/LoginDto';
 import { ApiService } from '../../Services/api.service';
-import { jwtDecode } from "jwt-decode";
+import { AuthService } from '../../Services/auth.service';
+import { Router } from '@angular/router';
 
-interface JwtPayload {
-  sub: string;
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': string;
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'?: string;
-  'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'?: string;
-  exp: number;
-  iss?: string;
-  aud?: string;
-}
+
 
 @Component({
   selector: 'app-login-form',
@@ -38,7 +31,9 @@ export class LoginForm implements OnInit,IDeactivate{
   constructor(
     private messageService: MessageService,
     private exitFormConformation : ExitFormConformation,
-    private apiService : ApiService) {}
+    private apiService : ApiService,
+    private authService : AuthService,
+    private router : Router) {}
 
   userToLogin : LoginDto | undefined;
   loginForm : FormGroup;
@@ -49,18 +44,6 @@ export class LoginForm implements OnInit,IDeactivate{
       email: new FormControl('', [Validators.required]),
       password: new FormControl('', Validators.required),
     })
-  }
-
-  getDecodedToken() : JwtPayload | null{
-    const token = localStorage.getItem('access_token');
-    if(!token) return null;
-
-    try{
-      return jwtDecode(token);
-    }catch(error){
-      console.error('Failed to decode token', error);
-      return null;
-    }
   }
 
   submitForm()
@@ -76,15 +59,20 @@ export class LoginForm implements OnInit,IDeactivate{
         this.apiService.login(this.userToLogin).subscribe({
           next: (response : string) => {
 
-            localStorage.setItem('access_token', response);
-            console.log(localStorage.getItem('access_token'))
-            console.log(this.getDecodedToken())
+            this.authService.setToken(response)
+            // console.log(localStorage.getItem('access_token'))
+            // console.log(this.authService.getDecodedToken())
+            // console.log(this.authService.getUserRole())
+            const role = this.authService.getUserRole();
+            sessionStorage.setItem('showWelcome', 'true');
 
-            this.messageService.add({ 
-            severity: 'success',
-            summary: 'Success',
-            detail: `Successfully logged in`,
-            life: 3000});
+            switch(role){
+              case 'Admin': this.router.navigate(['/admin']); break;
+              case 'Organizer': this.router.navigate(['/organizer']); break;
+              case 'Supplier': this.router.navigate(['/supplier']); break;
+              default: this.router.navigate(['/login'])
+            }
+
             this.loginForm.reset()
           },
           error: (errorResponse) => {
@@ -97,7 +85,7 @@ export class LoginForm implements OnInit,IDeactivate{
         })
        
 
-        console.log('New user to login: ', this.userToLogin)
+        // console.log('New user to login: ', this.userToLogin)
       } 
       else
       {
