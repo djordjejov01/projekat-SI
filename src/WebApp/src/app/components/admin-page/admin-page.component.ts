@@ -13,12 +13,17 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
+import { Tag } from 'primeng/tag';
+import { Table } from 'primeng/table';
+import { InputIcon } from 'primeng/inputicon';
+import { IconField } from 'primeng/iconfield';
+
 
 
 @Component({
   selector: 'app-admin-page',
   imports: [CommonModule,StatisticCard,ChartModule,TableModule, ButtonModule,
-    CommonModule, MultiSelectModule, InputTextModule, DropdownModule, FormsModule ],
+    CommonModule, MultiSelectModule, InputTextModule, DropdownModule, FormsModule,Tag,IconField, InputIcon,TableModule],
   templateUrl: './admin-page.component.html',
   styleUrl: './admin-page.component.css'
 })
@@ -42,6 +47,18 @@ export class AdminPage implements OnInit{
 
   @ViewChild('barChart') barChartComponent!: UIChart
   @ViewChild('doughnutChart') doughnutChartComponent!: UIChart
+
+  //TABLE
+  loading: boolean = true;
+  selectedUsers : User [];
+  searchValue : string;
+  value
+  roles = [
+  { name: 'Admin', value: 'Admin'},
+  { name: 'Organizer', value: 'Organizer' },
+  { name: 'Supplier', value: 'Supplier' },
+  // Add all roles you have
+];
 
 
   constructor(private cd: ChangeDetectorRef) {}
@@ -80,6 +97,7 @@ export class AdminPage implements OnInit{
       )
     })
     
+    this.loading = false;
 
     this.initializeDateRangers();
     this.initBarChart()
@@ -387,6 +405,23 @@ export class AdminPage implements OnInit{
     const counts = Object.values(roleCounts);
 
     return {counts, labels}
+  }
+  getSeverity(status: string) {
+        switch (status) {
+            case 'Inactive':
+                return 'danger';
+
+            case 'Active':
+                return 'success';
+
+            default: return null
+        }
+    }
+
+    clear(table: Table) {
+    table.clear();
+    this.selectedUsers = []
+    this.searchValue = '';
   }
 
 }
