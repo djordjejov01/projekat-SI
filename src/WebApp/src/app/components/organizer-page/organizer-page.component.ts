@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 import { FooterBar } from '../landing-page/footer-bar/footer-bar';
 @Component({
   selector: 'app-organizer-page',
-  imports: [MenuBarComponent, EventsComponent, OverviewComponent,RouterModule, FooterBar],
+  imports: [MenuBarComponent, OverviewComponent,RouterModule, FooterBar],
   templateUrl: './organizer-page.component.html',
   styleUrl: './organizer-page.component.css'
 })
