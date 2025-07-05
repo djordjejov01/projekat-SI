@@ -1,8 +1,9 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-menu-item',
-  imports: [],
+  imports: [TranslateModule],
   templateUrl: './menu-item.component.html',
   styleUrl: './menu-item.component.css'
 })

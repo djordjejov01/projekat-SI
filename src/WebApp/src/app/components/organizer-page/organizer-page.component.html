@@ -2,7 +2,11 @@
     <div id="head">
         <img src="./assets/logo91.png" alt="" id="logo" [routerLink]="['/']">
         <div id="right">
-            <p>Logout</p>
+            <select (change)="changeLanguage($event)">
+                <option value="sr">Srpski</option>
+                <option value="en">English</option>
+            </select>
+            <p id="lgout">{{ 'LOGOUT' | translate }}</p>
             <img src="./assets/bell.svg" alt="">
             <img src="./assets/A1.jpg" alt="" id="pfp">
         </div>

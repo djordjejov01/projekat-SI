@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
-
+import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-event-preview',
-  imports: [],
+  imports: [TranslateModule],
   templateUrl: './event-preview.component.html',
   styleUrl: './event-preview.component.css'
 })
