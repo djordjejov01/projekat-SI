@@ -1,1 +1,72 @@
-<p>profile works!</p>
+<div id="outer">
+    <div id="main">
+        <div id="leftside">
+                <div id="info">
+                    <p id="title">My Profile</p>
+                    <p id="role">Event Organizer</p>
+            </div>
+
+            <div class="profile-container">
+                <label for="fileUpload" class="upload-label">
+                    <img [src]="previewUrl || defaultImage" class="profile-img" alt="Profile" />
+                    <input type="file" id="fileUpload" (change)="onFileSelected($event)" accept="image/*" hidden />
+                    <button id="upbut" (click)="triggerFileUpload()"><i class="pi pi-upload"></i>Choose</button>
+                </label>
+            </div>
+            <div id="form">
+                <label for="name">Name</label>
+                <input id="name" type="text" [(ngModel)]="user.username" class="form-control" />
+                <label for="username">Username</label>
+                <input id="username" type="text" [(ngModel)]="user.username" class="form-control" />
+                <label for="email">Email</label>
+                <input id="email" type="text" [(ngModel)]="user.username" class="form-control" />
+                <label for="phone">Phone Number</label>
+                <input id="phone" type="text" [(ngModel)]="user.username" class="form-control" />
+                <label for="address">Address</label>
+                <input id="address" type="text" [(ngModel)]="user.username" class="form-control" />
+                <div id="pass">
+                    <div id="onepass">
+                        <label for="cpass">Current Password</label>
+                        <input id="cpass" type="text" [(ngModel)]="user.username" class="form-control" />
+                    </div>
+                    <div id="onepass">
+                        <label for="npass">New Password</label>
+                        <input id="npass" type="text" [(ngModel)]="user.username" class="form-control" />
+                    </div>
+
+                    <div id="onepass">
+                        <label for="cnpass">Confirm New Password</label>
+                        <input id="cnpass" type="text" [(ngModel)]="user.username" class="form-control" />
+                    </div>
+
+                </div>
+                <button id="upp">Update Profile</button>
+            </div>
+        </div>
+        <div id="rightside">
+            <h1>Event Overview</h1>
+
+            <div id="card">
+                <i class="pi pi-calendar-clock"></i>
+                <div id="addinfo">
+                    <p id="amount">24</p>
+                    <p id="type">Events Organized</p>
+                </div>
+            </div>
+            <div id="card">
+                <i class="pi pi-users"></i>
+                <div id="addinfo">
+                    <p id="amount">2406</p>
+                    <p id="type">Total Attendees</p>
+                </div>
+            </div>
+            <div id="card">
+                <i class="pi pi-calendar"></i>
+                <div id="addinfo">
+                    <p id="amount">3</p>
+                    <p id="type">Upcoming Events</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
