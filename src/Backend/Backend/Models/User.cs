@@ -30,6 +30,8 @@ namespace Backend.Models
         public DateTime CreationTime { get; set; } = DateTime.UtcNow;
         public DateTime? LastLoginTime { get; set; }
 
+        public string ProfilePicture { get; set; }
+
         public bool IsActive { get; set; }
     }
 }
