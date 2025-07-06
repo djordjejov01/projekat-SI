@@ -1,39 +1,53 @@
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { useFavorites } from '../context/FavoriteContext';
 import { AntDesign } from '@expo/vector-icons';
-
-const allEvents = [  {
-    id: '1',
-    title: 'Summer Music Fest',
-    date: 'Aug 10, 2025 - 7:00 PM',
-    location: 'Central Park',
-    image: 'https://images.unsplash.com/photo-1542751110-97427bbecf20',
-    attendees: '150+ Attending',
-  },
-  {
-    id: '2',
-    title: 'Tech Meetup',
-    date: 'Sep 5, 2025 - 6:00 PM',
-    location: 'Downtown Hub',
-    image: 'https://images.unsplash.com/photo-1542751110-97427bbecf20',
-    attendees: '200+ Attending',
-  },
-  {
-    id: '3',
-    title: 'Art Walk',
-    date: 'Sep 20, 2025 - 4:00 PM',
-    location: 'City Gallery',
-    image: 'https://images.unsplash.com/photo-1542751110-97427bbecf20',
-    attendees: '85+ Attending',
-  },
-];
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function FavoritesScreen() {
-  const { favorites, toggleFavorite } = useFavorites();
+  const { favorites, toggleFavorite, loadFavorites } = useFavorites();
+  const [events, setEvents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const favoriteEvents = allEvents.filter((event) => favorites.includes(event.id));
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      setLoading(true);
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+          console.log('No token, skipping fetch');
+          return;
+        }
+
+        const response = await fetch('http://192.168.188.32:5216/api/favorites', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setEvents(data);
+        } else {
+          console.error('Failed to fetch favorite events:', response.status);
+        }
+      } catch (err) {
+        console.error('Error fetching favorite events:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFavorites();
+  }, [favorites]); // Refetch kad se favorites promene
 
   const renderItem = ({ item }: any) => (
     <TouchableOpacity
@@ -45,34 +59,48 @@ export default function FavoritesScreen() {
         })
       }
     >
-      <Image source={{ uri: item.image }} style={styles.image} />
+      <Image source={{ uri: item.imageUrl }} style={styles.image} />
       <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.info}>{item.date}</Text>
+      <Text style={styles.info}>
+        🕒{' '}
+        {new Date(item.startDate).toLocaleDateString('en-US')} |{' '}
+        {new Date(item.startDate).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        })}
+        h
+      </Text>
       <Text style={styles.info}>📍 {item.location}</Text>
+
       <View style={styles.row}>
-        <Text style={styles.attending}>{item.attendees}</Text>
+        <Text style={styles.attending}>{item.attendingCount || 0}+ Attending</Text>
         <TouchableOpacity onPress={() => toggleFavorite(item.id)}>
-          <AntDesign
-            name={'heart'}
-            size={20}
-            color={'#FF2D55'}
-          />
+          <AntDesign name="heart" size={20} color="#FF2D55" />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#007AFF" />
+        <Text style={{ marginTop: 10 }}>Loading favorites...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Your Favorites</Text>
-      {favoriteEvents.length === 0 ? (
-        <Text style={styles.empty}>No favorites yet.</Text>
+      {events.length === 0 ? (
+        <Text style={styles.empty}>You have no favorite events yet.</Text>
       ) : (
         <FlatList
-          data={favoriteEvents}
+          data={events}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          contentContainerStyle={{ gap: 16, paddingBottom: 50 }}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={{ gap: 16, paddingBottom: 80 }}
           showsVerticalScrollIndicator={false}
         />
       )}

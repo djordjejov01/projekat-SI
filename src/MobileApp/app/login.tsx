@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { router } from 'expo-router';
+import { useFavorites } from './context/FavoriteContext';
+
 import {
   View,
   Text,
@@ -19,6 +21,8 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const { loadFavorites, clearFavorites } = useFavorites();
+
 
   const redirectUri = AuthSession.makeRedirectUri({});
 
@@ -74,7 +78,7 @@ export default function LoginScreen() {
     }
 
     try {
-      const response = await fetch('http://192.168.33.108:5216/api/User/login', {
+      const response = await fetch('http://192.168.188.32:5216/api/User/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,7 +95,9 @@ export default function LoginScreen() {
 
       if (data.token) {
         await AsyncStorage.setItem('token', data.token); 
-        console.log('Login successful. Token:', data.token);
+        
+        //console.log('Login successful. Token:', data.token);
+        loadFavorites();
         router.replace('./(tabs)/events');
       } else {
         Alert.alert('Error', 'No token received from server.');

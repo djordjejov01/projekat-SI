@@ -9,13 +9,20 @@ import {
   ScrollView,
   ActivityIndicator,
   Dimensions,
+  Alert,
 } from 'react-native';
 import MapView, { Marker, UrlTile } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFavorites } from '../context/FavoriteContext';
-
 const screen = Dimensions.get('window');
+
+type AgendaItem = {
+  title: string;
+  description: string;
+  startTime: string;
+  endTime: string;
+};
 
 type Event = {
   id: number;
@@ -29,50 +36,54 @@ type Event = {
   organizerName: string;
   attendingCount: number;
   isFavorite: boolean;
-  agenda: {
-    title: string;
-    description: string;
-    startTime: string;
-    endTime: string;
-  }[];
+  agenda: AgendaItem[];
 };
 
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const { favorites, toggleFavorite } = useFavorites();
+
+  const currentId = typeof id === 'string' ? id : '';
 
   const [event, setEvent] = useState<Event | null>(null);
   const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [updatingFavorite, setUpdatingFavorite] = useState(false);
 
-  const currentId = typeof id === 'string' ? id : '';
-
+  // Fetch event details from backend API
   useEffect(() => {
     const fetchEvent = async () => {
       try {
+        setLoading(true);
         const token = await AsyncStorage.getItem('token');
-        const response = await fetch(`http://192.168.33.108:5216/api/Events/Details?id=${currentId}`, {
+        if (!token) {
+          setError('Please log in to see event details.');
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(`http://192.168.188.32:5216/api/Events/Details?id=${currentId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         if (!response.ok) throw new Error('Failed to load event');
 
-        const data = await response.json();
+        const data: Event = await response.json();
         setEvent(data);
         geocodeLocation(data.location);
       } catch (err) {
         console.error(err);
-        setError('Došlo je do greške pri učitavanju događaja.');
+        setError('Failed to load event details.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchEvent();
-  }, [id]);
+  }, [currentId]);
 
+  // Geocode event location to get map coordinates
   const geocodeLocation = async (location: string) => {
     try {
       const response = await fetch(
@@ -87,22 +98,57 @@ export default function EventDetailScreen() {
         });
       }
     } catch (err) {
-      console.warn('Greška pri geokodiranju lokacije:', err);
+      console.warn('Error geocoding location:', err);
     }
   };
 
-  const isFavorite = favorites.includes(currentId);
 
-  const calculateDuration = (start: string, end: string) => {
-    const diff = (new Date(end).getTime() - new Date(start).getTime()) / (1000 * 60 * 60);
-    return `${diff.toFixed(1)}h`;
-  };
+
+const { loadFavorites } = useFavorites();
+
+const toggleFavorite = async () => {
+  if (!event) return;
+
+  setUpdatingFavorite(true);
+
+  try {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) {
+      Alert.alert('Authentication required', 'Please log in to manage favorites.');
+      setUpdatingFavorite(false);
+      return;
+    }
+
+    const method = event.isFavorite ? 'DELETE' : 'POST';
+
+    const res = await fetch('http://192.168.188.32:5216/api/Favorites', {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(event.id),
+    });
+
+    if (res.ok) {
+      setEvent((prev) => prev ? { ...prev, isFavorite: !prev.isFavorite } : prev);
+      await loadFavorites(); 
+    } else {
+      const errorText = await res.text();
+      Alert.alert('Error', `Failed to update favorite: ${errorText}`);
+    }
+  } catch (err) {
+    Alert.alert('Error', 'Failed to update favorite');
+  } finally {
+    setUpdatingFavorite(false);
+  }
+};
 
   if (loading) {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color="#2563EB" />
-        <Text style={{ marginTop: 10 }}>Učitavanje...</Text>
+        <Text style={{ marginTop: 10 }}>Loading...</Text>
       </View>
     );
   }
@@ -110,7 +156,7 @@ export default function EventDetailScreen() {
   if (error || !event) {
     return (
       <View style={styles.center}>
-        <Text style={{ fontSize: 16 }}>{error || 'Događaj nije pronađen.'}</Text>
+        <Text style={{ fontSize: 16 }}>{error || 'Event not found.'}</Text>
       </View>
     );
   }
@@ -121,7 +167,7 @@ export default function EventDetailScreen() {
 
       <Text style={styles.title}>{event.title}</Text>
       <Text style={styles.date}>
-        📅 {new Date(event.startDate).toLocaleDateString('sr-RS', {
+        📅 {new Date(event.startDate).toLocaleDateString('en-US', {
           weekday: 'long',
           year: 'numeric',
           month: 'long',
@@ -140,33 +186,43 @@ export default function EventDetailScreen() {
           })}h
         </Text>
         <Text style={styles.info}>📍 {event.location}</Text>
-        <Text style={styles.info}>🏢 Organizator: {event.organizerName}</Text>
-        <Text style={styles.info}>👥 Prijavljenih: {event.attendingCount || 0}</Text>
+        <Text style={styles.info}>🏢 Organizer: {event.organizerName}</Text>
+        <Text style={styles.info}>👥 Attending: {event.attendingCount || 0}</Text>
       </View>
 
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.favoriteBtn} onPress={() => toggleFavorite(currentId)} activeOpacity={0.7}>
+        <TouchableOpacity
+          style={styles.favoriteBtn}
+          onPress={toggleFavorite}
+          activeOpacity={0.7}
+          disabled={updatingFavorite}
+        >
           <Ionicons
-            name={isFavorite ? 'heart' : 'heart-outline'}
+            name={event.isFavorite ? 'heart' : 'heart-outline'}
             size={24}
-            color={isFavorite ? '#FF2D55' : '#2563EB'}
+            color={event.isFavorite ? '#FF2D55' : '#2563EB'}
           />
-          <Text style={[styles.favoriteText, { color: isFavorite ? '#FF2D55' : '#2563EB' }]}>
-            {isFavorite ? 'Ukloni iz favorita' : 'Dodaj u favorite'}
+          <Text
+            style={[
+              styles.favoriteText,
+              { color: event.isFavorite ? '#FF2D55' : '#2563EB' },
+            ]}
+          >
+            {event.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.buyBtn} activeOpacity={0.7}>
-          <Text style={styles.buyText}>Kupi kartu</Text>
+          <Text style={styles.buyText}>Buy Ticket</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.sectionTitle}>Opis događaja</Text>
+      <Text style={styles.sectionTitle}>Event Description</Text>
       <Text style={styles.description}>{event.description}</Text>
 
       {event.agenda?.length > 0 && (
         <>
-          <Text style={styles.sectionTitle}>Raspored</Text>
+          <Text style={styles.sectionTitle}>Agenda</Text>
           {event.agenda.map((item, index) => (
             <View key={index} style={styles.scheduleItem}>
               <Text style={styles.scheduleTime}>
@@ -187,7 +243,7 @@ export default function EventDetailScreen() {
 
       {coords && (
         <>
-          <Text style={styles.sectionTitle}>Lokacija</Text>
+          <Text style={styles.sectionTitle}>Location</Text>
           <MapView
             style={styles.map}
             initialRegion={{
@@ -202,17 +258,17 @@ export default function EventDetailScreen() {
               maximumZ={19}
               flipY={false}
             />
-            <Marker
-              coordinate={coords}
-              title={event.title}
-              description={event.location}
-            />
+            <Marker coordinate={coords} title={event.title} description={event.location} />
           </MapView>
         </>
       )}
 
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()} activeOpacity={0.7}>
-        <Text style={styles.backText}>← Nazad na događaje</Text>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => router.back()}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.backText}>← Back to events</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -235,7 +291,7 @@ const styles = StyleSheet.create({
     height: 220,
     borderRadius: 14,
     marginBottom: 20,
-    marginTop:40
+    marginTop: 40,
   },
   title: {
     fontSize: 24,

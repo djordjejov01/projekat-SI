@@ -7,7 +7,6 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { AntDesign } from '@expo/vector-icons';
@@ -16,7 +15,7 @@ import { useFavorites } from '../context/FavoriteContext';
 
 export default function EventsScreen() {
   const router = useRouter();
-  const { favorites, toggleFavorite } = useFavorites();
+  const { favorites, toggleFavorite, clearFavorites, loadFavorites } = useFavorites();
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,16 +24,14 @@ export default function EventsScreen() {
       setLoading(true);
       try {
         const token = await AsyncStorage.getItem('token');
-        if (!token) {
-          Alert.alert('Error', 'Token not found. Please log in again.');
-          return;
+
+        const headers: any = { 'Content-Type': 'application/json' };
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
         }
 
-        const response = await fetch('http://192.168.33.108:5216/api/Events', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
+        const response = await fetch('http://192.168.188.32:5216/api/Events', {
+          headers,
         });
 
         if (!response.ok) {
@@ -43,9 +40,9 @@ export default function EventsScreen() {
 
         const data = await response.json();
         setEvents(data);
+        await loadFavorites(); 
       } catch (error) {
         console.error('Error fetching events:', error);
-        Alert.alert('Error', 'Could not load events.');
       } finally {
         setLoading(false);
       }
@@ -54,8 +51,18 @@ export default function EventsScreen() {
     fetchEvents();
   }, []);
 
+  const onFavoritePress = (eventId: number) => {
+    toggleFavorite(eventId);
+  };
+
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('token');
+    clearFavorites();
+    router.replace('/login');
+  };
+
   const renderItem = ({ item }: any) => {
-    const isFavorite = favorites.includes(item.id.toString());
+    const isFavorite = favorites.includes(item.id);
 
     return (
       <TouchableOpacity
@@ -70,15 +77,18 @@ export default function EventsScreen() {
         <Image source={{ uri: item.imageUrl }} style={styles.image} />
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.info}>
-  🕒 {new Date(item.startDate).toLocaleDateString('sr-RS')} | {new Date(item.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h
+          🕒 {new Date(item.startDate).toLocaleDateString('en-US')} |{' '}
+          {new Date(item.startDate).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}
+          h
         </Text>
         <Text style={styles.info}>📍 {item.location}</Text>
 
         <View style={styles.row}>
-          <Text style={styles.attending}>
-            {item.attendingCount || 0}+ Attending
-          </Text>
-          <TouchableOpacity onPress={() => toggleFavorite(item.id.toString())}>
+          <Text style={styles.attending}>{item.attendingCount || 0}+ Attending</Text>
+          <TouchableOpacity onPress={() => onFavoritePress(item.id)}>
             <AntDesign
               name={isFavorite ? 'heart' : 'hearto'}
               size={20}
@@ -92,12 +102,7 @@ export default function EventsScreen() {
 
   if (loading) {
     return (
-      <View
-        style={[
-          styles.container,
-          { justifyContent: 'center', alignItems: 'center' },
-        ]}
-      >
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color="#007AFF" />
         <Text style={{ marginTop: 10 }}>Loading events...</Text>
       </View>
@@ -111,9 +116,13 @@ export default function EventsScreen() {
         data={events}
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
+        extraData={favorites}
         contentContainerStyle={{ gap: 16, paddingBottom: 80 }}
         showsVerticalScrollIndicator={false}
       />
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.logoutText}>Log out</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -149,6 +158,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 12,
     color: '#fff',
+    fontWeight: '600',
+  },
+  logoutButton: {
+    marginTop: 20,
+    backgroundColor: '#FF3B30',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  logoutText: {
+    color: '#fff',
+    fontSize: 16,
     fontWeight: '600',
   },
 });
