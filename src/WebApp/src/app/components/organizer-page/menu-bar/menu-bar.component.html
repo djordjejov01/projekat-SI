@@ -3,6 +3,7 @@
         <app-menu-item
     *ngFor="let item of items; let i = index"
     [title]="item.title"
+    [link] = "item.link"
     [image]="selectedIndex === i ? item.imageWhite : item.image"
     [isSelected]="selectedIndex === i"
     (clicked)="selectItem(i)"
