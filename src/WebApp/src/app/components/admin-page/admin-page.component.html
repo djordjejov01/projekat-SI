@@ -1,7 +1,7 @@
 <div class="content">
 
     <p-toast />
-
+    <p-confirmdialog />
     <header>
 
         <nav>
@@ -17,7 +17,7 @@
             </div>
 
             <div class="user-actions">
-                <button>Logout</button>
+                <button (click)="onLogoutClick()">Logout</button>
                 <i class="pi pi-bell"></i>
 
                 <div class="pfp">
@@ -197,7 +197,7 @@
                         </p-columnFilter>
                     </div>
                 </th>
-                <!-- <th style="width: 5rem"></th> -->
+                <th style="width: 5rem"></th>
             </tr>
         </ng-template>
 
@@ -232,9 +232,17 @@
                     <p-tag [value]="user.isActive ? 'Active' : 'Inactive'" [severity]="getSeverity(user.isActive ? 'Active' : 'Inactive')" />
                 </td>
 
-                <!-- <td style="text-align: center">
-                    <p-button rounded icon="pi pi-cog" />
-                </td> -->
+                <td style="text-align: center">
+                    <p-button
+                    *ngIf="user.role === 'Supplier'"
+                    [icon]="user.isActive ? 'pi pi-times' : 'pi pi-check'"
+                    [label]="user.isActive ? 'Deactivate' : 'Activate'"
+                    [severity]="user.isActive ? 'danger' : 'success'"
+                    size="small"
+                    [style]="{'width': '100px'}"
+                    (click)="toggleUserActivation(user)"
+                    ></p-button>
+                </td>
 
             </tr>
         </ng-template>
@@ -246,6 +254,7 @@
         </ng-template>
 
     </p-table>
+    
 </div>
 
 </div>

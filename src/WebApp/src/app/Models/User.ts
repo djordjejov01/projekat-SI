@@ -55,4 +55,8 @@ export class User{
         return this.lastLogin;
     }
 
+    setActive(value : boolean){
+        this.isActive = value;
+    }
+
 }

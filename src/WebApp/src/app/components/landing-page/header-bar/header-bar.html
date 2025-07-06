@@ -4,8 +4,6 @@
         <p routerLink="/home">{{ 'HOME' | translate }}</p>
         <p>{{ 'ABOUTUS' | translate }}</p>
         <p>{{ 'ContactUs' | translate }}</p>
-        <p routerLink="/organizer">Organizer</p>
-        <p routerLink="/admin">Admin</p>
     </div>
     <div id="rightside">
         <select (change)="changeLanguage($event)">
@@ -13,8 +11,13 @@
             <option value="en">English</option>
         </select>
         <p>|</p>
-        <p id="login" routerLink="/login">{{ 'LOGIN' | translate }}</p>
-        <p>/</p>
-        <p id="register" routerLink="/register">{{ 'REGISTER' | translate }}</p>
+        <p id="dashboard" *ngIf="isLoggedIn" [routerLink]="dashboardRoute"> Dashboard </p>
+
+        <ng-container  *ngIf="!isLoggedIn">
+            <p id="login" routerLink="/login">{{ 'LOGIN' | translate }}</p>
+            <p>/</p>
+            <p id="register" routerLink="/register">{{ 'REGISTER' | translate }}</p>
+        </ng-container>
+
     </div>
 </header>

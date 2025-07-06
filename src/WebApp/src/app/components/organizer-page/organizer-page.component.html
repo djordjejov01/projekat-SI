@@ -1,8 +1,10 @@
 <main>
+    <p-toast />
+    <p-confirmdialog />
     <div id="head">
         <img src="./assets/logo91.png" alt="" id="logo" routerLink="/home">
         <div id="right">
-            <p>Logout</p>
+            <button (click)="onLogoutClick()">Logout</button>
             <img src="./assets/bell.svg" alt="">
             <img src="./assets/A1.jpg" alt="" id="pfp">
         </div>

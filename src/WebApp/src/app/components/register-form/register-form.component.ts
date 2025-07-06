@@ -15,7 +15,7 @@ import { MessageService} from 'primeng/api';
 import { IDeactivate } from '../../Interfaces/IDeactivate';
 import { Observable } from 'rxjs';
 import { ConfirmDialog } from 'primeng/confirmdialog';
-import { ExitFormConformation } from '../../Services/exitConformation.service';
+import { ConfirmationDialogService } from '../../Services/confirmation-dialog.service';
 import { RegisterDto } from '../../Models/RegisterDto';
 import { ApiService } from '../../Services/api.service';
 import { UserDto } from '../../Models/UserDto';
@@ -42,7 +42,7 @@ export class RegisterForm implements OnInit,IDeactivate{
 
   constructor(
     private messageService: MessageService,
-    private exitFormConformation : ExitFormConformation,
+    private confirmationDialogService : ConfirmationDialogService,
     private apiService : ApiService) {}
 
   roles: String[] | undefined;
@@ -170,7 +170,7 @@ export class RegisterForm implements OnInit,IDeactivate{
         this.userToRegister.getUsername()  ||
         this.userToRegister.getEmail()     ||
         this.userToRegister.getPassword()  ||
-        this.userToRegister.getConfirmPassword()) ?  this.exitFormConformation.confirmExit() :  true;
+        this.userToRegister.getConfirmPassword()) ?  this.confirmationDialogService.confirmExit('You have unsaved changes. Are you sure you want to leave this page?','Unsaved Changes') :  true;
     }
 
 }

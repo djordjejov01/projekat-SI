@@ -9,7 +9,7 @@ import { OrganizerPageComponent } from './components/organizer-page/organizer-pa
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit{
+export class AppComponent {
 
   title = 'WebApp';
 
@@ -17,10 +17,6 @@ export class AppComponent implements OnInit{
     translate.addLangs(['sr', 'en']);
     translate.setDefaultLang('sr');
     translate.use('sr');
-  }
-
-  ngOnInit(): void {
-    localStorage.removeItem('access_token');
   }
 
   changeLanguage(lang: string) {

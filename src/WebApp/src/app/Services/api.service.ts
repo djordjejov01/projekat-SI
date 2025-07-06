@@ -20,6 +20,10 @@ export class ApiService{
 
     constructor(private http: HttpClient) {}
 
+    activateUser(userId: number, isActive: boolean = true) {
+        return this.http.put(`${this.apiUrl}/Admin/users/${userId}/active?isActive=${isActive}`, {});
+    }
+
     getAllUsers(): Observable<User[]>{
         return this.http.get<UserApiResponse[]>(`${this.apiUrl}/Admin/users`).pipe(
             

@@ -23,20 +23,22 @@ import { ToastModule } from 'primeng/toast';
 import { Toast } from 'primeng/toast';
 import { RouterLink } from '@angular/router';
 import { ApiService } from '../../Services/api.service';
+import { SessionService } from '../../Services/session.service';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 
 
 @Component({
   selector: 'app-admin-page',
   imports: [CommonModule,StatisticCard,ChartModule,TableModule, ButtonModule,
-    CommonModule, MultiSelectModule, InputTextModule, DropdownModule, FormsModule,Tag,IconField, InputIcon,TableModule,ToastModule,Toast,RouterLink],
+    CommonModule, MultiSelectModule, InputTextModule, DropdownModule, FormsModule,Tag,IconField, InputIcon,TableModule,ToastModule,Toast,RouterLink,ConfirmDialogModule],
   templateUrl: './admin-page.component.html',
   styleUrl: './admin-page.component.css'
 })
 export class AdminPage implements OnInit,AfterViewInit{
 
   //PAGE
-  users : User[] | undefined;
+  users : User[] = [];
   currentDate : Date;
   startWindowLast30 : Date;
   endWindowLast30 : Date;
@@ -71,7 +73,8 @@ export class AdminPage implements OnInit,AfterViewInit{
     private cd: ChangeDetectorRef,
     private messageService : MessageService,
     private authService : AuthService,
-    private apiService : ApiService) {}
+    private apiService : ApiService,
+    private sessionService : SessionService) {}
 
   @HostListener('window:resize')
     onResize() {
@@ -124,7 +127,6 @@ export class AdminPage implements OnInit,AfterViewInit{
     // })
 
   }
-
 
   ngAfterViewInit(): void {
     
@@ -266,7 +268,6 @@ export class AdminPage implements OnInit,AfterViewInit{
             }
     }
   
-
   initializeDateRangers(){
 
     this.currentDate = new Date();
@@ -275,7 +276,6 @@ export class AdminPage implements OnInit,AfterViewInit{
     this.startWindowLast30 = new Date(this.currentDate);
     this.startWindowLast30.setDate(this.startWindowLast30.getDate() - 30)
     
-
     this.endWindowPrev30 = new Date(this.startWindowLast30)
     this.startWindowPrev30 = new Date(this.endWindowPrev30)
     this.startWindowPrev30.setDate(this.startWindowPrev30.getDate() - 30)
@@ -450,6 +450,7 @@ export class AdminPage implements OnInit,AfterViewInit{
 
     return {counts, labels}
   }
+
   getSeverity(status: string) {
         switch (status) {
             case 'Inactive':
@@ -466,6 +467,33 @@ export class AdminPage implements OnInit,AfterViewInit{
     table.clear();
     this.selectedUsers = []
     this.searchValue = '';
+  }
+
+  toggleUserActivation(user : User){
+
+    const newStatus = !user.userActive()
+
+    this.apiService.activateUser(user.getUserId(),newStatus).subscribe({
+      next: () =>{
+          user.setActive(newStatus);
+          this.messageService.add({
+          severity: newStatus ? 'success' : 'info',
+          summary: newStatus ? 'Activated' : 'Deactivated',
+          detail: `${user.getUsername()} has been ${newStatus ? 'activated' : 'deactivated'}.`
+        });
+      },
+      error: () => {
+         this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: `Could not ${newStatus ? 'activate' : 'deactivate'} ${user.getUsername()}`
+        });
+      }
+    })
+  }
+
+  onLogoutClick(){
+    this.sessionService.logoutWithConfirmation();
   }
 
 }

@@ -8,7 +8,7 @@ import { DividerModule } from 'primeng/divider';
 import { IDeactivate } from '../../Interfaces/IDeactivate';
 import { Observable } from 'rxjs';
 import { MessageService } from 'primeng/api';
-import { ExitFormConformation } from '../../Services/exitConformation.service';
+import { ConfirmationDialogService } from '../../Services/confirmation-dialog.service';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { RouterLink } from '@angular/router';
@@ -30,7 +30,7 @@ export class LoginForm implements OnInit,IDeactivate{
 
   constructor(
     private messageService: MessageService,
-    private exitFormConformation : ExitFormConformation,
+    private confirmationDialogService : ConfirmationDialogService,
     private apiService : ApiService,
     private authService : AuthService,
     private router : Router) {}
@@ -126,7 +126,7 @@ export class LoginForm implements OnInit,IDeactivate{
 
     return ( 
       this.userToLogin.getEmail() ||
-      this.userToLogin.getPassword()) ? this.exitFormConformation.confirmExit() : true;
+      this.userToLogin.getPassword()) ? this.confirmationDialogService.confirmExit('You have unsaved changes. Are you sure you want to leave this page?','Unsaved Changes') : true;
 
   }
 
