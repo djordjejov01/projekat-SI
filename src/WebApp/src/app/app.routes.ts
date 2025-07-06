@@ -4,13 +4,14 @@ import { RegisterForm } from './components/register-form/register-form.component
 import { LoginForm } from './components/login-form/login-form.component';
 import { AdminPage } from './components/admin-page/admin-page.component';
 import { OrganizerPageComponent } from './components/organizer-page/organizer-page.component';
+import { AuthGuard } from './Guards/auth.guard';
 
 
 export const routes: Routes = [
     {path: '', component: LandingPage},
     {path: 'home', component: LandingPage},
-    {path: 'organizer', component: OrganizerPageComponent},
+    {path: 'organizer', component: OrganizerPageComponent, canActivate: [AuthGuard], data : { roles: ['Organizer']}},
     {path: 'register', component: RegisterForm, canDeactivate: [(comp: RegisterForm) => comp.canExit()]},
     {path: 'login', component: LoginForm, canDeactivate: [(comp: LoginForm) => comp.canExit()]},
-    {path: 'admin', component: AdminPage}
+    {path: 'admin', component: AdminPage, canActivate: [AuthGuard], data : { roles: ['Admin']}}
 ];

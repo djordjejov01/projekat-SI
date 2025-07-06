@@ -4,19 +4,12 @@ import { Observable, throwError, catchError, map } from "rxjs";
 import { RegisterDto } from "../Models/RegisterDto";
 import { LoginDto } from "../Models/LoginDto";
 import { UserDto } from "../Models/UserDto";
+import { User } from "../Models/User";
+import { UserDtoResponse } from "../Interfaces/UserDtoResponse";
+import { TokenResponse } from "../Interfaces/TokenResponse";
+import { UserApiResponse } from "../Interfaces/UserApiResponse";
+import { UserRoleMap } from "../Models/User";
 
-
-interface UserDtoResponse{
-  userId: number;
-  username: string;
-  email: string;
-  role: string;
-  isActive: boolean;
-}
-
-interface TokenResponse{
-    token : string;
-}
 
 @Injectable({
     providedIn: "root"
@@ -26,6 +19,27 @@ export class ApiService{
     private apiUrl = 'https://localhost:7269/api';
 
     constructor(private http: HttpClient) {}
+
+    getAllUsers(): Observable<User[]>{
+        return this.http.get<UserApiResponse[]>(`${this.apiUrl}/Admin/users`).pipe(
+            
+            map(data =>
+                data.map(userResponse => new User(
+                    userResponse.userId,
+                    userResponse.username,
+                    userResponse.email,
+                    UserRoleMap[userResponse.role] || 'Unknown',
+                    new Date(userResponse.creationTime),
+                    userResponse.isActive,
+                    userResponse.lastLoginTime ? new Date(userResponse.lastLoginTime) : null,
+                    userResponse.password,
+                    userResponse.firstName,
+                    userResponse.lastName
+                ))
+            )
+
+        )
+    }
 
     register(data : RegisterDto): Observable<UserDto>{
 

@@ -21,13 +21,15 @@ import { MessageService } from 'primeng/api';
 import { AuthService } from '../../Services/auth.service';
 import { ToastModule } from 'primeng/toast';
 import { Toast } from 'primeng/toast';
+import { RouterLink } from '@angular/router';
+import { ApiService } from '../../Services/api.service';
 
 
 
 @Component({
   selector: 'app-admin-page',
   imports: [CommonModule,StatisticCard,ChartModule,TableModule, ButtonModule,
-    CommonModule, MultiSelectModule, InputTextModule, DropdownModule, FormsModule,Tag,IconField, InputIcon,TableModule,ToastModule,Toast],
+    CommonModule, MultiSelectModule, InputTextModule, DropdownModule, FormsModule,Tag,IconField, InputIcon,TableModule,ToastModule,Toast,RouterLink],
   templateUrl: './admin-page.component.html',
   styleUrl: './admin-page.component.css'
 })
@@ -68,7 +70,8 @@ export class AdminPage implements OnInit,AfterViewInit{
   constructor(
     private cd: ChangeDetectorRef,
     private messageService : MessageService,
-    private authService : AuthService) {}
+    private authService : AuthService,
+    private apiService : ApiService) {}
 
   @HostListener('window:resize')
     onResize() {
@@ -89,27 +92,36 @@ export class AdminPage implements OnInit,AfterViewInit{
   ngOnInit(): void {
 
     //API CALL INSTEAD DUMMY DATA
-    this.users = Users.map((data)=>{
-      return new User(
-        data.id,
-        data.username,
-        data.email,
-        // data.password,
-        // data.first_name,
-        // data.last_name,
-        data.role,
-        new Date(data.creation_time),
-        data.isActive,
-        new Date(data.last_login)
-      )
-    })
-    
-    this.loading = false;
+    this.apiService.getAllUsers().subscribe({
+    next: (users) => {
+      this.users = users;
+      this.loading = false;
+      this.initializeDateRangers();
+      this.initBarChart();
+      this.initDoughnutChart();
+      console.log(this.users)
+    },
+    error: (err) => {
+      this.loading = false;
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed To Load Users' });
+      // Optionally show an error message to the user here
+    }
+  });
 
-    this.initializeDateRangers();
-    this.initBarChart()
-    this.initDoughnutChart()
-    console.log(this.users)
+    // this.users = Users.map((data)=>{
+    //   return new User(
+    //     data.id,
+    //     data.username,
+    //     data.email,
+    //     // data.password,
+    //     // data.first_name,
+    //     // data.last_name,
+    //     data.role,
+    //     new Date(data.creation_time),
+    //     data.isActive,
+    //     new Date(data.last_login)
+    //   )
+    // })
 
   }
 
@@ -211,6 +223,7 @@ export class AdminPage implements OnInit,AfterViewInit{
   initDoughnutChart() {
 
     const stats = this.getRoleDistribution()
+    console.log(stats)
 
     if (isPlatformBrowser(this.platformId)) {
                 const documentStyle = getComputedStyle(document.documentElement);
@@ -221,9 +234,9 @@ export class AdminPage implements OnInit,AfterViewInit{
                     datasets: [
                         {
                             data: stats.counts,
-                            backgroundColor: ['rgba(233, 99, 141, 0.4)','rgba(100,106,232, 0.2)'],
-                            hoverBackgroundColor: ['rgba(233, 99, 141, 0.7)','rgba(100,106,232, 0.4)'],
-                            borderColor: ['rgba(233, 99, 141,0.7)','rgb(139, 92, 246,0.7)'],
+                            backgroundColor: ['rgba(233, 99, 141, 0.4)','rgba(100,106,232, 0.2)','rgba(180, 180, 180, 0.2)'],
+                            hoverBackgroundColor: ['rgba(233, 99, 141, 0.7)','rgba(100,106,232, 0.4)','rgba(180, 180, 180, 0.4)'],
+                            borderColor: ['rgba(233, 99, 141,0.7)','rgb(139, 92, 246,0.7)','rgba(180, 180, 180, 0.7)'],
                             borderWidth: 1
                         }
                     ]

@@ -1,3 +1,9 @@
+export const UserRoleMap: Record<number, string> = {
+  0: 'Admin',
+  1: 'Organizer',
+  2: 'Supplier'
+};
+
 export class User{
 
     constructor(
