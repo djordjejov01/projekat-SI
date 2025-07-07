@@ -18,7 +18,7 @@ namespace Backend.Controllers
             _context = context;
         }
 
-        [Authorize(Roles = "MobileUser")]
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EventListDto>>> GetAllEvents()
         {
@@ -38,7 +38,7 @@ namespace Backend.Controllers
             return Ok(events);
         }
 
-        [Authorize(Roles = "MobileUser")]
+        [AllowAnonymous]
         [HttpGet("upcomingEvents")] //get upcoming events
         public async Task<ActionResult<IEnumerable<EventListDto>>> GetUpcomingEvents()
         {
@@ -63,8 +63,8 @@ namespace Backend.Controllers
             return Ok(events);
         }
 
-        [Authorize(Roles = "MobileUser")]
-        [HttpGet("events/{id}")] //detalji o dogadjaju
+        [AllowAnonymous]
+        [HttpGet("Details")] //detalji o dogadjaju
         public async Task<ActionResult<EventDetailsDto>> GetEventDetails(int id)
         {
             // Ucitaj dogadjaj sa organizatorom
@@ -94,11 +94,14 @@ namespace Backend.Controllers
                 .CountAsync(ut => ut.Ticket.EventID == id);
 
             
-            //bool isFavorite = false;
-            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-            bool isFavorite = await _context.FavoriteEvents
+            bool isFavorite = false;
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+                isFavorite = await _context.FavoriteEvents
                 .AnyAsync(f => f.UserId == userId && f.EventId == id);
-
+            }
+            
             // Popuni DTO
             var dto = new EventDetailsDto
             {

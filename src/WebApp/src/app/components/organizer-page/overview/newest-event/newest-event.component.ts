@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
-
+import { TranslateModule } from '@ngx-translate/core';
 @Component({
   selector: 'app-newest-event',
-  imports: [],
+  imports: [TranslateModule],
   templateUrl: './newest-event.component.html',
   styleUrl: './newest-event.component.css'
 })

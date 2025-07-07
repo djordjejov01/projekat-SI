@@ -68,3 +68,16 @@ hr{
         padding-right: 10px;
     }
 }
+
+#lgout{
+    border: 1px solid rgb(232, 232, 232);
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 5px;
+}
+#lgout:hover{
+    cursor: pointer;
+}
+select:hover, option:hover{
+    cursor: pointer;
+}

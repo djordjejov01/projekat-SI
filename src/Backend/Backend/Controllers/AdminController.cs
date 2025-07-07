@@ -104,12 +104,12 @@ namespace Backend.Controllers
         }
         [HttpPut("users/{id}/active")]
 
-        public async Task<IActionResult> SetUserActiveStatus([FromRoute] int id,[FromQuery] bool isActive)
+        public async Task<IActionResult> SetUserActiveStatus([FromRoute] int id, [FromQuery] bool isActive)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)
                 return NotFound();
-            
+
             user.IsActive = isActive;
             await _context.SaveChangesAsync();
 

@@ -93,6 +93,12 @@ h2{
 #ae:hover{
     cursor: pointer;
 }
+#ae{
+    display: flex;
+    align-items: center;
+    gap:3px;
+}
+
 #timeline{
     margin-top: 1px;
     display: flex;

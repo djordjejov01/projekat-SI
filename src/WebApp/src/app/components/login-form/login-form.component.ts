@@ -16,12 +16,11 @@ import { LoginDto } from '../../Models/LoginDto';
 import { ApiService } from '../../Services/api.service';
 import { AuthService } from '../../Services/auth.service';
 import { Router } from '@angular/router';
-
-
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login-form',
-  imports: [ReactiveFormsModule,FloatLabelModule,InputTextModule,CommonModule,PasswordModule,DividerModule,ToastModule,ConfirmDialog,RouterLink],
+  imports: [ReactiveFormsModule,FloatLabelModule,InputTextModule,CommonModule,PasswordModule,DividerModule,ToastModule,ConfirmDialog,RouterLink, TranslateModule],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.css'
 })
@@ -33,7 +32,8 @@ export class LoginForm implements OnInit,IDeactivate{
     private confirmationDialogService : ConfirmationDialogService,
     private apiService : ApiService,
     private authService : AuthService,
-    private router : Router) {}
+    private router : Router,
+    private translate : TranslateService) {}
 
   userToLogin : LoginDto | undefined;
   loginForm : FormGroup;
@@ -45,6 +45,13 @@ export class LoginForm implements OnInit,IDeactivate{
       password: new FormControl('', Validators.required),
     })
   }
+
+  changeLanguage(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const lang = selectElement.value;
+    this.translate.use(lang);
+  }
+
 
   submitForm()
   {

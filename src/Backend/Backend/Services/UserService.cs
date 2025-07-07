@@ -97,7 +97,7 @@ namespace Backend.Services
             {
                 throw new Exception("Dobavljač još nije odobren od strane admina.");
             }
-            if(!user.IsActive)
+            if (!user.IsActive)
             {
                 throw new Exception("Korisnik nije aktivan.");
             }

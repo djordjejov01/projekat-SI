@@ -17,6 +17,8 @@ const MAPPING = {
   'house.fill': 'home',
   'paperplane.fill': 'send',
   'chevron.left.forwardslash.chevron.right': 'code',
+  'calendar': 'calendar-today',
+  'heart.fill': 'favorite',
   'chevron.right': 'chevron-right',
 } as IconMapping;
 

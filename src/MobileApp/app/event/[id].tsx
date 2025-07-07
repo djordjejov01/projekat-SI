@@ -1,125 +1,274 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+  Dimensions,
+  Alert,
+} from 'react-native';
+import MapView, { Marker, UrlTile } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFavorites } from '../context/FavoriteContext';
+const screen = Dimensions.get('window');
 
-type Event = {
-  id: string;
+type AgendaItem = {
   title: string;
-  date: string;
-  time: string;
-  location: string;
-  duration: string;
-  organizer: string;
-  image: string;
   description: string;
-  schedule: { time: string; title: string }[];
-  performers: { name: string; color: string }[];
+  startTime: string;
+  endTime: string;
 };
 
-const mockEvents: Event[] = [
-  {
-    id: '1',
-    title: 'Summer Music Fest 2025',
-    date: 'Saturday, August 10, 2025',
-    time: '7:00 PM',
-    location: 'Central Park, New York',
-    duration: '5h',
-    organizer: 'SyncUp Events Inc.',
-    image: 'https://images.unsplash.com/photo-1542751110-97427bbecf20',
-    description:
-      'Held annually in the heart of the city, the Summer Music Fest is a celebration of music, community, and summer vibes. Featuring world-renowned performers, food trucks, art installations, and interactive experiences, it\'s the ultimate summer event.\n\nJoin thousands of fans as you dance to the beats of top DJs, explore various stages, and enjoy a unique mix of genres. This year\'s lineup promises to deliver unforgettable moments and surprises.',
-    schedule: [
-      { time: '7:00 PM', title: 'Opening Ceremony & Local Talent Showcase' },
-      { time: '7:30 PM', title: 'Main Stage: DJ Electro' },
-      { time: '8:10 PM', title: 'Acoustic Tent: Chillout Session with Lush Echo' },
-      { time: '9:10 PM', title: 'Late Night Groove: DJ Spark' },
-    ],
-    performers: [
-      { name: 'DJ Electro', color: '#D1FAE5' },
-      { name: 'Vocal Harmony', color: '#FDE68A' },
-      { name: 'Dr. Arya Sharma', color: '#FECACA' },
-    ],
-  },
-];
+type Event = {
+  id: number;
+  title: string;
+  imageUrl: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+  organizerId: number;
+  organizerName: string;
+  attendingCount: number;
+  isFavorite: boolean;
+  agenda: AgendaItem[];
+};
 
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
 
-  const { favorites, toggleFavorite } = useFavorites();
-
-  const event = mockEvents.find((e) => e.id === id);
-
-  // Da izbegnemo greške tipa, proveravamo da li id postoji i koristi se kao string
   const currentId = typeof id === 'string' ? id : '';
 
-  const isFavorite = favorites.includes(currentId);
+  const [event, setEvent] = useState<Event | null>(null);
+  const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [updatingFavorite, setUpdatingFavorite] = useState(false);
 
-  if (!event) {
+  // Fetch event details from backend API
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        setLoading(true);
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+          setError('Please log in to see event details.');
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch(`http://192.168.188.32:5216/api/Events/Details?id=${currentId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!response.ok) throw new Error('Failed to load event');
+
+        const data: Event = await response.json();
+        setEvent(data);
+        geocodeLocation(data.location);
+      } catch (err) {
+        console.error(err);
+        setError('Failed to load event details.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEvent();
+  }, [currentId]);
+
+  // Geocode event location to get map coordinates
+  const geocodeLocation = async (location: string) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`
+      );
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        setCoords({
+          latitude: parseFloat(data[0].lat),
+          longitude: parseFloat(data[0].lon),
+        });
+      }
+    } catch (err) {
+      console.warn('Error geocoding location:', err);
+    }
+  };
+
+
+
+const { loadFavorites } = useFavorites();
+
+const toggleFavorite = async () => {
+  if (!event) return;
+
+  setUpdatingFavorite(true);
+
+  try {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) {
+      Alert.alert('Authentication required', 'Please log in to manage favorites.');
+      setUpdatingFavorite(false);
+      return;
+    }
+
+    const method = event.isFavorite ? 'DELETE' : 'POST';
+
+    const res = await fetch('http://192.168.188.32:5216/api/Favorites', {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(event.id),
+    });
+
+    if (res.ok) {
+      setEvent((prev) => prev ? { ...prev, isFavorite: !prev.isFavorite } : prev);
+      await loadFavorites(); 
+    } else {
+      const errorText = await res.text();
+      Alert.alert('Error', `Failed to update favorite: ${errorText}`);
+    }
+  } catch (err) {
+    Alert.alert('Error', 'Failed to update favorite');
+  } finally {
+    setUpdatingFavorite(false);
+  }
+};
+
+  if (loading) {
     return (
       <View style={styles.center}>
-        <Text style={{ fontSize: 18 }}>Event not found</Text>
+        <ActivityIndicator size="large" color="#2563EB" />
+        <Text style={{ marginTop: 10 }}>Loading...</Text>
+      </View>
+    );
+  }
+
+  if (error || !event) {
+    return (
+      <View style={styles.center}>
+        <Text style={{ fontSize: 16 }}>{error || 'Event not found.'}</Text>
       </View>
     );
   }
 
   return (
     <ScrollView style={styles.container}>
-      <Image source={{ uri: event.image }} style={styles.image} />
+      <Image source={{ uri: event.imageUrl }} style={styles.image} />
 
       <Text style={styles.title}>{event.title}</Text>
-      <Text style={styles.date}>{event.date}</Text>
+      <Text style={styles.date}>
+        📅 {new Date(event.startDate).toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        })}
+      </Text>
 
       <View style={styles.infoCard}>
-        <Text style={styles.info}>🕒 {event.time}</Text>
+        <Text style={styles.info}>
+          🕒 {new Date(event.startDate).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}h - {new Date(event.endDate).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          })}h
+        </Text>
         <Text style={styles.info}>📍 {event.location}</Text>
-        <Text style={styles.info}>⏱ Duration: {event.duration}</Text>
-        <Text style={styles.info}>🏢 Organizer: {event.organizer}</Text>
+        <Text style={styles.info}>🏢 Organizer: {event.organizerName}</Text>
+        <Text style={styles.info}>👥 Attending: {event.attendingCount || 0}</Text>
       </View>
 
       <View style={styles.actions}>
         <TouchableOpacity
           style={styles.favoriteBtn}
-          onPress={() => toggleFavorite(currentId)}
+          onPress={toggleFavorite}
           activeOpacity={0.7}
+          disabled={updatingFavorite}
         >
           <Ionicons
-            name={isFavorite ? 'heart' : 'heart-outline'}
+            name={event.isFavorite ? 'heart' : 'heart-outline'}
             size={24}
-            color={isFavorite ? '#FF2D55' : '#2563EB'}
+            color={event.isFavorite ? '#FF2D55' : '#2563EB'}
           />
-          <Text style={[styles.favoriteText, { color: isFavorite ? '#FF2D55' : '#2563EB' }]}>
-            {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
+          <Text
+            style={[
+              styles.favoriteText,
+              { color: event.isFavorite ? '#FF2D55' : '#2563EB' },
+            ]}
+          >
+            {event.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.buyBtn} activeOpacity={0.7}>
-          <Text style={styles.buyText}>Buy Tickets</Text>
+          <Text style={styles.buyText}>Buy Ticket</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.sectionTitle}>About the Event</Text>
+      <Text style={styles.sectionTitle}>Event Description</Text>
       <Text style={styles.description}>{event.description}</Text>
 
-      <Text style={styles.sectionTitle}>Event Schedule</Text>
-      {event.schedule.map((item, index) => (
-        <View key={index} style={styles.scheduleItem}>
-          <Text style={styles.scheduleTime}>{item.time}</Text>
-          <Text style={styles.scheduleTitle}>{item.title}</Text>
-        </View>
-      ))}
+      {event.agenda?.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Agenda</Text>
+          {event.agenda.map((item, index) => (
+            <View key={index} style={styles.scheduleItem}>
+              <Text style={styles.scheduleTime}>
+                {new Date(item.startTime).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })} - {new Date(item.endTime).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+              </Text>
+              <Text style={styles.scheduleTitle}>{item.title}</Text>
+              <Text style={styles.scheduleDesc}>{item.description}</Text>
+            </View>
+          ))}
+        </>
+      )}
 
-      <Text style={styles.sectionTitle}>Speakers & Performers</Text>
-      {event.performers.map((p, index) => (
-        <View key={index} style={[styles.performerItem, { backgroundColor: p.color }]}>
-          <Text>{p.name}</Text>
-        </View>
-      ))}
+      {coords && (
+        <>
+          <Text style={styles.sectionTitle}>Location</Text>
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: coords.latitude,
+              longitude: coords.longitude,
+              latitudeDelta: 0.01,
+              longitudeDelta: 0.01,
+            }}
+          >
+            <UrlTile
+              urlTemplate="http://c.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              maximumZ={19}
+              flipY={false}
+            />
+            <Marker coordinate={coords} title={event.title} description={event.location} />
+          </MapView>
+        </>
+      )}
 
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()} activeOpacity={0.7}>
-        <Text style={styles.backText}>← Back to Events</Text>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => router.back()}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.backText}>← Back to events</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -128,7 +277,7 @@ export default function EventDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    padding: 15,
     backgroundColor: '#fff',
     paddingBottom: 40,
   },
@@ -139,44 +288,45 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: 200,
-    borderRadius: 12,
-    marginBottom: 12,
+    height: 220,
+    borderRadius: 14,
+    marginBottom: 20,
+    marginTop: 40,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: '700',
+    marginBottom: 6,
   },
   date: {
     fontSize: 16,
-    color: '#555',
-    marginTop: 4,
+    color: '#6B7280',
     marginBottom: 10,
   },
   infoCard: {
     backgroundColor: '#F3F4F6',
-    padding: 12,
-    borderRadius: 10,
-    marginBottom: 12,
+    padding: 14,
+    borderRadius: 12,
+    marginBottom: 16,
   },
   info: {
     fontSize: 14,
-    marginBottom: 4,
+    marginBottom: 6,
+    color: '#374151',
   },
   actions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 14,
   },
   favoriteBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
   },
   favoriteText: {
     fontWeight: '500',
-    marginLeft: 6,
+    marginLeft: 8,
     fontSize: 16,
   },
   buyBtn: {
@@ -192,39 +342,50 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
+    marginBottom: 10,
     marginTop: 20,
-    marginBottom: 8,
   },
   description: {
     fontSize: 14,
-    color: '#333',
     lineHeight: 20,
+    color: '#4B5563',
   },
   scheduleItem: {
+    backgroundColor: '#F9FAFB',
+    padding: 10,
+    borderRadius: 10,
     marginBottom: 10,
   },
   scheduleTime: {
     fontWeight: 'bold',
     fontSize: 14,
+    marginBottom: 2,
   },
   scheduleTitle: {
     fontSize: 14,
-    color: '#444',
+    color: '#111827',
   },
-  performerItem: {
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 8,
+  scheduleDesc: {
+    fontSize: 13,
+    color: '#6B7280',
+    marginTop: 2,
+  },
+  map: {
+    width: '100%',
+    height: 200,
+    borderRadius: 10,
+    marginTop: 10,
   },
   backButton: {
     marginTop: 24,
     marginBottom: 40,
-    paddingVertical: 12,
-    borderRadius: 8,
-    backgroundColor: '#E0E0E0',
+    paddingVertical: 14,
+    borderRadius: 10,
+    backgroundColor: '#E5E7EB',
     alignItems: 'center',
   },
   backText: {
     fontSize: 16,
+    color: '#111827',
   },
 });
