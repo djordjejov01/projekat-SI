@@ -31,6 +31,7 @@ namespace Backend.Models
         public DateTime? LastLoginTime { get; set; }
 
         public string ProfilePicture { get; set; }
+        public string Language { get; set; }
 
         public bool IsActive { get; set; }
     }
