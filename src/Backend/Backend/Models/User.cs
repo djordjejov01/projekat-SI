@@ -16,22 +16,22 @@ namespace Backend.Models
         public string Email { get; set; }
 
         [Required]
-        public string Password { get; set; } // hashed
+        public string Password { get; set; }
 
         [Required, MaxLength(50)]
-        public string FirstName { get; set; } //posle registracije korisnik dodaje FirstName
+        public string FirstName { get; set; }
 
         [Required, MaxLength(50)]
-        public string LastName { get; set; } //posle registracije korisnik dodaje LastName
+        public string LastName { get; set; }
 
         [Required]
-        public UserRole Role { get; set; } // enum tip
+        public UserRole Role { get; set; } 
 
         public DateTime CreationTime { get; set; } = DateTime.UtcNow;
         public DateTime? LastLoginTime { get; set; }
 
         public string ProfilePicture { get; set; }
-        public string Language { get; set; } //npr. "sr", "en", "de"...
+        public string Language { get; set; }
 
         public bool IsActive { get; set; }
     }
