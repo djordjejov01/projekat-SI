@@ -3,6 +3,7 @@ using Backend.Models.Dto;
 using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -19,11 +20,12 @@ namespace Backend.Controllers
     {
         private readonly IUserService _userService;
         private readonly IConfiguration _config;
-
-        public UserController(IUserService userService, IConfiguration config)
+        private readonly AppDbContext _context;
+        public UserController(IUserService userService, IConfiguration config, AppDbContext context)
         {
             _userService = userService;
             _config = config;
+            _context = context;
         }
 
         [HttpPost("register")]
@@ -97,6 +99,21 @@ namespace Backend.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        [Authorize]
+        [HttpPost("SetLanguage")]
+        public async Task<IActionResult> SetLanguage([FromBody] string Language)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound();
+
+            user.Language = Language;
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }
