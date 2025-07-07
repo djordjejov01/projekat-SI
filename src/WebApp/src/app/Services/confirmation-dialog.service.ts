@@ -5,19 +5,19 @@ import { ConfirmationService, MessageService } from "primeng/api";
     providedIn: 'root'
 })
 
-export class ExitFormConformation{
+export class ConfirmationDialogService {
 
-    conformationService : ConfirmationService = inject(ConfirmationService);
+    confirmationService : ConfirmationService = inject(ConfirmationService);
     messageService : MessageService = inject(MessageService)
 
-    confirmExit() : Promise<boolean>
+    confirmExit(message : string, header : string = 'Confirmation') : Promise<boolean>
     {
         return new Promise((resolve)=>{
 
-        this.conformationService.confirm({
+        this.confirmationService.confirm({
 
-            message: 'Form fields are filled are you sure you want to navigate away?',
-            header: 'Confirmation',
+            message: message,
+            header: header,
             closable: true,
             closeOnEscape: true,
             icon: 'pi pi-exclamation-triangle',
@@ -33,8 +33,8 @@ export class ExitFormConformation{
                 resolve(true)
             },
             reject: () => {
-                this.messageService.add({ severity: 'error', summary: 'Rejected', detail: 'Navigation Canceled!', life: 3000, });
-            resolve(false)
+                this.messageService.add({ severity: 'info', summary: 'Cancelled', detail: 'Action canceled by user', life: 3000, });
+                resolve(false)
             },
             });
 

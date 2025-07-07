@@ -1,16 +1,22 @@
+export const UserRoleMap: Record<number, string> = {
+  0: 'Admin',
+  1: 'Organizer',
+  2: 'Supplier'
+};
+
 export class User{
 
     constructor(
         private userId : number,
         private username : string,
         private email : string,
-        private password : string,
-        private firstName : string,
-        private lastName : string,
         private role : string,
         private creationTime : Date,
         private isActive : boolean,
-        private lastLogin : Date | null
+        private lastLogin : Date | null,
+        private password? : string,
+        private firstName? : string,
+        private lastName? : string,
     ){}
 
     getUserId() : number{
@@ -47,6 +53,10 @@ export class User{
 
     getLastLogin() : Date{
         return this.lastLogin;
+    }
+
+    setActive(value : boolean){
+        this.isActive = value;
     }
 
 }
