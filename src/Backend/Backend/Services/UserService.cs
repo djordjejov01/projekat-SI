@@ -97,6 +97,10 @@ namespace Backend.Services
             {
                 throw new Exception("Dobavljač još nije odobren od strane admina.");
             }
+            if (!user.IsActive)
+            {
+                throw new Exception("Korisnik nije aktivan.");
+            }
             user.LastLoginTime = DateTime.UtcNow;
             _context.Users.Update(user);
             _context.SaveChanges();
