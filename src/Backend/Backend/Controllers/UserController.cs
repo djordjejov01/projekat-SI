@@ -103,14 +103,14 @@ namespace Backend.Controllers
 
         [Authorize]
         [HttpPost("SetLanguage")]
-        public async Task<IActionResult> SetLanguage([FromBody] string Language)
+        public async Task<IActionResult> SetLanguage([FromBody] SetLanguageDto languageDto)
         {
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
                 return NotFound();
 
-            user.Language = Language;
+            user.Language = languageDto.Language;
             await _context.SaveChangesAsync();
 
             return Ok();
