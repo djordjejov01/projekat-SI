@@ -8,24 +8,15 @@ import { DividerModule } from 'primeng/divider';
 import { IDeactivate } from '../../Interfaces/IDeactivate';
 import { Observable } from 'rxjs';
 import { MessageService } from 'primeng/api';
-import { ExitFormConformation } from '../../Services/exitConformation.service';
+import { ConfirmationDialogService } from '../../Services/confirmation-dialog.service';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { RouterLink } from '@angular/router';
 import { LoginDto } from '../../Models/LoginDto';
 import { ApiService } from '../../Services/api.service';
-import { jwtDecode } from "jwt-decode";
+import { AuthService } from '../../Services/auth.service';
+import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-
-interface JwtPayload {
-  sub: string;
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': string;
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'?: string;
-  'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'?: string;
-  exp: number;
-  iss?: string;
-  aud?: string;
-}
 
 @Component({
   selector: 'app-login-form',
@@ -38,8 +29,10 @@ export class LoginForm implements OnInit,IDeactivate{
 
   constructor(
     private messageService: MessageService,
-    private exitFormConformation : ExitFormConformation,
+    private confirmationDialogService : ConfirmationDialogService,
     private apiService : ApiService,
+    private authService : AuthService,
+    private router : Router,
     private translate : TranslateService) {}
 
   userToLogin : LoginDto | undefined;
@@ -52,22 +45,13 @@ export class LoginForm implements OnInit,IDeactivate{
       password: new FormControl('', Validators.required),
     })
   }
-    changeLanguage(event: Event) {
-  const selectElement = event.target as HTMLSelectElement;
-  const lang = selectElement.value;
-  this.translate.use(lang);
-}
-  getDecodedToken() : JwtPayload | null{
-    const token = localStorage.getItem('access_token');
-    if(!token) return null;
 
-    try{
-      return jwtDecode(token);
-    }catch(error){
-      console.error('Failed to decode token', error);
-      return null;
-    }
+  changeLanguage(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const lang = selectElement.value;
+    this.translate.use(lang);
   }
+
 
   submitForm()
   {
@@ -82,15 +66,20 @@ export class LoginForm implements OnInit,IDeactivate{
         this.apiService.login(this.userToLogin).subscribe({
           next: (response : string) => {
 
-            localStorage.setItem('access_token', response);
-            console.log(localStorage.getItem('access_token'))
-            console.log(this.getDecodedToken())
+            this.authService.setToken(response)
+            // console.log(localStorage.getItem('access_token'))
+            // console.log(this.authService.getDecodedToken())
+            // console.log(this.authService.getUserRole())
+            const role = this.authService.getUserRole();
+            sessionStorage.setItem('showWelcome', 'true');
 
-            this.messageService.add({ 
-            severity: 'success',
-            summary: 'Success',
-            detail: `Successfully logged in`,
-            life: 3000});
+            switch(role){
+              case 'Admin': this.router.navigate(['/admin']); break;
+              case 'Organizer': this.router.navigate(['/organizer']); break;
+              case 'Supplier': this.router.navigate(['/supplier']); break;
+              default: this.router.navigate(['/login'])
+            }
+
             this.loginForm.reset()
           },
           error: (errorResponse) => {
@@ -103,7 +92,7 @@ export class LoginForm implements OnInit,IDeactivate{
         })
        
 
-        console.log('New user to login: ', this.userToLogin)
+        // console.log('New user to login: ', this.userToLogin)
       } 
       else
       {
@@ -144,7 +133,7 @@ export class LoginForm implements OnInit,IDeactivate{
 
     return ( 
       this.userToLogin.getEmail() ||
-      this.userToLogin.getPassword()) ? this.exitFormConformation.confirmExit() : true;
+      this.userToLogin.getPassword()) ? this.confirmationDialogService.confirmExit('You have unsaved changes. Are you sure you want to leave this page?','Unsaved Changes') : true;
 
   }
 

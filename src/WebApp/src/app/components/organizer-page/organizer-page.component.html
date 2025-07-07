@@ -1,12 +1,14 @@
 <main>
+    <p-toast />
+    <p-confirmdialog />
     <div id="head">
-        <img src="./assets/logo91.png" alt="" id="logo" [routerLink]="['/']">
+        <img src="./assets/logo91.png" alt="" id="logo" routerLink="/home">
         <div id="right">
             <select (change)="changeLanguage($event)">
                 <option value="sr">Srpski</option>
                 <option value="en">English</option>
             </select>
-            <p id="lgout">{{ 'LOGOUT' | translate }}</p>
+            <button (click)="onLogoutClick()">{{ 'LOGOUT' | translate }}</button>
             <img src="./assets/bell.svg" alt="">
             <img src="./assets/A1.jpg" alt="" id="pfp">
         </div>
