@@ -7,6 +7,7 @@ using System.Text;
 using System.Linq;
 using Backend.Models;
 using System.Runtime.Intrinsics.X86;
+using Backend.Helpers;
 
 namespace Backend.Services
 {
@@ -29,7 +30,7 @@ namespace Backend.Services
                 throw new Exception("Korisnik sa datim emailom ili korisničkim imenom već postoji.");
             }
 
-            string hashedPassword = HashPassword(registerDto.Password);
+            string hashedPassword = CommonHelpers.HashPassword(registerDto.Password);
 
             UserRole role = registerDto.Role;
             
@@ -73,15 +74,7 @@ namespace Backend.Services
                 return false;
             return true;
         }
-        private string HashPassword(string password)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var bytes = Encoding.UTF8.GetBytes(password);
-                var hash = sha256.ComputeHash(bytes);
-                return Convert.ToBase64String(hash);
-            }
-        }
+        
 
         public async Task<UserDto> LoginAsync(LoginDto loginDto)
         {
@@ -91,7 +84,7 @@ namespace Backend.Services
                 throw new Exception("Korisnik sa datim emailom ne postoji.");
             }
 
-            string hashedInputPassword = HashPassword(loginDto.Password);
+            string hashedInputPassword = CommonHelpers.HashPassword(loginDto.Password);
             if (user.Password != hashedInputPassword)
             {
                 throw new Exception("Pogrešna lozinka.");
