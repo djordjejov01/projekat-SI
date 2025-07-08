@@ -20,5 +20,6 @@ namespace Backend.Models
 
         public User Supplier { get; set; }
         public Event Event { get; set; }
+        public Resource Resource { get; set; }
     }
 }

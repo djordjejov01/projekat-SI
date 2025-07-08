@@ -115,5 +115,23 @@ namespace Backend.Controllers
 
             return Ok();
         }
+
+        [HttpGet("/api/users/{userId}/reservations")]
+        public IActionResult GetUserReservations(int userId)
+        {
+            var reservations = _context.UserResourceReservations
+                .Where(r => r.UserID == userId)
+                .Select(r => new {
+                    r.Id,
+                    r.EventResourceID,
+                    r.Quantity,
+                    r.ReservedAt,
+                    ResourceName = r.EventResource.Resource.Name,
+                    EventName = r.EventResource.Event.Title
+                })
+                .ToList();
+
+            return Ok(reservations);
+        }
     }
 }
