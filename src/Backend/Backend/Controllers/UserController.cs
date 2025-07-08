@@ -156,8 +156,8 @@ namespace Backend.Controllers
             });
         }
 
-        [Authorize(Roles = "MobileUser")]
         [HttpPut("profileUpdate")]
+        [Authorize(Roles = "MobileUser")]
         public IActionResult UpdateProfile([FromBody] UpdateProfileDto dto)
         {
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
@@ -166,10 +166,12 @@ namespace Backend.Controllers
                 return NotFound("Korisnik nije pronađen.");
 
             
+            if (_context.Users.Any(u => u.Email == dto.Email && u.UserId != userId))
+                return BadRequest("Korisnik sa ovom email adresom već postoji.");
+
             if (string.IsNullOrWhiteSpace(dto.Email) || !Regex.IsMatch(dto.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
                 return BadRequest("Neispravan format email adrese.");
 
-            
             if (!string.IsNullOrWhiteSpace(dto.PhoneNumber) && !Regex.IsMatch(dto.PhoneNumber, @"^[+]?\d[\d\s-]{5,19}$"))
                 return BadRequest("Neispravan format broja telefona.");
 
