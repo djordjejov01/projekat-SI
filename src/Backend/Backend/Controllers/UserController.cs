@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Backend.Controllers
@@ -154,5 +155,32 @@ namespace Backend.Controllers
                 phoneNumber = user.PhoneNumber
             });
         }
+
+        [Authorize(Roles = "MobileUser")]
+        [HttpPut("profileUpdate")]
+        public IActionResult UpdateProfile([FromBody] UpdateProfileDto dto)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            if (user == null)
+                return NotFound("Korisnik nije pronađen.");
+
+            
+            if (string.IsNullOrWhiteSpace(dto.Email) || !Regex.IsMatch(dto.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                return BadRequest("Neispravan format email adrese.");
+
+            
+            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber) && !Regex.IsMatch(dto.PhoneNumber, @"^[+]?\d[\d\s-]{5,19}$"))
+                return BadRequest("Neispravan format broja telefona.");
+
+            user.FirstName = dto.FirstName;
+            user.LastName = dto.LastName;
+            user.Email = dto.Email;
+            user.PhoneNumber = dto.PhoneNumber;
+
+            _context.SaveChanges();
+            return Ok("Profil uspešno izmenjen.");
+        }
+
     }
 }
