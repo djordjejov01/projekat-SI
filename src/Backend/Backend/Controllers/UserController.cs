@@ -136,5 +136,23 @@ namespace Backend.Controllers
 
             return Ok(reservations);
         }
+
+        [Authorize(Roles = "MobileUser")]
+        [HttpGet("profile")]
+        public IActionResult GetProfile()
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            if (user == null)
+                return NotFound("Korisnik nije pronađen.");
+
+            return Ok(new {
+                firstName = user.FirstName,
+                lastName = user.LastName,
+                email = user.Email,
+                phoneNumber = user.PhoneNumber
+            });
+        }
     }
 }

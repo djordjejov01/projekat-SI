@@ -45,7 +45,8 @@ namespace Backend.Services
                 Role = role,
                 IsActive = isActive,
                 ProfilePicture="",
-                Language=""
+                Language="",
+                PhoneNumber=""
             };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();

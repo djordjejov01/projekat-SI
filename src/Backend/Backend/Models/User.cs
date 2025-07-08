@@ -32,7 +32,7 @@ namespace Backend.Models
 
         public string ProfilePicture { get; set; }
         public string Language { get; set; }
-
+        public string PhoneNumber { get; set; }
         public bool IsActive { get; set; }
     }
 }
