@@ -23,6 +23,6 @@ namespace Backend.Models
         [Required]
         public int Quantity { get; set; }
 
-        public DateTime ReservedAt { get; set; } = DateTime.UtcNow;
+        public DateTime ReservedAt { get; set; }
     }
 }

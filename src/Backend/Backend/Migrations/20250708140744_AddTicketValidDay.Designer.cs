@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250708135027_AddUserResourceReservation")]
-    partial class AddUserResourceReservation
+    [Migration("20250708140744_AddTicketValidDay")]
+    partial class AddTicketValidDay
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -237,7 +237,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("TicketID");
 
-                    b.ToTable("TicketValidDay");
+                    b.ToTable("TicketValidDays");
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>
@@ -295,6 +295,40 @@ namespace Backend.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Backend.Models.UserResourceReservation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EventResourceID")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ReservedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UserTicketID")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventResourceID");
+
+                    b.HasIndex("UserID");
+
+                    b.HasIndex("UserTicketID");
+
+                    b.ToTable("UserResourceReservations");
                 });
 
             modelBuilder.Entity("Backend.Models.UserRoles", b =>
@@ -419,6 +453,31 @@ namespace Backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("Backend.Models.UserResourceReservation", b =>
+                {
+                    b.HasOne("Backend.Models.EventResource", "EventResource")
+                        .WithMany()
+                        .HasForeignKey("EventResourceID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.UserTicket", "UserTicket")
+                        .WithMany()
+                        .HasForeignKey("UserTicketID");
+
+                    b.Navigation("EventResource");
+
+                    b.Navigation("User");
+
+                    b.Navigation("UserTicket");
                 });
 
             modelBuilder.Entity("Backend.Models.UserTicket", b =>
