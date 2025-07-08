@@ -43,8 +43,23 @@ namespace Backend.Services
                 FirstName = "",
                 LastName = "",
                 Role = role,
-                IsActive = isActive
+                IsActive = isActive,
+                ProfilePicture = "",
             };
+            if(user.Role == UserRole.Organizer) //SAME FOR OTHER ROLES IF NEEDED, FACTOR OUT INTO METHOD IF NEEDED
+            {
+                Organizer o = new Organizer
+                {
+                    Id = user.UserId,
+                    Username = user.Username,
+                    Email = user.Email,
+                    Name = user.FirstName + " " + user.LastName,
+                    PhoneNumber = ""
+                };
+                _context.Organizers.Add(o);
+            }
+
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
