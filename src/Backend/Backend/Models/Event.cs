@@ -21,7 +21,6 @@ namespace Backend.Models
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int? NumberOfPeople { get; set; }
-        public int TicketPrice { get; set; }
         public User Organizer { get; set; }
         public string ImageUrl { get; set; }
     }

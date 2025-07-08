@@ -43,7 +43,9 @@ namespace Backend.Services
                 FirstName = "",
                 LastName = "",
                 Role = role,
-                IsActive = isActive
+                IsActive = isActive,
+                ProfilePicture="",
+                Language=""
             };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
