@@ -23,5 +23,6 @@ namespace Backend.Models
         public int? NumberOfPeople { get; set; }
         public User Organizer { get; set; }
         public string ImageUrl { get; set; }
+        public bool isFree { get; set; }
     }
 }
