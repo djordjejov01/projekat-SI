@@ -1,5 +1,6 @@
 ﻿using Backend.Models;
 using Backend.Models.Dto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,7 @@ namespace Backend.Controllers
             _context = context;
         }
 
+        [Authorize(Roles ="MobileUser")]
         [HttpGet("{eventId}/resources")]
         public IActionResult GetResourcesForEvent(int eventId)
         {
@@ -35,6 +37,7 @@ namespace Backend.Controllers
             return Ok(resources);
         }
 
+        [Authorize(Roles = "MobileUser")]
         [HttpPost("reserve")]
         public IActionResult ReserveResource([FromBody] ResourceReservationDto dto)
         {

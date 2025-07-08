@@ -116,9 +116,12 @@ namespace Backend.Controllers
             return Ok();
         }
 
-        [HttpGet("/api/users/{userId}/reservations")]
-        public IActionResult GetUserReservations(int userId)
+        [Authorize(Roles ="MobileUser")]
+        [HttpGet("reservations")]
+        public IActionResult GetUserReservations()
         {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
             var reservations = _context.UserResourceReservations
                 .Where(r => r.UserID == userId)
                 .Select(r => new {
