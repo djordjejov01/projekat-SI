@@ -5,7 +5,7 @@ namespace Backend.Models
 {
     public class UserResourceReservation
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [ForeignKey(nameof(User))]

@@ -5,7 +5,7 @@ namespace Backend.Models
 {
     public class Ticket
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TicketID { get; set; }
 
         [ForeignKey(nameof(Event))]

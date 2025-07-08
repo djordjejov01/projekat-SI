@@ -5,7 +5,7 @@ namespace Backend.Models
 {
     public class EventActivity
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ActivityID { get; set; }
 
         [ForeignKey(nameof(Event))]

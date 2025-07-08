@@ -5,7 +5,7 @@ namespace Backend.Models
 {
     public class TicketValidDay
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [ForeignKey(nameof(Ticket))]

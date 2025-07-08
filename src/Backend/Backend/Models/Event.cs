@@ -7,7 +7,7 @@ namespace Backend.Models
 {
     public class Event
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int EventID { get; set; }
 
         [ForeignKey(nameof(Organizer))]
