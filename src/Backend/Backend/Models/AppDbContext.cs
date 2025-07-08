@@ -18,6 +18,11 @@ namespace Backend.Models
         public DbSet<UserTicket> UserTickets { get; set; }
         public DbSet<FavoriteEvent> FavoriteEvents { get; set; }
 
-        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        { 
+            modelBuilder.Entity<Ticket>()
+                .HasIndex(t => new { t.EventID, t.TypeName })
+                .IsUnique();
+        }
     }
 } 
