@@ -20,7 +20,7 @@ namespace Backend.Controllers
         public IActionResult GetResourcesForEvent(int eventId)
         {
             var resources = _context.EventResources
-                .Where(er => er.EventID == eventId)
+                .Where(er => er.EventID == eventId && er.IsReservable)
                 .Select(er => new {
                     er.ID,
                     er.SupplierID,
@@ -52,6 +52,7 @@ namespace Backend.Controllers
 
             if (alreadyReserved + dto.Quantity > eventResource.Quantity)
                 return BadRequest("Nema dovoljno dostupnih resursa.");
+
 
 
             var reservation = new UserResourceReservation

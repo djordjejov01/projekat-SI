@@ -17,7 +17,7 @@ namespace Backend.Models
         public int Quantity { get; set; }
 
         public string Measure { get; set; }
-
+        public bool IsReservable { get; set; }
         public User Supplier { get; set; }
         public Event Event { get; set; }
         public Resource Resource { get; set; }
