@@ -51,7 +51,7 @@ header{
     flex-wrap: wrap;
 }
 
-#login:hover, #register:hover{
+#login:hover, #register:hover, #dashboard:hover{
     cursor: pointer;
 }
 

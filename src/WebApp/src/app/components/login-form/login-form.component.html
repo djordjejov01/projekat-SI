@@ -2,8 +2,9 @@
 
   <div class="form-and-header">
 
-    <img src="/assets/logo91.png" alt="logo" routerLink="/Home" />
+    <img src="/assets/logo91.png" alt="logo" routerLink="/home" />
     <h1>{{"Log" | translate}}<span class="text-violet-400">{{"In" | translate}}</span></h1>
+
 
     <form action="" class="login-form" [formGroup]="loginForm">
 
@@ -53,7 +54,8 @@
         (click)="submitForm()">
         {{"LOGIN" | translate}}
       </button>
-      <p class="text-violet-400 noacc" routerLink="/Register">
+
+      <p class="text-violet-400 noacc" routerLink="/register">
         {{"NOACC" | translate}}
       </p>
 
