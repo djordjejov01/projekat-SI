@@ -5,18 +5,27 @@ type FavoriteContextType = {
   favorites: number[];
   toggleFavorite: (eventId: number) => Promise<void>;
   loadFavorites: () => Promise<void>;
-  clearFavorites: () => void; // ✅ dodat tip
+  clearFavorites: () => void;
+  isGuest: boolean;
+  setGuestMode: (value: boolean) => void;
 };
 
 const FavoriteContext = createContext<FavoriteContextType>({
   favorites: [],
   toggleFavorite: async () => {},
   loadFavorites: async () => {},
-  clearFavorites: () => {}, // ✅ dodat default
+  clearFavorites: () => {},
+  isGuest: false,
+  setGuestMode: () => {},
 });
 
 export const FavoriteProvider = ({ children }: { children: React.ReactNode }) => {
   const [favorites, setFavorites] = useState<number[]>([]);
+  const [isGuest, setIsGuest] = useState(false);
+
+  const setGuestMode = (value: boolean) => {
+    setIsGuest(value);
+  };
 
   const clearFavorites = () => {
     setFavorites([]);
@@ -73,7 +82,16 @@ export const FavoriteProvider = ({ children }: { children: React.ReactNode }) =>
   }, []);
 
   return (
-    <FavoriteContext.Provider value={{ favorites, toggleFavorite, loadFavorites, clearFavorites }}>
+    <FavoriteContext.Provider
+      value={{
+        favorites,
+        toggleFavorite,
+        loadFavorites,
+        clearFavorites,
+        isGuest,
+        setGuestMode,
+      }}
+    >
       {children}
     </FavoriteContext.Provider>
   );
