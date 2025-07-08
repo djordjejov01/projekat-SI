@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Backend.Helpers
 {
@@ -7,15 +8,19 @@ namespace Backend.Helpers
     {
         public static bool IsEmailInValidForm(string email)
         {
-            try
-            {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == email;
-            }
-            catch
-            {
+            if (string.IsNullOrWhiteSpace(email))
                 return false;
-            }
+            const string allowed = @"A-Za-z0-9!#$%&'*+/=?^_`{|}~\-";
+            var pattern = $@"^[{allowed}]{{3,}}@[{allowed}]{{2,}}\.[{allowed}]{{2,}}$";
+
+            return Regex.IsMatch(email, pattern);
+        }
+        public static bool IsPhoneNumberValid(string phoneNumber) //TODO potentially: different checks based on country of user (+1 for US...) - don't remove comment
+        {
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+                return false;
+            var pattern = @"^(?:\+3816\d{8}|06\d{8})$";
+            return Regex.IsMatch(phoneNumber, pattern);
         }
         public static bool IsPasswordStrong(string password)
         {

@@ -46,23 +46,24 @@ namespace Backend.Services
                 IsActive = isActive,
                 ProfilePicture = "",
             };
-            if(user.Role == UserRole.Organizer) //SAME FOR OTHER ROLES IF NEEDED, FACTOR OUT INTO METHOD IF NEEDED
+
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            if (user.Role == UserRole.Organizer)
             {
                 Organizer o = new Organizer
                 {
-                    Id = user.UserId,
+                    Id = _context.Users.Where(u=>u.Username==user.Username).First().UserId,
                     Username = user.Username,
                     Email = user.Email,
                     Name = user.FirstName + " " + user.LastName,
                     PhoneNumber = ""
                 };
                 _context.Organizers.Add(o);
+                await _context.SaveChangesAsync();
+
             }
-
-
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
             var userDto = new UserDto
             {
                 UserId = user.UserId,
@@ -109,6 +110,7 @@ namespace Backend.Services
                 IsActive = user.IsActive
                 
             };
+
             return userDto;
         }
 
