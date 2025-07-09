@@ -41,6 +41,7 @@ namespace Backend.Controllers
         [HttpPost("reserve")]
         public IActionResult ReserveResource([FromBody] ResourceReservationDto dto)
         {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             if (dto.Quantity <= 0)
                 return BadRequest("Količina mora biti veća od nule.");
 
@@ -60,7 +61,7 @@ namespace Backend.Controllers
 
             var reservation = new UserResourceReservation
             {
-                UserID = dto.UserID,
+                UserID = userId,
                 EventResourceID = dto.EventResourceID,
                 Quantity = dto.Quantity,
                 UserTicketID = dto.UserTicketID,
