@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { User } from '../../Models/User';
 import { Users } from '../../Services/user.list';
 import { CommonModule } from '@angular/common';
@@ -35,7 +35,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
   templateUrl: './admin-page.component.html',
   styleUrl: './admin-page.component.css'
 })
-export class AdminPage implements OnInit,AfterViewInit{
+export class AdminPage implements OnInit,AfterContentInit{
 
   //PAGE
   users : User[] = [];
@@ -128,27 +128,22 @@ export class AdminPage implements OnInit,AfterViewInit{
 
   }
 
-  ngAfterViewInit(): void {
-    
+  ngAfterContentInit(): void {
+    this.cd.detectChanges(); // Ensure view is fully initialized
+
     const shouldShowWelcome = sessionStorage.getItem('showWelcome') === 'true';
-      if(shouldShowWelcome){
-        const name = this.authService.getUserName();
-
-        if(name){
-
-          console.log('Showing welcome toast');
-
-          this.messageService.add({
+    if (shouldShowWelcome) {
+      const name = this.authService.getUserName();
+      if (name) {
+        this.messageService.add({
           severity: 'success',
           summary: 'Welcome',
           detail: `Welcome back, ${name}!`,
           life: 3000
         });
-        }
-
-         sessionStorage.removeItem('showWelcome');
       }
-
+      sessionStorage.removeItem('showWelcome');
+    }
   }
 
   initBarChart() {
