@@ -15,6 +15,7 @@ import MapView, { Marker, UrlTile } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFavorites } from '../context/FavoriteContext';
+
 const screen = Dimensions.get('window');
 
 type AgendaItem = {
@@ -51,20 +52,20 @@ export default function EventDetailScreen() {
   const [error, setError] = useState<string | null>(null);
   const [updatingFavorite, setUpdatingFavorite] = useState(false);
 
-  // Fetch event details from backend API
+  const { loadFavorites } = useFavorites();
+
+  // Fetch event details (no token required, but if token exists use it)
   useEffect(() => {
     const fetchEvent = async () => {
       try {
         setLoading(true);
         const token = await AsyncStorage.getItem('token');
-        if (!token) {
-          setError('Please log in to see event details.');
-          setLoading(false);
-          return;
-        }
+
+        const headers: any = {};
+        if (token) headers.Authorization = `Bearer ${token}`;
 
         const response = await fetch(`http://192.168.188.32:5216/api/Events/Details?id=${currentId}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers,
         });
 
         if (!response.ok) throw new Error('Failed to load event');
@@ -83,7 +84,7 @@ export default function EventDetailScreen() {
     fetchEvent();
   }, [currentId]);
 
-  // Geocode event location to get map coordinates
+  // Geocode location for map
   const geocodeLocation = async (location: string) => {
     try {
       const response = await fetch(
@@ -102,47 +103,51 @@ export default function EventDetailScreen() {
     }
   };
 
+  // Toggle favorite only if logged in
+  const toggleFavorite = async () => {
+    if (!event) return;
 
+    setUpdatingFavorite(true);
 
-const { loadFavorites } = useFavorites();
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        Alert.alert(
+          'Authentication required',
+          'Please log in to manage favorites.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Log in', onPress: () => router.push('/login') },
+          ]
+        );
+        setUpdatingFavorite(false);
+        return;
+      }
 
-const toggleFavorite = async () => {
-  if (!event) return;
+      const method = event.isFavorite ? 'DELETE' : 'POST';
 
-  setUpdatingFavorite(true);
+      const res = await fetch('http://192.168.188.32:5216/api/Favorites', {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(event.id),
+      });
 
-  try {
-    const token = await AsyncStorage.getItem('token');
-    if (!token) {
-      Alert.alert('Authentication required', 'Please log in to manage favorites.');
+      if (res.ok) {
+        setEvent((prev) => (prev ? { ...prev, isFavorite: !prev.isFavorite } : prev));
+        await loadFavorites();
+      } else {
+        const errorText = await res.text();
+        Alert.alert('Error', `Failed to update favorite: ${errorText}`);
+      }
+    } catch (err) {
+      Alert.alert('Error', 'Failed to update favorite');
+    } finally {
       setUpdatingFavorite(false);
-      return;
     }
-
-    const method = event.isFavorite ? 'DELETE' : 'POST';
-
-    const res = await fetch('http://192.168.188.32:5216/api/Favorites', {
-      method,
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(event.id),
-    });
-
-    if (res.ok) {
-      setEvent((prev) => prev ? { ...prev, isFavorite: !prev.isFavorite } : prev);
-      await loadFavorites(); 
-    } else {
-      const errorText = await res.text();
-      Alert.alert('Error', `Failed to update favorite: ${errorText}`);
-    }
-  } catch (err) {
-    Alert.alert('Error', 'Failed to update favorite');
-  } finally {
-    setUpdatingFavorite(false);
-  }
-};
+  };
 
   if (loading) {
     return (
@@ -167,7 +172,8 @@ const toggleFavorite = async () => {
 
       <Text style={styles.title}>{event.title}</Text>
       <Text style={styles.date}>
-        📅 {new Date(event.startDate).toLocaleDateString('en-US', {
+        📅{' '}
+        {new Date(event.startDate).toLocaleDateString('en-US', {
           weekday: 'long',
           year: 'numeric',
           month: 'long',
@@ -177,13 +183,17 @@ const toggleFavorite = async () => {
 
       <View style={styles.infoCard}>
         <Text style={styles.info}>
-          🕒 {new Date(event.startDate).toLocaleTimeString([], {
+          🕒{' '}
+          {new Date(event.startDate).toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
-          })}h - {new Date(event.endDate).toLocaleTimeString([], {
+          })}
+          h -{' '}
+          {new Date(event.endDate).toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
-          })}h
+          })}
+          h
         </Text>
         <Text style={styles.info}>📍 {event.location}</Text>
         <Text style={styles.info}>🏢 Organizer: {event.organizerName}</Text>
@@ -229,7 +239,9 @@ const toggleFavorite = async () => {
                 {new Date(item.startTime).toLocaleTimeString([], {
                   hour: '2-digit',
                   minute: '2-digit',
-                })} - {new Date(item.endTime).toLocaleTimeString([], {
+                })}{' '}
+                -{' '}
+                {new Date(item.endTime).toLocaleTimeString([], {
                   hour: '2-digit',
                   minute: '2-digit',
                 })}
