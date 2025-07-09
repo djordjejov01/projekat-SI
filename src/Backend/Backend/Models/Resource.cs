@@ -6,7 +6,7 @@ namespace Backend.Models
 {
     public class Resource
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ResourceID { get; set; }
 
         [Required]

@@ -6,8 +6,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Linq;
 using Backend.Models;
-using System.Runtime.Intrinsics.X86;
 using Backend.Helpers;
+
 namespace Backend.Services
 {
     public class UserService : IUserService
@@ -32,7 +32,6 @@ namespace Backend.Services
             string hashedPassword = CommonHelpers.HashPassword(registerDto.Password);
 
             UserRole role = registerDto.Role;
-            
             bool isActive = role == UserRole.Supplier ? false : true;
 
             var user = new User
@@ -45,16 +44,18 @@ namespace Backend.Services
                 Role = role,
                 IsActive = isActive,
                 ProfilePicture = "",
+                Language = "",
+                PhoneNumber = ""
             };
-
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+
             if (user.Role == UserRole.Organizer)
             {
                 Organizer o = new Organizer
                 {
-                    Id = _context.Users.Where(u=>u.Username==user.Username).First().UserId,
+                    Id = _context.Users.Where(u => u.Username == user.Username).First().UserId,
                     Username = user.Username,
                     Email = user.Email,
                     Name = user.FirstName + " " + user.LastName,
@@ -62,8 +63,8 @@ namespace Backend.Services
                 };
                 _context.Organizers.Add(o);
                 await _context.SaveChangesAsync();
-
             }
+
             var userDto = new UserDto
             {
                 UserId = user.UserId,
@@ -74,7 +75,6 @@ namespace Backend.Services
             };
             return userDto;
         }
-
 
         public async Task<UserDto> LoginAsync(LoginDto loginDto)
         {
@@ -89,14 +89,17 @@ namespace Backend.Services
             {
                 throw new Exception("Pogrešna lozinka.");
             }
+
             if (user.Role == UserRole.Supplier && !user.IsActive)
             {
                 throw new Exception("Dobavljač još nije odobren od strane admina.");
             }
+
             if (!user.IsActive)
             {
                 throw new Exception("Korisnik nije aktivan.");
             }
+
             user.LastLoginTime = DateTime.UtcNow;
             _context.Users.Update(user);
             _context.SaveChanges();
@@ -108,7 +111,6 @@ namespace Backend.Services
                 Email = user.Email,
                 Role = user.Role,
                 IsActive = user.IsActive
-                
             };
 
             return userDto;
@@ -137,4 +139,4 @@ namespace Backend.Services
             return true;
         }
     }
-} 
+}

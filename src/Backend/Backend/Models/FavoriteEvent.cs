@@ -5,7 +5,7 @@ namespace Backend.Models
 {
     public class FavoriteEvent
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         [ForeignKey(nameof(User))]
         public int UserId { get; set; }
