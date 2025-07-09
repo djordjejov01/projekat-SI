@@ -5,7 +5,7 @@ namespace Backend.Models
 {
     public class UserTicket
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int UserTicketID { get; set; }
 
         [ForeignKey(nameof(User))]

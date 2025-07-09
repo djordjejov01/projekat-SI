@@ -3,6 +3,7 @@ using System;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250708140744_AddTicketValidDay")]
+    partial class AddTicketValidDay
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,17 +114,11 @@ namespace Backend.Migrations
                     b.Property<int>("EventID")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("IsReservable")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Measure")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Quantity")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ResourceID")
                         .HasColumnType("integer");
 
                     b.Property<int>("SupplierID")
@@ -130,8 +127,6 @@ namespace Backend.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("EventID");
-
-                    b.HasIndex("ResourceID");
 
                     b.HasIndex("SupplierID");
 
@@ -159,39 +154,6 @@ namespace Backend.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("FavoriteEvents");
-                });
-
-            modelBuilder.Entity("Backend.Models.Organizer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Organizers");
                 });
 
             modelBuilder.Entity("Backend.Models.Resource", b =>
@@ -318,10 +280,6 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("ProfilePicture")
                         .IsRequired()
                         .HasColumnType("text");
@@ -434,12 +392,6 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Backend.Models.Resource", "Resource")
-                        .WithMany()
-                        .HasForeignKey("ResourceID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Backend.Models.User", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierID")
@@ -447,8 +399,6 @@ namespace Backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Event");
-
-                    b.Navigation("Resource");
 
                     b.Navigation("Supplier");
                 });

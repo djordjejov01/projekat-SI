@@ -15,13 +15,15 @@ namespace Backend.Helpers
 
             return Regex.IsMatch(email, pattern);
         }
-        public static bool IsPhoneNumberValid(string phoneNumber) //TODO potentially: different checks based on country of user (+1 for US...) - don't remove comment
+
+        public static bool IsPhoneNumberValid(string phoneNumber)
         {
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 return false;
             var pattern = @"^(?:\+3816\d{8}|06\d{8})$";
             return Regex.IsMatch(phoneNumber, pattern);
         }
+
         public static bool IsPasswordStrong(string password)
         {
             if (string.IsNullOrEmpty(password) || password.Length < 8)
@@ -34,6 +36,7 @@ namespace Backend.Helpers
                 return false;
             return true;
         }
+
         public static string HashPassword(string password)
         {
             using (var sha256 = SHA256.Create())

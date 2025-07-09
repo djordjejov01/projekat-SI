@@ -15,6 +15,6 @@
         public bool IsFavorite { get; set; }
         public List<EventActivityDto> Agenda { get; set; }
 
-        //za izvodjace?
+        //za izvodjace(TODO)
     }
 }

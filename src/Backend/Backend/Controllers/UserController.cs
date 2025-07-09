@@ -1,3 +1,4 @@
+using Backend.Helpers;
 using Backend.Models;
 using Backend.Models.Dto;
 using Backend.Services;
@@ -8,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Backend.Controllers
@@ -103,17 +105,112 @@ namespace Backend.Controllers
 
         [Authorize]
         [HttpPost("SetLanguage")]
-        public async Task<IActionResult> SetLanguage([FromBody] string Language)
+        public async Task<IActionResult> SetLanguage([FromBody] SetLanguageDto languageDto)
         {
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
                 return NotFound();
 
-            user.Language = Language;
+            user.Language = languageDto.Language;
             await _context.SaveChangesAsync();
 
             return Ok();
         }
+
+        [Authorize(Roles ="MobileUser")]
+        [HttpGet("reservations")]
+        public IActionResult GetUserReservations()
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var reservations = _context.UserResourceReservations
+                .Where(r => r.UserID == userId)
+                .Select(r => new {
+                    r.Id,
+                    r.EventResourceID,
+                    r.Quantity,
+                    r.ReservedAt,
+                    ResourceName = r.EventResource.Resource.Name,
+                    EventName = r.EventResource.Event.Title
+                })
+                .ToList();
+
+            return Ok(reservations);
+        }
+
+        [Authorize(Roles = "MobileUser")]
+        [HttpGet("profile")]
+        public IActionResult GetProfile()
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            if (user == null)
+                return NotFound("Korisnik nije pronađen.");
+
+            return Ok(new {
+                firstName = user.FirstName,
+                lastName = user.LastName,
+                email = user.Email,
+                phoneNumber = user.PhoneNumber
+            });
+        }
+
+        [Authorize(Roles = "MobileUser")]
+        [HttpPut("profileUpdate")]
+        public IActionResult UpdateProfile([FromBody] UpdateProfileDto dto)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            if (user == null)
+                return NotFound("Korisnik nije pronađen.");
+
+            
+            if (_context.Users.Any(u => u.Email == dto.Email && u.UserId != userId))
+                return BadRequest("Korisnik sa ovom email adresom već postoji.");
+
+            if (string.IsNullOrWhiteSpace(dto.Email) || !Regex.IsMatch(dto.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+                return BadRequest("Neispravan format email adrese.");
+
+            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber) && !Regex.IsMatch(dto.PhoneNumber, @"^[+]?\d[\d\s-]{5,19}$"))
+                return BadRequest("Neispravan format broja telefona.");
+
+            user.FirstName = dto.FirstName;
+            user.LastName = dto.LastName;
+            user.Email = dto.Email;
+            user.PhoneNumber = dto.PhoneNumber;
+
+            _context.SaveChanges();
+            return Ok("Profil uspešno izmenjen.");
+        }
+
+
+        [Authorize]
+        [HttpPut("change-password")]
+        public IActionResult ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            if (user == null)
+                return NotFound("Korisnik nije pronađen.");
+
+            
+            if (CommonHelpers.HashPassword(dto.CurrentPassword) != user.Password)
+                return BadRequest("Trenutna lozinka nije ispravna.");
+
+            
+            if (string.IsNullOrWhiteSpace(dto.NewPassword) || dto.NewPassword.Length < 8 ||
+                !dto.NewPassword.Any(char.IsUpper) ||
+                !dto.NewPassword.Any(char.IsLower) ||
+                !dto.NewPassword.Any(char.IsDigit))
+                return BadRequest("Nova lozinka mora imati bar 8 karaktera, veliko i malo slovo i cifru.");
+
+            
+            user.Password = CommonHelpers.HashPassword(dto.NewPassword);
+            _context.SaveChanges();
+            return Ok("Lozinka uspešno promenjena.");
+        }
+
     }
 }
