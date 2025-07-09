@@ -9,7 +9,7 @@ namespace Backend.Models
         }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<UserRoles> UserRoles {  get; set; }
+        public DbSet<UserRoles> UserRoles { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<EventActivity> EventActivities { get; set; }
         public DbSet<Resource> Resources { get; set; }
@@ -19,12 +19,13 @@ namespace Backend.Models
         public DbSet<FavoriteEvent> FavoriteEvents { get; set; }
         public DbSet<TicketValidDay> TicketValidDays { get; set; }
         public DbSet<UserResourceReservation> UserResourceReservations { get; set; }
+        public DbSet<Organizer> Organizers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        { 
+        {
             modelBuilder.Entity<Ticket>()
                 .HasIndex(t => new { t.EventID, t.TypeName })
                 .IsUnique();
         }
     }
-} 
+}
