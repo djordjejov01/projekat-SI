@@ -1,3 +1,4 @@
+using Backend.Helpers;
 using Backend.Models;
 using Backend.Models.Dto;
 using Backend.Services;
@@ -156,8 +157,8 @@ namespace Backend.Controllers
             });
         }
 
-        [HttpPut("profileUpdate")]
         [Authorize(Roles = "MobileUser")]
+        [HttpPut("profileUpdate")]
         public IActionResult UpdateProfile([FromBody] UpdateProfileDto dto)
         {
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
@@ -182,6 +183,33 @@ namespace Backend.Controllers
 
             _context.SaveChanges();
             return Ok("Profil uspešno izmenjen.");
+        }
+
+
+        [Authorize]
+        [HttpPut("change-password")]
+        public IActionResult ChangePassword([FromBody] ChangePasswordDto dto)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            if (user == null)
+                return NotFound("Korisnik nije pronađen.");
+
+            
+            if (CommonHelpers.HashPassword(dto.CurrentPassword) != user.Password)
+                return BadRequest("Trenutna lozinka nije ispravna.");
+
+            
+            if (string.IsNullOrWhiteSpace(dto.NewPassword) || dto.NewPassword.Length < 8 ||
+                !dto.NewPassword.Any(char.IsUpper) ||
+                !dto.NewPassword.Any(char.IsLower) ||
+                !dto.NewPassword.Any(char.IsDigit))
+                return BadRequest("Nova lozinka mora imati bar 8 karaktera, veliko i malo slovo i cifru.");
+
+            
+            user.Password = CommonHelpers.HashPassword(dto.NewPassword);
+            _context.SaveChanges();
+            return Ok("Lozinka uspešno promenjena.");
         }
 
     }
