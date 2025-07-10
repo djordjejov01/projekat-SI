@@ -122,9 +122,7 @@ export default function EventsScreen() {
         />
       )}
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>{t('logOut')}</Text>
-      </TouchableOpacity>
+      
     </View>
   );
 }
@@ -157,18 +155,5 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     color: '#fff',
     fontWeight: '600',
-  },
-  logoutButton: {
-    backgroundColor: '#F87171',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignSelf: 'center',
-    marginTop: 20,
-  },
-  logoutText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
+  }
 });

@@ -70,7 +70,29 @@
   "loginToManageFavorites": "Please log in to manage favorites.",
   "cancel": "Cancel",
   "failedToUpdateFavorite": "Failed to update favorite",
-  "backToEvents": "Back to events"
+  "backToEvents": "Back to events",
+  "profile": {
+  "notLoggedIn": "You're not logged in",
+  "loginPrompt": "Please log in to view your profile.",
+  "loginNow": "Log in now",
+  "title": "My Profile",
+  "edit": "Edit Profile",
+  "tickets": "Tickets Purchased",
+  "favorites": "Favorite Events",
+  "accountSettings": "Account Settings",
+  "personalInfo": "Personal Information",
+  "communication": "Communication Preferences",
+  "changePassword": "Change Password",
+  "application": "Application",
+  "about": "About SyncUp",
+  "logout": "Sign Out",
+  "logoutTitle": "Log Out",
+  "logoutConfirm": "Are you sure you want to log out?",
+  "cancel": "Cancel",
+  "error": "Error",
+  "logoutError": "Failed to log out."
+}
+
 
 
 
