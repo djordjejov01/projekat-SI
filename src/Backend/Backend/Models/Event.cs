@@ -7,7 +7,7 @@ namespace Backend.Models
 {
     public class Event
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int EventID { get; set; }
 
         [ForeignKey(nameof(Organizer))]
@@ -21,8 +21,8 @@ namespace Backend.Models
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int? NumberOfPeople { get; set; }
-        public int TicketPrice { get; set; }
         public User Organizer { get; set; }
         public string ImageUrl { get; set; }
+        public bool isFree { get; set; }
     }
 }

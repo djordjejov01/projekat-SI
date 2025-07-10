@@ -39,7 +39,7 @@ namespace Backend.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("upcomingEvents")] //get upcoming events
+        [HttpGet("upcomingEvents")]
         public async Task<ActionResult<IEnumerable<EventListDto>>> GetUpcomingEvents()
         {
             var now = DateTime.UtcNow;
@@ -64,10 +64,10 @@ namespace Backend.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("Details")] //detalji o dogadjaju
+        [HttpGet("Details")]
         public async Task<ActionResult<EventDetailsDto>> GetEventDetails(int id)
         {
-            // Ucitaj dogadjaj sa organizatorom
+            
             var eventEntity = await _context.Events
                 .Include(e => e.Organizer)
                 .FirstOrDefaultAsync(e => e.EventID == id);
@@ -75,7 +75,7 @@ namespace Backend.Controllers
             if (eventEntity == null)
                 return NotFound();
 
-            // Ucitaj agendu (aktivnosti)
+            
             var agenda = await _context.EventActivities
                 .Where(a => a.EventID == id)
                 .OrderBy(a => a.StartTime)
@@ -88,7 +88,7 @@ namespace Backend.Controllers
                 })
                 .ToListAsync();
 
-            // Broj prijavljenih (AttendingCount)
+            
             var attendingCount = await _context.UserTickets
                 .Include(ut => ut.Ticket)
                 .CountAsync(ut => ut.Ticket.EventID == id);
@@ -102,7 +102,7 @@ namespace Backend.Controllers
                 .AnyAsync(f => f.UserId == userId && f.EventId == id);
             }
             
-            // Popuni DTO
+            
             var dto = new EventDetailsDto
             {
                 Id = eventEntity.EventID,
