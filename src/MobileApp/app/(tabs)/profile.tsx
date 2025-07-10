@@ -12,7 +12,11 @@ import { useFavorites } from '../context/FavoriteContext';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const { favorites } = useFavorites();
+  const {
+    favorites,
+    clearFavorites,
+    setGuestMode
+  } = useFavorites();
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -60,8 +64,15 @@ export default function ProfileScreen() {
           text: 'Log Out',
           style: 'destructive',
           onPress: async () => {
-            await AsyncStorage.removeItem('token');
-            router.replace('/');
+            try {
+              await AsyncStorage.removeItem('token');
+              clearFavorites();
+              setGuestMode(true);
+              router.replace('/');
+            } catch (err) {
+              console.error('Error during logout:', err);
+              Alert.alert('Error', 'Failed to log out.');
+            }
           },
         },
       ],
