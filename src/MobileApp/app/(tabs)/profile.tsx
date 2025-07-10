@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,19 +8,54 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFavorites } from '../context/FavoriteContext';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { favorites } = useFavorites();
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) return;
+
+        const res = await fetch('http://192.168.33.109:5216/api/User/profile', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setFirstName(data.firstName || '');
+          setLastName(data.lastName || '');
+          setEmail(data.email || '');
+        }
+      } catch (error) {
+        console.error('Failed to load user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const getInitials = () => {
+    const firstInitial = firstName ? firstName[0].toUpperCase() : '';
+    const lastInitial = lastName ? lastName[0].toUpperCase() : '';
+    return `${firstInitial}${lastInitial}`;
+  };
 
   const handleLogout = () => {
     Alert.alert(
       'Log Out',
       'Are you sure you want to log out?',
       [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
+        { text: 'Cancel', style: 'cancel' },
         {
           text: 'Log Out',
           style: 'destructive',
@@ -40,11 +75,11 @@ export default function ProfileScreen() {
 
       <View style={styles.profileCard}>
         <View style={styles.avatarCircle}>
-          <Text style={styles.avatarText}>JD</Text>
+          <Text style={styles.avatarText}>{getInitials()}</Text>
         </View>
         <View style={{ flex: 1 }}>
-          <Text style={styles.name}>Jane Doe</Text>
-          <Text style={styles.email}>jane.doe@example.com</Text>
+          <Text style={styles.name}>{`${firstName} ${lastName}`}</Text>
+          <Text style={styles.email}>{email}</Text>
         </View>
         <TouchableOpacity
           onPress={() => router.push('../profile/personal-info')}
@@ -66,7 +101,7 @@ export default function ProfileScreen() {
           style={styles.statBox}
           onPress={() => router.push('/favorites')}
         >
-          <Text style={styles.statNumber}>5</Text>
+          <Text style={styles.statNumber}>{favorites.length}</Text>
           <Text style={styles.statLabel}>Favorite Events</Text>
         </TouchableOpacity>
       </View>
@@ -104,10 +139,7 @@ export default function ProfileScreen() {
         <Text style={styles.optionArrow}>›</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.option}
-        onPress={handleLogout}
-      >
+      <TouchableOpacity style={styles.option} onPress={handleLogout}>
         <Text style={{ color: 'red' }}>🚪 Sign Out</Text>
         <Text style={[styles.optionArrow, { color: 'red' }]}>›</Text>
       </TouchableOpacity>
@@ -120,7 +152,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: '#fff',
-    paddingTop:50
+    paddingTop: 50,
   },
   header: {
     fontSize: 20,

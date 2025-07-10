@@ -15,10 +15,10 @@ import { Ionicons } from '@expo/vector-icons';
 export default function PersonalInfoScreen() {
   const router = useRouter();
 
-  const [name, setName] = useState('');
+  const [firstName, setName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phoneNumber, setPhone] = useState('');
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -26,7 +26,7 @@ export default function PersonalInfoScreen() {
         const token = await AsyncStorage.getItem('token');
         if (!token) return;
 
-        const res = await fetch('http://192.168.0.17:5216/api/User/profile', {
+        const res = await fetch('http://192.168.33.109:5216/api/User/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -34,10 +34,10 @@ export default function PersonalInfoScreen() {
 
         if (res.ok) {
           const data = await res.json();
-          setName(data.name || '');
+          setName(data.firstName || '');
           setLastName(data.lastName || '');
           setEmail(data.email || '');
-          setPhone(data.phone || '');
+          setPhone(data.phoneNumber || '');
         }
       } catch (error) {
         console.error(error);
@@ -55,17 +55,17 @@ export default function PersonalInfoScreen() {
         return;
       }
 
-      const res = await fetch('http://192.168.0.17:5216/api/User/update-profile', {
+      const res = await fetch('http://192.168.33.109:5216/api/User/profileUpdate', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          name,
+          firstName,
           lastName,
           email,
-          phone,
+          phoneNumber,
         }),
       });
 
@@ -97,7 +97,7 @@ export default function PersonalInfoScreen() {
       <TextInput
         style={styles.input}
         placeholder="John"
-        value={name}
+        value={firstName}
         onChangeText={setName}
       />
 
@@ -123,7 +123,7 @@ export default function PersonalInfoScreen() {
       <TextInput
         style={styles.input}
         placeholder="+381 64 123 4567"
-        value={phone}
+        value={phoneNumber}
         onChangeText={setPhone}
         keyboardType="phone-pad"
       />
