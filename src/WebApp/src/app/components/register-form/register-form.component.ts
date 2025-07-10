@@ -48,7 +48,7 @@ export class RegisterForm implements OnInit,IDeactivate{
     private apiService : ApiService,
     private translate : TranslateService) {}
 
-  roles: String[] | undefined;
+  roles : Object[];
   userToRegister : RegisterDto | undefined;
 
   registerForm : FormGroup;
@@ -61,6 +61,10 @@ export class RegisterForm implements OnInit,IDeactivate{
 
   ngOnInit(): void {
 
+    this.translate.onLangChange.subscribe(()=>{
+      this.setTranslatedRoles();
+    })
+
     this.registerForm = new FormGroup({
       role: new FormControl(null, Validators.required),
       username: new FormControl('', Validators.required),
@@ -71,6 +75,13 @@ export class RegisterForm implements OnInit,IDeactivate{
     }, CustomValidators.passwordsMatch)
     
   }
+
+     setTranslatedRoles(){
+      this.roles = [
+        {label: this.translate.instant('ORGANIZER'), value: 'Organizer'},
+        {label: this.translate.instant('Supplier'), value: 'Supplier'}
+      ]
+    }
 
   submitForm()
   {
