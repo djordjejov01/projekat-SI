@@ -231,9 +231,9 @@ export class AdminPage implements OnInit,AfterContentInit{
                     datasets: [
                         {
                             data: stats.counts,
-                            backgroundColor: ['rgba(233, 99, 141, 0.4)','rgba(100,106,232, 0.2)','rgba(180, 180, 180, 0.2)'],
-                            hoverBackgroundColor: ['rgba(233, 99, 141, 0.7)','rgba(100,106,232, 0.4)','rgba(180, 180, 180, 0.4)'],
-                            borderColor: ['rgba(233, 99, 141,0.7)','rgb(139, 92, 246,0.7)','rgba(180, 180, 180, 0.7)'],
+                            backgroundColor: ['rgba(100,106,232, 0.2)','rgba(126, 230, 78, 0.2)','rgba(180, 180, 180, 0.2)','rgba(233, 99, 141, 0.2)'],
+                            hoverBackgroundColor:  ['rgba(100,106,232, 0.4)','rgba(126, 230, 78, 0.4)','rgba(180, 180, 180, 0.4)','rgba(233, 99, 141, 0.4)'],
+                            borderColor:  ['rgba(100,106,232, 0.7)','rgba(126, 230, 78, 0.7)','rgba(180, 180, 180, 0.7)','rgba(233, 99, 141, 0.7)'],
                             borderWidth: 1
                         }
                     ]
