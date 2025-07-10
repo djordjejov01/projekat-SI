@@ -45,7 +45,7 @@ namespace Backend.Services
                 IsActive = isActive,
                 ProfilePicture = "",
                 Language = "",
-                PhoneNumber = ""
+                PhoneNumber = "",
             };
 
             _context.Users.Add(user);
