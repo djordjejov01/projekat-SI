@@ -19,11 +19,11 @@ namespace Backend.Controllers
 
         [Authorize(Roles = "MobileUser")]
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EventListDto>>> GetFavorites(/*int UserId*/)
+        public async Task<ActionResult<IEnumerable<EventListDto>>> GetFavorites()
         {
-            // Izvuci userId iz tokena
+            
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-            // U realnoj aplikaciji userId bi izvlačio iz tokena, ovde ga šalješ kao query parametar
+            
             var favoriteEvents = await _context.FavoriteEvents
                 .Where(f => f.UserId == userId)
                 .Include(f => f.Event)
@@ -43,12 +43,12 @@ namespace Backend.Controllers
 
         [Authorize(Roles = "MobileUser")]
         [HttpPost]
-        public async Task<IActionResult> AddFavorite([FromBody] int eventId/*, int userId*/)
+        public async Task<IActionResult> AddFavorite([FromBody] int eventId)
         {
 
-            // Izvuci userId iz tokena
+            
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-            // Proveri da li vec postoji
+            
             var exists = await _context.FavoriteEvents.AnyAsync(f => f.UserId == userId && f.EventId == eventId);
             if (exists)
                 return BadRequest("Event is already in favorites.");
@@ -67,9 +67,9 @@ namespace Backend.Controllers
 
         [Authorize(Roles = "MobileUser")]
         [HttpDelete]
-        public async Task<IActionResult> RemoveFavorite([FromBody] int eventId/*, int userId*/)
+        public async Task<IActionResult> RemoveFavorite([FromBody] int eventId)
         {
-            // Izvuci userId iz tokena
+            
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var favorite = await _context.FavoriteEvents
                 .FirstOrDefaultAsync(f => f.UserId == userId && f.EventId == eventId);

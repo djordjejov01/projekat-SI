@@ -54,13 +54,13 @@ namespace Backend.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("TicketPrice")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
+
+                    b.Property<bool>("isFree")
+                        .HasColumnType("boolean");
 
                     b.HasKey("EventID");
 
@@ -111,11 +111,17 @@ namespace Backend.Migrations
                     b.Property<int>("EventID")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsReservable")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Measure")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ResourceID")
                         .HasColumnType("integer");
 
                     b.Property<int>("SupplierID")
@@ -124,6 +130,8 @@ namespace Backend.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("EventID");
+
+                    b.HasIndex("ResourceID");
 
                     b.HasIndex("SupplierID");
 
@@ -151,6 +159,39 @@ namespace Backend.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("FavoriteEvents");
+                });
+
+            modelBuilder.Entity("Backend.Models.Organizer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Organizers");
                 });
 
             modelBuilder.Entity("Backend.Models.Resource", b =>
@@ -190,20 +231,51 @@ namespace Backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TicketID"));
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("EventID")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Price")
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("Quota")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("integer");
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("TicketID");
 
-                    b.HasIndex("EventID");
+                    b.HasIndex("EventID", "TypeName")
+                        .IsUnique();
 
                     b.ToTable("Tickets");
+                });
+
+            modelBuilder.Entity("Backend.Models.TicketValidDay", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("TicketID")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ValidDay")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketID");
+
+                    b.ToTable("TicketValidDays");
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>
@@ -246,6 +318,10 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ProfilePicture")
                         .IsRequired()
                         .HasColumnType("text");
@@ -261,6 +337,40 @@ namespace Backend.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Backend.Models.UserResourceReservation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EventResourceID")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ReservedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UserTicketID")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventResourceID");
+
+                    b.HasIndex("UserID");
+
+                    b.HasIndex("UserTicketID");
+
+                    b.ToTable("UserResourceReservations");
                 });
 
             modelBuilder.Entity("Backend.Models.UserRoles", b =>
@@ -324,6 +434,12 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Backend.Models.Resource", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Backend.Models.User", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierID")
@@ -331,6 +447,8 @@ namespace Backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Event");
+
+                    b.Navigation("Resource");
 
                     b.Navigation("Supplier");
                 });
@@ -376,6 +494,42 @@ namespace Backend.Migrations
                     b.Navigation("Event");
                 });
 
+            modelBuilder.Entity("Backend.Models.TicketValidDay", b =>
+                {
+                    b.HasOne("Backend.Models.Ticket", "Ticket")
+                        .WithMany("ValidDays")
+                        .HasForeignKey("TicketID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
+                });
+
+            modelBuilder.Entity("Backend.Models.UserResourceReservation", b =>
+                {
+                    b.HasOne("Backend.Models.EventResource", "EventResource")
+                        .WithMany()
+                        .HasForeignKey("EventResourceID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Models.UserTicket", "UserTicket")
+                        .WithMany()
+                        .HasForeignKey("UserTicketID");
+
+                    b.Navigation("EventResource");
+
+                    b.Navigation("User");
+
+                    b.Navigation("UserTicket");
+                });
+
             modelBuilder.Entity("Backend.Models.UserTicket", b =>
                 {
                     b.HasOne("Backend.Models.Ticket", "Ticket")
@@ -393,6 +547,11 @@ namespace Backend.Migrations
                     b.Navigation("Ticket");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Backend.Models.Ticket", b =>
+                {
+                    b.Navigation("ValidDays");
                 });
 #pragma warning restore 612, 618
         }

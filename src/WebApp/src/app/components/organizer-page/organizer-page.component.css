@@ -28,7 +28,13 @@ flex-direction: column;
     display: flex;
     align-items: center;
     margin-right: 10px;
-    gap:10px;
+    gap: 1rem;
+}
+#right button{
+    padding: 0.25rem 0.75rem;
+    border: 1px solid #EBEBEAFF;
+    border-radius: 6px;
+    font-weight: 600;
 }
 #logo{
     max-width: 120px;

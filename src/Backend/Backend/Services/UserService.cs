@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Linq;
 using Backend.Models;
-using System.Runtime.Intrinsics.X86;
+using Backend.Helpers;
 
 namespace Backend.Services
 {
@@ -21,7 +21,7 @@ namespace Backend.Services
 
         public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
         {
-            if (!IsPasswordStrong(registerDto.Password))
+            if (!CommonHelpers.IsPasswordStrong(registerDto.Password))
                 throw new Exception("Lozinka mora imati najmanje 8 karaktera, jedno veliko slovo, jedno malo slovo i jedan broj.");
 
             if (await _context.Users.AnyAsync(u => u.Email == registerDto.Email || u.Username == registerDto.Username))
@@ -29,10 +29,9 @@ namespace Backend.Services
                 throw new Exception("Korisnik sa datim emailom ili korisničkim imenom već postoji.");
             }
 
-            string hashedPassword = HashPassword(registerDto.Password);
+            string hashedPassword = CommonHelpers.HashPassword(registerDto.Password);
 
             UserRole role = registerDto.Role;
-            
             bool isActive = role == UserRole.Supplier ? false : true;
 
             var user = new User
@@ -43,10 +42,28 @@ namespace Backend.Services
                 FirstName = "",
                 LastName = "",
                 Role = role,
-                IsActive = isActive
+                IsActive = isActive,
+                ProfilePicture = "",
+                Language = "",
+                PhoneNumber = ""
             };
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+
+            if (user.Role == UserRole.Organizer)
+            {
+                Organizer o = new Organizer
+                {
+                    Id = _context.Users.Where(u => u.Username == user.Username).First().UserId,
+                    Username = user.Username,
+                    Email = user.Email,
+                    Name = user.FirstName + " " + user.LastName,
+                    PhoneNumber = ""
+                };
+                _context.Organizers.Add(o);
+                await _context.SaveChangesAsync();
+            }
 
             var userDto = new UserDto
             {
@@ -58,27 +75,6 @@ namespace Backend.Services
             };
             return userDto;
         }
-        private bool IsPasswordStrong(string password)
-        {
-            if (string.IsNullOrEmpty(password) || password.Length < 8)
-                return false;
-            if (!password.Any(char.IsUpper))
-                return false;
-            if (!password.Any(char.IsLower))
-                return false;
-            if (!password.Any(char.IsDigit))
-                return false;
-            return true;
-        }
-        private string HashPassword(string password)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var bytes = Encoding.UTF8.GetBytes(password);
-                var hash = sha256.ComputeHash(bytes);
-                return Convert.ToBase64String(hash);
-            }
-        }
 
         public async Task<UserDto> LoginAsync(LoginDto loginDto)
         {
@@ -88,19 +84,22 @@ namespace Backend.Services
                 throw new Exception("Korisnik sa datim emailom ne postoji.");
             }
 
-            string hashedInputPassword = HashPassword(loginDto.Password);
+            string hashedInputPassword = CommonHelpers.HashPassword(loginDto.Password);
             if (user.Password != hashedInputPassword)
             {
                 throw new Exception("Pogrešna lozinka.");
             }
+
             if (user.Role == UserRole.Supplier && !user.IsActive)
             {
                 throw new Exception("Dobavljač još nije odobren od strane admina.");
             }
+
             if (!user.IsActive)
             {
                 throw new Exception("Korisnik nije aktivan.");
             }
+
             user.LastLoginTime = DateTime.UtcNow;
             _context.Users.Update(user);
             _context.SaveChanges();
@@ -112,8 +111,8 @@ namespace Backend.Services
                 Email = user.Email,
                 Role = user.Role,
                 IsActive = user.IsActive
-                
             };
+
             return userDto;
         }
 
@@ -140,4 +139,4 @@ namespace Backend.Services
             return true;
         }
     }
-} 
+}

@@ -5,7 +5,7 @@ namespace Backend.Models
 {
     public class EventResource
     {
-        [Key]
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
 
         [ForeignKey(nameof(Supplier))]
@@ -17,8 +17,9 @@ namespace Backend.Models
         public int Quantity { get; set; }
 
         public string Measure { get; set; }
-
+        public bool IsReservable { get; set; }
         public User Supplier { get; set; }
         public Event Event { get; set; }
+        public Resource Resource { get; set; }
     }
 }

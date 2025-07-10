@@ -14,21 +14,26 @@ import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function FavoritesScreen() {
-  const { favorites, toggleFavorite, loadFavorites } = useFavorites();
+  const { favorites, toggleFavorite } = useFavorites();
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isGuest, setIsGuest] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchFavorites = async () => {
+    const checkAuthAndFetch = async () => {
       setLoading(true);
-      try {
-        const token = await AsyncStorage.getItem('token');
-        if (!token) {
-          console.log('No token, skipping fetch');
-          return;
-        }
+      const token = await AsyncStorage.getItem('token');
 
+      if (!token) {
+        setIsGuest(true);
+        setLoading(false);
+        return;
+      }
+
+      setIsGuest(false);
+
+      try {
         const response = await fetch('http://192.168.188.32:5216/api/favorites', {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -46,8 +51,8 @@ export default function FavoritesScreen() {
       }
     };
 
-    fetchFavorites();
-  }, [favorites]); // Refetch kad se favorites promene
+    checkAuthAndFetch();
+  }, [favorites]);
 
   const renderItem = ({ item }: any) => (
     <TouchableOpacity
@@ -93,7 +98,9 @@ export default function FavoritesScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Your Favorites</Text>
-      {events.length === 0 ? (
+      {isGuest ? (
+        <Text style={styles.empty}>You must be logged in to view favorites.</Text>
+      ) : events.length === 0 ? (
         <Text style={styles.empty}>You have no favorite events yet.</Text>
       ) : (
         <FlatList
