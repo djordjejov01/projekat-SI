@@ -98,3 +98,4 @@ export const FavoriteProvider = ({ children }: { children: React.ReactNode }) =>
 };
 
 export const useFavorites = () => useContext(FavoriteContext);
+export default FavoriteProvider;

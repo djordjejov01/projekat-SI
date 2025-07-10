@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { useFavorites } from './context/FavoriteContext';
-
 import {
   View,
   Text,
@@ -14,15 +13,16 @@ import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const { loadFavorites, clearFavorites } = useFavorites();
-
+  const { loadFavorites } = useFavorites();
 
   const redirectUri = AuthSession.makeRedirectUri({});
 
@@ -43,23 +43,21 @@ export default function LoginScreen() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const user = await res.json();
-      console.log('User Info:', user);
       router.replace('./(tabs)/events');
     } catch (err) {
-      Alert.alert('Error', 'Failed to get user info');
+      Alert.alert(t('error'), t('googleUserInfoFailed'));
     }
   };
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please fill in both fields');
+      Alert.alert(t('error'), t('fillAllFields'));
       return;
     }
 
     const isValidEmail = email.includes('@');
-
     if (!isValidEmail) {
-      Alert.alert('Login Failed', 'Invalid email format');
+      Alert.alert(t('loginFailed'), t('invalidEmail'));
       return;
     }
 
@@ -71,49 +69,43 @@ export default function LoginScreen() {
     };
 
     const isValidPassword = Object.values(criteria).every(Boolean);
-
     if (!isValidPassword) {
-      Alert.alert('Login Failed', 'Invalid password.');
+      Alert.alert(t('loginFailed'), t('invalidPassword'));
       return;
     }
 
     try {
       const response = await fetch('http://192.168.188.32:5216/api/User/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Login failed');
+        throw new Error(errorData.message || t('loginFailed'));
       }
 
       const data = await response.json();
-
       if (data.token) {
-        await AsyncStorage.setItem('token', data.token); 
-        
-        //console.log('Login successful. Token:', data.token);
+        await AsyncStorage.setItem('token', data.token);
         loadFavorites();
         router.replace('./(tabs)/events');
       } else {
-        Alert.alert('Error', 'No token received from server.');
+        Alert.alert(t('error'), t('noToken'));
       }
     } catch (error: any) {
-      Alert.alert('Login Error', error.message || 'Something went wrong');
+      Alert.alert(t('loginError'), error.message || t('genericError'));
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to SyncUp!</Text>
+      <Text style={styles.title}>{t('welcomeToSyncUp')}</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="Email address"
+        placeholder={t('emailPlaceholder')}
         keyboardType="email-address"
         autoCapitalize="none"
         onChangeText={setEmail}
@@ -123,36 +115,36 @@ export default function LoginScreen() {
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
-          placeholder="••••••••"
+          placeholder={t('passwordPlaceholder')}
           secureTextEntry={!showPassword}
           onChangeText={setPassword}
           value={password}
         />
         <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
           <Text style={styles.toggleText}>
-            {showPassword ? 'Hide' : 'Show'}
+            {showPassword ? t('hide') : t('show')}
           </Text>
         </TouchableOpacity>
       </View>
 
       <TouchableOpacity>
-        <Text style={styles.forgot}>Forgot your password?</Text>
+        <Text style={styles.forgot}>{t('forgotPassword')}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginText}>Log in</Text>
+        <Text style={styles.loginText}>{t('login')}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.signupButton}
         onPress={() => router.push('/signup')}
       >
-        <Text style={styles.signupText}>Sign up</Text>
+        <Text style={styles.signupText}>{t('signup')}</Text>
       </TouchableOpacity>
 
       <View style={styles.orContainer}>
         <View style={styles.line} />
-        <Text style={styles.orText}>OR</Text>
+        <Text style={styles.orText}>{t('or')}</Text>
         <View style={styles.line} />
       </View>
 
@@ -161,7 +153,7 @@ export default function LoginScreen() {
         onPress={() => promptAsync()}
         disabled={!request}
       >
-        <Text style={{ fontSize: 16 }}>Continue with Google</Text>
+        <Text style={{ fontSize: 16 }}>{t('continueWithGoogle')}</Text>
       </TouchableOpacity>
     </View>
   );
