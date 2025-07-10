@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -10,6 +11,64 @@ namespace Backend.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "ticketValidDays",
+                columns: table => new {
+                    Id = table.Column<int>(nullable: false)
+                      .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TicketId = table.Column<int>(nullable: false),
+                    ValidDays = table.Column<int>(nullable: false)
+                },
+                constraints: table => {
+                    table.PrimaryKey("PK_ticketValidDays", x => x.Id);
+                    table.ForeignKey(
+                       name: "FK_ticketValidDays_Tickets_TicketID",
+                       column: x => x.TicketId,
+                       principalTable: "Tickets",
+                       principalColumn: "TicketID",
+                       onDelete: ReferentialAction.Cascade);
+                });
+            migrationBuilder.CreateTable(
+                name: "userResourceReservations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation(
+                          "Npgsql:ValueGenerationStrategy",
+                          NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserID = table.Column<int>(nullable: false),
+                    EventResourceID = table.Column<int>(nullable: false),
+                    UserTicketID = table.Column<int>(nullable: true),
+                    Quantity = table.Column<int>(nullable: false),
+                    ReservedAt = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey(
+                        name: "PK_userResourceReservations",
+                        x => x.Id);
+
+                    table.ForeignKey(
+                        name: "FK_userResourceReservations_Users_UserID",
+                        column: x => x.UserID,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
+
+                    table.ForeignKey(
+                        name: "FK_userResourceReservations_EventResources_EventResourceID",
+                        column: x => x.EventResourceID,
+                        principalTable: "EventResources",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+
+                    table.ForeignKey(
+                        name: "FK_userResourceReservations_UserTickets_UserTicketID",
+                        column: x => x.UserTicketID,
+                        principalTable: "UserTickets",
+                        principalColumn: "UserTicketID",
+                        onDelete: ReferentialAction.Restrict);
+                });
             migrationBuilder.DropForeignKey(
                 name: "FK_ticketValidDays_Tickets_TicketID",
                 table: "ticketValidDays");
@@ -42,25 +101,25 @@ namespace Backend.Migrations
                 name: "ticketValidDays",
                 newName: "TicketValidDays");
 
-            migrationBuilder.RenameIndex(
-                name: "IX_userResourceReservations_UserTicketID",
-                table: "UserResourceReservations",
-                newName: "IX_UserResourceReservations_UserTicketID");
+            //migrationBuilder.RenameIndex(
+            //    name: "IX_userResourceReservations_UserTicketID",
+            //    table: "UserResourceReservations",
+            //    newName: "IX_UserResourceReservations_UserTicketID");
 
-            migrationBuilder.RenameIndex(
-                name: "IX_userResourceReservations_UserID",
-                table: "UserResourceReservations",
-                newName: "IX_UserResourceReservations_UserID");
+            //migrationBuilder.RenameIndex(
+            //    name: "IX_userResourceReservations_UserID",
+            //    table: "UserResourceReservations",
+            //    newName: "IX_UserResourceReservations_UserID");
 
-            migrationBuilder.RenameIndex(
-                name: "IX_userResourceReservations_EventResourceID",
-                table: "UserResourceReservations",
-                newName: "IX_UserResourceReservations_EventResourceID");
+            //migrationBuilder.RenameIndex(
+            //    name: "IX_userResourceReservations_EventResourceID",
+            //    table: "UserResourceReservations",
+            //    newName: "IX_UserResourceReservations_EventResourceID");
 
-            migrationBuilder.RenameIndex(
-                name: "IX_ticketValidDays_TicketID",
-                table: "TicketValidDays",
-                newName: "IX_TicketValidDays_TicketID");
+            //migrationBuilder.RenameIndex(
+            //    name: "IX_ticketValidDays_TicketID",
+            //    table: "TicketValidDays",
+            //    newName: "IX_TicketValidDays_TicketID");
 
             migrationBuilder.AddPrimaryKey(
                 name: "PK_UserResourceReservations",
@@ -75,7 +134,7 @@ namespace Backend.Migrations
             migrationBuilder.AddForeignKey(
                 name: "FK_TicketValidDays_Tickets_TicketID",
                 table: "TicketValidDays",
-                column: "TicketID",
+                column: "TicketId",
                 principalTable: "Tickets",
                 principalColumn: "TicketID",
                 onDelete: ReferentialAction.Cascade);
