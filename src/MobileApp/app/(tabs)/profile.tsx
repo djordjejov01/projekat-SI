@@ -9,29 +9,27 @@ import {
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFavorites } from '../context/FavoriteContext';
+import { useTranslation } from 'react-i18next';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const {
-    favorites,
-    clearFavorites,
-    setGuestMode
-  } = useFavorites();
+  const { favorites, clearFavorites, setGuestMode } = useFavorites();
+  const { t } = useTranslation();
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
-        const token = await AsyncStorage.getItem('token');
-        if (!token) return;
+      const token = await AsyncStorage.getItem('token');
+      if (!token) return;
 
-        const res = await fetch('http://192.168.33.109:5216/api/User/profile', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      setIsLoggedIn(true);
+      try {
+        const res = await fetch('http://192.168.188.32:5216/api/User/profile', {
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (res.ok) {
@@ -56,12 +54,12 @@ export default function ProfileScreen() {
 
   const handleLogout = () => {
     Alert.alert(
-      'Log Out',
-      'Are you sure you want to log out?',
+      t('profile.logoutTitle'),
+      t('profile.logoutConfirm'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('profile.cancel'), style: 'cancel' },
         {
-          text: 'Log Out',
+          text: t('profile.logout'),
           style: 'destructive',
           onPress: async () => {
             try {
@@ -71,7 +69,7 @@ export default function ProfileScreen() {
               router.replace('/');
             } catch (err) {
               console.error('Error during logout:', err);
-              Alert.alert('Error', 'Failed to log out.');
+              Alert.alert(t('profile.error'), t('profile.logoutError'));
             }
           },
         },
@@ -80,9 +78,21 @@ export default function ProfileScreen() {
     );
   };
 
+  if (!isLoggedIn) {
+    return (
+      <View style={styles.centeredContainer}>
+        <Text style={styles.header}>{t('profile.notLoggedIn')}</Text>
+        <Text style={styles.message}>{t('profile.loginPrompt')}</Text>
+        <TouchableOpacity style={styles.loginButton} onPress={() => router.push('/login')}>
+          <Text style={styles.loginText}>{t('profile.loginNow')}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>My Profile</Text>
+      <Text style={styles.header}>{t('profile.title')}</Text>
 
       <View style={styles.profileCard}>
         <View style={styles.avatarCircle}>
@@ -92,71 +102,55 @@ export default function ProfileScreen() {
           <Text style={styles.name}>{`${firstName} ${lastName}`}</Text>
           <Text style={styles.email}>{email}</Text>
         </View>
-        <TouchableOpacity
-          onPress={() => router.push('../profile/personal-info')}
-        >
-          <Text style={styles.edit}>✏️ Edit Profile</Text>
+        <TouchableOpacity onPress={() => router.push('../profile/personal-info')}>
+          <Text style={styles.edit}>✏️ {t('profile.edit')}</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.rowContainer}>
-        <TouchableOpacity
-          style={styles.statBox}
-          onPress={() => router.push('../profile/tickets')}
-        >
+        <TouchableOpacity style={styles.statBox} onPress={() => router.push('../profile/tickets')}>
           <Text style={styles.statNumber}>12</Text>
-          <Text style={styles.statLabel}>Tickets Purchased</Text>
+          <Text style={styles.statLabel}>{t('profile.tickets')}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.statBox}
-          onPress={() => router.push('/favorites')}
-        >
+        <TouchableOpacity style={styles.statBox} onPress={() => router.push('/favorites')}>
           <Text style={styles.statNumber}>{favorites.length}</Text>
-          <Text style={styles.statLabel}>Favorite Events</Text>
+          <Text style={styles.statLabel}>{t('profile.favorites')}</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.sectionTitle}>Account Settings</Text>
+      <Text style={styles.sectionTitle}>{t('profile.accountSettings')}</Text>
 
-      <TouchableOpacity
-        style={styles.option}
-        onPress={() => router.push('../profile/personal-info')}
-      >
-        <Text>👤 Personal Information</Text>
+      <TouchableOpacity style={styles.option} onPress={() => router.push('../profile/personal-info')}>
+        <Text>👤 {t('profile.personalInfo')}</Text>
         <Text style={styles.optionArrow}>›</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.option}>
-        <Text>📩 Communication Preferences</Text>
+        <Text>📩 {t('profile.communication')}</Text>
         <Text style={styles.optionArrow}>›</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={styles.option}
-        onPress={() => router.push('../profile/change-password')}
-      >
-        <Text>🔒 Change Password</Text>
+      <TouchableOpacity style={styles.option} onPress={() => router.push('../profile/change-password')}>
+        <Text>🔒 {t('profile.changePassword')}</Text>
         <Text style={styles.optionArrow}>›</Text>
       </TouchableOpacity>
 
-      <Text style={styles.sectionTitle}>Application</Text>
+      <Text style={styles.sectionTitle}>{t('profile.application')}</Text>
 
-      <TouchableOpacity
-        style={styles.option}
-        onPress={() => router.push('../profile/about')}
-      >
-        <Text>❓ About SyncUp</Text>
+      <TouchableOpacity style={styles.option} onPress={() => router.push('../profile/about')}>
+        <Text>❓ {t('profile.about')}</Text>
         <Text style={styles.optionArrow}>›</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.option} onPress={handleLogout}>
-        <Text style={{ color: 'red' }}>🚪 Sign Out</Text>
+        <Text style={{ color: 'red' }}>🚪 {t('profile.logout')}</Text>
         <Text style={[styles.optionArrow, { color: 'red' }]}>›</Text>
       </TouchableOpacity>
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -247,4 +241,21 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
+  message: { fontSize: 16, color: '#555', textAlign: 'center', marginBottom: 20 },
+  loginButton: {
+    backgroundColor: '#7069E1',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 20,
+    alignSelf: 'center',
+  },
+  loginText: { color: '#fff', fontWeight: 'bold' },
+  centeredContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  backgroundColor: '#fff',
+  padding: 20,
+},
+
 });

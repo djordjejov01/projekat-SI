@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import { useFavorites } from '../context/FavoriteContext';
 import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
 export default function FavoritesScreen() {
   const { favorites, toggleFavorite } = useFavorites();
@@ -19,6 +20,7 @@ export default function FavoritesScreen() {
   const [loading, setLoading] = useState(true);
   const [isGuest, setIsGuest] = useState(false);
   const router = useRouter();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const checkAuthAndFetch = async () => {
@@ -78,7 +80,9 @@ export default function FavoritesScreen() {
       <Text style={styles.info}>📍 {item.location}</Text>
 
       <View style={styles.row}>
-        <Text style={styles.attending}>{item.attendingCount || 0}+ Attending</Text>
+        <Text style={styles.attending}>
+          {item.attendingCount || 0}+ {t('attending')}
+        </Text>
         <TouchableOpacity onPress={() => toggleFavorite(item.id)}>
           <AntDesign name="heart" size={20} color="#FF2D55" />
         </TouchableOpacity>
@@ -90,18 +94,18 @@ export default function FavoritesScreen() {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={{ marginTop: 10 }}>Loading favorites...</Text>
+        <Text style={{ marginTop: 10 }}>{t('loadingFavorites')}</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Your Favorites</Text>
+      <Text style={styles.header}>{t('yourFavorites')}</Text>
       {isGuest ? (
-        <Text style={styles.empty}>You must be logged in to view favorites.</Text>
+        <Text style={styles.empty}>{t('mustBeLoggedInToViewFavorites')}</Text>
       ) : events.length === 0 ? (
-        <Text style={styles.empty}>You have no favorite events yet.</Text>
+        <Text style={styles.empty}>{t('noFavoriteEvents')}</Text>
       ) : (
         <FlatList
           data={events}
