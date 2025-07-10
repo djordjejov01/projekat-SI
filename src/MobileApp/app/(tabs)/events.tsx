@@ -13,12 +13,14 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AntDesign } from '@expo/vector-icons';
 import { useFavorites } from '../context/FavoriteContext';
+import { useTranslation } from 'react-i18next';
 
 export default function EventsScreen() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { favorites, toggleFavorite, clearFavorites } = useFavorites();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -45,12 +47,12 @@ export default function EventsScreen() {
     const token = await AsyncStorage.getItem('token');
     if (!token) {
       Alert.alert(
-        'Not logged in',
-        'You must be logged in to add favorites.',
+        t('notLoggedIn'),
+        t('loginToAddFavorites'),
         [
-          { text: 'Continue as guest' },
+          { text: t('continueAsGuest') },
           {
-            text: 'Log in',
+            text: t('logIn'),
             onPress: () => router.push('/login'),
           },
         ],
@@ -64,7 +66,7 @@ export default function EventsScreen() {
   const handleLogout = async () => {
     await AsyncStorage.removeItem('token');
     clearFavorites();
-    Alert.alert('Logged out', 'You have been logged out.');
+    Alert.alert(t('loggedOut'), t('youHaveBeenLoggedOut'));
     router.replace('/login');
   };
 
@@ -85,7 +87,9 @@ export default function EventsScreen() {
         <Text style={styles.info}>📍 {item.location}</Text>
 
         <View style={styles.row}>
-          <Text style={styles.attending}>{item.attendingCount || 0}+ Attending</Text>
+          <Text style={styles.attending}>
+            {item.attendingCount || 0}+ {t('attending')}
+          </Text>
           <TouchableOpacity onPress={() => handleToggleFavorite(item.id)}>
             <AntDesign name="heart" size={20} color={isFavorite ? '#FF2D55' : '#ccc'} />
           </TouchableOpacity>
@@ -98,16 +102,16 @@ export default function EventsScreen() {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={{ marginTop: 10 }}>Loading events...</Text>
+        <Text style={{ marginTop: 10 }}>{t('loadingEvents')}</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Events</Text>
+      <Text style={styles.header}>{t('events')}</Text>
       {events.length === 0 ? (
-        <Text style={styles.empty}>No events found.</Text>
+        <Text style={styles.empty}>{t('noEvents')}</Text>
       ) : (
         <FlatList
           data={events}
@@ -119,7 +123,7 @@ export default function EventsScreen() {
       )}
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Log out</Text>
+        <Text style={styles.logoutText}>{t('logOut')}</Text>
       </TouchableOpacity>
     </View>
   );
