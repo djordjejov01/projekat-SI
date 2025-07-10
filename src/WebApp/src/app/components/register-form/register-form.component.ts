@@ -175,7 +175,7 @@ export class RegisterForm implements OnInit,IDeactivate{
         this.userToRegister.getUsername()  ||
         this.userToRegister.getEmail()     ||
         this.userToRegister.getPassword()  ||
-        this.userToRegister.getConfirmPassword()) ?  this.confirmationDialogService.confirmExit('You have unsaved changes. Are you sure you want to leave this page?','Unsaved Changes') :  true;
+        this.userToRegister.getConfirmPassword()) ?  this.confirmationDialogService.confirm('You have unsaved changes. Are you sure you want to leave this page?','Unsaved Changes') :  true;
     }
 
 }

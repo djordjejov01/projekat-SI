@@ -25,6 +25,7 @@ import { RouterLink } from '@angular/router';
 import { ApiService } from '../../Services/api.service';
 import { SessionService } from '../../Services/session.service';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationDialogService } from '../../Services/confirmation-dialog.service';
 
 
 
@@ -74,7 +75,8 @@ export class AdminPage implements OnInit,AfterContentInit{
     private messageService : MessageService,
     private authService : AuthService,
     private apiService : ApiService,
-    private sessionService : SessionService) {}
+    private sessionService : SessionService,
+    private confirmationDialogService : ConfirmationDialogService) {}
 
   @HostListener('window:resize')
     onResize() {
@@ -464,9 +466,15 @@ export class AdminPage implements OnInit,AfterContentInit{
     this.searchValue = '';
   }
 
-  toggleUserActivation(user : User){
+  async toggleUserActivation(user : User){
 
     const newStatus = !user.userActive()
+    const confirmed = await this.confirmationDialogService.confirm(
+      `Are you sure you want to ${newStatus ? 'activate' : 'deactivate'} ${user.getUsername()}?`,
+      `${newStatus ? 'Activate' : 'Deactivate'} User`
+    )
+
+    if(!confirmed) return;
 
     this.apiService.activateUser(user.getUserId(),newStatus).subscribe({
       next: () =>{

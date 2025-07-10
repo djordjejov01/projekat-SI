@@ -133,7 +133,7 @@ export class LoginForm implements OnInit,IDeactivate{
 
     return ( 
       this.userToLogin.getEmail() ||
-      this.userToLogin.getPassword()) ? this.confirmationDialogService.confirmExit('You have unsaved changes. Are you sure you want to leave this page?','Unsaved Changes') : true;
+      this.userToLogin.getPassword()) ? this.confirmationDialogService.confirm('You have unsaved changes. Are you sure you want to leave this page?','Unsaved Changes') : true;
 
   }
 
