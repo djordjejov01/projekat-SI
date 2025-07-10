@@ -15,6 +15,7 @@
     /*gap: 5rem;*/
     border-radius: 14px;
     box-shadow: 0px 0px 10px 3px rgb(214, 214, 214);
+    max-width: 1200px;
 }
 
 .register-form{
@@ -37,10 +38,11 @@
 .form-header h1{
     font-weight: bold;
     font-size: 2.25rem;
+    max-width: 60%;
 }
 
 .form-header p{
-    max-width: 60%;
+    max-width: 70%;
 }
 
 .form-header img{
@@ -59,10 +61,18 @@
     gap: 1rem;
 }
 
+.input-wrapper p{
+    color: #8C8D8B;
+}
+
 .passwords{
     display: flex;
     justify-content: space-between;
     gap: 1rem;
+}
+
+.passwords > .input-wrapper{
+    flex: 1 1 47.5%;
 }
 
 .have-account{

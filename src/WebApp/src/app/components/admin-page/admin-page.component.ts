@@ -1,13 +1,12 @@
 import { AfterContentInit, AfterViewInit, Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { User } from '../../Models/User';
-import { Users } from '../../Services/user.list';
 import { CommonModule } from '@angular/common';
 import { StatisticCard } from './statistic-card/statistic-card.component';
 import { ChartModule } from 'primeng/chart';
 import { isPlatformBrowser } from '@angular/common';
 import { ChangeDetectorRef, inject, PLATFORM_ID } from '@angular/core';
 import { UIChart } from 'primeng/chart'
-import { TableModule } from 'primeng/table';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { InputTextModule } from 'primeng/inputtext';
@@ -40,6 +39,8 @@ export class AdminPage implements OnInit,AfterContentInit{
 
   //PAGE
   users : User[] = [];
+  // lazyUsers : User[] = [];
+  // totalRecords: number = 0;
   currentDate : Date;
   startWindowLast30 : Date;
   endWindowLast30 : Date;
@@ -101,6 +102,7 @@ export class AdminPage implements OnInit,AfterContentInit{
     next: (users) => {
       this.users = users;
       this.loading = false;
+      // this.totalRecords = this.users.length;
       this.initializeDateRangers();
       this.initBarChart();
       this.initDoughnutChart();
@@ -112,21 +114,6 @@ export class AdminPage implements OnInit,AfterContentInit{
       // Optionally show an error message to the user here
     }
   });
-
-    // this.users = Users.map((data)=>{
-    //   return new User(
-    //     data.id,
-    //     data.username,
-    //     data.email,
-    //     // data.password,
-    //     // data.first_name,
-    //     // data.last_name,
-    //     data.role,
-    //     new Date(data.creation_time),
-    //     data.isActive,
-    //     new Date(data.last_login)
-    //   )
-    // })
 
   }
 
@@ -168,14 +155,11 @@ export class AdminPage implements OnInit,AfterContentInit{
                         backgroundColor: 'rgba(100,106,232, 0.2)',
                         borderColor: 'rgb(139, 92, 246)',
                         borderWidth: 1
-                        //borderRadius: 6
                     },
                 ],
             };
 
             this.barChartOptions = {
-              // responsive: true,
-              // maintainAspectRatio: false,
                 plugins: {
                     legend: {
                       display: true,
@@ -242,8 +226,6 @@ export class AdminPage implements OnInit,AfterContentInit{
                 };
 
                 this.doughnutChartOptions = {
-                  // responsive: true,
-                  // maintainAspectRatio: false,
                     cutout: '60%',
                     plugins: {
                         legend: {
@@ -494,6 +476,25 @@ export class AdminPage implements OnInit,AfterContentInit{
       }
     })
   }
+
+  // loadUsersLazy(event: TableLazyLoadEvent){
+  //   this.loading = true;
+
+  //   const start = event.first ?? 0;
+  //   const count = event.rows ?? 10;
+
+  //   this.apiService.getUsersPaginated(start,count).subscribe({
+
+  //     next: (users) => {
+  //       this.lazyUsers = users;
+  //       console.log(this.lazyUsers);
+  //       this.loading = false;
+  //     },
+  //     error: () =>{
+  //       this.messageService.add({severity: 'error', summary: 'Error', detail: 'Could not fetch user count'})
+  //     }
+  //   });
+  // }
 
   onLogoutClick(){
     this.sessionService.logoutWithConfirmation();
