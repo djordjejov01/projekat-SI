@@ -1,27 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Modal,
+  Pressable,
+} from 'react-native';
 import { Link } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import i18n from './i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [selectedLang, setSelectedLang] = useState<'en' | 'sr'>('en');
+  const [languageModalVisible, setLanguageModalVisible] = useState(false);
 
-useEffect(() => {
-  setSelectedLang(i18n.language === 'sr' ? 'sr' : 'en');
-}, []);
+  useEffect(() => {
+    setSelectedLang(i18n.language === 'sr' ? 'sr' : 'en');
+  }, []);
 
-
-const handleLanguageSwitch = async (lang: 'en' | 'sr') => {
-  await i18n.changeLanguage(lang);
-  await i18n.services.languageDetector.cacheUserLanguage(lang);
-  setSelectedLang(lang);
-};
+  const handleLanguageSwitch = async (lang: 'en' | 'sr') => {
+    await i18n.changeLanguage(lang);
+    await i18n.services.languageDetector.cacheUserLanguage(lang);
+    setSelectedLang(lang);
+    setLanguageModalVisible(false);
+  };
 
   return (
     <View style={styles.container}>
+      {/* JEZIK GORE DESNO */}
+      <View style={styles.langMenu}>
+        <TouchableOpacity
+          onPress={() => setLanguageModalVisible(true)}
+          style={styles.langToggle}
+        >
+          <Text style={styles.langEmoji}>
+            {selectedLang === 'en' ? '🇬🇧' : '🇷🇸'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       <Image source={require('../assets/images/SyncUpLogo.png')} style={styles.icon} />
 
       <Text style={styles.subtitle}>Discover the World at Your Fingertips</Text>
@@ -38,36 +58,65 @@ const handleLanguageSwitch = async (lang: 'en' | 'sr') => {
         </TouchableOpacity>
       </Link>
 
-      {/* Jezik ispod Guest mode */}
-      <View style={styles.langSwitchContainer}>
-        <TouchableOpacity
-          onPress={() => handleLanguageSwitch('en')}
-          style={[styles.langButton, selectedLang === 'en' && styles.selectedLang]}
+      {/* MODAL ZA IZBOR JEZIKA */}
+      <Modal
+        transparent
+        animationType="fade"
+        visible={languageModalVisible}
+        onRequestClose={() => setLanguageModalVisible(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setLanguageModalVisible(false)}
         >
-          <Text style={[styles.langText, selectedLang === 'en' && styles.selectedText]}>
-            English
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => handleLanguageSwitch('sr')}
-          style={[styles.langButton, selectedLang === 'sr' && styles.selectedLang]}
-        >
-          <Text style={[styles.langText, selectedLang === 'sr' && styles.selectedText]}>
-            Srpski
-          </Text>
-        </TouchableOpacity>
-      </View>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.langOption}
+              onPress={() => handleLanguageSwitch('en')}
+            >
+              <Text style={styles.optionText}>🇬🇧 English</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.langOption}
+              onPress={() => handleLanguageSwitch('sr')}
+            >
+              <Text style={styles.optionText}>🇷🇸 Srpski</Text>
+            </TouchableOpacity>
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center', padding: 20,
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  langMenu: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    zIndex: 10,
+  },
+  langToggle: {
+    backgroundColor: '#EEE',
+    padding: 10,
+    borderRadius: 20,
+    width: 50,
+    alignItems: 'center',
+  },
+  langEmoji: {
+    fontSize: 20,
   },
   icon: {
-    width: 250, height: 250, marginBottom: 10,
+    width: 250,
+    height: 250,
+    marginBottom: 10,
   },
   subtitle: {
     fontSize: 18,
@@ -84,39 +133,44 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
+    width: 300, 
     marginTop: 40,
     marginBottom: 10,
   },
-  buttonText: {
-    color: '#fff', fontWeight: 'bold',
-  },
+buttonText: {
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 16,
+  textAlign: 'center',
+},
+
   guestText: {
     color: '#333',
     textDecorationLine: 'underline',
     marginTop: 10,
     marginBottom: 16,
   },
-  langSwitchContainer: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 10,
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    paddingTop: 80,
+    paddingRight: 20,
   },
-  langButton: {
-    marginTop:50,
-    paddingVertical: 8,
-    paddingHorizontal: 18,
-    backgroundColor: '#EEE',
-    borderRadius: 20,
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    paddingVertical: 10,
+    width: 150,
+    elevation: 4,
   },
-  selectedLang: {
-    backgroundColor: '#7069E1',
+  langOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
   },
-  langText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
-  },
-  selectedText: {
-    color: '#fff',
+  optionText: {
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
