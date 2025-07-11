@@ -23,7 +23,7 @@ namespace Backend.Controllers
         public IActionResult GetResourcesForEvent(int eventId)
         {
             var resources = _context.EventResources
-                .Where(er => er.EventID == eventId && er.IsReservable)
+                .Where(er => er.EventID == eventId && er.IsReservable && er.Event.EndDate > DateTime.UtcNow)
                 .Select(er => new {
                     er.ID,
                     er.SupplierID,
@@ -51,10 +51,14 @@ namespace Backend.Controllers
             var eventResource = _context.EventResources
                 .Include(er => er.Event)
                 .FirstOrDefault(er => er.ID == dto.EventResourceID);
+
             if (eventResource == null)
                 return NotFound("Resurs ne postoji.");
 
-            
+            if (!eventResource.IsReservable)
+                return BadRequest("Ovaj resurs nije moguće rezervisati.");
+
+
             var hasTicket = _context.UserTickets
                 .Any(ut => ut.UserID == userId && ut.Ticket.EventID == eventResource.EventID);
             if (!hasTicket)
@@ -83,6 +87,8 @@ namespace Backend.Controllers
 
             if (alreadyReserved + dto.Quantity > eventResource.Quantity)
                 return BadRequest("Nema dovoljno dostupnih resursa.");
+
+            //TODO(ogranicenje kolicine resursa)
 
             var reservation = new UserResourceReservation
             {

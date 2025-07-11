@@ -54,6 +54,11 @@ namespace Backend.Controllers
             if (eventEntity.EndDate < DateTime.UtcNow)
                 return BadRequest("Nije moguće kupiti kartu za događaj koji je već prošao.");
 
+            if (eventEntity.isFree)
+            {
+                return BadRequest("Nije moguće kupiti kartu za besplatan događaj ili događaj koji ne koristi karte.");
+            }
+
             int sold = _context.UserTickets.Count(ut => ut.TicketID == dto.TicketID);
             if (sold >= ticket.Quota)
                 return BadRequest("Nema više dostupnih ulaznica za ovaj tip.");
