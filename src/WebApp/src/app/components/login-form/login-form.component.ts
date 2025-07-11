@@ -66,21 +66,50 @@ export class LoginForm implements OnInit,IDeactivate{
         this.apiService.login(this.userToLogin).subscribe({
           next: (response : string) => {
 
-            this.authService.setToken(response)
-            // console.log(localStorage.getItem('access_token'))
-            // console.log(this.authService.getDecodedToken())
-            // console.log(this.authService.getUserRole())
-            const role = this.authService.getUserRole();
-            sessionStorage.setItem('showWelcome', 'true');
+            const result = this.authService.setToken(response)
 
-            switch(role){
-              case 'Admin': this.router.navigate(['/admin']); break;
-              case 'Organizer': this.router.navigate(['/organizer']); break;
-              case 'Supplier': this.router.navigate(['/supplier']); break;
-              default: this.router.navigate(['/login'])
+            const role = this.authService.getUserRole();
+
+            if(result === 'ok')
+            {
+              sessionStorage.setItem('showWelcome', 'true');
+              switch(role)
+              {
+                case 'Admin': this.router.navigate(['/admin']); break;
+                case 'Organizer': this.router.navigate(['/organizer']); break;
+                case 'Supplier': this.router.navigate(['/supplier']); break;
+                default:
+                  this.authService.logout() 
+                  this.router.navigate(['/login'])
+                  this.messageService.add({
+                    severity: 'error',
+                    summary: 'Login Error',
+                    detail: 'Invalid role detected.',
+                    life: 3000
+                  });
+                  return
+              }
+
+              this.loginForm.reset()
+            }
+            else if(result === 'unauthorized') 
+            {
+              this.messageService.add({
+              severity: 'error',
+              summary: 'Access Denied',
+              detail: 'This account is not allowed to access the web application.',
+              life: 3000 });
+            }
+            else
+            {
+              this.messageService.add({
+              severity: 'error',
+              summary: 'Login Failed',
+              detail: 'Something went wrong while processing your login.',
+              life: 3000 });
             }
 
-            this.loginForm.reset()
+
           },
           error: (errorResponse) => {
              this.messageService.add({
