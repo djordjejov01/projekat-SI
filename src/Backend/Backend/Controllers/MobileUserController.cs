@@ -3,6 +3,7 @@ using Backend.Models.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 
 namespace Backend.Controllers
@@ -18,7 +19,8 @@ namespace Backend.Controllers
         {
             _context = context;
         }
-        
+
+
         [HttpGet("reservations")]
         public IActionResult GetUserReservations()
         {
