@@ -55,7 +55,13 @@ namespace Backend.Controllers
                 return NotFound("Resurs ne postoji.");
 
             
-            if (eventResource.Event.EndDate < DateTime.Now)
+            var hasTicket = _context.UserTickets
+                .Any(ut => ut.UserID == userId && ut.Ticket.EventID == eventResource.EventID);
+            if (!hasTicket)
+                return BadRequest("Morate imati ulaznicu za ovaj događaj da biste rezervisali resurs.");
+
+
+            if (eventResource.Event.EndDate < DateTime.UtcNow)
                 return BadRequest("Nije moguće rezervisati resurs za događaj koji je prošao.");
 
             

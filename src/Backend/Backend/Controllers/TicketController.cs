@@ -47,6 +47,13 @@ namespace Backend.Controllers
             if (ticket == null)
                 return NotFound("Ulaznica ne postoji.");
 
+            var eventEntity = _context.Events.FirstOrDefault(e => e.EventID == ticket.EventID);
+            if (eventEntity == null)
+                return NotFound("Događaj nije pronađen.");
+
+            if (eventEntity.EndDate < DateTime.UtcNow)
+                return BadRequest("Nije moguće kupiti kartu za događaj koji je već prošao.");
+
             int sold = _context.UserTickets.Count(ut => ut.TicketID == dto.TicketID);
             if (sold >= ticket.Quota)
                 return BadRequest("Nema više dostupnih ulaznica za ovaj tip.");
