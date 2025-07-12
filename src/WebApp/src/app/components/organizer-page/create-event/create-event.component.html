@@ -1,160 +1,164 @@
-<form action="" class="eventForm" [formGroup]="eventForm">
+<div class="form-container">
+    <form action="" class="eventForm" [formGroup]="eventForm">
 
-    <div class="formTitle">
-        <h3>Create New Event</h3>
-        <p>Fill in the details below to set up your event.</p>
-    </div>
-
-    <div class="form-inputs">
-
-        <div  class="input-wrapper">
-
-            <p>Event Title</p>
-            <p-floatlabel class="w-full md:w-56" variant="on">
-                <input  type="text"  pInputText  placeholder=" "  formControlName="title"  inputId="title"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-            <label for="title">Enter Event Title</label>
-            </p-floatlabel>
-
+        <div class="formTitle">
+            <h3>Create New Event</h3>
+            <p>Fill in the details below to set up your event.</p>
         </div>
+
+        <div class="form-inputs">
 
             <div  class="input-wrapper">
 
-                <p>Description</p>
+                <p>Event Title</p>
                 <p-floatlabel class="w-full md:w-56" variant="on">
-                    <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
-                <label for="description">Describe your event in detail</label>
+                    <input  type="text"  pInputText  placeholder=" "  formControlName="title"  inputId="title"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                <label for="title">Enter Event Title</label>
                 </p-floatlabel>
 
             </div>
 
-            <div class="location-capacity">
-
                 <div  class="input-wrapper">
 
-                    <p>Location</p>
+                    <p>Description</p>
                     <p-floatlabel class="w-full md:w-56" variant="on">
-                        <input  type="text"  pInputText  placeholder=" "  formControlName="location"  inputId="location"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-                    <label for="location">Enter Event Location (e.g. Zoom, Conference Hall A)</label>
+                        <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
+                    <label for="description">Describe your event in detail</label>
                     </p-floatlabel>
 
                 </div>
 
-                <div  class="input-wrapper">
+                <div class="location-capacity">
 
-                    <p>Capacity</p>
-                    
+                    <div  class="input-wrapper">
 
-                    <p-floatlabel class="w-full md:w-56" variant="on">
-                       <p-inputnumber
-                            formControlName="capacity"
-                            inputId="capacity"
-                            [min]="1"
-                            [useGrouping]="false"
-                            [showButtons]="false"
-                            [style]="{ width: '100%' }"
-                            inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                        ></p-inputnumber>
-                    <label for="capacity">Enter Event Capacity</label>
-                    </p-floatlabel>
+                        <p>Location</p>
+                        <p-floatlabel class="w-full md:w-56" variant="on">
+                            <input  type="text"  pInputText  placeholder=" "  formControlName="location"  inputId="location"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                        <label for="location">Enter Event Location (e.g. Zoom, Conference Hall A)</label>
+                        </p-floatlabel>
 
-                    <div class="flex items-center gap-2">
-                        <p-checkbox formControlName="isUnlimitedCapacity" inputId="isUnlimitedCapacity" name="isUnlimitedCapacity" binary="true" size="large" />
-                        <label for="isUnlimitedCapacity" >Unlimited Capacity</label>
+                    </div>
+
+                    <div  class="input-wrapper">
+
+                        <p>Capacity</p>
+                        
+
+                        <p-floatlabel class="w-full md:w-56" variant="on">
+                        <p-inputnumber
+                                formControlName="capacity"
+                                inputId="capacity"
+                                [min]="1"
+                                [useGrouping]="false"
+                                [showButtons]="false"
+                                [style]="{ width: '100%' }"
+                                inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                            ></p-inputnumber>
+                        <label for="capacity">Enter Event Capacity</label>
+                        </p-floatlabel>
+
+                        <div class="flex items-center gap-2">
+                            <p-checkbox formControlName="isUnlimitedCapacity" inputId="isUnlimitedCapacity" name="isUnlimitedCapacity" binary="true" size="large" />
+                            <label for="isUnlimitedCapacity" >Unlimited Capacity</label>
+                        </div>
+
                     </div>
 
                 </div>
 
-            </div>
+                <div class="dates">
 
-            <div class="dates">
+                    <div  class="input-wrapper">
+                        <p>Start Date</p>
+                        <p-floatlabel class="w-full md:w-56"  variant="on">
+                            <p-datepicker inputId="startDateTime" placeholder=" " formControlName="startDateTime" [showTime]="true" hourFormat="24" [minDate]="minDate"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                            <label for="startDateTime">Start Date and Time</label>
+                        </p-floatlabel>
+                    </div>
+
+                    <div  class="input-wrapper">
+                        <p>End Date</p>
+                        <p-floatlabel class="w-full md:w-56"  variant="on">
+                            <p-datepicker inputId="endDateTime" placeholder=" " formControlName="endDateTime" [showTime]="true" hourFormat="24" [minDate]="minDate"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                            <label for="endDateTime">End Date and Time</label>
+                        </p-floatlabel>
+                    </div>
+
+                </div>
+
+                <div class="tickets" formArrayName="tickets">
+
+                    <p>Tickets</p>
+                    
+                    <div class="ticket" *ngFor="let ticket of tickets.controls; let i = index" [formGroupName]="i">
+
+                        <div  class="input-wrapper w-full ">
+
+                            <p>Ticket Name</p>
+                            <p-floatlabel class="w-full md:w-56" variant="on">
+                                <input  type="text"  pInputText  placeholder=" "  formControlName="name"  [id]="'ticketName-' + i"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                            <label [for]="'ticketName-' + i">Enter Ticket Name</label>
+                            </p-floatlabel>
+
+                        </div>
+
+                        <div  class="input-wrapper w-full ">
+
+                            <p>Ticket Price</p>
+                            <p-floatlabel class="w-full md:w-56" variant="on">
+                                <p-inputnumber  placeholder=" " mode="currency" [currency]="currencyCode" [locale]="localeCode" formControlName="price" [style]="{ width: '100%' }" [inputStyleClass]="'ticket-price-' + i + ' w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500'"/>
+                            <label [for]="'ticket-price-' + i">Enter Ticket Price (0 If Free)</label>
+                            </p-floatlabel>
+
+                        </div>
+
+                        <div class="delete-btn">
+                            <p-button icon="pi pi-times" [rounded]="true" [text]="true" [raised]="true" severity="help" (onClick)="removeTicket(i)"/>
+                        </div>
+                        
+                    </div>
+
+                    <div class="add-btn">
+                        <p-button icon="pi pi-plus" [rounded]="true" [text]="true" [raised]="true" severity="help" (onClick)="addTicket()"/>
+                    </div>
+
+                </div>
 
                 <div  class="input-wrapper">
-                    <p>Start Date</p>
-                    <p-floatlabel class="w-full md:w-56"  variant="on">
-                        <p-datepicker inputId="startDateTime" placeholder=" " formControlName="startDateTime" [showTime]="true" hourFormat="24" [minDate]="minDate"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
-                        <label for="startDateTime">Start Date and Time</label>
-                     </p-floatlabel>
+
+                    <p>Upload Event Image</p>
+                    <p-fileUpload
+                    [customUpload]="true"
+                    [auto]="false"
+                    [showUploadButton]="false"
+                    [showCancelButton]="false"
+                    [multiple]="false"
+                    accept="image/*"
+                    (onSelect)="onFileSelect($event)"
+                    (onClear)="onFileClear()"
+                    (onRemove)="onFileClear()"
+                    chooseLabel="Choose Event Image"
+                    ></p-fileUpload>
+
                 </div>
 
-                 <div  class="input-wrapper">
-                    <p>End Date</p>
-                    <p-floatlabel class="w-full md:w-56"  variant="on">
-                        <p-datepicker inputId="endDateTime" placeholder=" " formControlName="endDateTime" [showTime]="true" hourFormat="24" [minDate]="minDate"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
-                        <label for="endDateTime">End Date and Time</label>
-                    </p-floatlabel>
+                <div class="submit-btn">
+                    <p-button 
+                    label="Create Event"
+                    icon="pi pi-check"
+                    [raised]="true"
+                    severity="primary"
+                    (onClick)="submitForm()"
+                    ></p-button>
                 </div>
-
-            </div>
-
-            <div class="tickets" formArrayName="tickets">
-
-                <p>Tickets</p>
                 
-                <div class="ticket" *ngFor="let ticket of tickets.controls; let i = index" [formGroupName]="i">
 
-                    <div  class="input-wrapper">
-
-                        <p>Ticket Name</p>
-                        <p-floatlabel class="w-full md:w-56" variant="on">
-                            <input  type="text"  pInputText  placeholder=" "  formControlName="name"  [id]="'ticketName-' + i"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-                        <label [for]="'ticketName-' + i">Enter Ticket Name</label>
-                        </p-floatlabel>
-
-                    </div>
-
-                    <div  class="input-wrapper">
-
-                        <p>Ticket Price</p>
-                        <p-floatlabel class="w-full md:w-56" variant="on">
-                            <p-inputnumber  placeholder=" " mode="currency" [currency]="currencyCode" [locale]="localeCode" formControlName="price" [style]="{ width: '100%' }" [inputStyleClass]="'ticket-price-' + i + ' w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500'"/>
-                        <label [for]="'ticket-price-' + i">Enter Ticket Price (0 If Free)</label>
-                        </p-floatlabel>
-
-                    </div>
-
-                    <div class="delete-btn">
-                        <p-button icon="pi pi-times" [rounded]="true" [text]="true" [raised]="true" severity="help" (onClick)="removeTicket(i)"/>
-                    </div>
-                    
-                </div>
-
-                <div class="add-btn">
-                    <p-button icon="pi pi-plus" [rounded]="true" [text]="true" [raised]="true" severity="help" (onClick)="addTicket()"/>
-                </div>
-
-            </div>
-
-             <div  class="input-wrapper">
-
-                <p>Upload Event Image</p>
-                <p-fileUpload
-                [customUpload]="true"
-                [auto]="false"
-                [showUploadButton]="false"
-                [showCancelButton]="false"
-                [multiple]="false"
-                accept="image/*"
-                (onSelect)="onFileSelect($event)"
-                (onClear)="onFileClear()"
-                (onRemove)="onFileClear()"
-                chooseLabel="Choose Event Image"
-                ></p-fileUpload>
-
-            </div>
-
-            <div class="submit-btn">
-                <p-button 
-                label="Create Event"
-                icon="pi pi-check"
-                [raised]="true"
-                severity="primary"
-                (onClick)="submitForm()"
-                ></p-button>
-            </div>
-            
-
-    </div>
+        </div>
 
 
 
-</form>
+    </form>
+</div>
+
+
