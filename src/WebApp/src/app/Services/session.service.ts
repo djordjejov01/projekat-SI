@@ -15,7 +15,7 @@ export class SessionService {
   ) {}
 
  async logoutWithConfirmation() {
-  const confirmed = await this.confirmationDialog.confirmExit(
+  const confirmed = await this.confirmationDialog.confirm(
     'Are you sure you want to log out?',
     'Logout Confirmation'
   );
