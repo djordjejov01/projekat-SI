@@ -10,7 +10,7 @@ export class ConfirmationDialogService {
     confirmationService : ConfirmationService = inject(ConfirmationService);
     messageService : MessageService = inject(MessageService)
 
-    confirmExit(message : string, header : string = 'Confirmation') : Promise<boolean>
+    confirm(message : string, header : string = 'Confirmation') : Promise<boolean>
     {
         return new Promise((resolve)=>{
 

@@ -43,10 +43,16 @@ flex-direction: column;
 #page{
     display: flex;
     justify-content: space-between;
+    flex-wrap: nowrap; /*Nikola menjao*/
 }
 #show{
+    /* Nikola menjao
     padding-left: 30px;
-    padding-top:40px;
+    padding-top:40px; */
+    padding: 2rem;
+    padding-left: 0.25rem;
+    max-width: 1500px;
+    width: 100%;
 }
 img:hover{
     cursor: pointer;

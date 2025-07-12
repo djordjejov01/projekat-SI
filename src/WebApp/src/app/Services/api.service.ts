@@ -24,6 +24,27 @@ export class ApiService{
         return this.http.put(`${this.apiUrl}/Admin/users/${userId}/active?isActive=${isActive}`, {});
     }
 
+    // getUsersPaginated(start: number, count: number): Observable<User[]>{
+    //     return this.http.get<UserApiResponse[]>(`${this.apiUrl}/Admin/users/page?k=${start}&n=${count}`).pipe(
+
+    //         map( data =>
+    //             data.map(userResponse => new User(
+    //                 userResponse.userId,
+    //                 userResponse.username,
+    //                 userResponse.email,
+    //                 UserRoleMap[userResponse.role] || 'Unknown',
+    //                 new Date(userResponse.creationTime),
+    //                 userResponse.isActive,
+    //                 userResponse.lastLoginTime ? new Date(userResponse.lastLoginTime) : null,
+    //                 userResponse.password,
+    //                 userResponse.firstName,
+    //                 userResponse.lastName
+    //             ))
+    //         )
+
+    //     )
+    // }
+
     getAllUsers(): Observable<User[]>{
         return this.http.get<UserApiResponse[]>(`${this.apiUrl}/Admin/users`).pipe(
             

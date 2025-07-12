@@ -9,7 +9,7 @@
         <div class="title">
           
           <h1>{{"CACC" | translate}}</h1>
-          <p>
+          <p class="font-medium  break-words">
             {{"CDESC" | translate}}
           </p>
           
@@ -21,44 +21,31 @@
 
       <div class="form-inputs">
 
-        <div class="input-wrapper">
+        <div class="input-wrapper w-full">
 
-          <p>{{"IAM" | translate}}</p>
-          <p-floatlabel class="w-full md:w-56" variant="on">
-            <p-select  [options]="[
-            'ORGANIZER' | translate,
-            'Supplier' | translate
-            ]"  name="role"  formControlName="role"  placeholder=" "  inputId="roles"  class="w-full md:w-56 h-10"/>
+          <p class="font-medium  break-words">{{"IAM" | translate}}</p>
+          <p-floatlabel class="w-full" variant="on">
+            <p-select  [options]="roles"  name="role"  formControlName="role"  placeholder=" "  inputId="roles"  class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
             <label for="roles">{{"S1" | translate}}</label>
           </p-floatlabel>
 
         </div>
 
-        <div  class="input-wrapper">
+        <div  class="input-wrapper  w-full">
 
-          <p>{{"USERNAME" | translate}}</p>
-          <p-floatlabel class="w-full md:w-56" variant="on">
-            <input  type="text"  pInputText  placeholder=" "  formControlName="username"  inputId="username"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+          <p class="font-medium  break-words">{{"USERNAME" | translate}}</p>
+          <p-floatlabel class="w-full" variant="on">
+            <input  type="text"  pInputText  placeholder=" "  formControlName="username"  inputId="username"  class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
             <label for="username">{{"EUSER" | translate}}</label>
           </p-floatlabel>
 
         </div>
 
-        <!-- <div  class="input-wrapper"  *ngIf="registerForm.get('role').value === 'Supplier'">
+        <div class="input-wrapper w-full">
 
-          <p>Supplier Name</p>
-          <p-floatlabel class="w-full md:w-56" variant="on">
-            <input  type="text"  pInputText  placeholder=" "  formControlName="username"  inputId="supplierName"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-            <label for="supplierName">Enter Supplier Name</label>
-          </p-floatlabel>
-
-        </div> -->
-
-        <div class="input-wrapper">
-
-          <p>Email</p>
-          <p-floatlabel class="w-full md:w-56" variant="on">
-            <input  type="text"  pInputText  placeholder=" "  formControlName="email"  inputId="email"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"  />
+          <p class="font-medium  break-words">Email</p>
+          <p-floatlabel class="w-full " variant="on">
+            <input  type="text"  pInputText  placeholder=" "  formControlName="email"  inputId="email"  class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"  />
             <label for="email">{{"EMAILPH" | translate}}</label>
           </p-floatlabel>
 
@@ -66,10 +53,10 @@
 
         <div class="passwords">
 
-          <div class="input-wrapper">
-            <p>{{"Password" | translate}}</p>
-            <p-floatlabel  class="w-full md:w-56"  variant="on"  inputId="password">
-              <p-password formControlName="password" [toggleMask]="true">
+          <div class="input-wrapper w-full">
+            <p class="font-medium  break-words">{{"Password" | translate}}</p>
+            <p-floatlabel  class="w-full"  variant="on"  inputId="password">
+              <p-password formControlName="password" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500">
                 <ng-template #header>
                   <div class="font-semibold text-xm mb-4">{{"PICK" | translate}}</div>
                 </ng-template>
@@ -88,9 +75,9 @@
           </div>
 
           <div class="input-wrapper">
-            <p>{{"CONF" | translate}}</p>
-            <p-floatlabel class="w-full md:w-56" variant="on" inputId="confirm">
-              <p-password formControlName="confirm" [toggleMask]="true">
+            <p class="font-medium  break-words">{{"CONF" | translate}}</p>
+            <p-floatlabel class="w-full" variant="on" inputId="confirm" >
+              <p-password formControlName="confirm" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500">
                 <ng-template #header>
                   <div class="font-semibold text-xm mb-4">{{"CONF" | translate}}</div>
                 </ng-template>
