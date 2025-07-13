@@ -25,6 +25,15 @@ export class CalendarComponent {
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin,timeGridPlugin,interactionPlugin,listPlugin],
+    selectable: true,
+    selectAllow: (selectInfo) => {
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      return selectInfo.start >= today
+    },
+    selectMirror: true,
+    selectOverlap: false,
+    select : this.handleDateSelect.bind(this),
     initialView: 'dayGridMonth',
     headerToolbar: {
       left: 'prev,next today',
@@ -66,6 +75,35 @@ export class CalendarComponent {
         start: '2025-07-25',
       }
     ]
+  }
+
+  async handleDateSelect(selectInfo: DateSelectArg){
+
+    const { start, end, view } = selectInfo
+    
+    const startDateFormatted = this.datePipe.transform(start, 'MMM d, y, HH:mm:ss');
+
+    let adjustedEnd = end;
+    if(view.type === 'dayGridMonth' || selectInfo.allDay){
+      adjustedEnd = new Date(end.getTime() - 1);
+      // adjustedEnd.setDate(adjustedEnd.getSeconds() - 1);
+    }
+
+    const endDateFormatted = this.datePipe.transform(adjustedEnd,'MMM d, y, HH:mm:ss');
+
+    const confirmed = await this.confirmationDialogService.confirm(
+      `Create and event from ${startDateFormatted} to ${endDateFormatted}?`,
+      'Create Event'
+    );
+
+    if(confirmed){
+      this.router.navigate(['/organizer/create-event'],{
+        queryParams: { start: start.toISOString(), end: adjustedEnd.toISOString()}
+      });
+    }
+
+    selectInfo.view.calendar.unselect();
+
   }
 
 }
