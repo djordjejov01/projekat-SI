@@ -27,7 +27,10 @@ export class CreateEventComponent implements OnInit{
   minDate : Date;
   selectedImageFile: File | null = null;
 
-  constructor( private translateService : TranslateService, private messageService : MessageService) {}
+  constructor( 
+    private translateService : TranslateService,
+    private messageService : MessageService,
+    ) {}
 
   ngOnInit(): void {
 
