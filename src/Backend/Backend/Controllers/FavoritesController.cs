@@ -21,9 +21,9 @@ namespace Backend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EventListDto>>> GetFavorites()
         {
-            
+
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-            
+
             var favoriteEvents = await _context.FavoriteEvents
                 .Where(f => f.UserId == userId)
                 .Include(f => f.Event)
@@ -46,9 +46,9 @@ namespace Backend.Controllers
         public async Task<IActionResult> AddFavorite([FromBody] int eventId)
         {
 
-            
+
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-            
+
             var exists = await _context.FavoriteEvents.AnyAsync(f => f.UserId == userId && f.EventId == eventId);
             if (exists)
                 return BadRequest("Event is already in favorites.");
@@ -69,7 +69,7 @@ namespace Backend.Controllers
         [HttpDelete]
         public async Task<IActionResult> RemoveFavorite([FromBody] int eventId)
         {
-            
+
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var favorite = await _context.FavoriteEvents
                 .FirstOrDefaultAsync(f => f.UserId == userId && f.EventId == eventId);
