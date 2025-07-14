@@ -45,7 +45,7 @@ namespace Backend.Services
                 IsActive = isActive,
                 ProfilePicture = "",
                 Language = "",
-                PhoneNumber = ""
+                PhoneNumber = "",
             };
 
             _context.Users.Add(user);
@@ -116,27 +116,6 @@ namespace Backend.Services
             return userDto;
         }
 
-        public async Task<bool> ApproveSupplierAsync(int userId)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
-            if (user == null)
-            {
-                throw new Exception("Korisnik nije pronađen.");
-            }
-
-            if (user.Role != UserRole.Supplier)
-            {
-                throw new Exception("Korisnik nije dobavljač.");
-            }
-
-            if (user.IsActive)
-            {
-                throw new Exception("Dobavljač je već odobren.");
-            }
-
-            user.IsActive = true;
-            await _context.SaveChangesAsync();
-            return true;
-        }
+        
     }
 }
