@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 export default function EventsScreen() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState<{ [key: number]: boolean }>({});
   const router = useRouter();
   const { favorites, toggleFavorite, clearFavorites } = useFavorites();
   const { t } = useTranslation();
@@ -26,7 +27,7 @@ export default function EventsScreen() {
     const fetchEvents = async () => {
       setLoading(true);
       try {
-        const response = await fetch('http://192.168.188.32:5216/api/events');
+        const response = await fetch('http://192.168.33.111:5216/api/events');
         if (response.ok) {
           const data = await response.json();
           setEvents(data);
@@ -78,7 +79,26 @@ export default function EventsScreen() {
         style={styles.card}
         onPress={() => router.push({ pathname: '../event/[id]', params: { id: item.id } })}
       >
-        <Image source={{ uri: item.imageUrl }} style={styles.image} />
+        <View style={styles.imageWrapper}>
+          {imageLoading[item.id] && (
+            <ActivityIndicator
+              size="large"
+              color="#007AFF"
+              style={StyleSheet.absoluteFill}
+            />
+          )}
+          <Image
+            source={{ uri: item.imageUrl }}
+            style={styles.image}
+            onLoadStart={() =>
+              setImageLoading((prev) => ({ ...prev, [item.id]: true }))
+            }
+            onLoadEnd={() =>
+              setImageLoading((prev) => ({ ...prev, [item.id]: false }))
+            }
+          />
+        </View>
+
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.info}>
           🕒 {new Date(item.startDate).toLocaleDateString('en-US')} |{' '}
@@ -121,8 +141,6 @@ export default function EventsScreen() {
           showsVerticalScrollIndicator={false}
         />
       )}
-
-      
     </View>
   );
 }
@@ -138,8 +156,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
   },
-  image: { width: '100%', height: 150, borderRadius: 8 },
-  title: { fontSize: 16, fontWeight: '600', marginTop: 8 },
+  imageWrapper: {
+    width: '100%',
+    height: 150,
+    borderRadius: 8,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  title: { fontSize: 16, fontWeight: '600' },
   info: { fontSize: 13, color: '#444', marginTop: 2 },
   row: {
     marginTop: 8,
@@ -155,5 +185,5 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     color: '#fff',
     fontWeight: '600',
-  }
+  },
 });

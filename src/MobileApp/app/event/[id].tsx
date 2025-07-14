@@ -51,6 +51,7 @@ export default function EventDetailScreen() {
   const [event, setEvent] = useState<Event | null>(null);
   const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updatingFavorite, setUpdatingFavorite] = useState(false);
 
@@ -167,7 +168,20 @@ export default function EventDetailScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <Image source={{ uri: event.imageUrl }} style={styles.image} />
+      <View style={styles.imageWrapper}>
+        {imageLoading && (
+          <ActivityIndicator
+            size="large"
+            color="#2563EB"
+            style={StyleSheet.absoluteFill}
+          />
+        )}
+        <Image
+          source={{ uri: event.imageUrl }}
+          style={styles.image}
+          onLoadEnd={() => setImageLoading(false)}
+        />
+      </View>
 
       <Text style={styles.title}>{event.title}</Text>
       <Text style={styles.date}>
@@ -255,7 +269,7 @@ export default function EventDetailScreen() {
       {coords && (
         <>
           <Text style={styles.sectionTitle}>{t('location')}</Text>
-         <MapView
+          <MapView
             style={styles.map}
             mapType="none"
             initialRegion={{
@@ -299,12 +313,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  image: {
+  imageWrapper: {
     width: '100%',
     height: 220,
     borderRadius: 14,
     marginBottom: 20,
     marginTop: 40,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
   },
   title: {
     fontSize: 24,
