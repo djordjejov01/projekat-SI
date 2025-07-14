@@ -66,7 +66,7 @@ export default function EventDetailScreen() {
         const headers: any = {};
         if (token) headers.Authorization = `Bearer ${token}`;
 
-        const response = await fetch(`http://192.168.33.111:5216/api/Events/Details?id=${currentId}`, {
+        const response = await fetch(`http://192.168.188.32:5216/api/Events/Details?id=${currentId}`, {
           headers,
         });
 
@@ -74,6 +74,8 @@ export default function EventDetailScreen() {
 
         const data: Event = await response.json();
         setEvent(data);
+
+console.log('Event location:', data.location);
         geocodeLocation(data.location);
       } catch (err) {
         console.error(err);
@@ -86,23 +88,49 @@ export default function EventDetailScreen() {
     fetchEvent();
   }, [currentId]);
 
-  const geocodeLocation = async (location: string) => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`
-      );
-      const data = await response.json();
-
-      if (data && data.length > 0) {
-        setCoords({
-          latitude: parseFloat(data[0].lat),
-          longitude: parseFloat(data[0].lon),
-        });
+//   const geocodeLocation = async (location: string) => {
+//     try {
+//       const response = await fetch(
+//         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`
+//       );
+//       const data = await response.json();
+// console.log('Geocode result:', data);
+//       if (data && data.length > 0) {
+//         setCoords({
+//           latitude: parseFloat(data[0].lat),
+//           longitude: parseFloat(data[0].lon),
+//         });
+//       }
+//     } catch (err) {
+//       console.warn('Error geocoding location:', err);
+//     }
+//   };
+const geocodeLocation = async (location: string) => {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`,
+      {
+        headers: {
+          'User-Agent': 'SyncUpApp/1.0 (your-email@example.com)',
+          'Accept-Language': 'en',
+        },
       }
-    } catch (err) {
-      console.warn('Error geocoding location:', err);
+    );
+
+    const text = await response.text();
+    const data = JSON.parse(text);
+    if (data && data.length > 0) {
+      setCoords({
+        latitude: parseFloat(data[0].lat),
+        longitude: parseFloat(data[0].lon),
+      });
+    } else {
+      console.warn('No results for location:', location);
     }
-  };
+  } catch (err) {
+    console.warn('Error geocoding location:', err);
+  }
+};
 
   const toggleFavorite = async () => {
     if (!event) return;
@@ -126,7 +154,7 @@ export default function EventDetailScreen() {
 
       const method = event.isFavorite ? 'DELETE' : 'POST';
 
-      const res = await fetch('http://192.168.33.111:5216/api/Favorites', {
+      const res = await fetch('http://192.168.188.32:5216/api/Favorites', {
         method,
         headers: {
           'Content-Type': 'application/json',

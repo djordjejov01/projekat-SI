@@ -15,7 +15,9 @@
   "noFavoriteEvents": "Još uvek nemate omiljene događaje.",
   "loadingFavorites": "Učitavanje omiljenih...",
   "welcomeHome": "Dobrodošli! Korisnik je prijavljen.",
-  "guestLoadingMessage": "Pregledate kao gost. Učitavanje događaja...",
+      "guest": {
+    "loadingMessage":  "Pregledate kao gost. Učitavanje događaja..."
+  },
   "welcomeToSyncUp": "Dobrodošli u SyncUp!",
   "emailPlaceholder": "Email adresa",
   "passwordPlaceholder": "••••••••",
@@ -53,6 +55,8 @@
   "buyTicket": "Kupi kartu",
   "eventDescription": "Opis događaja",
   "agenda": "Program",
+  "success": "Uspešno",
+  "accountCreated": "Nalog je uspešno kreiran!",
   "location": "Lokacija",
   "organizer": "Organizator",
   "loading": "Učitavanje...",
@@ -70,7 +74,7 @@
   },
   "profile": {
   "notLoggedIn": "Niste ulogovani",
-  "loginPrompt": "Molimo vas da se ulogujete kako biste videli svoj profil.",
+  "loginPrompt": "Molimo Vas da se ulogujete kako biste videli svoj profil.",
   "loginNow": "Uloguj se",
   "title": "Moj Profil",
   "edit": "Izmeni Profil",
@@ -90,9 +94,8 @@
   "logoutError": "Neuspešna odjava."
 }
 
-
-
 }
+
 
 
 
