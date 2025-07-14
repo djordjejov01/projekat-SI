@@ -55,6 +55,8 @@
   "buyTicket": "Kupi kartu",
   "eventDescription": "Opis događaja",
   "agenda": "Program",
+  "success": "Uspešno",
+  "accountCreated": "Nalog je uspešno kreiran!",
   "location": "Lokacija",
   "organizer": "Organizator",
   "loading": "Učitavanje...",
@@ -93,6 +95,7 @@
 }
 
 }
+
 
 
 

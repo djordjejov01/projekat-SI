@@ -45,6 +45,8 @@
   "oneSpecial": "One special character",
   "alreadyHaveAccount": "Already have an account?",
   "allFieldsRequired": "All fields are required",
+  "success": "Success",
+  "accountCreated": "Account created successfully!",
   "passwordRequirements": "Password must meet all the listed requirements",
   "passwordMismatch": "Passwords do not match",
     "guest": {
@@ -97,5 +99,5 @@
 
 
 
-
 }
+
