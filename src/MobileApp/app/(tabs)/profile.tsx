@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_URL } from '../../config';
 import {
   View,
   Text,
@@ -28,7 +29,7 @@ export default function ProfileScreen() {
 
       setIsLoggedIn(true);
       try {
-        const res = await fetch('http://192.168.33.111:5216/api/MobileUser/profile', {
+        const res = await fetch(`${API_URL}/MobileUser/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { router } from 'expo-router';
 import { useFavorites } from './context/FavoriteContext';
+import { API_URL } from '../config';
 import {
   View,
   Text,
@@ -75,7 +76,7 @@ export default function LoginScreen() {
     }
 
     try {
-      const response = await fetch('http://192.168.188.32:5216/api/User/login', {
+      const response = await fetch(`${API_URL}/User/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -87,6 +88,14 @@ export default function LoginScreen() {
       }
 
       const data = await response.json();
+
+      // 🔒 Proveri da li je korisnik MobileUser
+      // if (data.role !== 'MobileUser') {
+      //   console.log(data.role);
+      //   Alert.alert('Pristup odbijen', 'Dozvoljen je samo pristup korisnicima mobilne aplikacije.');
+      //   return;
+      // }
+
       if (data.token) {
         await AsyncStorage.setItem('token', data.token);
         loadFavorites();

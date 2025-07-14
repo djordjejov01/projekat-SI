@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_URL } from '../../config';
 import {
   View,
   Text,
@@ -37,7 +38,7 @@ export default function FavoritesScreen() {
       setIsGuest(false);
 
       try {
-        const response = await fetch('http://192.168.33.111:5216/api/favorites', {
+        const response = await fetch(`${API_URL}/favorites`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

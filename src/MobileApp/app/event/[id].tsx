@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { API_URL } from '../../config';
 import {
   View,
   Text,
@@ -66,7 +67,7 @@ export default function EventDetailScreen() {
         const headers: any = {};
         if (token) headers.Authorization = `Bearer ${token}`;
 
-        const response = await fetch(`http://192.168.188.32:5216/api/Events/Details?id=${currentId}`, {
+        const response = await fetch(`${API_URL}/Events/Details?id=${currentId}`, {
           headers,
         });
 
@@ -88,49 +89,48 @@ console.log('Event location:', data.location);
     fetchEvent();
   }, [currentId]);
 
-//   const geocodeLocation = async (location: string) => {
-//     try {
-//       const response = await fetch(
-//         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`
-//       );
-//       const data = await response.json();
-// console.log('Geocode result:', data);
-//       if (data && data.length > 0) {
-//         setCoords({
-//           latitude: parseFloat(data[0].lat),
-//           longitude: parseFloat(data[0].lon),
-//         });
-//       }
-//     } catch (err) {
-//       console.warn('Error geocoding location:', err);
-//     }
-//   };
-const geocodeLocation = async (location: string) => {
-  try {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`,
-      {
-        headers: {
-          'User-Agent': 'SyncUpApp/1.0 (your-email@example.com)',
-          'Accept-Language': 'en',
-        },
+  const geocodeLocation = async (location: string) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`
+      );
+      const data = await response.json();
+      if (data && data.length > 0) {
+        setCoords({
+          latitude: parseFloat(data[0].lat),
+          longitude: parseFloat(data[0].lon),
+        });
       }
-    );
-
-    const text = await response.text();
-    const data = JSON.parse(text);
-    if (data && data.length > 0) {
-      setCoords({
-        latitude: parseFloat(data[0].lat),
-        longitude: parseFloat(data[0].lon),
-      });
-    } else {
-      console.warn('No results for location:', location);
+    } catch (err) {
+      console.warn('Error geocoding location:', err);
     }
-  } catch (err) {
-    console.warn('Error geocoding location:', err);
-  }
-};
+  };
+// const geocodeLocation = async (location: string) => {
+//   try {
+//     const response = await fetch(
+//       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`,
+//       {
+//         headers: {
+//           'User-Agent': 'SyncUpApp/1.0 (your-email@example.com)',
+//           'Accept-Language': 'en',
+//         },
+//       }
+//     );
+
+//     const text = await response.text();
+//     const data = JSON.parse(text);
+//     if (data && data.length > 0) {
+//       setCoords({
+//         latitude: parseFloat(data[0].lat),
+//         longitude: parseFloat(data[0].lon),
+//       });
+//     } else {
+//       console.warn('No results for location:', location);
+//     }
+//   } catch (err) {
+//     console.warn('Error geocoding location:', err);
+//   }
+// };
 
   const toggleFavorite = async () => {
     if (!event) return;
@@ -154,7 +154,7 @@ const geocodeLocation = async (location: string) => {
 
       const method = event.isFavorite ? 'DELETE' : 'POST';
 
-      const res = await fetch('http://192.168.188.32:5216/api/Favorites', {
+      const res = await fetch(`${API_URL}/Favorites`, {
         method,
         headers: {
           'Content-Type': 'application/json',

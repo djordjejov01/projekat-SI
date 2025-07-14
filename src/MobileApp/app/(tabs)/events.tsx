@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_URL } from '../../config';
 import {
   View,
   Text,
@@ -27,7 +28,7 @@ export default function EventsScreen() {
     const fetchEvents = async () => {
       setLoading(true);
       try {
-        const response = await fetch('http://192.168.33.111:5216/api/events');
+        const response = await fetch(`${API_URL}/events`);
         if (response.ok) {
           const data = await response.json();
           setEvents(data);

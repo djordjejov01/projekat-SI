@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'expo-router';
 import { router } from 'expo-router';
 import { Animated } from 'react-native';
+import { API_URL } from '../config';
 
 import {
   View,
@@ -62,7 +63,7 @@ export default function SignUpScreen() {
     }
 
     try {
-      const response = await fetch('http://192.168.188.32:5216/api/User/register', {
+      const response = await fetch(`${API_URL}/User/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
