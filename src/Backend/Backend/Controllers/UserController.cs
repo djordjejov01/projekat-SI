@@ -130,5 +130,17 @@ namespace Backend.Controllers
             return Ok("Lozinka uspešno promenjena.");
         }
 
+        [Authorize]
+        [HttpGet("role")]
+        public async Task<IActionResult> GetUserRole()
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound();
+
+            return Ok(new { role = user.Role.ToString() });
+        }
+
     }
 }
