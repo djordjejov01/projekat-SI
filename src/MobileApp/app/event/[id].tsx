@@ -65,7 +65,7 @@ export default function EventDetailScreen() {
         const headers: any = {};
         if (token) headers.Authorization = `Bearer ${token}`;
 
-        const response = await fetch(`http://192.168.188.32:5216/api/Events/Details?id=${currentId}`, {
+        const response = await fetch(`http://192.168.33.111:5216/api/Events/Details?id=${currentId}`, {
           headers,
         });
 
@@ -125,7 +125,7 @@ export default function EventDetailScreen() {
 
       const method = event.isFavorite ? 'DELETE' : 'POST';
 
-      const res = await fetch('http://192.168.188.32:5216/api/Favorites', {
+      const res = await fetch('http://192.168.33.111:5216/api/Favorites', {
         method,
         headers: {
           'Content-Type': 'application/json',
@@ -255,8 +255,9 @@ export default function EventDetailScreen() {
       {coords && (
         <>
           <Text style={styles.sectionTitle}>{t('location')}</Text>
-          <MapView
+         <MapView
             style={styles.map}
+            mapType="none"
             initialRegion={{
               latitude: coords.latitude,
               longitude: coords.longitude,
@@ -265,9 +266,10 @@ export default function EventDetailScreen() {
             }}
           >
             <UrlTile
-              urlTemplate="http://c.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
               maximumZ={19}
               flipY={false}
+              shouldReplaceMapContent={true}
             />
             <Marker coordinate={coords} title={event.title} description={event.location} />
           </MapView>
