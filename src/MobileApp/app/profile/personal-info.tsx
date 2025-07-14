@@ -26,7 +26,7 @@ export default function PersonalInfoScreen() {
         const token = await AsyncStorage.getItem('token');
         if (!token) return;
 
-        const res = await fetch('http://192.168.33.109:5216/api/User/profile', {
+        const res = await fetch('http://192.168.33.111:5216/api/MobileUser/profile', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -55,7 +55,7 @@ export default function PersonalInfoScreen() {
         return;
       }
 
-      const res = await fetch('http://192.168.33.109:5216/api/User/profileUpdate', {
+      const res = await fetch('http://192.168.33.111:5216/api/MobileUser/profileUpdate', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

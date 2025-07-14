@@ -28,7 +28,7 @@ export default function ProfileScreen() {
 
       setIsLoggedIn(true);
       try {
-        const res = await fetch('http://192.168.188.32:5216/api/User/profile', {
+        const res = await fetch('http://192.168.33.111:5216/api/MobileUser/profile', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
