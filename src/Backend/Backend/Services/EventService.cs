@@ -12,7 +12,8 @@ namespace Backend.Services
         {
             _context = context;
         }
-        public async Task<List<EventListDto>> SearchEventsAsync(string? name, EventCategory? category, string? location,bool? isFree)
+        public async Task<List<EventListDto>> SearchEventsAsync(string? name, EventCategory? category, string? location,bool? isFree,
+            DateTime? startDate,DateTime? endDate)
         {
             var query = _context.Events.AsQueryable();
 
@@ -36,6 +37,14 @@ namespace Backend.Services
             if (isFree.HasValue)
             {
                 query = query.Where(e => e.isFree == isFree.Value);
+            }
+            if (startDate.HasValue)
+            {
+                query = query.Where(e => e.StartDate >= startDate.Value);
+            }
+            if (endDate.HasValue)
+            {
+                query = query.Where(e => e.StartDate <= endDate.Value);
             }
 
             var attendingCounts = await _context.UserTickets
