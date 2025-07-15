@@ -263,9 +263,20 @@ console.log('Event location:', data.location);
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.buyBtn} activeOpacity={0.7}>
+          <TouchableOpacity
+          style={styles.buyBtn}
+          activeOpacity={0.7}
+          onPress={() =>
+            router.push({
+              pathname: './tickets',
+              params: { eventId: event.id.toString() }, 
+            })
+          }
+        >
           <Text style={styles.buyText}>{t('buyTicket')}</Text>
         </TouchableOpacity>
+
+
       </View>
 
       <Text style={styles.sectionTitle}>{t('eventDescription')}</Text>
