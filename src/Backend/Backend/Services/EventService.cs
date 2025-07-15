@@ -12,7 +12,7 @@ namespace Backend.Services
         {
             _context = context;
         }
-        public async Task<List<EventListDto>> SearchEventsAsync(string? name, EventCategory? category)
+        public async Task<List<EventListDto>> SearchEventsAsync(string? name, EventCategory? category, string? location)
         {
             var query = _context.Events.AsQueryable();
 
@@ -24,6 +24,11 @@ namespace Backend.Services
             if (category.HasValue)
             {
                 query = query.Where(e => e.Category == category.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(location))
+            {
+                query = query.Where(e => e.Location.ToLower().Contains(location.ToLower()));
             }
 
             var attendingCounts = await _context.UserTickets
