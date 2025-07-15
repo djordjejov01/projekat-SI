@@ -13,7 +13,7 @@ namespace Backend.Services
             _context = context;
         }
         public async Task<List<EventListDto>> SearchEventsAsync(string? name, EventCategory? category, string? location,bool? isFree,
-            DateTime? startDate,DateTime? endDate,bool? hasTickets)
+            DateTime? startDate,DateTime? endDate,bool? hasTickets,string? sortOrder)
         {
             var query = _context.Events.AsQueryable();
 
@@ -59,6 +59,14 @@ namespace Backend.Services
 
                 query = query.Where(e => eventIdsWithTickets.Contains(e.EventID));
             }
+            if (sortOrder != null && sortOrder.ToLower() == "desc")
+            {
+                query = query.OrderByDescending(e => e.StartDate);
+            }
+            else
+            {
+                query = query.OrderBy(e => e.StartDate);
+            }
 
             var attendingCounts = await _context.UserTickets
                 .GroupBy(ut => ut.Ticket.EventID)
@@ -66,7 +74,7 @@ namespace Backend.Services
                 .ToDictionaryAsync(x => x.EventID, x => x.Count);
 
             return await query
-                .OrderBy(e => e.StartDate)
+                //.OrderBy(e => e.StartDate)
                 .Select(e => new EventListDto
                 {
                     Id = e.EventID,
