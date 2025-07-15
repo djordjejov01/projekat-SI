@@ -5,6 +5,7 @@ namespace Backend.Services
 {
     public interface IEventService
     {
-        Task<List<EventListDto>> SearchEventsAsync(string? name,EventCategory? category,string? location);
+        Task<List<EventListDto>> SearchEventsAsync(string? name,EventCategory? category,string? location,
+            bool? isFree);
     }
 }
