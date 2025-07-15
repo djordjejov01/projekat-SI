@@ -132,9 +132,21 @@ namespace Backend.Controllers
 
         [AllowAnonymous]
         [HttpGet("search")]
-        public async Task<ActionResult<List<EventListDto>>> SearchEvents([FromQuery] string? name, [FromQuery] EventCategory? category)
+        public async Task<ActionResult<List<EventListDto>>> SearchEvents([FromQuery] string? name, [FromQuery] string? category)
         {
-            var events = await _eventService.SearchEventsAsync(name, category);
+            EventCategory? categoryEnum = null;
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                if (Enum.TryParse<EventCategory>(category, true, out var parsedCategory))
+                {
+                    categoryEnum = parsedCategory;
+                }
+                else
+                {
+                    return BadRequest("Nepoznata kategorija.");
+                }
+            }
+            var events = await _eventService.SearchEventsAsync(name, categoryEnum);
             return Ok(events);
 
         }
