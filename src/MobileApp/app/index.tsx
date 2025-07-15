@@ -8,9 +8,10 @@ import {
   Modal,
   Pressable,
 } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import i18n from './i18n';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -19,6 +20,20 @@ export default function HomeScreen() {
 
   useEffect(() => {
     setSelectedLang(i18n.language === 'sr' ? 'sr' : 'en');
+
+    const checkToken = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (token) {
+          // Korisnik je već prijavljen, preusmeri ga
+          router.replace('./(tabs)/events');
+        }
+      } catch (error) {
+        console.log('Token check failed:', error);
+      }
+    };
+
+    checkToken();
   }, []);
 
   const handleLanguageSwitch = async (lang: 'en' | 'sr') => {
@@ -42,7 +57,10 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      <Image source={require('../assets/images/SyncUpLogo.png')} style={styles.icon} />
+      <Image
+        source={require('../assets/images/SyncUpLogo.png')}
+        style={styles.icon}
+      />
 
       <Text style={styles.subtitle}>Discover the World at Your Fingertips</Text>
 
@@ -133,17 +151,16 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
-    width: 300, 
+    width: 300,
     marginTop: 40,
     marginBottom: 10,
   },
-buttonText: {
-  color: '#fff',
-  fontWeight: 'bold',
-  fontSize: 16,
-  textAlign: 'center',
-},
-
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center',
+  },
   guestText: {
     color: '#333',
     textDecorationLine: 'underline',
