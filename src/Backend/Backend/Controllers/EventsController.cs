@@ -12,10 +12,10 @@ namespace Backend.Controllers
     [ApiController]
     public class EventsController : ControllerBase
     {
-        private readonly IUserService _userService;
+        private readonly IEventService _eventService;
         private readonly AppDbContext _context;
 
-        public EventsController(AppDbContext context, IUserService eventService)
+        public EventsController(AppDbContext context, IEventService eventService)
         {
             _context = context;
             _eventService = eventService;
@@ -132,10 +132,10 @@ namespace Backend.Controllers
 
         [AllowAnonymous]
         [HttpGet("search")]
-        public async Task<IActionResult> SearchEvents(
-            [FromQuery] string? name, [FromQuery] EventCategory? category)
+        public async Task<ActionResult<List<EventListDto>>> SearchEvents([FromQuery] string? name, [FromQuery] EventCategory? category)
         {
             var events = await _eventService.SearchEventsAsync(name, category);
+            return Ok(events);
 
         }
 
