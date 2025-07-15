@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_URL } from '../../config';
 import {
   View,
   Text,
@@ -19,6 +20,7 @@ export default function FavoritesScreen() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isGuest, setIsGuest] = useState(false);
+  const [imageLoading, setImageLoading] = useState<{ [key: number]: boolean }>({});
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -36,7 +38,7 @@ export default function FavoritesScreen() {
       setIsGuest(false);
 
       try {
-        const response = await fetch('http://192.168.188.32:5216/api/favorites', {
+        const response = await fetch(`${API_URL}/favorites`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -66,7 +68,22 @@ export default function FavoritesScreen() {
         })
       }
     >
-      <Image source={{ uri: item.imageUrl }} style={styles.image} />
+      <View style={styles.imageWrapper}>
+        {imageLoading[item.id] && (
+          <ActivityIndicator size="large" color="#007AFF" style={StyleSheet.absoluteFill} />
+        )}
+        <Image
+          source={{ uri: item.imageUrl }}
+          style={styles.image}
+          onLoadStart={() =>
+            setImageLoading((prev) => ({ ...prev, [item.id]: true }))
+          }
+          onLoadEnd={() =>
+            setImageLoading((prev) => ({ ...prev, [item.id]: false }))
+          }
+        />
+      </View>
+
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.info}>
         🕒{' '}
@@ -140,7 +157,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
   },
-  image: { width: '100%', height: 150, borderRadius: 8 },
+  imageWrapper: {
+    width: '100%',
+    height: 150,
+    borderRadius: 8,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  image: { width: '100%', height: '100%' },
   title: { fontSize: 16, fontWeight: '600', marginTop: 8 },
   info: { fontSize: 13, color: '#444', marginTop: 2 },
   row: {
