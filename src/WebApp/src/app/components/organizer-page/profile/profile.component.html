@@ -15,26 +15,26 @@
             </div>
             <div id="form">
                 <label for="name">Name</label>
-                <input id="name" type="text" [(ngModel)]="user.username" class="form-control" />
+                <input id="name" type="text" [value]="currOrganizer?.getName()" class="form-control" />
                 <label for="username">Username</label>
-                <input id="username" type="text" [(ngModel)]="user.username" class="form-control" />
+                <input id="username" type="text" [value]="currOrganizer?.getUsername()" class="form-control" />
                 <label for="email">Email</label>
-                <input id="email" type="text" [(ngModel)]="user.username" class="form-control" />
+                <input id="email" type="text" [value]="currOrganizer?.getEmail()" class="form-control" />
                 <label for="phone">Phone Number</label>
-                <input id="phone" type="text" [(ngModel)]="user.username" class="form-control" />
+                <input id="phone" type="text" [value]="currOrganizer?.getPhoneNumber()" class="form-control" />
                 <div id="pass">
                     <div id="onepass">
                         <label for="cpass">Current Password</label>
-                        <input id="cpass" type="text" [(ngModel)]="user.username" class="form-control" />
+                        <input id="cpass" type="text" class="form-control" />
                     </div>
                     <div id="onepass">
                         <label for="npass">New Password</label>
-                        <input id="npass" type="text" [(ngModel)]="user.username" class="form-control" />
+                        <input id="npass" type="text" class="form-control" />
                     </div>
 
                     <div id="onepass">
                         <label for="cnpass">Confirm New Password</label>
-                        <input id="cnpass" type="text" [(ngModel)]="user.username" class="form-control" />
+                        <input id="cnpass" type="text" class="form-control" />
                     </div>
 
                 </div>
