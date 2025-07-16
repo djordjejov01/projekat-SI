@@ -20,7 +20,19 @@ export class AuthService{
     private readonly tokenKey = 'access_token';
     private decodedToken: JwtPayload | null = null;
 
-    constructor(){}
+    constructor(){
+         const token = localStorage.getItem(this.tokenKey);
+        if(token){
+            try{
+                const decoded = jwtDecode<JwtPayload>(token);
+                this.decodedToken = decoded;
+            }catch(err){
+                console.error('Failed to decode token on init:', err);
+                this.decodedToken = null;
+                localStorage.removeItem(this.tokenKey);
+            }
+        }
+    }
 
     setToken(token : string) : "ok" | 'unauthorized' | 'error'{
 
