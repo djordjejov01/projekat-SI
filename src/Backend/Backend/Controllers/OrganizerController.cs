@@ -18,11 +18,14 @@ namespace Backend.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IOrganizerService _organizerService;
+        private readonly IWebHostEnvironment _env;
 
-        public OrganizerController(AppDbContext context,IOrganizerService organizerService)
+
+        public OrganizerController(AppDbContext context,IOrganizerService organizerService, IWebHostEnvironment env)
         {
             _context = context;
             _organizerService = organizerService;
+            _env = env;
         }
         [HttpGet("get-organizer")]
         public async Task<IActionResult> GetOrganizer(int id)
@@ -39,6 +42,20 @@ namespace Backend.Controllers
             if(Organizer is not null)
                 return Ok(Organizer);
             return BadRequest(new { message = "Organizer with that ID does not exist." });
+        }
+        [HttpPost("change-organizer-picture")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadOrganizerPhoto([FromForm]UploadImageDto model)
+        {
+            string ImageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
+            Organizer o = _context.Organizers.Where(o => o.Id == model.OrganizerId).First();
+            if (o is null)
+                return BadRequest("ERROR!");
+            await CommonHelpers.RemovePhoto(o.Image, _env);
+            o.Image = ImageName;
+            _context.Organizers.Update(o);
+            _context.SaveChanges();
+            return Ok();
         }
         [HttpPost("update-organizer")]
         public async Task<IActionResult> UpdateOrganizer([FromBody] OrganizerDto model, string newPassword)
@@ -99,8 +116,6 @@ namespace Backend.Controllers
                 }
                 _context.Users.Where(o => o.UserId == model.Id).FirstOrDefault().Password = newHash;
             }
-            if(organizer.Image != model.Image)
-                organizer.Image = model.Image;
             
             await _context.SaveChangesAsync();
             
