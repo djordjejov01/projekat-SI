@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,12 +6,14 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 export default function AboutSyncUpScreen() {
   const router = useRouter();
+  const [imageLoading, setImageLoading] = useState(true);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -21,7 +23,7 @@ export default function AboutSyncUpScreen() {
           onPress={() => router.replace('/(tabs)/profile')}
           style={styles.backButton}
         >
-          <Ionicons name="arrow-back" size={24}  />
+          <Ionicons name="arrow-back" size={24} />
           <Text style={styles.backText}></Text>
         </TouchableOpacity>
         <View style={styles.titleWrapper}>
@@ -29,13 +31,21 @@ export default function AboutSyncUpScreen() {
         </View>
       </View>
 
-      {/* Ilustracija */}
-      <Image
-        source={{
-          uri: 'https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=1050&q=80',
-        }}
-        style={styles.image}
-      />
+      {/* Ilustracija sa loaderom */}
+      <View style={{ position: 'relative' }}>
+        {imageLoading && (
+          <View style={styles.loader}>
+            <ActivityIndicator size="large" color="#2563EB" />
+          </View>
+        )}
+        <Image
+          source={{
+            uri: 'https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=1050&q=80',
+          }}
+          style={styles.image}
+          onLoadEnd={() => setImageLoading(false)}
+        />
+      </View>
 
       <Text style={styles.heading}>About us</Text>
       <Text style={styles.paragraph}>
@@ -80,7 +90,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: '#fff',
     paddingBottom: 60,
-    marginTop:30
+    marginTop: 30,
   },
   header: {
     flexDirection: 'row',
@@ -112,6 +122,14 @@ const styles = StyleSheet.create({
     height: 180,
     borderRadius: 10,
     marginBottom: 20,
+  },
+  loader: {
+    position: 'absolute',
+    width: '100%',
+    height: 180,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1,
   },
   heading: {
     fontSize: 24,

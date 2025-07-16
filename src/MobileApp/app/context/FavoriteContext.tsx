@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL } from '../../config';
 
 type FavoriteContextType = {
   favorites: number[];
@@ -36,7 +37,7 @@ export const FavoriteProvider = ({ children }: { children: React.ReactNode }) =>
       const token = await AsyncStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch('http://192.168.188.32:5216/api/favorites', {
+      const response = await fetch(`${API_URL}/favorites`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -58,7 +59,7 @@ export const FavoriteProvider = ({ children }: { children: React.ReactNode }) =>
       const isAlreadyFavorite = favorites.includes(eventId);
       const method = isAlreadyFavorite ? 'DELETE' : 'POST';
 
-      const res = await fetch('http://192.168.188.32:5216/api/Favorites', {
+      const res = await fetch(`${API_URL}/Favorites`, {
         method,
         headers: {
           'Content-Type': 'application/json',
