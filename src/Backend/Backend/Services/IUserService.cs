@@ -7,6 +7,6 @@ namespace Backend.Services
     {
         Task<UserDto> RegisterAsync(RegisterDto registerDto);
         Task<UserDto> LoginAsync(LoginDto loginDto);
-        Task<bool> ApproveSupplierAsync(int userId);
+        
     }
 } 

@@ -22,7 +22,11 @@ flex-direction: column;
     justify-content: space-between;
     padding-bottom: 5px;
     border-bottom: 2px solid rgb(232, 232, 232);
-    margin-top: 10px;
+    padding-top: 10px;
+    background-color: white;
+    position:fixed;
+    width: 100%;
+    z-index: 10;
 }
 #right{
     display: flex;
@@ -35,6 +39,7 @@ flex-direction: column;
     border: 1px solid #EBEBEAFF;
     border-radius: 6px;
     font-weight: 600;
+    cursor: pointer;
 }
 #logo{
     max-width: 120px;
@@ -43,10 +48,19 @@ flex-direction: column;
 #page{
     display: flex;
     justify-content: space-between;
+    flex-wrap: nowrap; /*Nikola menjao*/
 }
 #show{
+    /* Nikola menjao
     padding-left: 30px;
-    padding-top:40px;
+    padding-top:40px; */
+    padding: 2rem;
+    padding-left: 0.25rem;
+    max-width: 1500px;
+    width: 100%;
+    padding-top: 5rem;
+    /*max-height: 800px;
+    overflow-y: auto;*/
 }
 img:hover{
     cursor: pointer;
@@ -55,16 +69,16 @@ hr{
     color: rgb(232, 232, 232);
 }
 
-@media screen and (width <= 1529px) {
-    #page{
+@media screen and (width <= 1666px) {
+    /*#page{
         flex-direction: column;
         justify-content: center;
         align-items: center;
         gap:10px;
-    }
+    }*/
     #show{
         padding:0;
-        padding-left:10px;
+        padding-left:290px;
         padding-right: 10px;
     }
 }

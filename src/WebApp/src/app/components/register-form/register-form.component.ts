@@ -48,7 +48,7 @@ export class RegisterForm implements OnInit,IDeactivate{
     private apiService : ApiService,
     private translate : TranslateService) {}
 
-  roles: String[] | undefined;
+  roles : Object[];
   userToRegister : RegisterDto | undefined;
 
   registerForm : FormGroup;
@@ -61,6 +61,12 @@ export class RegisterForm implements OnInit,IDeactivate{
 
   ngOnInit(): void {
 
+    this.setTranslatedRoles();
+
+    this.translate.onLangChange.subscribe(()=>{
+      this.setTranslatedRoles();
+    })
+
     this.registerForm = new FormGroup({
       role: new FormControl(null, Validators.required),
       username: new FormControl('', Validators.required),
@@ -71,6 +77,13 @@ export class RegisterForm implements OnInit,IDeactivate{
     }, CustomValidators.passwordsMatch)
     
   }
+
+     setTranslatedRoles(){
+      this.roles = [
+        {label: this.translate.instant('ORGANIZER'), value: 'Organizer'},
+        {label: this.translate.instant('Supplier'), value: 'Supplier'}
+      ]
+    }
 
   submitForm()
   {
@@ -175,7 +188,7 @@ export class RegisterForm implements OnInit,IDeactivate{
         this.userToRegister.getUsername()  ||
         this.userToRegister.getEmail()     ||
         this.userToRegister.getPassword()  ||
-        this.userToRegister.getConfirmPassword()) ?  this.confirmationDialogService.confirmExit('You have unsaved changes. Are you sure you want to leave this page?','Unsaved Changes') :  true;
+        this.userToRegister.getConfirmPassword()) ?  this.confirmationDialogService.confirm('You have unsaved changes. Are you sure you want to leave this page?','Unsaved Changes') :  true;
     }
 
 }

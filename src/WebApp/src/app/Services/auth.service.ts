@@ -20,27 +20,40 @@ export class AuthService{
     private readonly tokenKey = 'access_token';
     private decodedToken: JwtPayload | null = null;
 
-    constructor(){
-        this.loadToken()
-    }
-
-    private loadToken(){
+    constructor()
+    {
         const token = localStorage.getItem(this.tokenKey);
         if(token){
             try{
-                this.decodedToken = jwtDecode<JwtPayload>(token)
-            }catch(error){
-                console.error('Failed to decoted token', error);
+                const decoded = jwtDecode<JwtPayload>(token);
+                this.decodedToken = decoded;
+            }catch(err){
+                console.error('Failed to decode token on init:', err);
                 this.decodedToken = null;
+                localStorage.removeItem(this.tokenKey);
             }
         }
     }
 
-    setToken(token: string): void {
-        localStorage.setItem(this.tokenKey, token);
-        this.loadToken()
-    }
+    setToken(token : string) : "ok" | 'unauthorized' | 'error'{
 
+        try{
+            const decoded = jwtDecode<JwtPayload>(token);
+            const role = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']?.toLowerCase();
+            const validRoles = ['admin', 'organizer', 'supplier'];
+            
+            if(!validRoles.includes(role)) return 'unauthorized';
+
+            localStorage.setItem(this.tokenKey, token);
+            this.decodedToken = decoded;
+            return 'ok';
+        }
+        catch (err) {
+            console.error('Token decoding failed: ', err)
+            return 'error'
+        }
+
+    }
 
     getUserRole() : string | null{
         return this.decodedToken?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || null;

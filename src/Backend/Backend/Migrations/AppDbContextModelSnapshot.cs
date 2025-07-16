@@ -30,6 +30,9 @@ namespace Backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EventID"));
 
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -77,6 +80,9 @@ namespace Backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ActivityID"));
 
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -98,6 +104,22 @@ namespace Backend.Migrations
                     b.HasKey("ActivityID");
 
                     b.ToTable("EventActivities");
+                });
+
+            modelBuilder.Entity("Backend.Models.EventCategories", b =>
+                {
+                    b.Property<int>("CategoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CategoryID"));
+
+                    b.Property<int>("CategoryName")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CategoryID");
+
+                    b.ToTable("EventCategories");
                 });
 
             modelBuilder.Entity("Backend.Models.EventResource", b =>

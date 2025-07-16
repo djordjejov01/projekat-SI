@@ -1,21 +1,24 @@
-import React, { useState, useEffect,useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'expo-router';
 import { router } from 'expo-router';
 import { Animated } from 'react-native';
+import { API_URL } from '../config';
 
 import {
   View,
   Text,
   TextInput,
-  Switch,
-  StyleSheet,
   TouchableOpacity,
   ScrollView,
   Alert,
+  StyleSheet,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
 export default function SignUpScreen() {
+  const { t } = useTranslation();
+
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -40,103 +43,97 @@ export default function SignUpScreen() {
 
   const handleSubmit = async () => {
     if (!fullName || !email || !password || !confirmPassword) {
-      Alert.alert('All fields are required');
+      Alert.alert(t('error'), t('allFieldsRequired'));
       return;
     }
 
     if (!validateEmail(email)) {
-      Alert.alert('Invalid email address');
+      Alert.alert(t('error'), t('invalidEmail'));
       return;
     }
 
     if (!validatePassword(password)) {
-      Alert.alert('Password must meet all the listed requirements');
+      Alert.alert(t('error'), t('passwordRequirements'));
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Passwords do not match');
+      Alert.alert(t('error'), t('passwordMismatch'));
       return;
     }
 
     try {
-    const response = await fetch('http://192.168.188.32:5216/api/User/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: fullName,
-        email: email,
-        password: password,
-        confirmPassword: confirmPassword,
-        role:'MobileUser'
-      }),
-    });
+      const response = await fetch(`${API_URL}/User/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: fullName,
+          email,
+          password,
+          confirmPassword,
+          role: 'MobileUser',
+        }),
+      });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Registration failed');
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || t('genericError'));
+      }
+
+      Alert.alert(t('success'), t('accountCreated'), [
+        {
+          text: 'OK',
+          onPress: () => router.replace('/login'),
+        },
+      ]);
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      Alert.alert(t('error'), error.message || t('genericError'));
     }
+  };
 
-    Alert.alert('Success', 'Account created successfully!', [
-      {
-        text: 'OK',
-        onPress: () => router.replace('/login'),
-      },
-    ]);
-  } catch (error: any) {
-    console.error('Registration error:', error);
-    Alert.alert('Error', error.message || 'Something went wrong');
-  }
-};
-  
   type CriteriaKey = 'length' | 'upperLower' | 'number' | 'special';
 
- const criteria: Record<CriteriaKey, boolean> = {
-  length: password.length >= 8,
-  upperLower: /[A-Z]/.test(password) && /[a-z]/.test(password),
-  number: /[0-9]/.test(password),
-  special: /[!@#$%^&*(),.?":{}|<>_\-+=]/.test(password),
-};
+  const criteria: Record<CriteriaKey, boolean> = {
+    length: password.length >= 8,
+    upperLower: /[A-Z]/.test(password) && /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[!@#$%^&*(),.?":{}|<>_\-+=]/.test(password),
+  };
 
-const fadeAnims: Record<CriteriaKey, Animated.Value> = {
-  length: useRef(new Animated.Value(0.3)).current,
-  upperLower: useRef(new Animated.Value(0.3)).current,
-  number: useRef(new Animated.Value(0.3)).current,
-  special: useRef(new Animated.Value(0.3)).current,
-};
+  const fadeAnims: Record<CriteriaKey, Animated.Value> = {
+    length: useRef(new Animated.Value(0.3)).current,
+    upperLower: useRef(new Animated.Value(0.3)).current,
+    number: useRef(new Animated.Value(0.3)).current,
+    special: useRef(new Animated.Value(0.3)).current,
+  };
 
-
-
-useEffect(() => {
-  (Object.keys(criteria) as CriteriaKey[]).forEach((key) => {
-    Animated.timing(fadeAnims[key], {
-      toValue: criteria[key] ? 1 : 0.3,
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
-  });
-}, [password]);
-
-
+  useEffect(() => {
+    (Object.keys(criteria) as CriteriaKey[]).forEach((key) => {
+      Animated.timing(fadeAnims[key], {
+        toValue: criteria[key] ? 1 : 0.3,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    });
+  }, [password]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Create Your Account</Text>
+      <Text style={styles.title}>{t('createAccount')}</Text>
 
       <TextInput
         style={styles.input}
-        placeholder="John Doe"
-        placeholderTextColor='#888'
+        placeholder={t('fullNamePlaceholder')}
+        placeholderTextColor="#888"
         value={fullName}
         onChangeText={setFullName}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="john.doe@gmail.com"
-        placeholderTextColor='#888'
+        placeholder={t('emailPlaceholder')}
+        placeholderTextColor="#888"
         keyboardType="email-address"
         autoCapitalize="none"
         value={email}
@@ -146,62 +143,59 @@ useEffect(() => {
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
-          placeholder="Password"
-          placeholderTextColor='#888'
+          placeholder={t('passwordPlaceholder')}
+          placeholderTextColor="#888"
           secureTextEntry={!showPassword}
           value={password}
           onChangeText={setPassword}
         />
         <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-          <Text style={styles.toggleText}>{showPassword ? 'Hide' : 'Show'}</Text>
+          <Text style={styles.toggleText}>{showPassword ? t('hide') : t('show')}</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.requirementsTitle}>Password must:</Text>
+      <Text style={styles.requirementsTitle}>{t('passwordMust')}</Text>
       <View style={styles.requirements}>
-      <Animated.Text style={[styles.reqItem, { opacity: fadeAnims.length }]}>
-        • At least 8 characters
-      </Animated.Text>
-      <Animated.Text style={[styles.reqItem, { opacity: fadeAnims.upperLower }]}>
-        • Uppercase and lowercase letters
-      </Animated.Text>
-      <Animated.Text style={[styles.reqItem, { opacity: fadeAnims.number }]}>
-        • At least one number
-      </Animated.Text>
-      <Animated.Text style={[styles.reqItem, { opacity: fadeAnims.special }]}>
-        • One special character
-      </Animated.Text>
-    </View>
-
+        <Animated.Text style={[styles.reqItem, { opacity: fadeAnims.length }]}>
+          • {t('atLeast8')}
+        </Animated.Text>
+        <Animated.Text style={[styles.reqItem, { opacity: fadeAnims.upperLower }]}>
+          • {t('upperLower')}
+        </Animated.Text>
+        <Animated.Text style={[styles.reqItem, { opacity: fadeAnims.number }]}>
+          • {t('atLeastOneNumber')}
+        </Animated.Text>
+        <Animated.Text style={[styles.reqItem, { opacity: fadeAnims.special }]}>
+          • {t('oneSpecial')}
+        </Animated.Text>
+      </View>
 
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
-          placeholder="Confirm Password"
-          placeholderTextColor='#888'
+          placeholder={t('confirmPasswordPlaceholder')}
+          placeholderTextColor="#888"
           secureTextEntry={!showConfirmPassword}
           value={confirmPassword}
           onChangeText={setConfirmPassword}
         />
         <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-          <Text style={styles.toggleText}>
-            {showConfirmPassword ? 'Hide' : 'Show'}
-          </Text>
+          <Text style={styles.toggleText}>{showConfirmPassword ? t('hide') : t('show')}</Text>
         </TouchableOpacity>
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Create Account</Text>
+        <Text style={styles.buttonText}>{t('createAccount')}</Text>
       </TouchableOpacity>
 
       <View style={{ alignItems: 'center' }}>
         <Text style={styles.loginLink}>
-          Already have an account?{' '}
-         <Link href="/login" asChild>
-          <TouchableOpacity>
-            <Text style={styles.link}>Log In</Text>
-          </TouchableOpacity>
-        </Link>
+          {t('alreadyHaveAccount')}{' '}
+          <Link href="/login" asChild>
+            <TouchableOpacity>
+              <Text style={styles.link}>{t('login')}</Text>
+            </TouchableOpacity>
+          </Link>
         </Text>
       </View>
     </ScrollView>
@@ -261,17 +255,6 @@ const styles = StyleSheet.create({
   reqItem: {
     fontSize: 13,
     marginBottom: 2,
-  },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  checkboxText: {
-    marginLeft: 10,
-    fontSize: 13,
-    flex: 1,
-    flexWrap: 'wrap',
   },
   link: {
     color: '#007AFF',

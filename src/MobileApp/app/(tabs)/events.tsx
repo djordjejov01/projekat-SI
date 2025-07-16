@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { API_URL } from '../../config';
 import {
   View,
   Text,
@@ -13,18 +14,21 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AntDesign } from '@expo/vector-icons';
 import { useFavorites } from '../context/FavoriteContext';
+import { useTranslation } from 'react-i18next';
 
 export default function EventsScreen() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState<{ [key: number]: boolean }>({});
   const router = useRouter();
   const { favorites, toggleFavorite, clearFavorites } = useFavorites();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchEvents = async () => {
       setLoading(true);
       try {
-        const response = await fetch('http://192.168.188.32:5216/api/events');
+        const response = await fetch(`${API_URL}/events`);
         if (response.ok) {
           const data = await response.json();
           setEvents(data);
@@ -45,12 +49,12 @@ export default function EventsScreen() {
     const token = await AsyncStorage.getItem('token');
     if (!token) {
       Alert.alert(
-        'Not logged in',
-        'You must be logged in to add favorites.',
+        t('notLoggedIn'),
+        t('loginToAddFavorites'),
         [
-          { text: 'Continue as guest' },
+          { text: t('continueAsGuest') },
           {
-            text: 'Log in',
+            text: t('logIn'),
             onPress: () => router.push('/login'),
           },
         ],
@@ -64,7 +68,7 @@ export default function EventsScreen() {
   const handleLogout = async () => {
     await AsyncStorage.removeItem('token');
     clearFavorites();
-    Alert.alert('Logged out', 'You have been logged out.');
+    Alert.alert(t('loggedOut'), t('youHaveBeenLoggedOut'));
     router.replace('/login');
   };
 
@@ -76,7 +80,26 @@ export default function EventsScreen() {
         style={styles.card}
         onPress={() => router.push({ pathname: '../event/[id]', params: { id: item.id } })}
       >
-        <Image source={{ uri: item.imageUrl }} style={styles.image} />
+        <View style={styles.imageWrapper}>
+          {imageLoading[item.id] && (
+            <ActivityIndicator
+              size="large"
+              color="#007AFF"
+              style={StyleSheet.absoluteFill}
+            />
+          )}
+          <Image
+            source={{ uri: item.imageUrl }}
+            style={styles.image}
+            onLoadStart={() =>
+              setImageLoading((prev) => ({ ...prev, [item.id]: true }))
+            }
+            onLoadEnd={() =>
+              setImageLoading((prev) => ({ ...prev, [item.id]: false }))
+            }
+          />
+        </View>
+
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.info}>
           🕒 {new Date(item.startDate).toLocaleDateString('en-US')} |{' '}
@@ -85,7 +108,9 @@ export default function EventsScreen() {
         <Text style={styles.info}>📍 {item.location}</Text>
 
         <View style={styles.row}>
-          <Text style={styles.attending}>{item.attendingCount || 0}+ Attending</Text>
+          <Text style={styles.attending}>
+            {item.attendingCount || 0}+ {t('attending')}
+          </Text>
           <TouchableOpacity onPress={() => handleToggleFavorite(item.id)}>
             <AntDesign name="heart" size={20} color={isFavorite ? '#FF2D55' : '#ccc'} />
           </TouchableOpacity>
@@ -98,16 +123,16 @@ export default function EventsScreen() {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={{ marginTop: 10 }}>Loading events...</Text>
+        <Text style={{ marginTop: 10 }}>{t('loadingEvents')}</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Events</Text>
+      <Text style={styles.header}>{t('events')}</Text>
       {events.length === 0 ? (
-        <Text style={styles.empty}>No events found.</Text>
+        <Text style={styles.empty}>{t('noEvents')}</Text>
       ) : (
         <FlatList
           data={events}
@@ -117,10 +142,6 @@ export default function EventsScreen() {
           showsVerticalScrollIndicator={false}
         />
       )}
-
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Log out</Text>
-      </TouchableOpacity>
     </View>
   );
 }
@@ -136,8 +157,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
   },
-  image: { width: '100%', height: 150, borderRadius: 8 },
-  title: { fontSize: 16, fontWeight: '600', marginTop: 8 },
+  imageWrapper: {
+    width: '100%',
+    height: 150,
+    borderRadius: 8,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  title: { fontSize: 16, fontWeight: '600' },
   info: { fontSize: 13, color: '#444', marginTop: 2 },
   row: {
     marginTop: 8,
@@ -153,18 +186,5 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     color: '#fff',
     fontWeight: '600',
-  },
-  logoutButton: {
-    backgroundColor: '#F87171',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignSelf: 'center',
-    marginTop: 20,
-  },
-  logoutText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
   },
 });
