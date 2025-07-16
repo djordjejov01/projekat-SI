@@ -85,4 +85,12 @@ export class AuthService{
         return this.decodedToken?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || null;
     }
 
+    getUserId(): number | null {
+        const sub = this.decodedToken?.sub;
+        if (!sub) return null;
+
+        const userId = Number(sub);
+        return isNaN(userId) ? null : userId;
+    }
+
 }
