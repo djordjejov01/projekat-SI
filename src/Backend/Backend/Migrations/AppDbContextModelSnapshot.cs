@@ -174,6 +174,11 @@ namespace Backend.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)

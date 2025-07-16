@@ -27,6 +27,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Registracija UserService-a
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IOrganizerService, OrganizerService>();
 
 builder.Services.AddAuthentication(options =>
 {

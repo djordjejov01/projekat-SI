@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250708140758_AddUserResourceReservation")]
-    partial class AddUserResourceReservation
+    [Migration("20250716083016_MissingImageField")]
+    partial class MissingImageField
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -114,11 +114,17 @@ namespace Backend.Migrations
                     b.Property<int>("EventID")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("IsReservable")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Measure")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ResourceID")
                         .HasColumnType("integer");
 
                     b.Property<int>("SupplierID")
@@ -127,6 +133,8 @@ namespace Backend.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("EventID");
+
+                    b.HasIndex("ResourceID");
 
                     b.HasIndex("SupplierID");
 
@@ -154,6 +162,44 @@ namespace Backend.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("FavoriteEvents");
+                });
+
+            modelBuilder.Entity("Backend.Models.Organizer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Organizers");
                 });
 
             modelBuilder.Entity("Backend.Models.Resource", b =>
@@ -280,6 +326,10 @@ namespace Backend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ProfilePicture")
                         .IsRequired()
                         .HasColumnType("text");
@@ -392,6 +442,12 @@ namespace Backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Backend.Models.Resource", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Backend.Models.User", "Supplier")
                         .WithMany()
                         .HasForeignKey("SupplierID")
@@ -399,6 +455,8 @@ namespace Backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Event");
+
+                    b.Navigation("Resource");
 
                     b.Navigation("Supplier");
                 });

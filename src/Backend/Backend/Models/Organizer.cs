@@ -19,6 +19,8 @@ namespace Backend.Models
         
         [Required, MaxLength(50)]
         public string PhoneNumber { get; set; }
+        [MaxLength(100)]
+        public string Image {  get; set; }
 
     }
 }
