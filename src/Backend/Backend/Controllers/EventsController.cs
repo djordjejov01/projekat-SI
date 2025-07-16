@@ -128,7 +128,7 @@ namespace Backend.Controllers
 
         [HttpPost("change-event-picture")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadOrganizerPhoto([FromForm] UploadImageDto model)
+        public async Task<IActionResult> UploadEventPhoto([FromForm] UploadImageDto model)
         {
             string ImageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
             Event e = _context.Events.Where(e => e.EventID == model.Id).First();
