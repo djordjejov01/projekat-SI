@@ -1,4 +1,5 @@
-﻿using Backend.Models;
+﻿using Backend.Helpers;
+using Backend.Models;
 using Backend.Models.Dto;
 using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -14,11 +15,12 @@ namespace Backend.Controllers
     {
         private readonly IEventService _eventService;
         private readonly AppDbContext _context;
-
-        public EventsController(AppDbContext context, IEventService eventService)
+        private readonly IWebHostEnvironment _env;
+        public EventsController(AppDbContext context, IEventService eventService, IWebHostEnvironment env)
         {
             _context = context;
             _eventService = eventService;
+            _env = env;
         }
 
         [AllowAnonymous]
@@ -128,6 +130,20 @@ namespace Backend.Controllers
             };
 
             return Ok(dto);
+        }
+        [HttpPost("change-event-picture")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadEventPhoto([FromForm] UploadImageDto model)
+        {
+            string ImageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
+            Event o = _context.Events.Where(o => o.EventID == model.Id).First();
+            if (o is null)
+                return BadRequest("ERROR!");
+            await CommonHelpers.RemovePhoto(o.ImageUrl, _env);
+            o.ImageUrl = ImageName;
+            _context.Events.Update(o);
+            _context.SaveChanges();
+            return Ok();
         }
 
         [AllowAnonymous]
