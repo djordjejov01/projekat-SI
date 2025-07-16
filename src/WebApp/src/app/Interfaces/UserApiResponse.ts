@@ -9,4 +9,7 @@ export interface UserApiResponse {
   password?: string;       // Optional
   firstName?: string;      // Optional
   lastName?: string;       // Optional
+  language?: string;
+  phoneNumber?: string;
+  profilePicture?: string;
 }
