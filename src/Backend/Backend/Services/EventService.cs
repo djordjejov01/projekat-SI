@@ -13,7 +13,7 @@ namespace Backend.Services
             _context = context;
         }
         public async Task<List<EventListDto>> SearchEventsAsync(string? name, EventCategory? category, string? location,bool? isFree,
-            DateTime? startDate,DateTime? endDate,bool? hasTickets,string? sortOrder)
+            DateTime? startDate,DateTime? endDate,bool? hasTickets,string? sortOrder,string? sortBy)
         {
             var query = _context.Events.AsQueryable();
 
@@ -59,13 +59,20 @@ namespace Backend.Services
 
                 query = query.Where(e => eventIdsWithTickets.Contains(e.EventID));
             }
-            if (sortOrder != null && sortOrder.ToLower() == "desc")
+            if (!string.IsNullOrEmpty(sortBy) && sortBy.ToLower() == "title")
             {
-                query = query.OrderByDescending(e => e.StartDate);
+                if (!string.IsNullOrEmpty(sortOrder) && sortOrder.ToLower() == "desc")
+                    query = query.OrderByDescending(e => e.Title);
+                else
+                    query = query.OrderBy(e => e.Title);
             }
             else
             {
-                query = query.OrderBy(e => e.StartDate);
+                
+                if (!string.IsNullOrEmpty(sortOrder) && sortOrder.ToLower() == "desc")
+                    query = query.OrderByDescending(e => e.StartDate);
+                else
+                    query = query.OrderBy(e => e.StartDate);
             }
 
             var attendingCounts = await _context.UserTickets

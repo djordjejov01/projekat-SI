@@ -135,7 +135,7 @@ namespace Backend.Controllers
         public async Task<ActionResult<List<EventListDto>>> SearchEvents([FromQuery] string? name, [FromQuery] string? category,
             [FromQuery] string? location, [FromQuery] bool? isFree,
             [FromQuery] DateTime? startDate,[FromQuery] DateTime? endDate,
-            [FromQuery] bool? hasTickets, [FromQuery] string? sortOrder)
+            [FromQuery] bool? hasTickets, [FromQuery] string? sortOrder, [FromQuery] string? sortBy)
         {
             EventCategory? categoryEnum = null;
             if (!string.IsNullOrWhiteSpace(category))
@@ -149,7 +149,7 @@ namespace Backend.Controllers
                     return BadRequest("Nepoznata kategorija.");
                 }
             }
-            var events = await _eventService.SearchEventsAsync(name, categoryEnum,location,isFree,startDate,endDate,hasTickets,sortOrder);
+            var events = await _eventService.SearchEventsAsync(name, categoryEnum,location,isFree,startDate,endDate,hasTickets,sortOrder,sortBy);
             return Ok(events);
 
         }
