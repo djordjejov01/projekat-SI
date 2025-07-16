@@ -16,6 +16,9 @@ namespace Backend.Models
         [Required, MaxLength(50)]
         public string Title { get; set; }
 
+        [Required]
+        public EventCategory Category { get; set; }
+
         public string Description { get; set; }
         public string Location { get; set; }
         public DateTime StartDate { get; set; }
