@@ -1,6 +1,6 @@
 # SyncUp
 
-**SyncUp** je aplikacija za upravljanje događajima, sa backendom (.NET), web frontendom (Angular) i mobilnom aplikacijom (React Native/Expo).
+**SyncUp** je platforma za organizaciju i upravljanje događajima, namenjena kako organizatorima, tako i posetiocima. Aplikacija omogućava jednostavno kreiranje i upravljanje događajima, kao i interakciju između organizatora i učesnika. Backend (.NET), web frontend (Angular) i mobilna aplikacija (React Native/Expo).
 
 ---
 
