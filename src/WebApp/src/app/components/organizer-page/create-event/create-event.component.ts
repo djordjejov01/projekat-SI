@@ -13,6 +13,10 @@ import { FileUpload } from 'primeng/fileupload';
 import { CustomValidators } from '../../../Validators/custom.validators';
 import { MessageService } from 'primeng/api';
 import { ActivatedRoute } from '@angular/router';
+import { TicketDto } from '../../../Models/TicketDto';
+import { CreatEventDto } from '../../../Models/CreateEventDto';
+import { ApiService } from '../../../Services/api.service';
+import { AuthService } from '../../../Services/auth.service';
 
 @Component({
   selector: 'app-create-event',
@@ -31,7 +35,9 @@ export class CreateEventComponent implements OnInit{
   constructor( 
     private translateService : TranslateService,
     private messageService : MessageService,
-    private route : ActivatedRoute) {}
+    private route : ActivatedRoute,
+    private apiService : ApiService,
+    private authService : AuthService) {}
 
   ngOnInit(): void {
 
@@ -225,15 +231,31 @@ export class CreateEventComponent implements OnInit{
     }
     const formValues = this.eventForm.getRawValue();
 
-    const {isUnlimitedCapacity, ...cleanValues} = formValues
+    const ticketDtos = formValues.tickets.map(ticket => new TicketDto(ticket.name, ticket.price));
+    const capacity = formValues.isUnlimitedCapacity ? -1 : formValues.capacity;
 
-    const fullData ={
-      ...cleanValues,
-      image: this.selectedImageFile
-    };
+    const eventDto = new CreatEventDto(
+      formValues.title,
+      formValues.description,
+      formValues.location,
+      new Date(formValues.startDateTime),
+      new Date(formValues.endDateTime),
+      capacity,
+      '',
+      ticketDtos
+    )
 
-    console.log(fullData)
+    console.log(eventDto)
     
+    this.apiService.createEvent(eventDto,this.authService.getUserId()).subscribe({
+      next: (response) =>{
+        const message = response.headers.get('Location') || 'Event created successfully!';
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: message });
+      },
+      error: () => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to create event.' })
+      }
+    })
 
   }
 }
