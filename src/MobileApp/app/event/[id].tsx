@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { API_URL } from '../../config';
 import {
   View,
   Text,
@@ -51,6 +52,7 @@ export default function EventDetailScreen() {
   const [event, setEvent] = useState<Event | null>(null);
   const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updatingFavorite, setUpdatingFavorite] = useState(false);
 
@@ -65,7 +67,7 @@ export default function EventDetailScreen() {
         const headers: any = {};
         if (token) headers.Authorization = `Bearer ${token}`;
 
-        const response = await fetch(`http://192.168.188.32:5216/api/Events/Details?id=${currentId}`, {
+             const response = await fetch(`${API_URL}/Events/Details?id=${currentId}`, {
           headers,
         });
 
@@ -74,7 +76,7 @@ export default function EventDetailScreen() {
         const data: Event = await response.json();
         setEvent(data);
 
-console.log('Event location:', data.location);
+//console.log('Event location:', data.location);
         geocodeLocation(data.location);
       } catch (err) {
         console.error(err);
@@ -87,37 +89,29 @@ console.log('Event location:', data.location);
     fetchEvent();
   }, [currentId]);
 
-//   const geocodeLocation = async (location: string) => {
-//     try {
-//       const response = await fetch(
-//         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`
-//       );
-//       const data = await response.json();
-// console.log('Geocode result:', data);
-//       if (data && data.length > 0) {
-//         setCoords({
-//           latitude: parseFloat(data[0].lat),
-//           longitude: parseFloat(data[0].lon),
-//         });
-//       }
-//     } catch (err) {
-//       console.warn('Error geocoding location:', err);
-//     }
-//   };
 const geocodeLocation = async (location: string) => {
   try {
     const response = await fetch(
       `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`,
       {
         headers: {
-          'User-Agent': 'SyncUpApp/1.0 (your-email@example.com)',
+          'User-Agent': 'SyncUpApp/1.0 (support@syncupapp.com)',
+
           'Accept-Language': 'en',
         },
       }
     );
 
-    const text = await response.text();
-    const data = JSON.parse(text);
+    if (!response.ok) {
+      console.warn('Nominatim API returned error status:', response.status);
+      const text = await response.text();
+      console.warn('Response text:', text);
+      return; 
+    }
+
+    const data = await response.json();
+    //console.log('Geocode result:', data);
+
     if (data && data.length > 0) {
       setCoords({
         latitude: parseFloat(data[0].lat),
@@ -153,7 +147,7 @@ const geocodeLocation = async (location: string) => {
 
       const method = event.isFavorite ? 'DELETE' : 'POST';
 
-      const res = await fetch('http://192.168.188.32:5216/api/Favorites', {
+    const res = await fetch(`${API_URL}/Favorites`, {
         method,
         headers: {
           'Content-Type': 'application/json',
@@ -195,7 +189,20 @@ const geocodeLocation = async (location: string) => {
 
   return (
     <ScrollView style={styles.container}>
-      <Image source={{ uri: event.imageUrl }} style={styles.image} />
+      <View style={styles.imageWrapper}>
+        {imageLoading && (
+          <ActivityIndicator
+            size="large"
+            color="#2563EB"
+            style={StyleSheet.absoluteFill}
+          />
+        )}
+        <Image
+          source={{ uri: event.imageUrl }}
+          style={styles.image}
+          onLoadEnd={() => setImageLoading(false)}
+        />
+      </View>
 
       <Text style={styles.title}>{event.title}</Text>
       <Text style={styles.date}>
@@ -327,12 +334,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  image: {
+  imageWrapper: {
     width: '100%',
     height: 220,
     borderRadius: 14,
     marginBottom: 20,
     marginTop: 40,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
   },
   title: {
     fontSize: 24,
@@ -430,3 +444,5 @@ const styles = StyleSheet.create({
     color: '#111827',
   },
 });
+
+

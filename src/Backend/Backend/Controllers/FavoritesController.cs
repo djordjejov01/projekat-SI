@@ -34,6 +34,7 @@ namespace Backend.Controllers
                     Location = f.Event.Location,
                     StartDate = f.Event.StartDate,
                     ImageUrl = f.Event.ImageUrl,
+                    Category = f.Event.Category,
                     AttendingCount = _context.UserTickets.Count(ut => ut.Ticket.EventID == f.Event.EventID)
                 })
                 .ToListAsync();

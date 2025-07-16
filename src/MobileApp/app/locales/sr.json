@@ -92,7 +92,76 @@
   "cancel": "Otkaži",
   "error": "Greška",
   "logoutError": "Neuspešna odjava."
+},
+"aboutScreen": {
+  "heading": "O nama",
+  "description": "SyncUp je vaš idealan saputnik za događaje. Pomažemo ljudima da pronađu, prisustvuju i budu informisani o događajima koje vole – od koncerata i IT okupljanja do radionica i umetničkih festivala.",
+  "missionTitle": "🌟 Naša misija",
+  "missionText": "Da povežemo ljude kroz zajednička iskustva. Bilo da volite muziku, tehnologiju, umetnost ili obrazovanje – SyncUp se pobrine da ništa ne propustite.",
+  "whyTitle": "🚀 Zašto SyncUp?",
+  "whyText": "- Otkrijte personalizovane događaje u svojoj blizini\n- Sačuvajte omiljene i kupujte karte bez problema\n- Budite u toku sa rasporedima, mapama i agendama\n- Uživajte u intuitivnom, jednostavnom iskustvu",
+  "locationTitle": "📍 Gde se nalazimo",
+  "locationText": "Kragujevac, Srbija – ali SyncUp je napravljen da poveže ljude svuda.",
+  "contactTitle": "📬 Kontaktirajte nas",
+  "contactText": "Email: contact@syncup.rs\nInstagram: @syncup.events\nLinkedIn: SyncUp Tim",
+  "footer": "© 2025 SyncUp. Sva prava zadržana."
+},
+"changePassword": {
+  "title": "Promena lozinke",
+  "currentPassword": "Trenutna lozinka",
+  "newPassword": "Nova lozinka",
+  "confirmPassword": "Potvrdi novu lozinku",
+  "saveChanges": "Sačuvaj izmene",
+  "error": "Greška",
+  "allFieldsRequired": "Sva polja su obavezna.",
+  "invalidPasswordTitle": "Nevažeća lozinka",
+  "invalidPasswordMessage": "Lozinka mora imati najmanje 8 karaktera i sadržati veliko, malo slovo, broj i specijalni karakter.",
+  "passwordMismatch": "Nove lozinke se ne poklapaju.",
+  "notLoggedIn": "Niste prijavljeni.",
+  "success": "Uspeh",
+  "passwordChanged": "Lozinka je uspešno promenjena.",
+  "changeFailed": "Promena lozinke nije uspela."
+},
+"personalInfo": {
+  "title": "Lični podaci",
+  "firstName": "Ime",
+  "firstNamePlaceholder": "Jovan",
+  "lastName": "Prezime",
+  "lastNamePlaceholder": "Jović",
+  "email": "Email",
+  "emailPlaceholder": "primer@email.com",
+  "phone": "Broj telefona",
+  "phonePlaceholder": "+381 64 123 4567",
+  "saveChanges": "Sačuvaj izmene",
+  "error": "Greška",
+  "notLoggedIn": "Niste prijavljeni.",
+  "success": "Uspeh",
+  "updated": "Vaši podaci su uspešno sačuvani.",
+  "updateFailed": "Nije uspelo ažuriranje profila."
+},
+"search": {
+  "header": "Pretraga događaja",
+  "placeholder": "Pretraga po nazivu ili opisu...",
+  "startDate": "Datum od",
+  "endDate": "Datum do",
+  "selectLocation": "Izaberite lokaciju...",
+  "sortBy": "Sortiraj po...",
+  "dateAsc": "Datum ↑",
+  "dateDesc": "Datum ↓",
+  "popularityDesc": "Popularnost ↓",
+  "reset": "Poništi sve filtere",
+  "noResults": "Nema događaja koji odgovaraju filterima.",
+  "attending": "{{count}}+ prisustvuje"
+},
+"tabs": {
+  "events": "Događaji",
+  "search": "Pretraga",
+  "favorites": "Omiljeni",
+  "profile": "Profil"
 }
+
+
+
 
 }
 

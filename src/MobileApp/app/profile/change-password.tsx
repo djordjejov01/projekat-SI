@@ -1,4 +1,6 @@
+
 import React, { useState } from 'react';
+import { API_URL } from '../../config';
 import {
   View,
   Text,
@@ -11,9 +13,11 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 export default function ChangePasswordScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -35,31 +39,31 @@ export default function ChangePasswordScreen() {
 
   const handleChangePassword = async () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
-      Alert.alert('Error', 'All fields are required.');
+      Alert.alert(t('changePassword.error'), t('changePassword.allFieldsRequired'));
       return;
     }
 
     if (!validatePassword(newPassword)) {
       Alert.alert(
-        'Invalid Password',
-        'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.'
+        t('changePassword.invalidPasswordTitle'),
+        t('changePassword.invalidPasswordMessage')
       );
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      Alert.alert('Error', 'New passwords do not match.');
+      Alert.alert(t('changePassword.error'), t('changePassword.passwordMismatch'));
       return;
     }
 
     try {
       const token = await AsyncStorage.getItem('token');
       if (!token) {
-        Alert.alert('Error', 'You are not logged in.');
+        Alert.alert(t('changePassword.error'), t('changePassword.notLoggedIn'));
         return;
       }
 
-      const res = await fetch('http://192.168.33.109:5216/api/User/change-password', {
+      const res = await fetch(`${API_URL}/User/change-password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -72,14 +76,14 @@ export default function ChangePasswordScreen() {
       });
 
       if (res.ok) {
-        Alert.alert('Success', 'Password changed successfully.');
+        Alert.alert(t('changePassword.success'), t('changePassword.passwordChanged'));
         router.push('../(tabs)/profile');
       } else {
         const err = await res.json();
-        throw new Error(err.message || 'Password change failed.');
+        throw new Error(err.message || t('changePassword.changeFailed'));
       }
     } catch (error: any) {
-      Alert.alert('Error', error.message);
+      Alert.alert(t('changePassword.error'), error.message);
     }
   };
 
@@ -90,24 +94,24 @@ export default function ChangePasswordScreen() {
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <View style={styles.titleWrapper}>
-          <Text style={styles.title}>Change Password</Text>
+          <Text style={styles.title}>{t('changePassword.title')}</Text>
         </View>
       </View>
 
-      <Text style={styles.label}>Current Password</Text>
+      <Text style={styles.label}>{t('changePassword.currentPassword')}</Text>
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
           value={currentPassword}
           onChangeText={setCurrentPassword}
-          secureTextEntry={!showCurrent}      
+          secureTextEntry={!showCurrent}
         />
         <TouchableOpacity onPress={() => setShowCurrent(!showCurrent)}>
           <Ionicons name={showCurrent ? 'eye-off' : 'eye'} size={22} color="#888" />
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.label}>New Password</Text>
+      <Text style={styles.label}>{t('changePassword.newPassword')}</Text>
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
@@ -120,7 +124,7 @@ export default function ChangePasswordScreen() {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.label}>Confirm New Password</Text>
+      <Text style={styles.label}>{t('changePassword.confirmPassword')}</Text>
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
@@ -134,11 +138,12 @@ export default function ChangePasswordScreen() {
       </View>
 
       <TouchableOpacity style={styles.saveButton} onPress={handleChangePassword}>
-        <Text style={styles.saveText}>Save Changes</Text>
+        <Text style={styles.saveText}>{t('changePassword.saveChanges')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -197,3 +202,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+

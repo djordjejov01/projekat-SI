@@ -25,8 +25,10 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("Baza")));
 
-// Registracija UserService-a
+// Registracija Service-a
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IOrganizerService, OrganizerService>();
+builder.Services.AddScoped<IEventService, EventService>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -74,9 +76,21 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+builder.Services.AddSwaggerGen(c =>
+{
+    // vital line:
+    c.MapType<IFormFile>(() => new Microsoft.OpenApi.Models.OpenApiSchema
+    {
+        Type = "string",
+        Format = "binary"
+    });
+});
+
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+
+app.UseStaticFiles();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

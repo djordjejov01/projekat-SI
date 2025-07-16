@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { useFavorites } from './context/FavoriteContext';
+import { API_URL } from '../config';
 import {
   View,
   Text,
@@ -9,13 +10,8 @@ import {
   StyleSheet,
   Alert,
 } from 'react-native';
-import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
-import * as AuthSession from 'expo-auth-session';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
-
-WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
   const { t } = useTranslation();
@@ -23,31 +19,6 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const { loadFavorites } = useFavorites();
-
-  const redirectUri = AuthSession.makeRedirectUri({});
-
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId: '872083620944-8kpmch9eccq4i4n773tq4qtiu8o1bi3g.apps.googleusercontent.com',
-    redirectUri,
-  });
-
-  useEffect(() => {
-    if (response?.type === 'success' && response.authentication?.accessToken) {
-      fetchUserInfo(response.authentication.accessToken);
-    }
-  }, [response]);
-
-  const fetchUserInfo = async (token: string) => {
-    try {
-      const res = await fetch('https://www.googleapis.com/userinfo/v2/me', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const user = await res.json();
-      router.replace('./(tabs)/events');
-    } catch (err) {
-      Alert.alert(t('error'), t('googleUserInfoFailed'));
-    }
-  };
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -75,7 +46,7 @@ export default function LoginScreen() {
     }
 
     try {
-      const response = await fetch('http://192.168.188.32:5216/api/User/login', {
+      const response = await fetch(`${API_URL}/User/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -87,6 +58,14 @@ export default function LoginScreen() {
       }
 
       const data = await response.json();
+
+      // 🔒 Proveri da li je korisnik MobileUser
+      // if (data.role !== 'MobileUser') {
+      //   console.log(data.role);
+      //   Alert.alert('Pristup odbijen', 'Dozvoljen je samo pristup korisnicima mobilne aplikacije.');
+      //   return;
+      // }
+
       if (data.token) {
         await AsyncStorage.setItem('token', data.token);
         loadFavorites();
@@ -140,20 +119,6 @@ export default function LoginScreen() {
         onPress={() => router.push('/signup')}
       >
         <Text style={styles.signupText}>{t('signup')}</Text>
-      </TouchableOpacity>
-
-      <View style={styles.orContainer}>
-        <View style={styles.line} />
-        <Text style={styles.orText}>{t('or')}</Text>
-        <View style={styles.line} />
-      </View>
-
-      <TouchableOpacity
-        style={[styles.altButton, { marginTop: 10 }]}
-        onPress={() => promptAsync()}
-        disabled={!request}
-      >
-        <Text style={{ fontSize: 16 }}>{t('continueWithGoogle')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -230,28 +195,5 @@ const styles = StyleSheet.create({
     color: '#0047FF',
     fontWeight: '600',
     fontSize: 16,
-  },
-  orContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 16,
-  },
-  orText: {
-    marginHorizontal: 10,
-    fontWeight: '600',
-    fontSize: 14,
-    color: '#555',
-  },
-  line: {
-    flex: 1,
-    height: 1,
-    backgroundColor: '#ccc',
-  },
-  altButton: {
-    borderWidth: 1,
-    borderColor: '#000',
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: 'center',
   },
 });

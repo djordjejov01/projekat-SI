@@ -12,6 +12,7 @@ import { HttpClient } from '@angular/common/http';
 import { routes } from './app.routes';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { AuthInterceptor } from './Services/AuthInterceptor.service';
+import { DatePipe } from '@angular/common';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -37,6 +38,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptorsFromDi()),
     MessageService,
     ConfirmationService,
+    DatePipe,
     providePrimeNG({
       theme: {
         preset: MyPreset,

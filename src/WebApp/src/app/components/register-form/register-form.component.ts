@@ -61,6 +61,8 @@ export class RegisterForm implements OnInit,IDeactivate{
 
   ngOnInit(): void {
 
+    this.setTranslatedRoles();
+
     this.translate.onLangChange.subscribe(()=>{
       this.setTranslatedRoles();
     })

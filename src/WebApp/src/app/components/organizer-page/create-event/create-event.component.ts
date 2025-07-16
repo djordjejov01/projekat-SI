@@ -12,6 +12,7 @@ import { ButtonModule } from 'primeng/button';
 import { FileUpload } from 'primeng/fileupload';
 import { CustomValidators } from '../../../Validators/custom.validators';
 import { MessageService } from 'primeng/api';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-create-event',
@@ -27,7 +28,10 @@ export class CreateEventComponent implements OnInit{
   minDate : Date;
   selectedImageFile: File | null = null;
 
-  constructor( private translateService : TranslateService, private messageService : MessageService) {}
+  constructor( 
+    private translateService : TranslateService,
+    private messageService : MessageService,
+    private route : ActivatedRoute) {}
 
   ngOnInit(): void {
 
@@ -86,6 +90,18 @@ export class CreateEventComponent implements OnInit{
       });
 
       this.eventForm.get('isUnlimitedCapacity')?.updateValueAndValidity({onlySelf: true, emitEvent: true});
+
+      this.route.queryParams.subscribe(params =>{
+        const start = params['start'];
+        const end = params['end'];
+
+        const parsedStart = new Date(start);
+        const parsedEnd = new Date(end)
+
+        if(!isNaN(parsedStart.getTime())) // Valid date check
+          this.eventForm.patchValue({startDateTime: parsedStart});
+        if(!isNaN(parsedEnd.getTime())) this.eventForm.patchValue({ endDateTime: parsedEnd});
+      });
   }
 
   get tickets(): FormArray{
