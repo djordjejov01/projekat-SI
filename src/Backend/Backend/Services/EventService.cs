@@ -59,7 +59,14 @@ namespace Backend.Services
 
                 query = query.Where(e => eventIdsWithTickets.Contains(e.EventID));
             }
-            if (!string.IsNullOrEmpty(sortBy) && sortBy.ToLower() == "title")
+            if (!string.IsNullOrEmpty(sortBy) && sortBy.ToLower() == "location")
+            {
+                if (!string.IsNullOrEmpty(sortOrder) && sortOrder.ToLower() == "desc")
+                    query = query.OrderByDescending(e => e.Location);
+                else
+                    query = query.OrderBy(e => e.Location);
+            }
+            else if (!string.IsNullOrEmpty(sortBy) && sortBy.ToLower() == "title")
             {
                 if (!string.IsNullOrEmpty(sortOrder) && sortOrder.ToLower() == "desc")
                     query = query.OrderByDescending(e => e.Title);
