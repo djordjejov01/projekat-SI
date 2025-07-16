@@ -9,6 +9,9 @@ import { UserDtoResponse } from "../Interfaces/UserDtoResponse";
 import { TokenResponse } from "../Interfaces/TokenResponse";
 import { UserApiResponse } from "../Interfaces/UserApiResponse";
 import { UserRoleMap } from "../Models/User";
+import { OrganizerDto } from "../Models/OrganizerDto";
+import { OrganizerDtoResponse } from "../Interfaces/OrganizerDtoResponse";
+import { SuccessfulMessageResponse } from "../Interfaces/SuccessfulMessageResponse";
 import { CreatEventDto } from "../Models/CreateEventDto";
 import { EventApiResponse } from "../Interfaces/EventApiResponse";
 import { CategoryMap, Event } from "../Models/Event";
@@ -123,6 +126,28 @@ export class ApiService{
         );
     }
 
+    getOrganizer(orgId : number) : Observable<OrganizerDto>{
+        return this.http.get<OrganizerDtoResponse>(`${this.apiUrl}/Organizer/get-organizer?id=${orgId}`).pipe(
+            map(data => {
+                return new OrganizerDto(
+                    data.id,
+                    data.name,
+                    data.username,
+                    data.email,
+                    data.phoneNumber,
+                    data.image
+                )
+            }),
+            catchError(this.handleError)
+        )
+    }
+
+    updateOrg(data : OrganizerDto, newP : string): Observable<string>{
+        return this.http.post<SuccessfulMessageResponse>(`${this.apiUrl}/Organizer/update-organizer?newPassword=${newP}`,data).pipe(
+            map(data => data.message),
+            catchError(this.handleError)
+        );
+    }
     //Observable<never> means: "This observable will never emit a real value, and only exists to throw an error."
     handleError(errorResponse : HttpErrorResponse) : Observable<never>{
 
