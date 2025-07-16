@@ -6,6 +6,11 @@
     gap:10px;
     border-bottom: 2px solid rgb(232, 232, 232);
     border-bottom-right-radius: 10px;
+    position: fixed;
+    margin-top: 53px;
+    z-index: 10;
+    background-color: white;
+    height: 95%;
 }
 
 #menu{
@@ -17,9 +22,13 @@
     margin-left: 25px;
     margin-right: 25px;
     gap:5px;
+    height: 100%;
 }
 #item4{
     margin-top: 50px;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
 }
 
 @media screen and (width <= 1529px) {
