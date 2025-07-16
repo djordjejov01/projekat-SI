@@ -93,11 +93,83 @@
   "cancel": "Cancel",
   "error": "Error",
   "logoutError": "Failed to log out."
+},
+"aboutScreen": {
+  "heading": "About us",
+  "description": "SyncUp is your ultimate event companion. We help people find, attend, and stay informed about events they love – from concerts and tech meetups to workshops and art festivals.",
+  "missionTitle": "🌟 Our Mission",
+  "missionText": "To connect people through shared experiences. Whether you’re into music, technology, art, or education – SyncUp makes sure you never miss out.",
+  "whyTitle": "🚀 Why SyncUp?",
+  "whyText": "- Discover personalized events near you\n- Save your favorites and buy tickets seamlessly\n- Stay updated with schedules, maps & agendas\n- Enjoy an intuitive, user-friendly experience",
+  "locationTitle": "📍 Where We’re Based",
+  "locationText": "Kragujevac, Serbia – but SyncUp is built to connect people everywhere.",
+  "contactTitle": "📬 Contact Us",
+  "contactText": "Email: contact@syncup.rs\nInstagram: @syncup.events\nLinkedIn: SyncUp Team",
+  "footer": "© 2025 SyncUp. All rights reserved."
+},
+"changePassword": {
+  "title": "Change Password",
+  "currentPassword": "Current Password",
+  "newPassword": "New Password",
+  "confirmPassword": "Confirm New Password",
+  "saveChanges": "Save Changes",
+  "error": "Error",
+  "allFieldsRequired": "All fields are required.",
+  "invalidPasswordTitle": "Invalid Password",
+  "invalidPasswordMessage": "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.",
+  "passwordMismatch": "New passwords do not match.",
+  "notLoggedIn": "You are not logged in.",
+  "success": "Success",
+  "passwordChanged": "Password changed successfully.",
+  "changeFailed": "Password change failed."
+},
+"personalInfo": {
+  "title": "Personal Information",
+  "firstName": "First Name",
+  "firstNamePlaceholder": "John",
+  "lastName": "Last Name",
+  "lastNamePlaceholder": "Doe",
+  "email": "Email",
+  "emailPlaceholder": "example@email.com",
+  "phone": "Phone Number",
+  "phonePlaceholder": "+381 64 123 4567",
+  "saveChanges": "Save Changes",
+  "error": "Error",
+  "notLoggedIn": "You are not logged in.",
+  "success": "Success",
+  "updated": "Your information has been updated.",
+  "updateFailed": "Failed to update profile."
+},
+"search": {
+  "header": "Search Events",
+  "placeholder": "Search by title or description...",
+  "startDate": "Start Date",
+  "endDate": "End Date",
+  "selectLocation": "Select location...",
+  "sortBy": "Sort by...",
+  "dateAsc": "Date ↑",
+  "dateDesc": "Date ↓",
+  "popularityDesc": "Popularity ↓",
+  "reset": "Reset All Filters",
+  "noResults": "No events found matching your filters.",
+  "attending": "{{count}}+ attending"
+},
+"tabs": {
+  "events": "Events",
+  "search": "Search",
+  "favorites": "Favorites",
+  "profile": "Profile"
 }
 
 
 
 
 
+
+
+
 }
+
+
+
 
