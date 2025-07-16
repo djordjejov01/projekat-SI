@@ -10,6 +10,8 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
@@ -108,6 +110,26 @@ const SearchScreen = () => {
       (Boolean(query) || Boolean(selectedLocation) || Boolean(startDate) || Boolean(endDate))
     );
   };
+  const handleToggleFavorite = async (eventId: number) => {
+  const token = await AsyncStorage.getItem('token');
+  if (!token) {
+    Alert.alert(
+      t('notLoggedIn'),
+      t('loginToAddFavorites'),
+      [
+        { text: t('continueAsGuest') },
+        {
+          text: t('logIn'),
+          onPress: () => router.push('/login'),
+        },
+      ],
+      { cancelable: true }
+    );
+    return;
+  }
+  await toggleFavorite(eventId);
+};
+
 
   const clearAll = () => {
     setQuery('');
@@ -146,7 +168,7 @@ const SearchScreen = () => {
         <Text style={styles.info}>🕒 {formatDate(new Date(item.startDate))}</Text>
         <View style={styles.row}>
           <Text style={styles.attending}>{t('search.attending', { count: item.attendingCount || 0 })}</Text>
-          <TouchableOpacity onPress={() => toggleFavorite(item.id)}>
+          <TouchableOpacity onPress={() => handleToggleFavorite(item.id)}>
             <AntDesign name="heart" size={20} color={isFavorite ? '#FF2D55' : '#ccc'} />
           </TouchableOpacity>
         </View>
