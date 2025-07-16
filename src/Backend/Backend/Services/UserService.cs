@@ -59,7 +59,8 @@ namespace Backend.Services
                     Username = user.Username,
                     Email = user.Email,
                     Name = user.FirstName + " " + user.LastName,
-                    PhoneNumber = ""
+                    PhoneNumber = "",
+                    Image = "",
                 };
                 _context.Organizers.Add(o);
                 await _context.SaveChangesAsync();

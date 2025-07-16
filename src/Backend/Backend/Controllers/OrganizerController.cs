@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Helpers;
+using Backend.Services;
 
 namespace Backend.Controllers
 {
@@ -16,9 +17,15 @@ namespace Backend.Controllers
     public class OrganizerController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public OrganizerController(AppDbContext context)
+        private readonly IOrganizerService _organizerService;
+        private readonly IWebHostEnvironment _env;
+
+
+        public OrganizerController(AppDbContext context,IOrganizerService organizerService, IWebHostEnvironment env)
         {
             _context = context;
+            _organizerService = organizerService;
+            _env = env;
         }
         [HttpGet("get-organizer")]
         public async Task<IActionResult> GetOrganizer(int id)
@@ -29,11 +36,26 @@ namespace Backend.Controllers
                 Username = o.Username,
                 Email = o.Email,
                 Name = o.Name,
-                PhoneNumber = o.PhoneNumber
+                PhoneNumber = o.PhoneNumber,
+                Image = o.Image
             }).FirstOrDefault();
             if(Organizer is not null)
                 return Ok(Organizer);
             return BadRequest(new { message = "Organizer with that ID does not exist." });
+        }
+        [HttpPost("change-organizer-picture")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadOrganizerPhoto([FromForm]UploadImageDto model)
+        {
+            string ImageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
+            Organizer o = _context.Organizers.Where(o => o.Id == model.OrganizerId).First();
+            if (o is null)
+                return BadRequest("ERROR!");
+            await CommonHelpers.RemovePhoto(o.Image, _env);
+            o.Image = ImageName;
+            _context.Organizers.Update(o);
+            _context.SaveChanges();
+            return Ok();
         }
         [HttpPost("update-organizer")]
         public async Task<IActionResult> UpdateOrganizer([FromBody] OrganizerDto model, string newPassword)
@@ -98,6 +120,31 @@ namespace Backend.Controllers
             await _context.SaveChangesAsync();
             
             return Ok(new {message = "User data successfully changed!"});
+        }
+        [HttpGet("events")]public async Task<IActionResult> GetEventsForOrganier(int id)
+        {
+            try
+            {
+                var events = _organizerService.GetEventsForOrganier(id);
+                return Ok(events);
+
+            }
+            catch (Exception ex)
+            { 
+                return BadRequest(new { message = ex.Message }); 
+            }
+        }
+        [HttpPost("create-event")]public async Task<IActionResult> CreateEvent(CreateEventDto model, int organizerID)
+        {
+            try
+            {
+                _organizerService.CreateEventForOrganizer(model, organizerID);
+                return Created("Event created successfully.", null);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

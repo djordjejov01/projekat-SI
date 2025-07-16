@@ -46,5 +46,41 @@ namespace Backend.Helpers
                 return Convert.ToBase64String(hash);
             }
         }
+        public static async Task<string> SaveImageAsync(IFormFile file, IWebHostEnvironment env)
+        {
+            var imagesPath = Path.Combine(env.WebRootPath, "images");
+            Directory.CreateDirectory(imagesPath);
+
+            var uniqueName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var fullPath = Path.Combine(imagesPath, uniqueName);
+
+            await using var fs = new FileStream(fullPath, FileMode.Create);
+            await file.CopyToAsync(fs);
+
+            // store only the relative path or just "images/{uniqueName}" in DB
+            return $"images/{uniqueName}";
+        }
+        public static Task RemovePhoto(string storedPath, IWebHostEnvironment env)
+        {
+            if (string.IsNullOrWhiteSpace(storedPath))
+                return Task.CompletedTask;
+
+            storedPath = storedPath
+                .Replace('\\', Path.DirectorySeparatorChar)
+                .Replace('/', Path.DirectorySeparatorChar)
+                .TrimStart(Path.DirectorySeparatorChar);
+            var fullPath = Path.Combine(env.WebRootPath, storedPath);
+            var webRootFull = Path.GetFullPath(env.WebRootPath);
+            var candidate = Path.GetFullPath(fullPath);
+            if (!candidate.StartsWith(webRootFull, System.StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("Attempt to delete a file outside wwwroot.");
+
+            if (File.Exists(candidate))
+            {
+                File.Delete(candidate);
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }
