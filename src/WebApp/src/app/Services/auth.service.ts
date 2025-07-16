@@ -20,8 +20,9 @@ export class AuthService{
     private readonly tokenKey = 'access_token';
     private decodedToken: JwtPayload | null = null;
 
-    constructor(){
-         const token = localStorage.getItem(this.tokenKey);
+    constructor()
+    {
+        const token = localStorage.getItem(this.tokenKey);
         if(token){
             try{
                 const decoded = jwtDecode<JwtPayload>(token);
