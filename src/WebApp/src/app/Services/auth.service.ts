@@ -86,11 +86,11 @@ export class AuthService{
     }
 
     getUserId(): number | null {
-        const sub = this.decodedToken?.sub;
-        if (!sub) return null;
+    const sub = this.decodedToken?.sub;
+    if (!sub) return null;
 
-        const userId = Number(sub);
-        return isNaN(userId) ? null : userId;
+    const userId = Number(sub);
+    return isNaN(userId) ? null : userId;
     }
 
 }
