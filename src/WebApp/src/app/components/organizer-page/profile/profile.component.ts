@@ -52,4 +52,34 @@ defaultImage = 'assets/default-picture.png'; // možeš postaviti neki default
 
       })
   }
+  update() {
+    const name = (document.getElementById('name') as HTMLInputElement).value;
+    const username = (document.getElementById('username') as HTMLInputElement).value;
+    const email = (document.getElementById('email') as HTMLInputElement).value;
+    const phone = (document.getElementById('phone') as HTMLInputElement).value;
+
+    const currentPassword = (document.getElementById('cpass') as HTMLInputElement).value;
+    const newPassword = (document.getElementById('npass') as HTMLInputElement).value;
+    const confirmNewPassword = (document.getElementById('cnpass') as HTMLInputElement).value;
+
+    const toUpdate = new OrganizerDto(this.authService.getUserId(),name,username,email,phone,"");
+
+    this.apiService.updateOrg(toUpdate, newPassword).subscribe({
+      next:(response : string) =>{
+        this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: response,
+              life: 3000 });
+        },
+        error:(errorResponse) =>{
+          this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000 });
+      }
+    })
+
+  }
 }
