@@ -1,13 +1,12 @@
 import { AfterContentInit, AfterViewInit, Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { User } from '../../Models/User';
-import { Users } from '../../Services/user.list';
 import { CommonModule } from '@angular/common';
 import { StatisticCard } from './statistic-card/statistic-card.component';
 import { ChartModule } from 'primeng/chart';
 import { isPlatformBrowser } from '@angular/common';
 import { ChangeDetectorRef, inject, PLATFORM_ID } from '@angular/core';
 import { UIChart } from 'primeng/chart'
-import { TableModule } from 'primeng/table';
+import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { InputTextModule } from 'primeng/inputtext';
@@ -25,6 +24,7 @@ import { RouterLink } from '@angular/router';
 import { ApiService } from '../../Services/api.service';
 import { SessionService } from '../../Services/session.service';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmationDialogService } from '../../Services/confirmation-dialog.service';
 
 
 
@@ -39,6 +39,8 @@ export class AdminPage implements OnInit,AfterContentInit{
 
   //PAGE
   users : User[] = [];
+  // lazyUsers : User[] = [];
+  // totalRecords: number = 0;
   currentDate : Date;
   startWindowLast30 : Date;
   endWindowLast30 : Date;
@@ -74,7 +76,8 @@ export class AdminPage implements OnInit,AfterContentInit{
     private messageService : MessageService,
     private authService : AuthService,
     private apiService : ApiService,
-    private sessionService : SessionService) {}
+    private sessionService : SessionService,
+    private confirmationDialogService : ConfirmationDialogService) {}
 
   @HostListener('window:resize')
     onResize() {
@@ -99,6 +102,7 @@ export class AdminPage implements OnInit,AfterContentInit{
     next: (users) => {
       this.users = users;
       this.loading = false;
+      // this.totalRecords = this.users.length;
       this.initializeDateRangers();
       this.initBarChart();
       this.initDoughnutChart();
@@ -110,21 +114,6 @@ export class AdminPage implements OnInit,AfterContentInit{
       // Optionally show an error message to the user here
     }
   });
-
-    // this.users = Users.map((data)=>{
-    //   return new User(
-    //     data.id,
-    //     data.username,
-    //     data.email,
-    //     // data.password,
-    //     // data.first_name,
-    //     // data.last_name,
-    //     data.role,
-    //     new Date(data.creation_time),
-    //     data.isActive,
-    //     new Date(data.last_login)
-    //   )
-    // })
 
   }
 
@@ -166,14 +155,11 @@ export class AdminPage implements OnInit,AfterContentInit{
                         backgroundColor: 'rgba(100,106,232, 0.2)',
                         borderColor: 'rgb(139, 92, 246)',
                         borderWidth: 1
-                        //borderRadius: 6
                     },
                 ],
             };
 
             this.barChartOptions = {
-              // responsive: true,
-              // maintainAspectRatio: false,
                 plugins: {
                     legend: {
                       display: true,
@@ -231,17 +217,15 @@ export class AdminPage implements OnInit,AfterContentInit{
                     datasets: [
                         {
                             data: stats.counts,
-                            backgroundColor: ['rgba(233, 99, 141, 0.4)','rgba(100,106,232, 0.2)','rgba(180, 180, 180, 0.2)'],
-                            hoverBackgroundColor: ['rgba(233, 99, 141, 0.7)','rgba(100,106,232, 0.4)','rgba(180, 180, 180, 0.4)'],
-                            borderColor: ['rgba(233, 99, 141,0.7)','rgb(139, 92, 246,0.7)','rgba(180, 180, 180, 0.7)'],
+                            backgroundColor: ['rgba(100,106,232, 0.2)','rgba(126, 230, 78, 0.2)','rgba(180, 180, 180, 0.2)','rgba(233, 99, 141, 0.2)'],
+                            hoverBackgroundColor:  ['rgba(100,106,232, 0.4)','rgba(126, 230, 78, 0.4)','rgba(180, 180, 180, 0.4)','rgba(233, 99, 141, 0.4)'],
+                            borderColor:  ['rgba(100,106,232, 0.7)','rgba(126, 230, 78, 0.7)','rgba(180, 180, 180, 0.7)','rgba(233, 99, 141, 0.7)'],
                             borderWidth: 1
                         }
                     ]
                 };
 
                 this.doughnutChartOptions = {
-                  // responsive: true,
-                  // maintainAspectRatio: false,
                     cutout: '60%',
                     plugins: {
                         legend: {
@@ -464,9 +448,15 @@ export class AdminPage implements OnInit,AfterContentInit{
     this.searchValue = '';
   }
 
-  toggleUserActivation(user : User){
+  async toggleUserActivation(user : User){
 
     const newStatus = !user.userActive()
+    const confirmed = await this.confirmationDialogService.confirm(
+      `Are you sure you want to ${newStatus ? 'activate' : 'deactivate'} ${user.getUsername()}?`,
+      `${newStatus ? 'Activate' : 'Deactivate'} User`
+    )
+
+    if(!confirmed) return;
 
     this.apiService.activateUser(user.getUserId(),newStatus).subscribe({
       next: () =>{
@@ -486,6 +476,25 @@ export class AdminPage implements OnInit,AfterContentInit{
       }
     })
   }
+
+  // loadUsersLazy(event: TableLazyLoadEvent){
+  //   this.loading = true;
+
+  //   const start = event.first ?? 0;
+  //   const count = event.rows ?? 10;
+
+  //   this.apiService.getUsersPaginated(start,count).subscribe({
+
+  //     next: (users) => {
+  //       this.lazyUsers = users;
+  //       console.log(this.lazyUsers);
+  //       this.loading = false;
+  //     },
+  //     error: () =>{
+  //       this.messageService.add({severity: 'error', summary: 'Error', detail: 'Could not fetch user count'})
+  //     }
+  //   });
+  // }
 
   onLogoutClick(){
     this.sessionService.logoutWithConfirmation();

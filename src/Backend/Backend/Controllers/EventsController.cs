@@ -1,6 +1,7 @@
-﻿using Backend.Helpers;
+using Backend.Helpers;
 using Backend.Models;
 using Backend.Models.Dto;
+using Backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,7 @@ namespace Backend.Controllers
     [ApiController]
     public class EventsController : ControllerBase
     {
+        private readonly IEventService _eventService;
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env;
 
@@ -19,7 +21,7 @@ namespace Backend.Controllers
         {
             _context = context;
             _env = env;
-        }
+            _eventService = eventService;
 
         [AllowAnonymous]
         [HttpGet]
@@ -34,6 +36,7 @@ namespace Backend.Controllers
                     Location = e.Location,
                     StartDate = e.StartDate,
                     ImageUrl = e.ImageUrl,
+                    Category=e.Category,
                     AttendingCount = _context.UserTickets.Count(ut => ut.Ticket.EventID == e.EventID)
                 })
                 .ToListAsync();
@@ -57,6 +60,7 @@ namespace Backend.Controllers
                     Location = e.Location,
                     StartDate = e.StartDate,
                     ImageUrl = e.ImageUrl,
+                    Category = e.Category,
                     AttendingCount = _context.UserTickets
                         .Include(ut => ut.Ticket)
                         .Count(ut => ut.Ticket.EventID == e.EventID)
@@ -87,7 +91,8 @@ namespace Backend.Controllers
                     Title = a.Title,
                     Description = a.Description,
                     StartTime = a.StartTime,
-                    EndTime = a.EndTime
+                    EndTime = a.EndTime,
+                    Category=a.Category,
                 })
                 .ToListAsync();
 
@@ -120,12 +125,12 @@ namespace Backend.Controllers
                 AttendingCount = attendingCount,
                 IsFavorite = isFavorite,
                 Agenda = agenda,
+                Category=eventEntity.Category
 
             };
 
             return Ok(dto);
         }
-
         [HttpPost("change-event-picture")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadEventPhoto([FromForm] UploadImageDto model)
@@ -139,6 +144,30 @@ namespace Backend.Controllers
             _context.Events.Update(e);
             _context.SaveChanges();
             return Ok();
+        }
+
+        [AllowAnonymous]
+        [HttpGet("search")]
+        public async Task<ActionResult<List<EventListDto>>> SearchEvents([FromQuery] string? name, [FromQuery] string? category,
+            [FromQuery] string? location, [FromQuery] bool? isFree,
+            [FromQuery] DateTime? startDate,[FromQuery] DateTime? endDate,
+            [FromQuery] bool? hasTickets, [FromQuery] string? sortOrder, [FromQuery] string? sortBy)
+        {
+            EventCategory? categoryEnum = null;
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                if (Enum.TryParse<EventCategory>(category, true, out var parsedCategory))
+                {
+                    categoryEnum = parsedCategory;
+                }
+                else
+                {
+                    return BadRequest("Nepoznata kategorija.");
+                }
+            }
+            var events = await _eventService.SearchEventsAsync(name, categoryEnum,location,isFree,startDate,endDate,hasTickets,sortOrder,sortBy);
+            return Ok(events);
+
         }
 
     }

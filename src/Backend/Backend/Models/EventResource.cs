@@ -20,6 +20,9 @@ namespace Backend.Models
         public bool IsReservable { get; set; }
         public User Supplier { get; set; }
         public Event Event { get; set; }
+
+        [ForeignKey(nameof(Resource))]
+        public int ResourceID { get; set; }
         public Resource Resource { get; set; }
     }
 }

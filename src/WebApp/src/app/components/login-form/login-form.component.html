@@ -25,19 +25,7 @@
 
           <p>{{"Password" | translate}}</p>
           <p-floatlabel class="w-full md:w-56" variant="on" inputId="password">
-            <p-password formControlName="password" [toggleMask]="true">
-              <ng-template #header>
-                <div class="font-semibold text-xm mb-4">{{"PICK" | translate}}</div>
-              </ng-template>
-              <ng-template #footer>
-                <p-divider />
-                <ul class="pl-2 ml-2 my-0 leading-normal">
-                  <li>{{"U1" | translate}}</li>
-                  <li>{{"U2" | translate}}</li>
-                  <li>{{"U3" | translate}}</li>
-                  <li>{{"U4" | translate}}</li>
-                </ul>
-              </ng-template>
+            <p-password formControlName="password" styleClass="w-full md:w-56" [toggleMask]="true" [feedback]="false" inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500">
             </p-password>
             <label for="password">{{"PASSPH" | translate}}</label>
           </p-floatlabel>

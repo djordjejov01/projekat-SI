@@ -1,9 +1,15 @@
+.form-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
 .eventForm{
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     gap: 2rem;
-    width: 1200px;
     border: 1px solid #EBEBEA;
     border-radius: 12px;
     padding: 2rem;
@@ -81,3 +87,16 @@
     display: flex;
     justify-content: center;
 }
+
+@media screen and (width <= 900px){
+    
+
+    .location-capacity, .dates, .ticket{
+        flex-direction: column;
+    }
+    
+    .ticket{
+        align-items: start;
+    }
+    
+} 

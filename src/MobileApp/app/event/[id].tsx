@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { API_URL } from '../../config';
 import {
   View,
   Text,
@@ -15,6 +16,7 @@ import MapView, { Marker, UrlTile } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFavorites } from '../context/FavoriteContext';
+import { useTranslation } from 'react-i18next';
 
 const screen = Dimensions.get('window');
 
@@ -43,18 +45,19 @@ type Event = {
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
+  const { t } = useTranslation();
 
   const currentId = typeof id === 'string' ? id : '';
 
   const [event, setEvent] = useState<Event | null>(null);
   const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updatingFavorite, setUpdatingFavorite] = useState(false);
 
   const { loadFavorites } = useFavorites();
 
-  // Fetch event details (no token required, but if token exists use it)
   useEffect(() => {
     const fetchEvent = async () => {
       try {
@@ -64,18 +67,20 @@ export default function EventDetailScreen() {
         const headers: any = {};
         if (token) headers.Authorization = `Bearer ${token}`;
 
-        const response = await fetch(`http://192.168.188.32:5216/api/Events/Details?id=${currentId}`, {
+             const response = await fetch(`${API_URL}/Events/Details?id=${currentId}`, {
           headers,
         });
 
-        if (!response.ok) throw new Error('Failed to load event');
+        if (!response.ok) throw new Error(t('failedToLoadEvent'));
 
         const data: Event = await response.json();
         setEvent(data);
+
+//console.log('Event location:', data.location);
         geocodeLocation(data.location);
       } catch (err) {
         console.error(err);
-        setError('Failed to load event details.');
+        setError(t('failedToLoadEventDetails'));
       } finally {
         setLoading(false);
       }
@@ -84,26 +89,42 @@ export default function EventDetailScreen() {
     fetchEvent();
   }, [currentId]);
 
-  // Geocode location for map
-  const geocodeLocation = async (location: string) => {
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`
-      );
-      const data = await response.json();
+const geocodeLocation = async (location: string) => {
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`,
+      {
+        headers: {
+          'User-Agent': 'SyncUpApp/1.0 (support@syncupapp.com)',
 
-      if (data && data.length > 0) {
-        setCoords({
-          latitude: parseFloat(data[0].lat),
-          longitude: parseFloat(data[0].lon),
-        });
+          'Accept-Language': 'en',
+        },
       }
-    } catch (err) {
-      console.warn('Error geocoding location:', err);
-    }
-  };
+    );
 
-  // Toggle favorite only if logged in
+    if (!response.ok) {
+      console.warn('Nominatim API returned error status:', response.status);
+      const text = await response.text();
+      console.warn('Response text:', text);
+      return; 
+    }
+
+    const data = await response.json();
+    //console.log('Geocode result:', data);
+
+    if (data && data.length > 0) {
+      setCoords({
+        latitude: parseFloat(data[0].lat),
+        longitude: parseFloat(data[0].lon),
+      });
+    } else {
+      console.warn('No results for location:', location);
+    }
+  } catch (err) {
+    console.warn('Error geocoding location:', err);
+  }
+};
+
   const toggleFavorite = async () => {
     if (!event) return;
 
@@ -113,11 +134,11 @@ export default function EventDetailScreen() {
       const token = await AsyncStorage.getItem('token');
       if (!token) {
         Alert.alert(
-          'Authentication required',
-          'Please log in to manage favorites.',
+          t('authenticationRequired'),
+          t('loginToManageFavorites'),
           [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Log in', onPress: () => router.push('/login') },
+            { text: t('cancel'), style: 'cancel' },
+            { text: t('login'), onPress: () => router.push('/login') },
           ]
         );
         setUpdatingFavorite(false);
@@ -126,7 +147,7 @@ export default function EventDetailScreen() {
 
       const method = event.isFavorite ? 'DELETE' : 'POST';
 
-      const res = await fetch('http://192.168.188.32:5216/api/Favorites', {
+    const res = await fetch(`${API_URL}/Favorites`, {
         method,
         headers: {
           'Content-Type': 'application/json',
@@ -140,10 +161,10 @@ export default function EventDetailScreen() {
         await loadFavorites();
       } else {
         const errorText = await res.text();
-        Alert.alert('Error', `Failed to update favorite: ${errorText}`);
+        Alert.alert(t('error'), `${t('failedToUpdateFavorite')}: ${errorText}`);
       }
     } catch (err) {
-      Alert.alert('Error', 'Failed to update favorite');
+      Alert.alert(t('error'), t('failedToUpdateFavorite'));
     } finally {
       setUpdatingFavorite(false);
     }
@@ -153,7 +174,7 @@ export default function EventDetailScreen() {
     return (
       <View style={styles.center}>
         <ActivityIndicator size="large" color="#2563EB" />
-        <Text style={{ marginTop: 10 }}>Loading...</Text>
+        <Text style={{ marginTop: 10 }}>{t('loading')}</Text>
       </View>
     );
   }
@@ -161,19 +182,32 @@ export default function EventDetailScreen() {
   if (error || !event) {
     return (
       <View style={styles.center}>
-        <Text style={{ fontSize: 16 }}>{error || 'Event not found.'}</Text>
+        <Text style={{ fontSize: 16 }}>{error || t('eventNotFound')}</Text>
       </View>
     );
   }
 
   return (
     <ScrollView style={styles.container}>
-      <Image source={{ uri: event.imageUrl }} style={styles.image} />
+      <View style={styles.imageWrapper}>
+        {imageLoading && (
+          <ActivityIndicator
+            size="large"
+            color="#2563EB"
+            style={StyleSheet.absoluteFill}
+          />
+        )}
+        <Image
+          source={{ uri: event.imageUrl }}
+          style={styles.image}
+          onLoadEnd={() => setImageLoading(false)}
+        />
+      </View>
 
       <Text style={styles.title}>{event.title}</Text>
       <Text style={styles.date}>
         📅{' '}
-        {new Date(event.startDate).toLocaleDateString('en-US', {
+        {new Date(event.startDate).toLocaleDateString(undefined, {
           weekday: 'long',
           year: 'numeric',
           month: 'long',
@@ -195,9 +229,9 @@ export default function EventDetailScreen() {
           })}
           h
         </Text>
-        <Text style={styles.info}>📍 {event.location}</Text>
-        <Text style={styles.info}>🏢 Organizer: {event.organizerName}</Text>
-        <Text style={styles.info}>👥 Attending: {event.attendingCount || 0}</Text>
+        <Text style={styles.info}>📍 {t('location')}: {event.location}</Text>
+        <Text style={styles.info}>🏢 {t('organizer')}: {event.organizerName}</Text>
+        <Text style={styles.info}>👥 {t('attending')}: {event.attendingCount || 0}</Text>
       </View>
 
       <View style={styles.actions}>
@@ -218,21 +252,21 @@ export default function EventDetailScreen() {
               { color: event.isFavorite ? '#FF2D55' : '#2563EB' },
             ]}
           >
-            {event.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+            {event.isFavorite ? t('removeFromFavorites') : t('addToFavorites')}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.buyBtn} activeOpacity={0.7}>
-          <Text style={styles.buyText}>Buy Ticket</Text>
+          <Text style={styles.buyText}>{t('buyTicket')}</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.sectionTitle}>Event Description</Text>
+      <Text style={styles.sectionTitle}>{t('eventDescription')}</Text>
       <Text style={styles.description}>{event.description}</Text>
 
       {event.agenda?.length > 0 && (
         <>
-          <Text style={styles.sectionTitle}>Agenda</Text>
+          <Text style={styles.sectionTitle}>{t('agenda')}</Text>
           {event.agenda.map((item, index) => (
             <View key={index} style={styles.scheduleItem}>
               <Text style={styles.scheduleTime}>
@@ -255,9 +289,10 @@ export default function EventDetailScreen() {
 
       {coords && (
         <>
-          <Text style={styles.sectionTitle}>Location</Text>
-          <MapView
+          <Text style={styles.sectionTitle}>{t('location')}</Text>
+         <MapView
             style={styles.map}
+            mapType="none"
             initialRegion={{
               latitude: coords.latitude,
               longitude: coords.longitude,
@@ -266,9 +301,10 @@ export default function EventDetailScreen() {
             }}
           >
             <UrlTile
-              urlTemplate="http://c.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
               maximumZ={19}
               flipY={false}
+              shouldReplaceMapContent={true}
             />
             <Marker coordinate={coords} title={event.title} description={event.location} />
           </MapView>
@@ -280,7 +316,7 @@ export default function EventDetailScreen() {
         onPress={() => router.back()}
         activeOpacity={0.7}
       >
-        <Text style={styles.backText}>← Back to events</Text>
+        <Text style={styles.backText}>← {t('backToEvents')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -298,12 +334,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  image: {
+  imageWrapper: {
     width: '100%',
     height: 220,
     borderRadius: 14,
     marginBottom: 20,
     marginTop: 40,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
   },
   title: {
     fontSize: 24,
@@ -401,3 +444,5 @@ const styles = StyleSheet.create({
     color: '#111827',
   },
 });
+
+

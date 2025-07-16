@@ -20,6 +20,7 @@ namespace Backend.Models
         public DbSet<TicketValidDay> TicketValidDays { get; set; }
         public DbSet<UserResourceReservation> UserResourceReservations { get; set; }
         public DbSet<Organizer> Organizers { get; set; }
+        public DbSet<EventCategories> EventCategories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
