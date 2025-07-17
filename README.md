@@ -74,10 +74,10 @@ cd syncup/src
 - API URL je definisan u fajlu:
   `MobileApp/config.ts`
   ```typescript
-  const LOCAL_IP = "<YOUR_LOCAL_IP>";
-  export const API_URL = `http://${LOCAL_IP}:<BACKEND_PORT>/api`;
+  const HOST = "<YOUR_HOST>";
+  export const API_URL = `http://${HOST}:<BACKEND_PORT>/api`;
   ```
-- Izmeni `LOCAL_IP` i port prema svom okruženju (posebno ako testiraš na fizičkom uređaju).
+- Izmeni `HOST` i port prema svom okruženju (posebno ako testiraš na fizičkom uređaju).
 ---
 
 ## Pokretanje Backend-a
