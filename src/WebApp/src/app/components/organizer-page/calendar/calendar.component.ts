@@ -63,14 +63,14 @@ export class CalendarComponent implements OnInit{
     this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe((events: Event[]) => {
       console.log(events)
       const calendarEvents : EventInput[] = events.map( event => ({
-        title: event['title'],
-        start: event['startDateTime'].toISOString(),
-        end: event['endDateTime'].toISOString(),
-        allDay: this.isAllDayEvent(event['startDateTime'],event['endDateTime']),
+        title: event.getTitle(),
+        start: event.getStartDateTime().toISOString(),
+        end: event.getEndDateTime().toISOString(),
+        allDay: this.isAllDayEvent(event.getStartDateTime(),event.getEndDateTime()),
         extendedProps: {
-          category: event['category'],
-          location: event['location'],
-          organizer: event['organizer']?.getUsername?.() || 'Unknown'
+          category: event.getCategory(),
+          location: event.getLocation(),
+          organizer: event.getOrganizer()?.getUsername?.() || 'Unknown'
         }
       }));
 
@@ -79,35 +79,22 @@ export class CalendarComponent implements OnInit{
 
   }
 
-  private isMidnightOrJustBefore(date: Date): boolean {
-    return (
-      (date.getHours() === 0 && date.getMinutes() === 0 && date.getSeconds() === 0 && date.getMilliseconds() === 0)
-      ||
-      (date.getHours() === 23 && date.getMinutes() === 59 && date.getSeconds() === 59 && date.getMilliseconds() === 999)
-    );
-  }
-
   private isAllDayEvent(start: Date, end: Date): boolean {
-    if (!this.isMidnightOrJustBefore(start) || !this.isMidnightOrJustBefore(end)) return false;
-
-    const diffDays = (end.getTime() - start.getTime() + 1) / (1000 * 60 * 60 * 24); // add 1 ms back for diff calc
-
-    return diffDays >= 1 && Number.isInteger(diffDays);
+    return (
+      start.getHours() === 0 &&
+      start.getMinutes() === 0 &&
+      end.getHours() === 0 &&
+      end.getMinutes() === 0 &&
+      end.getTime() - start.getTime() >= 24 * 60 * 60 * 1000
+    );
   }
 
   async handleDateSelect(selectInfo: DateSelectArg){
 
-    const { start, end, view } = selectInfo
+    const { start, end } = selectInfo
     
     const startDateFormatted = this.datePipe.transform(start, 'MMM d, y, HH:mm:ss');
-
-    let adjustedEnd = end;
-    if(view.type === 'dayGridMonth' || selectInfo.allDay){
-      adjustedEnd = new Date(end.getTime() - 1);
-      // adjustedEnd.setDate(adjustedEnd.getSeconds() - 1);
-    }
-
-    const endDateFormatted = this.datePipe.transform(adjustedEnd,'MMM d, y, HH:mm:ss');
+    const endDateFormatted = this.datePipe.transform(end,'MMM d, y, HH:mm:ss');
 
     const confirmed = await this.confirmationDialogService.confirm(
       `Create and event from ${startDateFormatted} to ${endDateFormatted}?`,
@@ -116,7 +103,7 @@ export class CalendarComponent implements OnInit{
 
     if(confirmed){
       this.router.navigate(['/organizer/create-event'],{
-        queryParams: { start: start.toISOString(), end: adjustedEnd.toISOString()}
+        queryParams: { start: start.toISOString(), end: end.toISOString()}
       });
     }
 
