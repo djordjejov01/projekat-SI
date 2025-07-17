@@ -63,14 +63,14 @@ export class CalendarComponent implements OnInit{
     this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe((events: Event[]) => {
       console.log(events)
       const calendarEvents : EventInput[] = events.map( event => ({
-        title: event['title'],
-        start: event['startDateTime'].toISOString(),
-        end: event['endDateTime'].toISOString(),
-        allDay: this.isAllDayEvent(event['startDateTime'],event['endDateTime']),
+        title: event.getTitle(),
+        start: event.getStartDateTime().toISOString(),
+        end: event.getEndDateTime().toISOString(),
+        allDay: this.isAllDayEvent(event.getStartDateTime(),event.getEndDateTime()),
         extendedProps: {
-          category: event['category'],
-          location: event['location'],
-          organizer: event['organizer']?.getUsername?.() || 'Unknown'
+          category: event.getCategory(),
+          location: event.getLocation(),
+          organizer: event.getOrganizer()?.getUsername?.() || 'Unknown'
         }
       }));
 
