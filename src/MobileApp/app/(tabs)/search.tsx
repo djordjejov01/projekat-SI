@@ -18,6 +18,7 @@ import { useRouter } from 'expo-router';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { useFavorites } from '../context/FavoriteContext';
 import { useTranslation } from 'react-i18next';
+import { API_URL } from '@/config';
 
 interface EventItem {
   id: number;
@@ -53,7 +54,7 @@ const SearchScreen = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://192.168.188.32:5216/api/events');
+        const response = await fetch(`${API_URL}/events`);
         const data: EventItem[] = await response.json();
         setAllEvents(data);
         const uniqueLocations = Array.from(new Set(data.map((e) => e.location).filter(Boolean)));
