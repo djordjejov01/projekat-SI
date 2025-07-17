@@ -10,6 +10,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { API_URL } from '../../config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Ticket = {
   id: number;
@@ -22,34 +23,54 @@ type Resource = {
   id: number;
   name: string;
   price?: number;
+  quantity: number;
+  measure: string;
 };
 
 export default function TicketPurchaseScreen() {
   const router = useRouter();
-  const { eventId } = useLocalSearchParams();
+  const { eventId } = useLocalSearchParams<{ eventId: string }>();
 
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
-  const [cart, setCart] = useState<{ [key: string]: number }>({});
+  const [cart, setCart] = useState<{ [key: number]: number }>({});
   const [selectedResources, setSelectedResources] = useState<Set<number>>(new Set());
   const [loading, setLoading] = useState(true);
+  const [redirecting, setRedirecting] = useState(false);  // novo
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const token = await AsyncStorage.getItem('token');
+
         const [ticketsRes, resourcesRes] = await Promise.all([
           fetch(`${API_URL}/Ticket/events/${eventId}/tickets`),
-          fetch(`${API_URL}/Resource/${eventId}/resources`),
+          fetch(`${API_URL}/Resource/${eventId}/resources`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         ]);
-        
-        const ticketData = ticketsRes.ok && ticketsRes.status !== 204 ? await ticketsRes.json() : [];
-        const resourceData = resourcesRes.ok && resourcesRes.status !== 204 ? await resourcesRes.json() : [];
-        
-        
-        setTickets(ticketData);
-        setResources(resourceData);
+
+        const ticketData = ticketsRes.ok ? await ticketsRes.json() : [];
+        const rawResources = resourcesRes.ok ? await resourcesRes.json() : [];
+
+        const mappedTickets = ticketData.map((t: any, index: number) => ({
+          id: t.ticketID ?? index,
+          name: t.typeName,
+          price: t.price,
+          available: t.available,
+        }));
+
+        const mappedResources = rawResources.map((r: any, index: number) => ({
+          id: r.id ?? index,
+          name: r.name,
+          price: r.price ?? undefined,
+          quantity: r.quantity,
+          measure: r.measure,
+        }));
+
+        setTickets(mappedTickets);
+        setResources(mappedResources);
       } catch (error) {
-        console.log(eventId);
         console.error('Error fetching data:', error);
       } finally {
         setLoading(false);
@@ -60,14 +81,15 @@ export default function TicketPurchaseScreen() {
   }, [eventId]);
 
   const handleAddToCart = (ticketId: number) => {
-    setCart((prev) => ({
-      ...prev,
-      [ticketId]: (prev[ticketId] || 0) + 1,
-    }));
+    const selectedCount = cart[ticketId] || 0;
+    const availableCount = tickets.find(t => t.id === ticketId)?.available || 0;
+    if (selectedCount < availableCount) {
+      setCart(prev => ({ ...prev, [ticketId]: selectedCount + 1 }));
+    }
   };
 
   const handleRemoveFromCart = (ticketId: number) => {
-    setCart((prev) => {
+    setCart(prev => {
       const updated = { ...prev };
       if (updated[ticketId] > 0) updated[ticketId] -= 1;
       if (updated[ticketId] === 0) delete updated[ticketId];
@@ -76,7 +98,7 @@ export default function TicketPurchaseScreen() {
   };
 
   const toggleResource = (resId: number) => {
-    setSelectedResources((prev) => {
+    setSelectedResources(prev => {
       const updated = new Set(prev);
       updated.has(resId) ? updated.delete(resId) : updated.add(resId);
       return updated;
@@ -84,68 +106,111 @@ export default function TicketPurchaseScreen() {
   };
 
   if (loading) {
-    return <ActivityIndicator style={{ marginTop: 100 }} size="large" color="#0047FF" />;
+  return (
+    <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+      <ActivityIndicator size="large" color="#0047FF" />
+      <Text style={{ marginTop: 16, fontSize: 16, color: '#0047FF' }}>
+        Učitavanje karata...
+      </Text>
+    </View>
+  );
+}
+  if (redirecting) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#0047FF" />
+        <Text style={{ marginTop: 16, fontSize: 16, color: '#0047FF' }}>
+          Redirekcija na kupovinu karata...
+        </Text>
+      </View>
+    );
   }
 
   return (
     <ScrollView style={styles.container}>
-      <TouchableOpacity style={styles.cartIcon} onPress={() => router.push({
-        pathname: './cart',
-        params: {
-          eventId: eventId?.toString(),
-          tickets: JSON.stringify(cart),
-          resources: JSON.stringify(Array.from(selectedResources)),
-        },
-      })}>
-        <Ionicons name="cart-outline" size={28} />
+      <TouchableOpacity
+        style={styles.cartIcon}
+        onPress={() => {
+          setRedirecting(true);
+          // Delay da se vidi loader bar par sekundi, zatim redirekcija
+          setTimeout(() => {
+            router.push({
+              pathname: './cart',
+              params: {
+                eventId: eventId?.toString(),
+                tickets: JSON.stringify(cart),
+                resources: JSON.stringify(Array.from(selectedResources)),
+              },
+            });
+          }, 1000);
+        }}
+      >
+        <Ionicons name="cart-outline" size={28} color="#0047FF" />
       </TouchableOpacity>
 
-      <Text style={styles.sectionTitle}>Tickets</Text>
-      {tickets.map((ticket) => (
-        <View key={ticket.id} style={styles.itemRow}>
-          <Text style={styles.itemText}>
-            {ticket.name} - {ticket.price} RSD ({ticket.available} left)
-          </Text>
-          <View style={styles.counterRow}>
-            <TouchableOpacity onPress={() => handleRemoveFromCart(ticket.id)}>
-              <Text style={styles.counterButton}>-</Text>
-            </TouchableOpacity>
-            <Text style={styles.counterValue}>{cart[ticket.id] || 0}</Text>
-            <TouchableOpacity onPress={() => handleAddToCart(ticket.id)}>
-              <Text style={styles.counterButton}>+</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      ))}
+      <Text style={styles.sectionTitle}>🎫 Tickets</Text>
+      {tickets.map(ticket => {
+        const selectedCount = cart[ticket.id] || 0;
+        const remaining = ticket.available - selectedCount;
 
-      <Text style={styles.sectionTitle}>Reservation Resources</Text>
-      {resources.map((res) => (
-        <TouchableOpacity key={res.id} style={styles.checkboxRow} onPress={() => toggleResource(res.id)}>
+        return (
+          <View key={`ticket-${ticket.id}`} style={styles.card}>
+            <Text style={styles.cardTitle}>{ticket.name}</Text>
+            <Text style={styles.cardText}>
+              {ticket.price} RSD - {remaining} available
+            </Text>
+            <View style={styles.counterRow}>
+              <TouchableOpacity onPress={() => handleRemoveFromCart(ticket.id)} style={styles.counterButton}>
+                <Text style={styles.counterText}>-</Text>
+              </TouchableOpacity>
+              <Text style={styles.counterValue}>{selectedCount}</Text>
+              <TouchableOpacity onPress={() => handleAddToCart(ticket.id)} style={styles.counterButton}>
+                <Text style={styles.counterText}>+</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        );
+      })}
+
+      <Text style={styles.sectionTitle}>📦 Resources</Text>
+      {resources.map(res => (
+        <TouchableOpacity
+          key={`res-${res.id}`}
+          style={[styles.card, { flexDirection: 'row', alignItems: 'center' }]}
+          onPress={() => toggleResource(res.id)}
+        >
           <Ionicons
             name={selectedResources.has(res.id) ? 'checkbox' : 'square-outline'}
             size={24}
             color="#0047FF"
+            style={{ marginRight: 10 }}
           />
-          <Text style={styles.itemText}>
-            {res.name} {res.price ? `- ${res.price} RSD` : ''}
-          </Text>
+          <View style={{ flexShrink: 1 }}>
+            <Text style={styles.cardTitle}>{res.name}</Text>
+            <Text style={styles.cardText}>
+              {res.price ? `${res.price} RSD - ` : ''}{res.quantity} {res.measure}
+            </Text>
+          </View>
         </TouchableOpacity>
       ))}
 
       <TouchableOpacity
         style={styles.proceedButton}
         onPress={() => {
-          router.push({
-            pathname: './cart',
-            params: {
-              eventId: eventId?.toString(),
-              tickets: JSON.stringify(cart),
-              resources: JSON.stringify(Array.from(selectedResources)),
-            },
-          });
+          setRedirecting(true);
+          setTimeout(() => {
+            router.push({
+              pathname: './cart',
+              params: {
+                eventId: eventId?.toString(),
+                tickets: JSON.stringify(cart),
+                resources: JSON.stringify(Array.from(selectedResources)),
+              },
+            });
+          }, 1000);
         }}
       >
-        <Text style={styles.proceedText}>Go to Cart</Text>
+        <Text style={styles.proceedText}>Proceed to Cart</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -154,27 +219,44 @@ export default function TicketPurchaseScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   cartIcon: { alignSelf: 'flex-end', marginBottom: 10 },
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', marginVertical: 14 },
-  itemRow: { flexDirection: 'row', justifyContent: 'space-between', marginVertical: 8 },
-  itemText: { fontSize: 16, flex: 1 },
-  counterRow: { flexDirection: 'row', alignItems: 'center' },
-  counterButton: {
-    fontSize: 20,
-    width: 32,
-    height: 32,
-    textAlign: 'center',
-    backgroundColor: '#ddd',
-    marginHorizontal: 5,
-    borderRadius: 5,
-  },
-  counterValue: { fontSize: 16, minWidth: 20, textAlign: 'center' },
-  checkboxRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 8 },
-  proceedButton: {
-    marginTop: 20,
-    backgroundColor: '#0047FF',
+  sectionTitle: { fontSize: 22, fontWeight: 'bold', marginVertical: 16, color: '#0047FF' },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
     padding: 16,
-    borderRadius: 10,
-    alignItems: 'center',
+    marginVertical: 8,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
   },
-  proceedText: { color: 'white', fontWeight: '600', fontSize: 16 },
+  cardTitle: { fontSize: 18, fontWeight: '600', color: '#333' },
+  cardText: { fontSize: 14, color: '#666', marginTop: 4 },
+  counterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+    alignSelf: 'flex-end',
+  },
+  counterButton: {
+    width: 36,
+    height: 36,
+    backgroundColor: '#0047FF',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 6,
+  },
+  counterText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  counterValue: { fontSize: 16, fontWeight: 'bold', minWidth: 20, textAlign: 'center' },
+  proceedButton: {
+    backgroundColor: '#0047FF',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 30,
+    marginBottom: 50,
+  },
+  proceedText: { color: '#fff', fontWeight: '600', fontSize: 16 },
 });
