@@ -38,43 +38,46 @@ namespace Backend.Controllers
         
         [Authorize(Roles = "MobileUser")]
         [HttpPost("purchase")]
-        public IActionResult PurchaseTicket([FromBody] PurchaseTicketDto dto)
+        public IActionResult PurchaseTicket([FromBody] List<PurchaseTicketDto> dtos)
         {
 
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
-            var ticket = _context.Tickets.FirstOrDefault(t => t.TicketID == dto.TicketID);
-            if (ticket == null)
-                return NotFound("Ulaznica ne postoji.");
-
-            var eventEntity = _context.Events.FirstOrDefault(e => e.EventID == ticket.EventID);
-            if (eventEntity == null)
-                return NotFound("Događaj nije pronađen.");
-
-            if (eventEntity.EndDate < DateTime.UtcNow)
-                return BadRequest("Nije moguće kupiti kartu za događaj koji je već prošao.");
-
-            if (eventEntity.isFree)
+            foreach (var dto in dtos)
             {
-                return BadRequest("Nije moguće kupiti kartu za besplatan događaj ili događaj koji ne koristi karte.");
+                var ticket = _context.Tickets.FirstOrDefault(t => t.TicketID == dto.TicketID);
+                if (ticket == null)
+                    return NotFound($"Ulaznica sa ID {dto.TicketID} ne postoji.");
+
+                var eventEntity = _context.Events.FirstOrDefault(e => e.EventID == ticket.EventID);
+                if (eventEntity == null)
+                    return NotFound($"Događaj za ulaznicu {dto.TicketID} nije pronađen.");
+
+                if (eventEntity.EndDate < DateTime.UtcNow)
+                    return BadRequest($"Nije moguće kupiti kartu za događaj {eventEntity.Title} koji je već prošao.");
+
+                if (eventEntity.isFree)
+                    return BadRequest($"Nije moguće kupiti kartu za besplatan događaj ({eventEntity.Title}).");
+
+                int sold = _context.UserTickets.Count(ut => ut.TicketID == dto.TicketID);
+                if (sold + dto.Quantity > ticket.Quota)
+                    return BadRequest($"Nema dovoljno dostupnih ulaznica za tip {ticket.TypeName}.");
+
+                //TODO - ogranicenje
+
+                for (int i = 0; i < dto.Quantity; i++)
+                {
+                    var userTicket = new UserTicket
+                    {
+                        UserID = userId,
+                        TicketID = dto.TicketID,
+                        PurchasedAt = DateTime.UtcNow
+                    };
+                    _context.UserTickets.Add(userTicket);
+                }
             }
 
-            int sold = _context.UserTickets.Count(ut => ut.TicketID == dto.TicketID);
-            if (sold >= ticket.Quota)
-                return BadRequest("Nema više dostupnih ulaznica za ovaj tip.");
-
-            //TODO(ogranicenje)
-
-            var userTicket = new UserTicket
-            {
-                UserID = userId,
-                TicketID = dto.TicketID,
-                PurchasedAt = DateTime.UtcNow
-            };
-
-            _context.UserTickets.Add(userTicket);
             _context.SaveChanges();
-
             return Ok("Kupovina uspešna.");
         }
 
