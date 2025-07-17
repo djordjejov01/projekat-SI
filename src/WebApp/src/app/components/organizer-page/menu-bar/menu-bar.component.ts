@@ -2,7 +2,8 @@ import { Component} from '@angular/core';
 import { MenuItemComponent } from './menu-item/menu-item.component';
 import { CommonModule } from '@angular/common';
 import { TranslateModule } from '@ngx-translate/core';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+
 @Component({
   selector: 'app-menu-bar',
   imports: [MenuItemComponent, CommonModule, TranslateModule, RouterModule],
@@ -17,8 +18,16 @@ export class MenuBarComponent {
       { title: 'CREATE', image: './assets/plus.svg', imageWhite: './assets/plusWhite.svg' , link: "create-event"},
       { title: 'MYPROFILE', image: './assets/profile.svg', imageWhite: './assets/profileWhite.svg', link: "my-profile" }]
     
-  constructor(private router: Router) {}
+  constructor(private router: Router, private route : ActivatedRoute) {}
       ngOnInit() {
+        this.route.queryParams.subscribe(params =>{
+        const showID = params['showID'];
+          if(showID)
+          {
+            this.selectedIndex = Number(showID);
+            console.log(this.selectedIndex)
+          }
+      });
     const currentRoute = this.router.url.split('/').pop();
     console.log(currentRoute);
     const foundIndex = this.items.findIndex(item => item.link === currentRoute);

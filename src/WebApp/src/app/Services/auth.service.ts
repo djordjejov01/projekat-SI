@@ -20,7 +20,20 @@ export class AuthService{
     private readonly tokenKey = 'access_token';
     private decodedToken: JwtPayload | null = null;
 
-    constructor(){}
+    constructor()
+    {
+        const token = localStorage.getItem(this.tokenKey);
+        if(token){
+            try{
+                const decoded = jwtDecode<JwtPayload>(token);
+                this.decodedToken = decoded;
+            }catch(err){
+                console.error('Failed to decode token on init:', err);
+                this.decodedToken = null;
+                localStorage.removeItem(this.tokenKey);
+            }
+        }
+    }
 
     setToken(token : string) : "ok" | 'unauthorized' | 'error'{
 
@@ -70,6 +83,14 @@ export class AuthService{
 
     getUserName(): string | null {
         return this.decodedToken?.['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || null;
+    }
+
+    getUserId(): number | null {
+    const sub = this.decodedToken?.sub;
+    if (!sub) return null;
+
+    const userId = Number(sub);
+    return isNaN(userId) ? null : userId;
     }
 
 }

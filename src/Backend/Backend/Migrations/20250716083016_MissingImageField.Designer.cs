@@ -3,6 +3,7 @@ using System;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250716083016_MissingImageField")]
+    partial class MissingImageField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,9 +32,6 @@ namespace Backend.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EventID"));
-
-                    b.Property<int>("Category")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -80,9 +80,6 @@ namespace Backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ActivityID"));
 
-                    b.Property<int>("Category")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
@@ -104,22 +101,6 @@ namespace Backend.Migrations
                     b.HasKey("ActivityID");
 
                     b.ToTable("EventActivities");
-                });
-
-            modelBuilder.Entity("Backend.Models.EventCategories", b =>
-                {
-                    b.Property<int>("CategoryID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CategoryID"));
-
-                    b.Property<int>("CategoryName")
-                        .HasColumnType("integer");
-
-                    b.HasKey("CategoryID");
-
-                    b.ToTable("EventCategories");
                 });
 
             modelBuilder.Entity("Backend.Models.EventResource", b =>

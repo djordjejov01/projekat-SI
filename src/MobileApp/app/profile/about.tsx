@@ -10,19 +10,20 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-
+import { useTranslation } from 'react-i18next';
+const [imageLoading, setImageLoading] = useState(true);
 export default function AboutSyncUpScreen() {
   const router = useRouter();
-  const [imageLoading, setImageLoading] = useState(true);
+  const { t } = useTranslation();
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Header with back arrow and centered title */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => router.replace('/(tabs)/profile')}
           style={styles.backButton}
         >
+          <Ionicons name="arrow-back" size={24} />
           <Ionicons name="arrow-back" size={24} />
           <Text style={styles.backText}></Text>
         </TouchableOpacity>
@@ -30,9 +31,7 @@ export default function AboutSyncUpScreen() {
           <Text style={styles.title}>SyncUp</Text>
         </View>
       </View>
-
-      {/* Ilustracija sa loaderom */}
-      <View style={{ position: 'relative' }}>
+ <View style={{ position: 'relative' }}>
         {imageLoading && (
           <View style={styles.loader}>
             <ActivityIndicator size="large" color="#2563EB" />
@@ -47,40 +46,22 @@ export default function AboutSyncUpScreen() {
         />
       </View>
 
-      <Text style={styles.heading}>About us</Text>
-      <Text style={styles.paragraph}>
-        SyncUp is your ultimate event companion. We help people find, attend,
-        and stay informed about events they love – from concerts and tech
-        meetups to workshops and art festivals.
-      </Text>
+      <Text style={styles.heading}>{t('aboutScreen.heading')}</Text>
+      <Text style={styles.paragraph}>{t('aboutScreen.description')}</Text>
 
-      <Text style={styles.subheading}>🌟 Our Mission</Text>
-      <Text style={styles.paragraph}>
-        To connect people through shared experiences. Whether you’re into music,
-        technology, art, or education – SyncUp makes sure you never miss out.
-      </Text>
+      <Text style={styles.subheading}>{t('aboutScreen.missionTitle')}</Text>
+      <Text style={styles.paragraph}>{t('aboutScreen.missionText')}</Text>
 
-      <Text style={styles.subheading}>🚀 Why SyncUp?</Text>
-      <Text style={styles.paragraph}>
-        - Discover personalized events near you{'\n'}
-        - Save your favorites and buy tickets seamlessly{'\n'}
-        - Stay updated with schedules, maps & agendas{'\n'}
-        - Enjoy an intuitive, user-friendly experience
-      </Text>
+      <Text style={styles.subheading}>{t('aboutScreen.whyTitle')}</Text>
+      <Text style={styles.paragraph}>{t('aboutScreen.whyText')}</Text>
 
-      <Text style={styles.subheading}>📍 Where We’re Based</Text>
-      <Text style={styles.paragraph}>
-        Kragujevac, Serbia – but SyncUp is built to connect people everywhere.
-      </Text>
+      <Text style={styles.subheading}>{t('aboutScreen.locationTitle')}</Text>
+      <Text style={styles.paragraph}>{t('aboutScreen.locationText')}</Text>
 
-      <Text style={styles.subheading}>📬 Contact Us</Text>
-      <Text style={styles.paragraph}>
-        Email: contact@syncup.rs{'\n'}
-        Instagram: @syncup.events{'\n'}
-        LinkedIn: SyncUp Team
-      </Text>
+      <Text style={styles.subheading}>{t('aboutScreen.contactTitle')}</Text>
+      <Text style={styles.paragraph}>{t('aboutScreen.contactText')}</Text>
 
-      <Text style={styles.footer}>© 2025 SyncUp. All rights reserved.</Text>
+      <Text style={styles.footer}>{t('aboutScreen.footer')}</Text>
     </ScrollView>
   );
 }
@@ -156,3 +137,6 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
   },
 });
+
+
+

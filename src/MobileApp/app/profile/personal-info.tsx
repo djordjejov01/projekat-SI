@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../../config';
 import {
@@ -12,9 +13,11 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 export default function PersonalInfoScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const [firstName, setName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -52,7 +55,7 @@ export default function PersonalInfoScreen() {
     try {
       const token = await AsyncStorage.getItem('token');
       if (!token) {
-        Alert.alert('Error', 'You are not logged in.');
+        Alert.alert(t('personalInfo.error'), t('personalInfo.notLoggedIn'));
         return;
       }
 
@@ -71,66 +74,66 @@ export default function PersonalInfoScreen() {
       });
 
       if (res.ok) {
-        Alert.alert('Success', 'Your information has been updated.');
-        router.push('../(tabs)/profile'); // <-- Vraćanje na profil tab
+        Alert.alert(t('personalInfo.success'), t('personalInfo.updated'));
+        router.push('../(tabs)/profile');
       } else {
         const err = await res.json();
-        throw new Error(err.message || 'Failed to update profile.');
+        throw new Error(err.message || t('personalInfo.updateFailed'));
       }
     } catch (error: any) {
-      Alert.alert('Error', error.message);
+      Alert.alert(t('personalInfo.error'), error.message);
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Header with back arrow and centered title */}
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.push('../(tabs)/profile')} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <View style={styles.titleWrapper}>
-          <Text style={styles.title}>Personal Information</Text>
+          <Text style={styles.title}>{t('personalInfo.title')}</Text>
         </View>
       </View>
 
-      <Text style={styles.label}>Name</Text>
+      <Text style={styles.label}>{t('personalInfo.firstName')}</Text>
       <TextInput
         style={styles.input}
-        placeholder="John"
+        placeholder={t('personalInfo.firstNamePlaceholder')}
         value={firstName}
         onChangeText={setName}
       />
 
-      <Text style={styles.label}>Last Name</Text>
+      <Text style={styles.label}>{t('personalInfo.lastName')}</Text>
       <TextInput
         style={styles.input}
-        placeholder="Doe"
+        placeholder={t('personalInfo.lastNamePlaceholder')}
         value={lastName}
         onChangeText={setLastName}
       />
 
-      <Text style={styles.label}>Email</Text>
+      <Text style={styles.label}>{t('personalInfo.email')}</Text>
       <TextInput
         style={styles.input}
-        placeholder="example@email.com"
+        placeholder={t('personalInfo.emailPlaceholder')}
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
       />
 
-      <Text style={styles.label}>Phone Number</Text>
+      <Text style={styles.label}>{t('personalInfo.phone')}</Text>
       <TextInput
         style={styles.input}
-        placeholder="+381 64 123 4567"
+        placeholder={t('personalInfo.phonePlaceholder')}
         value={phoneNumber}
         onChangeText={setPhone}
         keyboardType="phone-pad"
       />
 
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveText}>Save Changes</Text>
+        <Text style={styles.saveText}>{t('personalInfo.saveChanges')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -187,3 +190,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+

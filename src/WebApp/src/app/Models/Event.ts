@@ -1,0 +1,78 @@
+import { User } from "./User";
+
+export const CategoryMap: Record<number, string> = {
+  0: 'Music',
+  1: 'Sports',
+  2: 'Entertainment',
+  3: 'Protest',
+  4: 'Charity',
+  5: 'Business',
+  6: 'Culture',
+  7: 'Other'
+};
+
+export class Event
+{
+    constructor(
+        private eventId : number,
+        private organizerId : number,
+        private title : string ,
+        private category : string,
+        private description : string ,
+        private location : string,
+        private startDateTime : Date,
+        private endDateTime : Date,
+        private capacity : number,
+        private organizer : User | null,
+        private image : string,
+        private isFree : boolean
+    ){}
+
+    getEventId(): number {
+    return this.eventId;
+  }
+
+  getOrganizerId(): number {
+    return this.organizerId;
+  }
+
+  getTitle(): string {
+    return this.title;
+  }
+
+  getCategory(): string {
+    return this.category;
+  }
+
+  getDescription(): string {
+    return this.description;
+  }
+
+  getLocation(): string {
+    return this.location;
+  }
+
+  getStartDateTime(): Date {
+    return this.startDateTime;
+  }
+
+  getEndDateTime(): Date {
+    return this.endDateTime;
+  }
+
+  getCapacity(): number {
+    return this.capacity;
+  }
+
+  getOrganizer(): User{
+    return this.organizer
+  }
+
+  getImage(): string {
+    return this.image;
+  }
+
+  IsFree(): boolean {
+    return this.isFree;
+  }
+}

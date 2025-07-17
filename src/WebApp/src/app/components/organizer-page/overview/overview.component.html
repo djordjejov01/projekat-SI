@@ -1,30 +1,38 @@
 <main>
-    <app-newest-event image="./assets/ne.jpg" title="Demo Product Session" location="Tokyo" time="3:19 PM GMT+8"
-        desc="Join us for an exclusive demo of our latest product features, designed to streamline your workflow and boost productivity. This session is tailored for investors and potential partners, offering an in-depth look at our innovative solutions."></app-newest-event>
-    <div id="botside">
+    <app-newest-event *ngIf="allEvents && allEvents.length > 0; else noEvents" image="./assets/ne.jpg"
+        [title]="allEvents[0].getTitle()" [location]="allEvents[0].getLocation()"
+        [time]="allEvents[0].getStartDateTime().toString()" [desc]="allEvents[0].getDescription()"></app-newest-event>
+    <ng-template #noEvents>
+        <p>No events found.</p>
+        <button id="ae" (click) = "createEvent()"><i class="pi pi-plus"></i>{{'ADDEV' | translate }}</button>
+    </ng-template>
+    <div id="botside" *ngIf="allEvents && allEvents.length > 0">
         <div id="ls">
             <div id="timeline">
-            <img src="./assets/cal.svg" alt="">
-            <div id="linija"></div>
-        </div>
+                <img src="./assets/cal.svg" alt="">
+                <div id="linija"></div>
+            </div>
             <div id="leftside">
-            <div id="track">
-                <h2>{{'UPEV' | translate }}</h2>
-                <button id="ae"><i class="pi pi-plus"></i>{{'ADDEV' | translate }}</button>
-            </div>
-            <div id="events">
-                <app-event-preview image = "./assets/eimg1.jpg" status="Live" time="6:00 AM" title="Tech Meetup" host="By Alex Smith & Sam Lee" location ="Zoom"></app-event-preview>
-                <app-event-preview image = "./assets/eimg1.jpg" status="Upcoming" time="9:00 AM" title="Product Launch Showcase" host="By Sarah Chen" location ="Online Webinar"></app-event-preview>
+                <div id="track">
+                    <h2>{{'UPEV' | translate }}</h2>
+                    <button id="ae"><i class="pi pi-plus"></i>{{'ADDEV' | translate }}</button>
+                </div>
+                <div id="events">
+                    <app-event-preview *ngFor="let event of allEvents" image="./assets/eimg1.jpg" status="Upcoming"
+                        [time]="event.getStartDateTime().toLocaleDateString()" [title]="event.getTitle()"
+                        [host]="currUser" [location]="event.getLocation()">
+                    </app-event-preview>
+
+                </div>
             </div>
         </div>
-        </div>
-        
+
         <div id="rightside">
             <div id="stat">
                 <img src="./assets/calendar.svg" alt="">
                 <div id="tin">
                     <p id="n1">{{'TE' | translate }}</p>
-                    <p id="n2">25</p>
+                    <p id="n2">{{allEvents.length}}</p>
                 </div>
             </div>
             <div id="stat">
