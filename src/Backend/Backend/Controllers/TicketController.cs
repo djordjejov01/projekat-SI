@@ -43,6 +43,8 @@ namespace Backend.Controllers
 
                 var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
+            var createdTickets = new List<object>();
+
             foreach (var dto in dtos)
             {
                 var ticket = _context.Tickets.FirstOrDefault(t => t.TicketID == dto.TicketID);
@@ -74,11 +76,14 @@ namespace Backend.Controllers
                         PurchasedAt = DateTime.UtcNow
                     };
                     _context.UserTickets.Add(userTicket);
+                    _context.SaveChanges();
+
+                    createdTickets.Add(new { UserTicketID = userTicket.UserTicketID, TicketID = dto.TicketID });
                 }
             }
 
-            _context.SaveChanges();
-            return Ok("Kupovina uspešna.");
+           
+            return Ok(createdTickets);
         }
 
         [Authorize(Roles = "MobileUser")]

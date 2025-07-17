@@ -59,28 +59,30 @@ namespace Backend.Controllers
             if (!eventResource.IsReservable)
                 return BadRequest("Ovaj resurs nije moguće rezervisati.");
 
-
-            var hasTicket = _context.UserTickets
-                .Any(ut => ut.UserID == userId && ut.Ticket.EventID == eventResource.EventID);
-            if (!hasTicket)
-                return BadRequest("Morate imati ulaznicu za ovaj događaj da biste rezervisali resurs.");
-
-
             if (eventResource.Event.EndDate < DateTime.UtcNow)
                 return BadRequest("Nije moguće rezervisati resurs za događaj koji je prošao.");
 
-            
-            var userTicket = _context.UserTickets
-                .Include(ut => ut.Ticket)
-                .FirstOrDefault(ut => ut.UserTicketID == dto.UserTicketID && ut.UserID == userId);
+            if (!eventResource.Event.isFree)
+            {
 
-            if (userTicket == null)
-                return BadRequest("Nemate validnu ulaznicu za ovaj događaj.");
+                var hasTicket = _context.UserTickets
+                    .Any(ut => ut.UserID == userId && ut.Ticket.EventID == eventResource.EventID);
+                if (!hasTicket)
+                    return BadRequest("Morate imati ulaznicu za ovaj događaj da biste rezervisali resurs.");
 
-            
-            if (userTicket.Ticket.EventID != eventResource.EventID)
-                return BadRequest("Ulaznica nije za isti događaj kao resurs koji pokušavate da rezervišete.");
 
+                var userTicket = _context.UserTickets
+                    .Include(ut => ut.Ticket)
+                    .FirstOrDefault(ut => ut.UserTicketID == dto.UserTicketID && ut.UserID == userId);
+
+                if (userTicket == null)
+                    return BadRequest("Nemate validnu ulaznicu za ovaj događaj.");
+
+
+                if (userTicket.Ticket.EventID != eventResource.EventID)
+                    return BadRequest("Ulaznica nije za isti događaj kao resurs koji pokušavate da rezervišete.");
+
+            }
             
             int alreadyReserved = _context.UserResourceReservations
                 .Where(r => r.EventResourceID == dto.EventResourceID)
@@ -96,7 +98,7 @@ namespace Backend.Controllers
                 UserID = userId,
                 EventResourceID = dto.EventResourceID,
                 Quantity = dto.Quantity,
-                UserTicketID = dto.UserTicketID,
+                UserTicketID = eventResource.Event.isFree ? (int?)null : dto.UserTicketID,
                 ReservedAt = DateTime.UtcNow
             };
 
