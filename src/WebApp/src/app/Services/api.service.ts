@@ -67,7 +67,8 @@ export class ApiService{
                     event.isFree
                     );
                 })
-            )
+            ),
+            catchError(this.handleError)
         );
     }
 

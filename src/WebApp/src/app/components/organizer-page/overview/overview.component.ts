@@ -7,6 +7,7 @@ import { ApiService } from '../../../Services/api.service';
 import { AuthService } from '../../../Services/auth.service';
 import { MessageService } from 'primeng/api';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-overview',
   imports: [NewestEventComponent, EventPreviewComponent, TranslateModule, CommonModule],
@@ -16,7 +17,9 @@ import { CommonModule } from '@angular/common';
 export class OverviewComponent implements OnInit {
 
 
-  constructor(private apiService : ApiService, private authService : AuthService, private messageService : MessageService){}
+  constructor(private apiService : ApiService, private authService : AuthService, private messageService : MessageService,
+    private router : Router
+  ){}
   allEvents : Event[];
   currUser : string;
   ngOnInit(): void {
@@ -38,5 +41,11 @@ export class OverviewComponent implements OnInit {
             })
       
       
+  }
+  createEvent(){
+    this.router.navigate(["/organizer/create-event"],{
+        queryParams: { showID: 3}
+      });
+
   }
 }

@@ -103,7 +103,7 @@ export class CalendarComponent implements OnInit{
 
     if(confirmed){
       this.router.navigate(['/organizer/create-event'],{
-        queryParams: { start: start.toISOString(), end: end.toISOString()}
+        queryParams: { start: start.toISOString(), end: end.toISOString(), showID: 3}
       });
     }
 
