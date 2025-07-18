@@ -8,7 +8,7 @@
 
             <div class="logo-and-nav">
 
-                <img src="./assets/logo91.png" alt="logo" routerLink="/home">
+                <img src="./assets/logo91.png" alt="logo" routerLink="/home" id="lg">
                 <ul>
                     <li [ngClass]="{'active-link' : currentPage === 'Dashboard'}">Dashboard</li>
                     <li>Settings</li>
@@ -17,7 +17,7 @@
             </div>
 
             <div class="user-actions">
-                <button (click)="onLogoutClick()">Logout</button>
+                <button (click)="onLogoutClick()" id="lgout">Logout</button>
                 <i class="pi pi-bell"></i>
 
                 <div class="pfp">
@@ -249,7 +249,7 @@
 
         <ng-template #emptymessage>
             <tr>
-                <td colspan="8">No customers found.</td>
+                <td colspan="8">No users found.</td>
             </tr>
         </ng-template>
 

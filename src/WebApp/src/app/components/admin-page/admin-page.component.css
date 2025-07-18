@@ -26,11 +26,15 @@ nav{
     gap: 1rem;
     align-items: center;
 }
-
+#lgout{
+    cursor: pointer;
+}
 .logo-and-nav img{
     max-height: 44px;
 }
-
+#lg:hover{
+    cursor: pointer;
+}
 .user-actions{
     display: flex;
     align-items: center;
