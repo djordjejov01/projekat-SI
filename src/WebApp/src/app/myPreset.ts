@@ -4,17 +4,17 @@ import Aura from '@primeng/themes/aura';
 export const MyPreset = definePreset(Aura, {
     semantic: {
         primary: {
-            50: '{violet.50}',
-            100: '{violet.100}',
-            200: '{violet.200}',
-            300: '{violet.300}',
-            400: '{violet.400}',
-            500: '{violet.500}',
-            600: '{violet.600}',
-            700: '{violet.700}',
-            800: '{violet.800}',
-            900: '{violet.900}',
-            950: '{violet.950}'
+            50: '#e7e8fb',
+            100: '#d1d3f9',
+            200: '#b3b5f4',
+            300: '#9799f0',
+            400: '#7c7dee',
+            500: '#636AE8', // your desired main color
+            600: '#575fce',
+            700: '#4a52b3',
+            800: '#3b4394',
+            900: '#2f3577',
+            950: '#1f234f'
         }
     }
 });

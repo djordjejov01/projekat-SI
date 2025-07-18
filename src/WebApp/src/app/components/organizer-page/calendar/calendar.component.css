@@ -1,4 +1,4 @@
-.calendar{
+.calendar {
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
@@ -13,14 +13,14 @@
 
 /* Toolbar title (month name, etc.) */
 ::ng-deep .fc-toolbar-title {
-  color: #8b5cf6; /* violet-900 */
+  color: #434bbd; /* darker shade of #636AE8 */
   font-weight: 600;
   font-size: 1.25rem;
 }
 
 /* Calendar buttons (Today, Month, Week, etc.) */
 ::ng-deep .fc-button {
-  background-color: #8b5cf6 !important; /* violet-500 */
+  background-color: #636AE8 !important; /* main color */
   color: white !important;
   border: none !important;
   border-radius: 0.375rem !important; /* rounded-md */
@@ -31,17 +31,17 @@
 }
 
 ::ng-deep .fc-button:hover {
-  background-color: #7c3aed !important; /* violet-600 */
+  background-color: #525dbf !important; /* slightly darker for hover */
 }
 
 ::ng-deep .fc-button.fc-button-active {
-  background-color: #6d28d9 !important; /* violet-700 */
+  background-color: #454d9f !important; /* even darker for active */
 }
 
 /* Calendar events */
 ::ng-deep .fc-event {
-  background-color: #a78bfa !important; /* violet-300 */
-  color: #ffffff !important; /* violet-900 text */
+  background-color: #a0a8f7 !important; /* lighter shade of main */
+  color: #ffffff !important; /* white text */
   border: none !important;
   font-weight: 500;
   border-radius: 0.375rem !important;
@@ -56,27 +56,26 @@
 }
 
 ::ng-deep .fc-daygrid-event-dot {
-  border-color: #ffffff !important;      /* also override border color */
+  border-color: #ffffff !important;
 }
 
-::ng-deep .fc-list-event-dot{
-    border-color: #ffffff !important;
+::ng-deep .fc-list-event-dot {
+  border-color: #ffffff !important;
 }
 
 ::ng-deep .fc .fc-list-event:hover td {
-  background-color: #7c3aed;
+  background-color: #525dbf; /* hover shade */
 }
 
-::ng-deep .fc-button-group{
-    gap: 0.5rem;
+::ng-deep .fc-button-group {
+  gap: 0.5rem;
 }
 
-/* Current day pastel violet */
+/* Current day pastel shade */
 ::ng-deep .fc-day-today {
-  background-color: rgba(139, 92, 246, 0.15) !important;
+  background-color: rgba(99, 106, 232, 0.15) !important; /* pastel main color */
   border-radius: 0.5rem;
 }
-
 
 ::ng-deep .fc-toolbar {
   flex-wrap: wrap;

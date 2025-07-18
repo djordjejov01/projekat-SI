@@ -25,7 +25,7 @@
 
           <p class="font-medium  break-words">{{"IAM" | translate}}</p>
           <p-floatlabel class="w-full" variant="on">
-            <p-select  [options]="roles"  name="role"  formControlName="role"  placeholder=" "  inputId="roles"  class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+            <p-select  [options]="roles"  name="role"  formControlName="role"  placeholder=" "  inputId="roles"  class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"/>
             <label for="roles">{{"S1" | translate}}</label>
           </p-floatlabel>
 
@@ -35,7 +35,7 @@
 
           <p class="font-medium  break-words">{{"USERNAME" | translate}}</p>
           <p-floatlabel class="w-full" variant="on">
-            <input  type="text"  pInputText  placeholder=" "  formControlName="username"  inputId="username"  class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+            <input  type="text"  pInputText  placeholder=" "  formControlName="username"  inputId="username"  class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]" />
             <label for="username">{{"EUSER" | translate}}</label>
           </p-floatlabel>
 
@@ -45,7 +45,7 @@
 
           <p class="font-medium  break-words">Email</p>
           <p-floatlabel class="w-full " variant="on">
-            <input  type="text"  pInputText  placeholder=" "  formControlName="email"  inputId="email"  class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"  />
+            <input  type="text"  pInputText  placeholder=" "  formControlName="email"  inputId="email"  class="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"  />
             <label for="email">{{"EMAILPH" | translate}}</label>
           </p-floatlabel>
 
@@ -56,7 +56,7 @@
           <div class="input-wrapper w-full">
             <p class="font-medium  break-words">{{"Password" | translate}}</p>
             <p-floatlabel  class="w-full"  variant="on"  inputId="password">
-              <p-password formControlName="password" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500">
+              <p-password formControlName="password" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]">
                 <ng-template #header>
                   <div class="font-semibold text-xm mb-4">{{"PICK" | translate}}</div>
                 </ng-template>
@@ -77,7 +77,7 @@
           <div class="input-wrapper">
             <p class="font-medium  break-words">{{"CONF" | translate}}</p>
             <p-floatlabel class="w-full" variant="on" inputId="confirm" >
-              <p-password formControlName="confirm" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500">
+              <p-password formControlName="confirm" [toggleMask]="true" styleClass="w-full" inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]">
                 <ng-template #header>
                   <div class="font-semibold text-xm mb-4">{{"CONF" | translate}}</div>
                 </ng-template>
@@ -101,12 +101,12 @@
 
       <p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }"/>
       <p-confirmdialog />
-      <button type="button" class="bg-violet-400 text-white rounded-md px-4 py-2 hover:bg-violet-500"  (click)="submitForm()">
+      <button type="button" class="bg-[#636AE8] text-white rounded-md px-4 py-2 hover:bg-[#575FCE]"  (click)="submitForm()">
         {{"RACC" | translate}}
       </button>
 
       <div class="have-account">
-        <p class="text-violet-400" routerLink="/login">
+        <p class="text-[#636AE8]" routerLink="/login">
           {{"YESACC" | translate}}
         </p>
         <select (change)="changeLanguage($event)">
