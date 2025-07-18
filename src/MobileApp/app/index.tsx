@@ -12,6 +12,7 @@ import { Link, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import i18n from './i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Buffer } from 'buffer';
 
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -25,11 +26,20 @@ export default function HomeScreen() {
       try {
         const token = await AsyncStorage.getItem('token');
         if (token) {
-          // Korisnik je već prijavljen, preusmeri ga
-          router.replace('./(tabs)/events');
+          const [, payloadBase64] = token.split('.');
+          const payloadJson = Buffer.from(payloadBase64, 'base64').toString('utf-8');
+          const decodedPayload = JSON.parse(payloadJson);
+          const currentTime = Math.floor(Date.now() / 1000);
+
+          if (decodedPayload.exp && decodedPayload.exp > currentTime) {
+            router.replace('./(tabs)/events');
+          } else {
+            await AsyncStorage.removeItem('token');
+          }
         }
       } catch (error) {
         console.log('Token check failed:', error);
+        await AsyncStorage.removeItem('token');
       }
     };
 
@@ -45,7 +55,6 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      {/* JEZIK GORE DESNO */}
       <View style={styles.langMenu}>
         <TouchableOpacity
           onPress={() => setLanguageModalVisible(true)}
@@ -76,7 +85,6 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </Link>
 
-      {/* MODAL ZA IZBOR JEZIKA */}
       <Modal
         transparent
         animationType="fade"
