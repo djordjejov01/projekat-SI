@@ -64,7 +64,7 @@ export default function FavoritesScreen() {
       onPress={() =>
         router.push({
           pathname: '../event/[id]',
-          params: { id: item.id },
+          params: { id: item.id, from: 'favorites'},
         })
       }
     >
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     marginBottom: 20,
-    marginTop: 10,
+    marginTop: 25,
   },
   empty: {
     fontSize: 16,

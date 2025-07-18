@@ -43,7 +43,7 @@ type Event = {
 };
 
 export default function EventDetailScreen() {
-  const { id } = useLocalSearchParams();
+  const { id,from} = useLocalSearchParams();
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -189,6 +189,20 @@ const geocodeLocation = async (location: string) => {
 
   return (
     <ScrollView style={styles.container}>
+
+   <TouchableOpacity  onPress={() => {
+    if (from === 'search') {
+      router.replace('/search');
+    } else if (from === 'favorites') {
+      router.replace('/favorites');
+    } else {
+      router.replace('/events');
+    }
+  }}
+   style={styles.backButton}>
+             <Ionicons name="arrow-back" size={24} color="#333" />
+           </TouchableOpacity>
+
       <View style={styles.imageWrapper}>
         {imageLoading && (
           <ActivityIndicator
@@ -321,14 +335,6 @@ const geocodeLocation = async (location: string) => {
           </MapView>
         </>
       )}
-
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => router.back()}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.backText}>← {t('backToEvents')}</Text>
-      </TouchableOpacity>
     </ScrollView>
   );
 }
@@ -441,19 +447,16 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 10,
     marginTop: 10,
+    marginBottom:40
   },
   backButton: {
-    marginTop: 24,
-    marginBottom: 40,
-    paddingVertical: 14,
-    borderRadius: 10,
-    backgroundColor: '#E5E7EB',
-    alignItems: 'center',
+    padding:20
   },
   backText: {
     fontSize: 16,
     color: '#111827',
   },
+
 });
 
 

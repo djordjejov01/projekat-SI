@@ -161,7 +161,7 @@ const SearchScreen = () => {
     return (
       <TouchableOpacity
         style={styles.card}
-        onPress={() => router.push({ pathname: '../event/[id]', params: { id: item.id } })}
+        onPress={() => router.push({ pathname: '../event/[id]', params: { id: item.id, from: 'search' } })}
       >
         <Image source={{ uri: item.imageUrl }} style={styles.image} />
         <Text style={styles.title}>{item.title}</Text>
