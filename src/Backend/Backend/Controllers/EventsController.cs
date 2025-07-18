@@ -19,6 +19,7 @@ namespace Backend.Controllers
         public EventsController(AppDbContext context, IEventService eventService, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
             _eventService = eventService;
             _env = env;
         }
