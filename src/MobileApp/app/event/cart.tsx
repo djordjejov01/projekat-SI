@@ -25,11 +25,6 @@ type Resource = {
   price?: number;
 };
 
-type UserTicket = {
-  id: number;
-  ticketID: number;
-};
-
 export default function CartScreen() {
   const router = useRouter();
   const { tickets, resources, eventId } = useLocalSearchParams();
@@ -109,6 +104,7 @@ export default function CartScreen() {
     return total;
   };
 
+  // ISPRAVLJENA FUNKCIJA
   const handlePurchase = async () => {
     Alert.alert(
       'Potvrda kupovine',
@@ -126,58 +122,66 @@ export default function CartScreen() {
                 return;
               }
 
-              const ticketRequestBody = selectedTickets.flatMap(ticket =>
-                Array(ticket.quantity).fill({ TicketID: ticket.id })
-              );
-              console.log('Ticket request:', ticketRequestBody);
+              // Pripremi payload za kupovinu ulaznica
+              const ticketRequestBody = selectedTickets.map(ticket => ({
+                TicketID: ticket.id,
+                Quantity: ticket.quantity
+              }));
+
+              // Pošalji zahtev za kupovinu ulaznica
               const purchaseRes = await fetch(`${API_URL}/Ticket/purchase`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({ dto: ticketRequestBody }),
-            });
-
-
-                      if (!purchaseRes.ok) {
-          const errorText = await purchaseRes.text();
-          console.error('Purchase failed:', errorText);
-          throw new Error(`Kupovina ulaznica nije uspela. ${errorText}`);
-                                              }
-
-
-              // Dohvati sve korisničke karte nakon kupovine
-              const allUserTicketsRes = await fetch(`${API_URL}/Ticket/tickets/my`, {
-                headers: { Authorization: `Bearer ${token}` },
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(ticketRequestBody),
               });
-              const allUserTickets: UserTicket[] = await allUserTicketsRes.json();
 
-              // Pronađi novokupljene karte koje odgovaraju onima u selectedTickets
-              const newUserTicketIDs = allUserTickets
-                .filter(ut =>
-                  selectedTickets.some(st =>
-                    st.id === ut.ticketID
-                  )
-                )
-                .map(ut => ut.id);
+              if (!purchaseRes.ok) {
+                const errorText = await purchaseRes.text();
+                console.error('Purchase failed:', errorText);
+                throw new Error(`Kupovina ulaznica nije uspela. ${errorText}`);
+              }
 
-              // Rezerviši svaki izabrani resurs za svaku novu kartu
-              for (const resId of selectedResources) {
-                for (const userTicketID of newUserTicketIDs) {
-                  await fetch(`${API_URL}/Resource/reserve`, {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json',
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({
-                      eventResourceID: resId,
-                      quantity: 1,
-                      userTicketID: userTicketID,
-                    }),
-                  });
+              // Dobij UserTicketID-ove iz odgovora
+              const createdTickets: { UserTicketID?: number; TicketID?: number; userTicketID?: number; ticketID?: number }[] = await purchaseRes.json();
+
+              // Mapiraj TicketID na listu UserTicketID-ova (ako ima više istih tipova)
+              const ticketIdToUserTicketIds: { [ticketId: number]: number[] } = {};
+              for (const t of createdTickets) {
+                const ticketID = t.TicketID ?? t.ticketID;
+                const userTicketID = t.UserTicketID ?? t.userTicketID;
+                if (typeof ticketID === "undefined" || typeof userTicketID === "undefined") {
+                  console.warn("Nedostaje ticketID ili userTicketID u objektu:", t);
+                  continue;
                 }
+                if (!ticketIdToUserTicketIds[ticketID]) ticketIdToUserTicketIds[ticketID] = [];
+                ticketIdToUserTicketIds[ticketID].push(userTicketID);
+              }
+
+              // Rezerviši svaki izabrani resurs za odgovarajuću kartu (prvi tip ulaznice)
+              for (const resId of selectedResources) {
+                // Pronađi prvi tip ulaznice (ili možeš proširiti logiku po potrebi)
+                const firstSelectedTicket = selectedTickets[0];
+                const userTicketIds = ticketIdToUserTicketIds[firstSelectedTicket.id] || [];
+                if (userTicketIds.length === 0) continue;
+
+                // Uzmi jedan UserTicketID i ukloni ga iz niza (da ne koristiš isti više puta)
+                const userTicketID = userTicketIds.shift();
+
+                await fetch(`${API_URL}/Resource/reserve`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({
+                    EventResourceID: resId,
+                    Quantity: 1,
+                    UserTicketID: userTicketID
+                  }),
+                });
               }
 
               setLoading(false);

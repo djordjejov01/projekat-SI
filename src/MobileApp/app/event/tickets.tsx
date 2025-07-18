@@ -128,25 +128,10 @@ export default function TicketPurchaseScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      <TouchableOpacity
-        style={styles.cartIcon}
-        onPress={() => {
-          setRedirecting(true);
-          // Delay da se vidi loader bar par sekundi, zatim redirekcija
-          setTimeout(() => {
-            router.push({
-              pathname: './cart',
-              params: {
-                eventId: eventId?.toString(),
-                tickets: JSON.stringify(cart),
-                resources: JSON.stringify(Array.from(selectedResources)),
-              },
-            });
-          }, 1000);
-        }}
-      >
-        <Ionicons name="cart-outline" size={28} color="#0047FF" />
-      </TouchableOpacity>
+
+    <TouchableOpacity  onPress={() => router.back()} style={styles.backButton}>
+                 <Ionicons name="arrow-back" size={24} color="#333" />
+               </TouchableOpacity>
 
       <Text style={styles.sectionTitle}>🎫 Tickets</Text>
       {tickets.map(ticket => {
@@ -218,7 +203,6 @@ export default function TicketPurchaseScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
-  cartIcon: { alignSelf: 'flex-end', marginBottom: 10 },
   sectionTitle: { fontSize: 22, fontWeight: 'bold', marginVertical: 16, color: '#0047FF' },
   card: {
     backgroundColor: '#fff',
@@ -259,4 +243,8 @@ const styles = StyleSheet.create({
     marginBottom: 50,
   },
   proceedText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  backButton:
+  {
+    padding:20
+  }
 });
