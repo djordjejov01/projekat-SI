@@ -41,7 +41,7 @@ namespace Backend.Controllers
         public IActionResult PurchaseTicket([FromBody] List<PurchaseTicketDto> dtos)
         {
 
-            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+                var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
             var createdTickets = new List<object>();
 

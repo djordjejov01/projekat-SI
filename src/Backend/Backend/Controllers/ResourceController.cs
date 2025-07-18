@@ -25,18 +25,19 @@ namespace Backend.Controllers
             var resources = _context.EventResources
                 .Where(er => er.EventID == eventId && er.IsReservable && er.Event.EndDate > DateTime.UtcNow)
                 .Select(er => new {
-                    er.ID,
-                    er.SupplierID,
-                    er.EventID,
-                    er.Quantity,
-                    er.Measure,
-                    ResourceName = er.Resource.Name
-
+                    id = er.ID,                            // promenjeno sa ID -> id
+                    supplierID = er.SupplierID,
+                    eventID = er.EventID,
+                    quantity = er.Quantity,
+                    measure = er.Measure,
+                    name = er.Resource.Name,               // promenjeno sa ResourceName -> name
+                    price = (decimal?)er.Resource.Quantity // ako želiš neku cenu kao primer
                 })
                 .ToList();
 
             return Ok(resources);
         }
+
 
         [Authorize(Roles = "MobileUser")]
         [HttpPost("reserve")]
