@@ -11,10 +11,11 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-const [imageLoading, setImageLoading] = useState(true);
+
 export default function AboutSyncUpScreen() {
   const router = useRouter();
   const { t } = useTranslation();
+  const [imageLoading, setImageLoading] = useState(true); // ✅ Sada unutar komponente
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -24,14 +25,14 @@ export default function AboutSyncUpScreen() {
           style={styles.backButton}
         >
           <Ionicons name="arrow-back" size={24} />
-          <Ionicons name="arrow-back" size={24} />
           <Text style={styles.backText}></Text>
         </TouchableOpacity>
         <View style={styles.titleWrapper}>
           <Text style={styles.title}>SyncUp</Text>
         </View>
       </View>
- <View style={{ position: 'relative' }}>
+
+      <View style={{ position: 'relative' }}>
         {imageLoading && (
           <View style={styles.loader}>
             <ActivityIndicator size="large" color="#2563EB" />
@@ -137,6 +138,3 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
   },
 });
-
-
-

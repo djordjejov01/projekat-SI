@@ -18,6 +18,9 @@ export class User{
         private password? : string,
         private firstName? : string,
         private lastName? : string,
+        private language?: string,          
+        private phoneNumber?: string,        
+        private profilePicture?: string      
     ){}
 
     getUserId() : number{

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FullCalendarModule } from '@fullcalendar/angular';
-import { CalendarOptions, DateSelectArg } from '@fullcalendar/core/index.js';
+import { CalendarOptions, DateSelectArg, EventInput } from '@fullcalendar/core/index.js';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -8,6 +8,9 @@ import listPlugin from '@fullcalendar/list'
 import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
+import { ApiService } from '../../../Services/api.service';
+import { AuthService } from '../../../Services/auth.service';
+import { Event } from '../../../Models/Event';
 
 
 @Component({
@@ -16,12 +19,14 @@ import { DatePipe } from '@angular/common';
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css'
 })
-export class CalendarComponent {
+export class CalendarComponent implements OnInit{
 
   constructor(
     private confirmationDialogService : ConfirmationDialogService,
     private router : Router,
-    private datePipe : DatePipe) {}
+    private datePipe : DatePipe,
+    private apiService : ApiService,
+    private authService : AuthService) {}
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin,timeGridPlugin,interactionPlugin,listPlugin],
@@ -50,46 +55,46 @@ export class CalendarComponent {
       minute: '2-digit',
       hour12: false
     },
-    events: [
-      {
-        title: 'Team Meeting',
-        start: '2025-07-15T10:00:00',
-        end: '2025-07-15T11:30:00',
-      },
-      {
-        title: 'Event Setup',
-        start: '2025-07-17',
-      },
-      {
-        title: 'Music Festival',
-        start: '2025-07-20',
-        end: '2025-07-22',
-      },
-      {
-        title: 'Venue Cleanup',
-        start: '2025-07-23T14:00:00',
-        end: '2025-07-23T16:00:00',
-      },
-      {
-        title: 'Private Booking',
-        start: '2025-07-25',
-      }
-    ]
+    events: []
+  }
+
+  ngOnInit(): void {
+    
+    this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe((events: Event[]) => {
+      console.log(events)
+      const calendarEvents : EventInput[] = events.map( event => ({
+        title: event.getTitle(),
+        start: event.getStartDateTime().toISOString(),
+        end: event.getEndDateTime().toISOString(),
+        allDay: this.isAllDayEvent(event.getStartDateTime(),event.getEndDateTime()),
+        extendedProps: {
+          category: event.getCategory(),
+          location: event.getLocation(),
+          organizer: event.getOrganizer()?.getUsername?.() || 'Unknown'
+        }
+      }));
+
+      this.calendarOptions.events = calendarEvents
+    });
+
+  }
+
+  private isAllDayEvent(start: Date, end: Date): boolean {
+    return (
+      start.getHours() === 0 &&
+      start.getMinutes() === 0 &&
+      end.getHours() === 0 &&
+      end.getMinutes() === 0 &&
+      end.getTime() - start.getTime() >= 24 * 60 * 60 * 1000
+    );
   }
 
   async handleDateSelect(selectInfo: DateSelectArg){
 
-    const { start, end, view } = selectInfo
+    const { start, end } = selectInfo
     
     const startDateFormatted = this.datePipe.transform(start, 'MMM d, y, HH:mm:ss');
-
-    let adjustedEnd = end;
-    if(view.type === 'dayGridMonth' || selectInfo.allDay){
-      adjustedEnd = new Date(end.getTime() - 1);
-      // adjustedEnd.setDate(adjustedEnd.getSeconds() - 1);
-    }
-
-    const endDateFormatted = this.datePipe.transform(adjustedEnd,'MMM d, y, HH:mm:ss');
+    const endDateFormatted = this.datePipe.transform(end,'MMM d, y, HH:mm:ss');
 
     const confirmed = await this.confirmationDialogService.confirm(
       `Create and event from ${startDateFormatted} to ${endDateFormatted}?`,
@@ -98,7 +103,7 @@ export class CalendarComponent {
 
     if(confirmed){
       this.router.navigate(['/organizer/create-event'],{
-        queryParams: { start: start.toISOString(), end: adjustedEnd.toISOString()}
+        queryParams: { start: start.toISOString(), end: end.toISOString(), showID: 3}
       });
     }
 
