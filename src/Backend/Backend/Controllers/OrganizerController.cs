@@ -148,5 +148,24 @@ namespace Backend.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpGet("event-category-stats")]
+        public async Task<IActionResult> GetEventCategoryStats()
+        {
+            var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var stats = _context.Events
+                .Where(e => e.OrganizerID == organizerId)
+                .GroupBy(e => e.Category)
+                .Select(g => new
+                {
+                    Category = g.Key.ToString(),
+                    Count = g.Count()
+                })
+                .ToList();
+
+            var result = stats.ToDictionary(x => x.Category, x => x.Count);
+            return Ok(result);
+        }
     }
 }
