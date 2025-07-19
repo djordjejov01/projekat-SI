@@ -134,7 +134,9 @@ namespace Backend.Controllers
                 return BadRequest(new { message = ex.Message }); 
             }
         }
-        [HttpPost("create-event")]public async Task<IActionResult> CreateEvent(CreateEventDto model, int organizerID)
+        [HttpPost("create-event")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> CreateEvent(CreateEventDto model, int organizerID)
         {
             try
             {
