@@ -37,7 +37,7 @@
     border: 2px solid rgb(232, 232, 232);
     border-radius: 10px;
     gap:50px;
-    padding: 50px;
+    padding: 45px;
 }
 
 #rightside{
@@ -47,7 +47,7 @@
     border: 2px solid rgb(232, 232, 232);
     border-radius: 10px;
     gap:20px;
-    padding: 50px;
+    padding: 45px;
     max-height: 440px;
     
 }

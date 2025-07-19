@@ -17,10 +17,13 @@ import { TicketDto } from '../../../Models/TicketDto';
 import { CreatEventDto } from '../../../Models/CreateEventDto';
 import { ApiService } from '../../../Services/api.service';
 import { AuthService } from '../../../Services/auth.service';
+import { CategoryMap } from '../../../Models/Event';
+import { SelectModule } from 'primeng/select';
+
 
 @Component({
   selector: 'app-create-event',
-  imports: [CommonModule,ReactiveFormsModule,FloatLabelModule,InputTextModule,Checkbox,TextareaModule,DatePickerModule,InputNumber,ButtonModule,FileUpload],
+  imports: [CommonModule,ReactiveFormsModule,FloatLabelModule,InputTextModule,Checkbox,TextareaModule,DatePickerModule,InputNumber,ButtonModule,FileUpload,SelectModule],
   templateUrl: './create-event.component.html',
   styleUrl: './create-event.component.css'
 })
@@ -31,6 +34,10 @@ export class CreateEventComponent implements OnInit{
   localeCode : string;
   minDate : Date;
   selectedImageFile: File | null = null;
+  categories = [];
+
+  eventStart: Date | null = null;
+  eventEnd: Date | null = null;
 
   constructor( 
     private translateService : TranslateService,
@@ -42,6 +49,11 @@ export class CreateEventComponent implements OnInit{
   ngOnInit(): void {
 
       this.minDate = new Date();
+
+      this.categories = Object.entries(CategoryMap).map(([key,label]) => ({
+        label,
+        value: label
+      }))
 
       const currentLang = this.translateService.currentLang || 'en';
       if (currentLang === 'sr') {
@@ -70,13 +82,19 @@ export class CreateEventComponent implements OnInit{
       capacity: new FormControl('', [Validators.required,Validators.min(1)]),
       startDateTime: new FormControl('', [Validators.required,CustomValidators.notInPast]),
       endDateTime: new FormControl('', Validators.required),
+      category: new FormControl('',Validators.required),
       tickets: new FormArray([
         new FormGroup({
           name: new FormControl('',[Validators.required, CustomValidators.noWhitespaceValidator]),
-          price: new FormControl('', [Validators.required, Validators.min(0)])
-        }),
+          price: new FormControl('', [Validators.required, Validators.min(0)]),
+          description: new FormControl('', CustomValidators.noWhitespaceValidator),
+          quota: new FormControl('',[Validators.required,Validators.min(1)]),
+          validFrom: new FormControl({value: '', disabled: true}, Validators.required),
+          validUntil: new FormControl({value: '', disabled: true},Validators.required)
+
+        }, {validators: CustomValidators.startBeforeEndDates('validFrom','validUntil')}),
       ]),
-    }, {validators: CustomValidators.startBeforeEndValidator })
+    }, {validators: CustomValidators.startBeforeEndDates('startDateTime','endDateTime') })
 
 
     this.eventForm.get('isUnlimitedCapacity')?.valueChanges.subscribe((unlimited)=>{
@@ -93,6 +111,16 @@ export class CreateEventComponent implements OnInit{
           capacityControl.updateValueAndValidity();
         }
 
+      });
+
+      this.eventForm.get('startDateTime')?.valueChanges.subscribe( value =>{
+        this.eventStart = value;
+        this.toggleTicketDateControls()
+      });
+
+      this.eventForm.get('endDateTime')?.valueChanges.subscribe( value =>{
+        this.eventEnd = value;
+        this.toggleTicketDateControls()
       });
 
       this.eventForm.get('isUnlimitedCapacity')?.updateValueAndValidity({onlySelf: true, emitEvent: true});
@@ -118,13 +146,38 @@ export class CreateEventComponent implements OnInit{
     this.tickets.push(
       new FormGroup({
           name: new FormControl('',[Validators.required, CustomValidators.noWhitespaceValidator]),
-          price: new FormControl('', [Validators.required, Validators.min(0)])
-      })
+          price: new FormControl('', [Validators.required, Validators.min(0)]),
+          description: new FormControl('', CustomValidators.noWhitespaceValidator),
+          quota: new FormControl('',[Validators.required,Validators.min(1)]),
+          validFrom: new FormControl({value: '', disabled: !(this.eventStart && this.eventEnd)}, Validators.required),
+          validUntil: new FormControl({value: '', disabled: !(this.eventStart && this.eventEnd)},Validators.required)
+
+        }, {validators: CustomValidators.startBeforeEndDates('validFrom','validUntil')})
     );
+
+    this.toggleTicketDateControls();
   }
 
   removeTicket(index: number){
     this.tickets.removeAt(index);
+  }
+
+  toggleTicketDateControls() : void {
+    const tickets = this.eventForm.get('tickets') as FormArray;
+    const enable = this.eventStart !== null && this.eventEnd !== null;
+
+    tickets.controls.forEach(ticketGroup =>{
+      const formControl = ticketGroup.get('validFrom');
+      const untilControl = ticketGroup.get('validUntil');
+
+      if(enable){
+        formControl?.enable({emitEvent: false});
+        untilControl?.enable({emitEvent: false});
+      }else{
+        formControl?.disable({emitEvent: false});
+        untilControl?.disable({emitEvent: false});
+      }
+    });
   }
 
   onFileSelect(event : any) : void{
@@ -172,6 +225,18 @@ export class CreateEventComponent implements OnInit{
               }
 
             });
+
+            if(group.errors){
+              Object.keys(group.errors).forEach(errorKey => {
+                let errorMsg = '';
+                switch(errorKey){
+                  case 'startBeforeEnd': errorMsg = 'Valid From must be before Valid Until'; break;
+                  default: errorMsg = errorKey;
+                }
+                errors.push(`*Ticket ${index + 1} - ${errorMsg}`)
+              });
+            }
+
           }
         });    
 
@@ -230,8 +295,17 @@ export class CreateEventComponent implements OnInit{
       return;
     }
     const formValues = this.eventForm.getRawValue();
+    const tickets = formValues.tickets ?? [];
 
-    const ticketDtos = formValues.tickets.map(ticket => new TicketDto(ticket.name, ticket.price));
+    const ticketDtos = tickets.map(ticket => 
+      new TicketDto(
+        ticket.name,
+        ticket.price,
+        ticket.description,
+        ticket.quota,
+        new Date(ticket.validFrom),
+        new Date(ticket.validUntil))
+    );
     const capacity = formValues.isUnlimitedCapacity ? -1 : formValues.capacity;
 
     const eventDto = new CreatEventDto(
@@ -242,20 +316,21 @@ export class CreateEventComponent implements OnInit{
       new Date(formValues.endDateTime),
       capacity,
       '',
+      formValues.category,
       ticketDtos
     )
 
     console.log(eventDto)
     
-    this.apiService.createEvent(eventDto,this.authService.getUserId()).subscribe({
-      next: (response) =>{
-        const message = response.headers.get('Location') || 'Event created successfully!';
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: message });
-      },
-      error: () => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to create event.' })
-      }
-    })
+    // this.apiService.createEvent(eventDto,this.authService.getUserId()).subscribe({
+    //   next: (response) =>{
+    //     const message = response.headers.get('Location') || 'Event created successfully!';
+    //     this.messageService.add({ severity: 'success', summary: 'Success', detail: message });
+    //   },
+    //   error: () => {
+    //     this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to create event.' })
+    //   }
+    // })
 
   }
 }
