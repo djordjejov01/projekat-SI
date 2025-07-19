@@ -29,6 +29,7 @@ namespace Backend.Controllers
         public async Task<ActionResult<IEnumerable<EventListDto>>> GetAllEvents()
         {
             var events = await _context.Events
+                .Where(e => e.Status == EventStatus.Published)
                 .OrderBy(e => e.StartDate)
                 .Select(e => new EventListDto
                 {
@@ -52,7 +53,7 @@ namespace Backend.Controllers
             var now = DateTime.UtcNow;
 
             var events = await _context.Events
-                .Where(e => e.StartDate > now)
+                .Where(e => e.StartDate > now && e.Status == EventStatus.Published)
                 .OrderBy(e => e.StartDate)
                 .Select(e => new EventListDto
                 {
@@ -80,7 +81,7 @@ namespace Backend.Controllers
                 .Include(e => e.Organizer)
                 .FirstOrDefaultAsync(e => e.EventID == id);
 
-            if (eventEntity == null)
+            if (eventEntity == null || eventEntity.Status != EventStatus.Published)
                 return NotFound();
 
             
