@@ -47,6 +47,7 @@ const SearchScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [events, setEvents] = useState<EventType[]>([]);
   const [loading, setLoading] = useState(false);
+  const [imageLoading, setImageLoading] = useState<{ [key: number]: boolean }>({});
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -153,7 +154,6 @@ const renderEventItem = ({ item }: { item: EventType }) => {
   console.log('Event item:', item);
 };
 
-
   const date = item.startDate ? new Date(item.startDate) : null;
   const formattedDate = date && !isNaN(date.getTime()) ? date.toLocaleDateString() : 'No date';
 
@@ -161,12 +161,38 @@ const renderEventItem = ({ item }: { item: EventType }) => {
     <TouchableOpacity
       style={styles.eventItem}
  onPress={() => {
-  console.log('Navigating to event id:', item.id);
+  // console.log('Navigating to event id:', item.id);
   router.push({ pathname: '/event/[id]', params: { id: String(item.id) } });
 }}
 
     >
-      <Image source={{ uri: item.imageUrl }} style={styles.eventImage} />
+            <View style={{ position: 'relative' }}>
+        {imageLoading[item.id] && (
+          <ActivityIndicator
+            size="small"
+            color="#007AFF"
+            style={{ 
+              position: 'absolute', 
+              top: '50%', 
+              left: '50%', 
+              transform: [{ translateX: -12 }, { translateY: -12 }],
+              zIndex: 1,
+              width: 24,
+              height: 24,
+            }}
+          />
+        )}
+        <Image
+          source={{ uri: item.imageUrl }}
+          style={styles.eventImage}
+          onLoadStart={() =>
+            setImageLoading((prev) => ({ ...prev, [item.id]: true }))
+          }
+          onLoadEnd={() =>
+            setImageLoading((prev) => ({ ...prev, [item.id]: false }))
+          }
+        />
+      </View>
       <View style={styles.eventContent}>
         <Text style={styles.eventTitle}>{item.title || 'No title'}</Text>
         <Text style={styles.eventDate}>{formattedDate}</Text>
@@ -424,3 +450,5 @@ clearButtonText: {
   },
 });
 export default SearchScreen;
+
+
