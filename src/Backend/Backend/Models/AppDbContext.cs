@@ -27,6 +27,13 @@ namespace Backend.Models
             modelBuilder.Entity<Ticket>()
                 .HasIndex(t => new { t.EventID, t.TypeName })
                 .IsUnique();
+
+            modelBuilder.Entity<EventCategories>()
+               .Property(e => e.CategoryName)
+               .HasConversion(
+                   v => v.ToString(),
+                   v => (EventCategory)Enum.Parse(typeof(EventCategory), v)
+                );
         }
     }
 }

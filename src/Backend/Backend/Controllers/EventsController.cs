@@ -170,6 +170,20 @@ namespace Backend.Controllers
             return Ok(events);
 
         }
+        [AllowAnonymous]
+        [HttpGet("categories")]
+        public async Task<IActionResult> GetEventCategories()
+        {
+            var categories = await _context.EventCategories
+                .Select(c => new
+                {
+                    Id = c.CategoryID,
+                    Name = c.CategoryName.ToString(),
+                })
+                .ToListAsync();
+
+            return Ok(categories);
+        }
 
     }
 }
