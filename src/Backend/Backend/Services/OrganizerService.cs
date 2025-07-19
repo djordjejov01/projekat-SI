@@ -1,4 +1,5 @@
-﻿using Backend.Models;
+﻿using Backend.Helpers;
+using Backend.Models;
 using Backend.Models.Dto;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,10 +8,12 @@ namespace Backend.Services
     public class OrganizerService : IOrganizerService
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public OrganizerService(AppDbContext context)
+        public OrganizerService(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
         public List<Event> GetEventsForOrganier(int id)
         {
@@ -25,7 +28,7 @@ namespace Backend.Services
             return upcoming;
 
         }
-        public Task CreateEventForOrganizer(CreateEventDto model, int organizerID)
+        public async Task CreateEventForOrganizer(CreateEventDto model, int organizerID)
         {
             if (model == null)
             {
@@ -44,7 +47,8 @@ namespace Backend.Services
                 EndDate = model.EndDateTime,
                 NumberOfPeople = model.Capacity,
                 ImageUrl = model.Image,
-                OrganizerID = organizerID
+                OrganizerID = organizerID,
+                Category = model.Category
             };
             _context.Events.Add(newEvent);
             try
@@ -65,10 +69,13 @@ namespace Backend.Services
                         TypeName = ticket.Name,
                         Price = ticket.Price,
                         EventID = eventId,
-                        Quota = 0,
-                        Description = "",
-                        //Missing info for valid days
+                        Quota = ticket.Quota,
+                        Description = ticket.Description,
+                        validFrom = ticket.validFrom,
+                        validUntil = ticket.validUntil
                         
+                        //Missing info for valid days
+
                     };
                     _context.Tickets.Add(newTicket);
                 }
@@ -81,7 +88,15 @@ namespace Backend.Services
             {
                 throw ex;
             }
-            return Task.CompletedTask;
+            if (model.imageFile != null)
+            {
+                string imageName =  await CommonHelpers.SaveImageAsync(model.imageFile,_env);
+                newEvent.ImageUrl = imageName;
+                _context.Events.Update(newEvent);
+                _context.SaveChanges();
+
+            }
+            return;
         }
     }
 }
