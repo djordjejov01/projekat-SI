@@ -130,19 +130,19 @@ const SearchScreen = () => {
   const handleToggleFavorite = async (eventID: number) => {
     const token = await AsyncStorage.getItem('token');
     if (!token) {
-      Alert.alert(
-        'Not logged in',
-        'You must log in to add favorites',
-        [
-          { text: 'Continue as guest' },
-          {
-            text: 'Log In',
-            onPress: () => router.push('/login'),
-          },
-        ],
-        { cancelable: true }
-      );
-      return;
+     Alert.alert(
+             t('notLoggedIn'),
+             t('loginToAddFavorites'),
+             [
+               { text: t('continueAsGuest') },
+               {
+                 text: t('logIn'),
+                 onPress: () => router.push('/login'),
+               },
+             ],
+             { cancelable: true }
+           );
+           return;
     }
     await toggleFavorite(eventID);
   };
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
   header: {
   fontSize: 20,
   fontWeight: '700',
-  marginBottom: 20,
+  marginBottom: 15,
   marginTop: 10,
 },
 
@@ -355,7 +355,7 @@ const styles = StyleSheet.create({
   filterRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   filterLabel: {
     marginRight: 8,

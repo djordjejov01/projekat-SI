@@ -148,11 +148,14 @@
   "sortBy": "Sortiraj po...",
   "dateAsc": "Datum ↑",
   "dateDesc": "Datum ↓",
+  "priceAsc": "Cena ↑",
+  "priceDesc": "Cena ↓",
   "popularityDesc": "Popularnost ↓",
+  "freeOnly": "Samo besplatni",
   "reset": "Poništi sve filtere",
-  "noResults": "Nema događaja koji odgovaraju filterima.",
-  "attending": "{{count}}+ prisustvuje"
-},
+  "noResults": "Nema događaja koji odgovaraju filterima."
+}
+,
 "tabs": {
   "events": "Događaji",
   "search": "Pretraga",
