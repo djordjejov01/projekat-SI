@@ -48,7 +48,8 @@ namespace Backend.Services
                 NumberOfPeople = model.Capacity,
                 ImageUrl = model.Image,
                 OrganizerID = organizerID,
-                Category = model.Category
+                Category = model.Category,
+                Status = EventStatus.Draft
             };
             _context.Events.Add(newEvent);
             try
