@@ -167,5 +167,24 @@ namespace Backend.Controllers
             var result = stats.ToDictionary(x => x.Category, x => x.Count);
             return Ok(result);
         }
+
+        [HttpGet("event-status-stats")]
+        public async Task<IActionResult> GetEventStatusStats()
+        {
+            var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var stats = _context.Events
+                .Where(e => e.OrganizerID == organizerId)
+                .GroupBy(e => e.Status)
+                .Select(g => new
+                {
+                    Status = g.Key.ToString(),
+                    Count = g.Count()
+                })
+                .ToList();
+
+            var result = stats.ToDictionary(x => x.Status, x => x.Count);
+            return Ok(result);
+        }
     }
 }
