@@ -1,3 +1,7 @@
+<main>
+
+
+
 <h1>Events Dashboard</h1>
 
 <div id="infocards">
@@ -26,11 +30,12 @@
 <div id="graphs">
     <div id="group">
         <p-chart type="bar" [data]="data1" [options]="options1" class="h-[10rem]" />
-        <p-chart type="bar" [data]="data1" [options]="options1" class="h-[10rem]" />
+        <p-chart type="line" [data]="data1" [options]="options1" class="h-[10rem]" />
+
     </div>
     <div id="group">
-        <p-chart type="bar" [data]="data1" [options]="options1" class="h-[10rem]" />
-        <p-chart type="bar" [data]="data1" [options]="options1" class="h-[10rem]" />
+        <p-chart type="pie" [data]="data3" [options]="options3" class="md:w-[4rem]" />
+        <p-chart type="doughnut" [data]="data3" [options]="options3" class="md:w-[4rem]" />
     </div>
 
 
@@ -151,3 +156,5 @@
         </tr>
     </ng-template>
 </p-table>
+
+</main>

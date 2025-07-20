@@ -105,6 +105,90 @@ export class EventsComponent implements OnInit {
         }
       }
     };
+    options2 = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: true,
+      labels: {
+        color: '#495057'
+      }
+    },
+    tooltip: {
+      mode: 'index',
+      intersect: false
+    }
+  },
+  interaction: {
+    mode: 'nearest',
+    axis: 'x',
+    intersect: false
+  },
+  scales: {
+    x: {
+      display: true,
+      title: {
+        display: true,
+        text: 'Mesec',
+        color: '#333'
+      },
+      ticks: {
+        color: '#495057'
+      },
+      grid: {
+        color: '#ebedef'
+      }
+    },
+    y: {
+      display: true,
+      title: {
+        display: true,
+        text: 'Broj događaja',
+        color: '#333'
+      },
+      beginAtZero: true,
+      ticks: {
+        color: '#495057',
+        stepSize: 1
+      },
+      grid: {
+        color: '#ebedef'
+      }
+    }
+  }
+};
+    data3 = {
+  labels: ['Januar', 'Februar', 'Mart', 'April'],
+  datasets: [
+    {
+      data: [12, 19, 3, 5],
+      backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726', '#EF5350'],
+      hoverBackgroundColor: ['#64B5F6', '#81C784', '#FFB74D', '#E57373']
+    }
+  ]
+};
+    options3 = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'bottom',
+      labels: {
+        color: '#495057'
+      }
+    },
+    tooltip: {
+      callbacks: {
+        label: function (context: any) {
+          const label = context.label || '';
+          const value = context.parsed || 0;
+          return `${label}: ${value}`;
+        }
+      }
+    }
+  }
+};
+
     viewEvent(eID : number)
     {
       alert(eID);
