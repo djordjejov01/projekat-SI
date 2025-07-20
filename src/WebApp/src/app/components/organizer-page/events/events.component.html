@@ -1,28 +1,60 @@
-<h1>Events</h1>
+<h1>Events Dashboard</h1>
 
-<p-table
-    #dt
-    [value]="allEvents"
-    [(selection)]="selectedEvents"
-    dataKey="eventId"
-    [rowHover]="true"
-    [rows]="5"
-    [showCurrentPageReport]="true"
-    [rowsPerPageOptions]="[5 ,10, 25, 50]"
-    [loading]="loading"
-    [paginator]="true"
-    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-    [filterDelay]="0"
-    [globalFilterFields]="['name', 'date', 'endDate', 'category', 'status' , 'location']"
->
+<div id="infocards">
+    <div id="card">
+        <p id="cardTitle">Ukupan broj događaja</p>
+        <p id="cardNum">{{allEvents.length}}</p>
+        <p id="cardDesc">Ukupan broj organizovanih događaja </p>
+    </div>
+    <div id="card">
+        <p id="cardTitle">Ukupna zarada</p>
+        <p id="cardNum">{{allEvents.length}}</p>
+        <p id="cardDesc">Ukupna zarada od svih događaja</p>
+    </div>
+    <div id="card">
+        <p id="cardTitle">Broj prodatih karata</p>
+        <p id="cardNum">{{allEvents.length}}</p>
+        <p id="cardDesc">Ukupan broj prodatih karata</p>
+    </div>
+    <div id="card">
+        <p id="cardTitle">Broj razlicitih lokacija</p>
+        <p id="cardNum">{{allEvents.length}}</p>
+        <p id="cardDesc">Ukupan broj razlicitih lokacija</p>
+    </div>
+</div>
+
+<div id="graphs">
+    <div id="group">
+        <p-chart type="bar" [data]="data1" [options]="options1" class="h-[10rem]" />
+        <p-chart type="bar" [data]="data1" [options]="options1" class="h-[10rem]" />
+    </div>
+    <div id="group">
+        <p-chart type="bar" [data]="data1" [options]="options1" class="h-[10rem]" />
+        <p-chart type="bar" [data]="data1" [options]="options1" class="h-[10rem]" />
+    </div>
+
+
+</div>
+
+<h1 id="ev">Events</h1>
+
+<p-table #dt [value]="allEvents" [(selection)]="selectedEvents" dataKey="eventId" [rowHover]="true" [rows]="5"
+    [showCurrentPageReport]="true" [rowsPerPageOptions]="[5 ,10, 25, 50]" [loading]="loading" [paginator]="true"
+    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [filterDelay]="0"
+    [globalFilterFields]="['name', 'date', 'endDate', 'category', 'status' , 'location']">
     <ng-template #caption>
         <div class="flex justify-between">
-            <p-button [outlined]="true" icon="pi pi-filter-slash" label="Clear" (click)="clear(dt)" />
+            <div style="display: flex; gap:20px;">
+                <p-button [outlined]="true" icon="pi pi-filter-slash" label="Clear" (click)="clear(dt)" />
+                <button id="ae" (click)="createEvent()"><i class="pi pi-plus"></i>Add</button>
+            </div>
+
             <p-iconField iconPosition="left">
                 <p-inputIcon>
                     <i class="pi pi-search"></i>
                 </p-inputIcon>
-                <input pInputText type="text" [(ngModel)]="searchValue" (input)="dt.filterGlobal($any($event.target).value, 'contains')" placeholder="Keyboard Search" />
+                <input pInputText type="text" [(ngModel)]="searchValue"
+                    (input)="dt.filterGlobal($any($event.target).value, 'contains')" placeholder="Keyboard Search" />
             </p-iconField>
         </div>
     </ng-template>
@@ -107,9 +139,9 @@
                 {{ event.location }}
             </td>
             <td style="text-align: center; display: flex; gap:8px; padding-top:25px ; padding-bottom:25px ;">
-                <p-button rounded icon="pi pi-eye" (click) = "viewEvent(event.eventId)"/> 
-                <p-button rounded icon="pi pi-pencil" (click) = "editEvent(event.eventId)"/>
-                <p-button rounded icon="pi pi-trash" (click) = "deleteEvent(event.eventId)"/>
+                <p-button rounded icon="pi pi-eye" (click)="viewEvent(event.eventId)" />
+                <p-button rounded icon="pi pi-pencil" (click)="editEvent(event.eventId)" />
+                <p-button rounded icon="pi pi-trash" (click)="deleteEvent(event.eventId)" />
             </td>
         </tr>
     </ng-template>

@@ -3,6 +3,84 @@ h1{
     font-size: 1.5rem;
     padding-bottom: 50px;
 }
+#ae{
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    padding:5px;
+    font-size: 14px;
+    padding-right: 20px;
+    padding-left: 20px;
+    background-color: #636AE8;
+    border: 2px solid #636AE8;
+    text-align: center;
+    max-width: 200px;
+}
+#ev{
+    margin-top: 280px;
+}
+#ae:hover{
+    cursor: pointer;
+    background-color: #575dcb;
+}
+#ae{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap:3px;
+}
+
+#infocards{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+#graphs{
+        display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
+    gap:250px;
+    margin-top: 50px;
+}
+#group{
+    display: flex;
+    gap:50px;
+    justify-content: center;
+    width: 100%;
+}
+
+#group *{
+    width: 50%;
+}
+
+#card{
+    display: flex;
+    flex-direction: column;
+    gap:20px;
+    padding: 20px;
+    padding-left: 30px;
+    padding-right: 30px;
+    border: 1px solid rgb(226, 226, 226);
+    border-radius: 10px;
+    min-width: 17vw;
+    flex-wrap: wrap;
+}
+
+
+
+#cardTitle{
+    font-weight: bold;
+    color:gray;
+}
+
+#cardNum{
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+#cardDesc{
+    color:gray;
+}
 
  :host ::ng-deep {
         .p-paginator {

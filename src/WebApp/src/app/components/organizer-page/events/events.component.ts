@@ -60,6 +60,51 @@ export class EventsComponent implements OnInit {
   { name: 'Supplier', value: 'Supplier' },
   // Add all roles you have
 ];
+    data1 = {
+      labels: [
+      'Januar', 'Februar', 'Mart', 'April', 'Maj', 'Jun',
+      'Jul', 'Avgust', 'Septembar', 'Oktobar', 'Novembar', 'Decembar'
+    ],
+      datasets: [
+        {
+          label: 'Broj događaja',
+          backgroundColor: '#42A5F5',
+          data: [1,3,5,2,6,3,7,10,3,9,7,4]
+        }
+      ]
+    };
+
+    options1 = {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          labels: {
+            color: '#495057'
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: '#495057'
+          },
+          grid: {
+            color: '#ebedef'
+          }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: '#495057',
+            stepSize: 1
+          },
+          grid: {
+            color: '#ebedef'
+          }
+        }
+      }
+    };
     viewEvent(eID : number)
     {
       alert(eID);
@@ -100,7 +145,12 @@ export class EventsComponent implements OnInit {
             { label: 'Proposal', value: 'proposal' }
         ];
     }
+    createEvent(){
+    this.router.navigate(["/organizer/create-event"],{
+        queryParams: { showID: 3}
+      });
 
+  }
     getSeverity(status: string) {
         switch (status) {
             case 'unqualified':
