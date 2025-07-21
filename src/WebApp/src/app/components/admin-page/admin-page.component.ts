@@ -62,13 +62,14 @@ export class AdminPage implements OnInit,AfterContentInit{
   loading: boolean = true;
   selectedUsers : User [];
   searchValue : string;
-  value
   roles = [
   { name: 'Admin', value: 'Admin'},
   { name: 'Organizer', value: 'Organizer' },
   { name: 'Supplier', value: 'Supplier' },
+  { name: 'MobileUser', value: 'MobileUser' }
   // Add all roles you have
 ];
+selectedRoles: any[] = [];
 
 
   constructor(
@@ -107,6 +108,7 @@ export class AdminPage implements OnInit,AfterContentInit{
       this.initBarChart();
       this.initDoughnutChart();
       console.log(this.users)
+      console.log("USERS",this.users[0]);
     },
     error: (err) => {
       this.loading = false;
@@ -116,6 +118,16 @@ export class AdminPage implements OnInit,AfterContentInit{
   });
 
   }
+
+onRoleFilterChange(selectedOptions: any[], filterFn: (val: any) => void) {
+  this.selectedRoles = selectedOptions || [];
+
+  // Extract the 'value' strings to pass to the filter callback
+  const filterValues = this.selectedRoles.map(role => role.value);
+
+  filterFn(filterValues.length ? filterValues : null);
+}
+
 
   ngAfterContentInit(): void {
     this.cd.detectChanges(); // Ensure view is fully initialized

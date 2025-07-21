@@ -19,6 +19,7 @@ export class AuthService{
 
     private readonly tokenKey = 'access_token';
     private decodedToken: JwtPayload | null = null;
+    private _isLoggingOut = false;
 
     constructor()
     {
@@ -91,6 +92,14 @@ export class AuthService{
 
     const userId = Number(sub);
     return isNaN(userId) ? null : userId;
+    }
+
+    setIsLogginOut(value: boolean) : void{
+        this._isLoggingOut = value;
+    }
+
+    isLoggingOut(): boolean{
+        return this._isLoggingOut;
     }
 
 }

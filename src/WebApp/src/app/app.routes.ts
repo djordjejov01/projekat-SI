@@ -23,7 +23,7 @@ export const routes: Routes = [
       { path: 'my-profile', component: ProfileComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']} },
       { path: 'events', component: EventsComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']} },
       { path: 'calendar', component: CalendarComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']} },
-      { path: 'create-event', component: CreateEventComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']} }
+      { path: 'create-event', component: CreateEventComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']}, canDeactivate: [(comp: CreateEventComponent) => comp.canExit()] }
     ]},
     {path: 'register', component: RegisterForm, canDeactivate: [(comp: RegisterForm) => comp.canExit()]},
     {path: 'login', component: LoginForm, canDeactivate: [(comp: LoginForm) => comp.canExit()]},
