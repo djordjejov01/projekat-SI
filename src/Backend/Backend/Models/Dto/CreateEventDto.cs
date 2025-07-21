@@ -47,4 +47,3 @@ namespace Backend.Models.Dto
         public string Description { get; set; }
     }
 }
-

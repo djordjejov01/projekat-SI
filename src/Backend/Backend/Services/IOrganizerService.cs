@@ -5,7 +5,8 @@ namespace Backend.Services
 {
     public interface IOrganizerService
     {
-        List<Event> GetEventsForOrganier(int id);
+        List<Event> GetAllEventsForOrganier(int id);
+        List<Event> GetUpcomingEventsForOrganier(int id);
         Task CreateEventForOrganizer(CreateEventDto model, int organizerID);
     }
 }
