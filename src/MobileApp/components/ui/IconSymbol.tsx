@@ -21,6 +21,7 @@ const MAPPING = {
   'heart.fill': 'favorite',
   'chevron.right': 'chevron-right',
   'person.fill': 'person',
+  'magnifyingglass': 'search', 
 } as IconMapping;
 
 /**
@@ -39,6 +40,7 @@ export function IconSymbol({
   color: string | OpaqueColorValue;
   style?: StyleProp<TextStyle>;
   weight?: SymbolWeight;
+  
 }) {
   return <MaterialIcons color={color} size={size} name={MAPPING[name]} style={style} />;
 }

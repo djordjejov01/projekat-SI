@@ -21,8 +21,11 @@ export class SessionService {
   );
 
   if (confirmed) {
+    this.authService.setIsLogginOut(true);
     this.authService.logout();
-    this.router.navigate(['home']);
+    this.router.navigate(['home']).then(() => {
+      this.authService.setIsLogginOut(false);
+    });
   }
 }
 }

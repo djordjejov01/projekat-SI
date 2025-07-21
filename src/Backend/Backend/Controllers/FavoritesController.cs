@@ -25,7 +25,7 @@ namespace Backend.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
             var favoriteEvents = await _context.FavoriteEvents
-                .Where(f => f.UserId == userId)
+                .Where(f => f.UserId == userId && f.Event.Status == EventStatus.Published)
                 .Include(f => f.Event)
                 .Select(f => new EventListDto
                 {

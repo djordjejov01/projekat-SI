@@ -18,7 +18,7 @@
                     <button id="ae" (click) = "createEvent()"><i class="pi pi-plus"></i>{{'ADDEV' | translate }}</button>
                 </div>
                 <div id="events">
-                    <app-event-preview *ngFor="let event of allEvents" image="./assets/eimg1.jpg" status="Upcoming"
+                    <app-event-preview *ngFor="let event of allEvents; index as i" [image]="event.getImage()" status="Upcoming"
                         [time]="event.getStartDateTime().toLocaleDateString()" [title]="event.getTitle()"
                         [host]="currUser" [location]="event.getLocation()">
                     </app-event-preview>

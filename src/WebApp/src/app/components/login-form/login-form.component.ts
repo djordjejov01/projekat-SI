@@ -155,14 +155,11 @@ export class LoginForm implements OnInit,IDeactivate{
 
   canExit () : boolean | Observable<boolean> | Promise<boolean>{
 
-    this.userToLogin = new LoginDto(
-      this.loginForm.get('email').value,
-      this.loginForm.get('password').value
-    )
-
-    return ( 
-      this.userToLogin.getEmail() ||
-      this.userToLogin.getPassword()) ? this.confirmationDialogService.confirm('You have unsaved changes. Are you sure you want to leave this page?','Unsaved Changes') : true;
+    return (this.loginForm.dirty || this.loginForm.touched) ? this.confirmationDialogService.confirm(
+        'You have unsaved changes. Are you sure you want to leave this page?',
+        'Unsaved Changes'
+      )
+    : true;
 
   }
 

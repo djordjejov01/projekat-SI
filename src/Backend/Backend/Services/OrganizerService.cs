@@ -1,4 +1,5 @@
-﻿using Backend.Models;
+using Backend.Helpers;
+using Backend.Models;
 using Backend.Models.Dto;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,12 +8,14 @@ namespace Backend.Services
     public class OrganizerService : IOrganizerService
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public OrganizerService(AppDbContext context)
+        public OrganizerService(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
-        public List<Event> GetEventsForOrganier(int id)
+        public List<Event> GetUpcomingEventsForOrganier(int id)
         {
             var now = DateTime.Now;
             var events = _context.Events
@@ -23,9 +26,19 @@ namespace Backend.Services
             }
             List<Event> upcoming = events.Where(e => e.StartDate >= now).OrderBy(e => e.StartDate).ToList();
             return upcoming;
-
         }
-        public Task CreateEventForOrganizer(CreateEventDto model, int organizerID)
+        public List<Event> GetAllEventsForOrganier(int id)
+        {
+            var now = DateTime.Now;
+            var events = _context.Events
+                .Where(e => e.OrganizerID == id).ToList();
+            if (events == null || !events.Any())
+            {
+                throw new Exception("No events found for this organizer.");
+            }
+            return events;
+        }
+        public async Task CreateEventForOrganizer(CreateEventDto model, int organizerID)
         {
             if (model == null)
             {
@@ -35,6 +48,12 @@ namespace Backend.Services
             {
                 throw new ArgumentException("Invalid organizer ID.", nameof(organizerID));
             }
+            string imageName = null;
+            if (model.ImageFile != null)
+            {
+                imageName = await CommonHelpers.SaveImageAsync(model.ImageFile, _env);
+            }
+
             var newEvent = new Event
             {
                 Title = model.Title,
@@ -43,17 +62,19 @@ namespace Backend.Services
                 StartDate = model.StartDateTime,
                 EndDate = model.EndDateTime,
                 NumberOfPeople = model.Capacity,
-                ImageUrl = model.Image,
-                OrganizerID = organizerID
+                ImageUrl = imageName ?? "images/default-image.png",
+                OrganizerID = organizerID,
+                Category = model.Category,
+                Status = EventStatus.Draft
             };
             _context.Events.Add(newEvent);
             try
             {
-                 _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch (Exception)
             {
-                throw ex;
+                throw;
             }
             int eventId = newEvent.EventID;
             if (model.Tickets != null && model.Tickets.Any())
@@ -65,23 +86,24 @@ namespace Backend.Services
                         TypeName = ticket.Name,
                         Price = ticket.Price,
                         EventID = eventId,
-                        Quota = 0,
-                        Description = "",
+                        Quota = ticket.Quota,
+                        Description = ticket.Description,
+                        validFrom = ticket.ValidFrom,
+                        validUntil = ticket.ValidUntil
                         //Missing info for valid days
-                        
+
                     };
                     _context.Tickets.Add(newTicket);
                 }
             }
             try
             {
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch(Exception)
             {
-                throw ex;
+                throw;
             }
-            return Task.CompletedTask;
         }
     }
 }

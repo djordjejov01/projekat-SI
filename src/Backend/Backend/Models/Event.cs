@@ -27,5 +27,14 @@ namespace Backend.Models
         public User Organizer { get; set; }
         public string ImageUrl { get; set; }
         public bool isFree { get; set; }
+        public EventStatus Status { get; set; }
     }
+
+    public enum EventStatus
+    {
+        Draft,
+        Published,
+        Canceled
+    }
+
 }

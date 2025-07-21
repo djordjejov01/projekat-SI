@@ -23,7 +23,7 @@
                     <p>Description</p>
                     <p-floatlabel class="w-full md:w-56" variant="on">
                         <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
-                    <label for="description">Describe your event in detail</label>
+                    <label for="description">Describe Your Event</label>
                     </p-floatlabel>
 
                 </div>
@@ -87,28 +87,91 @@
 
                 </div>
 
+                <div  class="input-wrapper">
+
+                    <p>Category</p>
+                    <p-floatlabel class="w-full" variant="on">
+                        <p-select  [options]="categories"  name="category"  formControlName="category"  placeholder=" "  inputId="category"  class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"/>
+                        <label for="category">Select Event Category</label>
+                    </p-floatlabel>
+
+                </div>
+
                 <div class="tickets" formArrayName="tickets">
 
                     <p>Tickets</p>
                     
                     <div class="ticket" *ngFor="let ticket of tickets.controls; let i = index" [formGroupName]="i">
 
-                        <div  class="input-wrapper w-full ">
+                        <div class="name-price">
 
-                            <p>Ticket Name</p>
+                            <div  class="input-wrapper w-full ">
+
+                                <p>Ticket Name</p>
+                                <p-floatlabel class="w-full md:w-56" variant="on">
+                                    <input  type="text"  pInputText  placeholder=" "  formControlName="name"  [id]="'ticketName-' + i"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                                <label [for]="'ticketName-' + i">Enter Ticket Name</label>
+                                </p-floatlabel>
+
+                            </div>
+
+                            <div  class="input-wrapper w-full ">
+
+                                <p>Ticket Price</p>
+                                <p-floatlabel class="w-full md:w-56" variant="on">
+                                    <p-inputnumber  placeholder=" " mode="currency" [currency]="currencyCode" [locale]="localeCode" formControlName="price" [style]="{ width: '100%' }" [inputStyleClass]="'ticket-price-' + i + ' w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500'"/>
+                                <label [for]="'ticket-price-' + i">Enter Ticket Price (0 If Free)</label>
+                                </p-floatlabel>
+
+                            </div>
+
+                        </div>
+
+                        <div class="dates">
+
+                            <div  class="input-wrapper">
+                                <p>Valid From</p>
+                                <p-floatlabel class="w-full md:w-56"  variant="on">
+                                    <p-datepicker inputId="validFrom" placeholder=" " formControlName="validFrom" [showTime]="true" hourFormat="24" [minDate]="eventStart ?? null" [maxDate]="eventEnd ?? null"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                                    <label for="validFrom">Valid From Date and Time</label>
+                                </p-floatlabel>
+                            </div>
+
+                            <div  class="input-wrapper">
+                                <p>Valid Until</p>
+                                <p-floatlabel class="w-full md:w-56"  variant="on">
+                                    <p-datepicker inputId="validUntil" placeholder=" " formControlName="validUntil" [showTime]="true" hourFormat="24" [minDate]="eventStart ?? null" [maxDate]="eventEnd ?? null"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                                    <label for="validUntil">Valid Until Date and Time</label>
+                                </p-floatlabel>
+                            </div>
+
+                        </div>
+
+                        <div  class="input-wrapper">
+
+                            <p>Quota</p>
+                            
                             <p-floatlabel class="w-full md:w-56" variant="on">
-                                <input  type="text"  pInputText  placeholder=" "  formControlName="name"  [id]="'ticketName-' + i"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-                            <label [for]="'ticketName-' + i">Enter Ticket Name</label>
+                            <p-inputnumber
+                                    formControlName="quota"
+                                    inputId="quota"
+                                    [min]="1"
+                                    [useGrouping]="false"
+                                    [showButtons]="false"
+                                    [style]="{ width: '100%' }"
+                                    inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                                ></p-inputnumber>
+                            <label for="quota">Enter Ticket Quota</label>
                             </p-floatlabel>
 
                         </div>
 
-                        <div  class="input-wrapper w-full ">
+                        <div  class="input-wrapper">
 
-                            <p>Ticket Price</p>
+                            <p>Ticket Description</p>
                             <p-floatlabel class="w-full md:w-56" variant="on">
-                                <p-inputnumber  placeholder=" " mode="currency" [currency]="currencyCode" [locale]="localeCode" formControlName="price" [style]="{ width: '100%' }" [inputStyleClass]="'ticket-price-' + i + ' w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500'"/>
-                            <label [for]="'ticket-price-' + i">Enter Ticket Price (0 If Free)</label>
+                                <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
+                            <label for="description">Describe Your Ticket</label>
                             </p-floatlabel>
 
                         </div>
@@ -139,6 +202,7 @@
                     (onClear)="onFileClear()"
                     (onRemove)="onFileClear()"
                     chooseLabel="Choose Event Image"
+                    #fileUpload
                     ></p-fileUpload>
 
                 </div>

@@ -17,7 +17,6 @@ namespace Backend.Models
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<UserTicket> UserTickets { get; set; }
         public DbSet<FavoriteEvent> FavoriteEvents { get; set; }
-        public DbSet<TicketValidDay> TicketValidDays { get; set; }
         public DbSet<UserResourceReservation> UserResourceReservations { get; set; }
         public DbSet<Organizer> Organizers { get; set; }
         public DbSet<EventCategories> EventCategories { get; set; }
@@ -27,6 +26,13 @@ namespace Backend.Models
             modelBuilder.Entity<Ticket>()
                 .HasIndex(t => new { t.EventID, t.TypeName })
                 .IsUnique();
+
+            modelBuilder.Entity<EventCategories>()
+               .Property(e => e.CategoryName)
+               .HasConversion(
+                   v => v.ToString(),
+                   v => (EventCategory)Enum.Parse(typeof(EventCategory), v)
+                );
         }
     }
 }

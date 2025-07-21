@@ -49,13 +49,13 @@
     color: #8C8D8B;
 }
 
-.location-capacity, .dates, .ticket{
+.location-capacity, .dates, .ticket, .name-price{
     display: flex;
     justify-content: space-between;
     gap: 2rem;
 }
 
-.location-capacity > .input-wrapper, .dates > .input-wrapper, .ticket > .input-wrapper{
+.location-capacity > .input-wrapper, .dates > .input-wrapper, .ticket > .input-wrapper, .name-price > .input-wrapper{
      flex: 1 1 47.5%;   
 }
 
@@ -76,7 +76,9 @@
     border: 1px solid #EBEBEA;
     padding: 1rem;
     border-radius: 8px;
-    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 .delete-btn{
@@ -88,10 +90,20 @@
     justify-content: center;
 }
 
+.custom-help-button.p-button-text {
+  color: #636AE8 !important; /* main purple */
+  box-shadow: 0 2px 6px rgb(99 106 232 / 0.3); /* subtle purple shadow */
+}
+
+.custom-help-button.p-button-text:hover {
+  color: #575FCE !important; /* darker hover */
+  box-shadow: 0 2px 8px rgb(87 95 206 / 0.5);
+}
+
 @media screen and (width <= 900px){
     
 
-    .location-capacity, .dates, .ticket{
+    .location-capacity, .dates, .ticket,.name-price{
         flex-direction: column;
     }
     

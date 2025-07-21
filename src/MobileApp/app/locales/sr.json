@@ -148,17 +148,54 @@
   "sortBy": "Sortiraj po...",
   "dateAsc": "Datum ↑",
   "dateDesc": "Datum ↓",
+  "priceAsc": "Cena ↑",
+  "priceDesc": "Cena ↓",
   "popularityDesc": "Popularnost ↓",
+  "freeOnly": "Samo besplatni",
   "reset": "Poništi sve filtere",
-  "noResults": "Nema događaja koji odgovaraju filterima.",
-  "attending": "{{count}}+ prisustvuje"
-},
+  "noResults": "Nema događaja koji odgovaraju filterima."
+}
+,
 "tabs": {
   "events": "Događaji",
   "search": "Pretraga",
   "favorites": "Omiljeni",
   "profile": "Profil"
+},
+"tickets": {
+  "title": "Karte",
+  "available": "dostupno",
+  "loading": "Učitavanje karata...",
+  "redirecting": "Preusmeravanje na kupovinu karata...",
+  "proceed": "Nastavi ka korpi"
+},
+"resources": {
+  "title": "Resursi"
+},
+"cart": {
+  "title": "Vaša korpa",
+  "tickets": "Ulaznice",
+  "resources": "Resursi",
+  "noTickets": "Niste izabrali nijednu kartu.",
+  "noResources": "Niste izabrali dodatne resurse.",
+  "total": "Ukupno",
+  "purchase": "Kupi",
+  "purchasing": "Kupovina...",
+  "confirmTitle": "Potvrda kupovine",
+  "confirmMessage": "Da li ste sigurni da želite da obavite kupovinu?",
+  "cancel": "Otkaži",
+  "successTitle": "Uspešno",
+  "successMessage": "Karte i resursi su uspešno kupljeni.",
+  "errorTitle": "Greška",
+  "loginRequired": "Morate biti prijavljeni da biste kupili karte.",
+  "genericError": "Greška prilikom kupovine.",
+  "fetchError": "Neuspešno učitavanje podataka.",
+  "ok": "U redu",
+  "free": "Besplatno"
 }
+
+
+
 
 
 

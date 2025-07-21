@@ -175,20 +175,11 @@ export class RegisterForm implements OnInit,IDeactivate{
 
     canExit() : boolean | Observable<boolean> | Promise<boolean>
     {
-      this.userToRegister = new RegisterDto(
-        this.registerForm.get('username').value,
-        this.registerForm.get('email').value,
-        this.registerForm.get('password').value,
-        this.registerForm.get('confirm').value,
-        this.registerForm.get('role').value
+      return (this.registerForm.dirty || this.registerForm.touched) ? this.confirmationDialogService.confirm(
+        'You have unsaved changes. Are you sure you want to leave this page?',
+        'Unsaved Changes'
       )
-
-      return (
-        this.userToRegister.getRole()      ||
-        this.userToRegister.getUsername()  ||
-        this.userToRegister.getEmail()     ||
-        this.userToRegister.getPassword()  ||
-        this.userToRegister.getConfirmPassword()) ?  this.confirmationDialogService.confirm('You have unsaved changes. Are you sure you want to leave this page?','Unsaved Changes') :  true;
+    : true;
     }
 
 }

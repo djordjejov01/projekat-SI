@@ -18,12 +18,16 @@ namespace Backend.Models.Dto
 
         [Required]
         public DateTime EndDateTime { get; set; }
+        [Required]
+        public EventCategory Category { get; set; }
 
         [Required]
         public int Capacity { get; set; }
 
-        public string Image { get; set; }
-        public List<TicketDto> Tickets { get; set; }
+        public string? Image { get; set; }
+        public IFormFile? ImageFile { get; set; }
+
+        public List<TicketDto>? Tickets { get; set; }
     }
     public class TicketDto
     {
@@ -32,7 +36,14 @@ namespace Backend.Models.Dto
 
         [Required]
         public decimal Price { get; set; }
+        [Required]
+        public DateTime ValidFrom { get; set; }
+        [Required]
+        public DateTime ValidUntil { get; set; }
+        [Required]
+        public int Quota { get; set; }
 
+        [Required]
+        public string Description { get; set; }
     }
 }
-
