@@ -15,7 +15,7 @@ namespace Backend.Services
             _context = context;
             _env = env;
         }
-        public List<Event> GetEventsForOrganier(int id)
+        public List<Event> GetUpcomingEventsForOrganier(int id)
         {
             var now = DateTime.Now;
             var events = _context.Events
@@ -26,7 +26,17 @@ namespace Backend.Services
             }
             List<Event> upcoming = events.Where(e => e.StartDate >= now).OrderBy(e => e.StartDate).ToList();
             return upcoming;
-
+        }
+        public List<Event> GetAllEventsForOrganier(int id)
+        {
+            var now = DateTime.Now;
+            var events = _context.Events
+                .Where(e => e.OrganizerID == id).ToList();
+            if (events == null || !events.Any())
+            {
+                throw new Exception("No events found for this organizer.");
+            }
+            return events;
         }
         public async Task CreateEventForOrganizer(CreateEventDto model, int organizerID)
         {
