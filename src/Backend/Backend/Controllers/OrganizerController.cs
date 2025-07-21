@@ -148,16 +148,16 @@ namespace Backend.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-        [HttpPost("create-event")]
+        [HttpPost("create-event/{organizerID}")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> CreateEvent([FromBody]CreateEventDto model, int organizerID)
+        public async Task<IActionResult> CreateEvent([FromForm] CreateEventDto model, [FromRoute] int organizerID)
         {
             try
             {
-                _organizerService.CreateEventForOrganizer(model, organizerID);
+                await _organizerService.CreateEventForOrganizer(model, organizerID);
                 return Created("Event created successfully.", null);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
