@@ -150,6 +150,32 @@ namespace Backend.Controllers
             }
         }
 
+        [Authorize(Roles = "Organizer")]
+        [HttpPut("events/{eventId}")]
+        public async Task<IActionResult> UpdateEvent(int eventId, [FromBody] UpdateEventDto dto)
+        {
+            var eventEntity = await _context.Events.FindAsync(eventId);
+            if (eventEntity == null)
+                return NotFound();
+
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            if (eventEntity.OrganizerID != userId)
+                return Forbid();
+
+
+            eventEntity.Title = dto.Title;
+            eventEntity.Description = dto.Description;
+            eventEntity.Location = dto.Location;
+            eventEntity.StartDate = dto.StartDate;
+            eventEntity.EndDate = dto.EndDate;
+            eventEntity.Category = dto.Category;
+            eventEntity.NumberOfPeople = dto.Capacity;
+
+
+            await _context.SaveChangesAsync();
+            return Ok(eventEntity);
+        }
+
         [HttpGet("event-category-stats")]
         public async Task<IActionResult> GetEventCategoryStats()
         {
