@@ -25,9 +25,9 @@ namespace Backend.Models.Dto
         public int Capacity { get; set; }
 
         public string? Image { get; set; }
-        public IFormFile ImageFile { get; set; }
+        public IFormFile? ImageFile { get; set; }
 
-        public List<TicketDto> Tickets { get; set; }
+        public List<TicketDto>? Tickets { get; set; }
     }
     public class TicketDto
     {
