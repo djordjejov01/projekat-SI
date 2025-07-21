@@ -17,7 +17,10 @@ namespace Backend.Models
         public decimal Price { get; set; }
         [Required]
         public int Quota { get; set; }
-        public ICollection<TicketValidDay> ValidDays { get; set; }
+        [Required]
+        public DateTime validFrom { get; set; }
+        [Required]
+        public DateTime validUntil { get; set; }
         public Event Event { get; set; }
     }
 }
