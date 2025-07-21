@@ -140,6 +140,13 @@
   "updated": "Your information has been updated.",
   "updateFailed": "Failed to update profile."
 },
+
+"tabs": {
+  "events": "Events",
+  "search": "Search",
+  "favorites": "Favorites",
+  "profile": "Profile"
+},
 "search": {
   "header": "Search Events",
   "placeholder": "Search by title or description...",
@@ -149,21 +156,46 @@
   "sortBy": "Sort by...",
   "dateAsc": "Date ↑",
   "dateDesc": "Date ↓",
+  "priceAsc": "Price ↑",
+  "priceDesc": "Price ↓",
   "popularityDesc": "Popularity ↓",
-  "reset": "Reset All Filters",
-  "noResults": "No events found matching your filters.",
-  "attending": "{{count}}+ attending"
-},
-"tabs": {
-  "events": "Events",
-  "search": "Search",
-  "favorites": "Favorites",
-  "profile": "Profile"
+  "freeOnly": "Free Only",
+  "reset": "Clear All Filters",
+  "noResults": "No events found matching your filters."
 }
+,
 
-
-
-
+"tickets": {
+  "title": "Tickets",
+  "available": "available",
+  "loading": "Loading tickets...",
+  "redirecting": "Redirecting to ticket purchase...",
+  "proceed": "Proceed to Cart"
+},
+"resources": {
+  "title": "Resources"
+},
+"cart": {
+  "title": "Your Cart",
+  "tickets": "Tickets",
+  "resources": "Resources",
+  "noTickets": "You haven't selected any tickets.",
+  "noResources": "No additional resources selected.",
+  "total": "Total",
+  "purchase": "Purchase",
+  "purchasing": "Purchasing...",
+  "confirmTitle": "Purchase Confirmation",
+  "confirmMessage": "Are you sure you want to complete the purchase?",
+  "cancel": "Cancel",
+  "successTitle": "Success",
+  "successMessage": "Tickets and resources were successfully purchased.",
+  "errorTitle": "Error",
+  "loginRequired": "You must be logged in to purchase tickets.",
+  "genericError": "An error occurred during purchase.",
+  "fetchError": "Failed to load data.",
+  "ok": "OK",
+  "free": "Free"
+}
 
 
 

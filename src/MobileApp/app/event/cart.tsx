@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -27,6 +28,7 @@ type Resource = {
 
 export default function CartScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { tickets, resources, eventId } = useLocalSearchParams();
 
   const [selectedTickets, setSelectedTickets] = useState<{ id: number; quantity: number }[]>([]);
@@ -81,7 +83,8 @@ export default function CartScreen() {
         setTicketData(mappedTickets);
         setResourceData(mappedResources);
       } catch {
-        Alert.alert('Greška', 'Neuspešno učitavanje podataka.');
+        Alert.alert(t('cart.errorTitle'), t('cart.fetchError'));
+
       }
     };
 
@@ -106,21 +109,18 @@ export default function CartScreen() {
 
   // ISPRAVLJENA FUNKCIJA
   const handlePurchase = async () => {
-    Alert.alert(
-      'Potvrda kupovine',
-      'Da li ste sigurni da želite da obavite kupovinu?',
-      [
-        { text: 'Otkaži', style: 'cancel' },
-        {
-          text: 'Kupi',
-          onPress: async () => {
-            setLoading(true);
-            try {
-              if (!token) {
-                Alert.alert('Greška', 'Morate biti prijavljeni da biste kupili karte.');
-                setLoading(false);
-                return;
-              }
+     Alert.alert(t('cart.confirmTitle'), t('cart.confirmMessage'), [
+      { text: t('cart.cancel'), style: 'cancel' },
+      {
+        text: t('cart.purchase'),
+        onPress: async () => {
+          setLoading(true);
+          try {
+            if (!token) {
+              Alert.alert(t('cart.errorTitle'), t('cart.loginRequired'));
+              setLoading(false);
+              return;
+            }
 
               // Pripremi payload za kupovinu ulaznica
               const ticketRequestBody = selectedTickets.map(ticket => ({
@@ -184,30 +184,30 @@ export default function CartScreen() {
                 });
               }
 
-              setLoading(false);
-              Alert.alert('Uspešno', 'Karte i resursi su uspešno kupljeni.', [
-                { text: 'OK', onPress: () => router.replace('/(tabs)/events') },
-              ]);
-            } catch (error: any) {
-              setLoading(false);
-              Alert.alert('Greška', error.message || 'Greška prilikom kupovine.');
-            }
+                setLoading(false);
+            Alert.alert(t('cart.successTitle'), t('cart.successMessage'), [
+              { text: t('cart.ok'), onPress: () => router.replace('/(tabs)/events') },
+
+            ]);
+          } catch (error: any) {
+            setLoading(false);
+            Alert.alert(t('cart.errorTitle'), error.message || t('cart.genericError'));
+          }
           },
         },
       ]
     );
   };
-
-  return (
+return (
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity onPress={() => router.back()} style={styles.backArrow}>
         <Ionicons name="arrow-back" size={24} color="black" />
       </TouchableOpacity>
 
-      <Text style={styles.title}>Vaša korpa</Text>
+      <Text style={styles.title}>{t('cart.title')}</Text>
 
-      <Text style={styles.sectionTitle}>Ulaznice</Text>
-      {selectedTickets.length === 0 && <Text>Niste izabrali nijednu kartu.</Text>}
+      <Text style={styles.sectionTitle}>{t('cart.tickets')}</Text>
+      {selectedTickets.length === 0 && <Text>{t('cart.noTickets')}</Text>}
       {selectedTickets.map(ticket => {
         const info = getTicketInfo(ticket.id);
         if (!info) return null;
@@ -219,21 +219,21 @@ export default function CartScreen() {
         );
       })}
 
-      <Text style={styles.sectionTitle}>Resursi</Text>
-      {selectedResources.length === 0 && <Text>Niste izabrali dodatne resurse.</Text>}
+      <Text style={styles.sectionTitle}>{t('cart.resources')}</Text>
+      {selectedResources.length === 0 && <Text>{t('cart.noResources')}</Text>}
       {selectedResources.map(resId => {
         const res = getResourceInfo(resId);
         if (!res) return null;
         return (
           <View key={`res-${resId}`} style={styles.itemRow}>
             <Text style={styles.itemText}>{res.name}</Text>
-            <Text style={styles.itemPrice}>{res.price ? `${res.price} RSD` : 'Besplatno'}</Text>
+            <Text style={styles.itemPrice}>{res.price ? `${res.price} RSD` : t('cart.free')}</Text>
           </View>
         );
       })}
 
       <View style={styles.totalRow}>
-        <Text style={styles.totalText}>Ukupno:</Text>
+        <Text style={styles.totalText}>{t('cart.total')}:</Text>
         <Text style={styles.totalText}>{calculateTotal()} RSD</Text>
       </View>
 
@@ -242,7 +242,7 @@ export default function CartScreen() {
         onPress={handlePurchase}
         disabled={loading || selectedTickets.length === 0}
       >
-        <Text style={styles.purchaseText}>{loading ? 'Kupovina...' : 'Kupi'}</Text>
+        <Text style={styles.purchaseText}>{loading ? t('cart.purchasing') : t('cart.purchase')}</Text>
       </TouchableOpacity>
 
       {loading && (

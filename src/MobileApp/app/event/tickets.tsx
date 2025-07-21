@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   View,
   Text,
@@ -29,6 +30,7 @@ type Resource = {
 
 export default function TicketPurchaseScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const { eventId } = useLocalSearchParams<{ eventId: string }>();
 
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -105,22 +107,22 @@ export default function TicketPurchaseScreen() {
     });
   };
 
-  if (loading) {
-  return (
-    <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-      <ActivityIndicator size="large" color="#0047FF" />
-      <Text style={{ marginTop: 16, fontSize: 16, color: '#0047FF' }}>
-        Učitavanje karata...
-      </Text>
-    </View>
-  );
-}
+   if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#0047FF" />
+        <Text style={{ marginTop: 16, fontSize: 16, color: '#0047FF' }}>
+          {t('tickets.loading')}
+        </Text>
+      </View>
+    );
+  }
   if (redirecting) {
     return (
       <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
         <ActivityIndicator size="large" color="#0047FF" />
         <Text style={{ marginTop: 16, fontSize: 16, color: '#0047FF' }}>
-          Redirekcija na kupovinu karata...
+          {t('tickets.redirecting')}
         </Text>
       </View>
     );
@@ -128,12 +130,11 @@ export default function TicketPurchaseScreen() {
 
   return (
     <ScrollView style={styles.container}>
+      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <Ionicons name="arrow-back" size={24} color="#333" />
+      </TouchableOpacity>
 
-    <TouchableOpacity  onPress={() => router.back()} style={styles.backButton}>
-                 <Ionicons name="arrow-back" size={24} color="#333" />
-               </TouchableOpacity>
-
-      <Text style={styles.sectionTitle}>🎫 Tickets</Text>
+       <Text style={styles.sectionTitle}>🎫 {t('tickets.title')}</Text>
       {tickets.map(ticket => {
         const selectedCount = cart[ticket.id] || 0;
         const remaining = ticket.available - selectedCount;
@@ -142,8 +143,8 @@ export default function TicketPurchaseScreen() {
           <View key={`ticket-${ticket.id}`} style={styles.card}>
             <Text style={styles.cardTitle}>{ticket.name}</Text>
             <Text style={styles.cardText}>
-              {ticket.price} RSD - {remaining} available
-            </Text>
+          {ticket.price} RSD - {remaining} {t('tickets.available')}
+        </Text>
             <View style={styles.counterRow}>
               <TouchableOpacity onPress={() => handleRemoveFromCart(ticket.id)} style={styles.counterButton}>
                 <Text style={styles.counterText}>-</Text>
@@ -157,7 +158,7 @@ export default function TicketPurchaseScreen() {
         );
       })}
 
-      <Text style={styles.sectionTitle}>📦 Resources</Text>
+      <Text style={styles.sectionTitle}>📦 {t('resources.title')}</Text>
       {resources.map(res => (
         <TouchableOpacity
           key={`res-${res.id}`}
@@ -173,8 +174,9 @@ export default function TicketPurchaseScreen() {
           <View style={{ flexShrink: 1 }}>
             <Text style={styles.cardTitle}>{res.name}</Text>
             <Text style={styles.cardText}>
-              {res.price ? `${res.price} RSD - ` : ''}{res.quantity} {res.measure}
-            </Text>
+          {res.price ? `${res.price} RSD - ` : ''}
+          {res.quantity} {res.measure}
+        </Text>
           </View>
         </TouchableOpacity>
       ))}
@@ -195,7 +197,7 @@ export default function TicketPurchaseScreen() {
           }, 1000);
         }}
       >
-        <Text style={styles.proceedText}>Proceed to Cart</Text>
+           <Text style={styles.proceedText}>{t('tickets.proceed')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
