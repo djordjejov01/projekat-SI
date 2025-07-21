@@ -121,7 +121,8 @@ namespace Backend.Controllers
             
             return Ok(new {message = "User data successfully changed!"});
         }
-        [HttpGet("events")]public async Task<IActionResult> GetEventsForOrganier(int id)
+        [HttpGet("events")]
+        public async Task<IActionResult> GetEventsForOrganier(int id)
         {
             try
             {
@@ -134,7 +135,9 @@ namespace Backend.Controllers
                 return BadRequest(new { message = ex.Message }); 
             }
         }
-        [HttpPost("create-event")]public async Task<IActionResult> CreateEvent(CreateEventDto model, int organizerID)
+        [HttpPost("create-event")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> CreateEvent(CreateEventDto model, int organizerID)
         {
             try
             {
@@ -145,6 +148,100 @@ namespace Backend.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        [Authorize(Roles = "Organizer")]
+        [HttpPut("events/{eventId}")]
+        public async Task<IActionResult> UpdateEvent(int eventId, [FromBody] UpdateEventDto dto)
+        {
+            var eventEntity = await _context.Events.FindAsync(eventId);
+            if (eventEntity == null)
+                return NotFound();
+
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            if (eventEntity.OrganizerID != userId)
+                return Forbid();
+
+
+            eventEntity.Title = dto.Title;
+            eventEntity.Description = dto.Description;
+            eventEntity.Location = dto.Location;
+            eventEntity.StartDate = dto.StartDate;
+            eventEntity.EndDate = dto.EndDate;
+            eventEntity.Category = dto.Category;
+            eventEntity.NumberOfPeople = dto.Capacity;
+
+
+            await _context.SaveChangesAsync();
+            return Ok(eventEntity);
+        }
+
+        [HttpGet("event-category-stats")]
+        public async Task<IActionResult> GetEventCategoryStats()
+        {
+            var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var stats = await _context.Events
+                .Where(e => e.OrganizerID == organizerId)
+                .GroupBy(e => e.Category)
+                .Select(g => new
+                {
+                    Category = g.Key.ToString(),
+                    Count = g.Count()
+                })
+                .ToListAsync();
+
+            var result = stats.ToDictionary(x => x.Category, x => x.Count);
+            return Ok(result);
+        }
+
+        [HttpGet("event-status-stats")]
+        public async Task<IActionResult> GetEventStatusStats()
+        {
+            var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var stats = await _context.Events
+                .Where(e => e.OrganizerID == organizerId)
+                .GroupBy(e => e.Status)
+                .Select(g => new
+                {
+                    Status = g.Key.ToString(),
+                    Count = g.Count()
+                })
+                .ToListAsync();
+
+            var result = stats.ToDictionary(x => x.Status, x => x.Count);
+            return Ok(result);
+        }
+
+        [HttpGet("dashboard-metrics")]
+        public async Task<IActionResult> GetDashboardMetrics()
+        {
+            var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var totalEvents = await _context.Events.CountAsync(e => e.OrganizerID == organizerId);
+
+            var totalTicketsSold = await _context.UserTickets
+                .CountAsync(ut => ut.Ticket.Event.OrganizerID == organizerId);
+
+            var totalRevenue = await _context.UserTickets
+                .Where(ut => ut.Ticket.Event.OrganizerID == organizerId)
+                .SumAsync(ut => (decimal?)ut.Ticket.Price) ?? 0;
+
+            var uniqueLocations = await _context.Events
+                .Where(e => e.OrganizerID == organizerId)
+                .Select(e => e.Location)
+                .Distinct()
+                .CountAsync();
+
+            var result = new
+            {
+                TotalEvents = totalEvents,
+                TotalRevenue = totalRevenue,
+                TotalTicketsSold = totalTicketsSold,
+                UniqueLocations = uniqueLocations
+            };
+            return Ok(result);
         }
     }
 }
