@@ -38,6 +38,12 @@ namespace Backend.Services
             {
                 throw new ArgumentException("Invalid organizer ID.", nameof(organizerID));
             }
+            string imageName = null;
+            if (model.ImageFile != null)
+            {
+                imageName = await CommonHelpers.SaveImageAsync(model.ImageFile, _env);
+            }
+
             var newEvent = new Event
             {
                 Title = model.Title,
@@ -46,18 +52,18 @@ namespace Backend.Services
                 StartDate = model.StartDateTime,
                 EndDate = model.EndDateTime,
                 NumberOfPeople = model.Capacity,
-                ImageUrl = model.Image,
+                ImageUrl = imageName ?? "images/default-image.png",
                 OrganizerID = organizerID,
                 Category = model.Category
             };
             _context.Events.Add(newEvent);
             try
             {
-                 _context.SaveChanges();
+                 await _context.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch(Exception)
             {
-                throw ex;
+                throw;
             }
             int eventId = newEvent.EventID;
             if (model.Tickets != null && model.Tickets.Any())
@@ -71,8 +77,8 @@ namespace Backend.Services
                         EventID = eventId,
                         Quota = ticket.Quota,
                         Description = ticket.Description,
-                        validFrom = ticket.validFrom,
-                        validUntil = ticket.validUntil
+                        validFrom = ticket.ValidFrom,
+                        validUntil = ticket.ValidUntil
                         
                         //Missing info for valid days
 
@@ -82,21 +88,12 @@ namespace Backend.Services
             }
             try
             {
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch(Exception)
             {
-                throw ex;
+                throw;
             }
-            if (model.imageFile != null)
-            {
-                string imageName =  await CommonHelpers.SaveImageAsync(model.imageFile,_env);
-                newEvent.ImageUrl = imageName;
-                _context.Events.Update(newEvent);
-                _context.SaveChanges();
-
-            }
-            return;
         }
     }
 }

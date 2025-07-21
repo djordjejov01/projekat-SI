@@ -24,10 +24,10 @@ namespace Backend.Models.Dto
         [Required]
         public int Capacity { get; set; }
 
-        public string Image { get; set; }
-        public IFormFile imageFile { get; set; }
+        public string? Image { get; set; }
+        public IFormFile? ImageFile { get; set; }
 
-        public List<TicketDto> Tickets { get; set; }
+        public List<TicketDto>? Tickets { get; set; }
     }
     public class TicketDto
     {
@@ -37,9 +37,9 @@ namespace Backend.Models.Dto
         [Required]
         public decimal Price { get; set; }
         [Required]
-        public DateTime validFrom { get; set; }
+        public DateTime ValidFrom { get; set; }
         [Required]
-        public DateTime validUntil { get; set; }
+        public DateTime ValidUntil { get; set; }
         [Required]
         public int Quota { get; set; }
 

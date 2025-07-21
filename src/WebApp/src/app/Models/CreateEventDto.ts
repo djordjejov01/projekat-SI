@@ -10,6 +10,7 @@ export class CreatEventDto
         private endDateTime : Date,
         private capacity : number,
         private image : string,
+        private imageFile : File,
         private category: string,
         private tickets : TicketDto[]
     ){}
