@@ -19,6 +19,9 @@ import { ApiService } from '../../../Services/api.service';
 import { AuthService } from '../../../Services/auth.service';
 import { CategoryMap } from '../../../Models/Event';
 import { SelectModule } from 'primeng/select';
+import { IDeactivate } from '../../../Interfaces/IDeactivate';
+import { Observable } from 'rxjs';
+import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
 
 
 @Component({
@@ -27,7 +30,7 @@ import { SelectModule } from 'primeng/select';
   templateUrl: './create-event.component.html',
   styleUrl: './create-event.component.css'
 })
-export class CreateEventComponent implements OnInit{
+export class CreateEventComponent implements OnInit,IDeactivate{
 
   eventForm : FormGroup;
   currencyCode : string;
@@ -46,7 +49,8 @@ export class CreateEventComponent implements OnInit{
     private messageService : MessageService,
     private route : ActivatedRoute,
     private apiService : ApiService,
-    private authService : AuthService) {}
+    private authService : AuthService,
+    private confirmationDialogService : ConfirmationDialogService) {}
 
   ngOnInit(): void {
 
@@ -134,9 +138,15 @@ export class CreateEventComponent implements OnInit{
         const parsedStart = new Date(start);
         const parsedEnd = new Date(end)
 
-        if(!isNaN(parsedStart.getTime())) // Valid date check
+        if(!isNaN(parsedStart.getTime())){ // Valid date check
           this.eventForm.patchValue({startDateTime: parsedStart});
-        if(!isNaN(parsedEnd.getTime())) this.eventForm.patchValue({ endDateTime: parsedEnd});
+          this.eventForm.markAsDirty()
+        }
+
+        if(!isNaN(parsedEnd.getTime())){
+          this.eventForm.patchValue({ endDateTime: parsedEnd});
+          this.eventForm.markAsDirty()
+        }
       });
   }
 
@@ -360,5 +370,17 @@ submitForm(): void {
     }
   });
 }
+
+  canExit(): boolean | Observable<boolean> | Promise<boolean>{
+
+    if(this.authService.isLoggingOut()) return true;
+
+    const formDirty = this.eventForm?.dirty;
+    const hasImage = !!this.selectedImageFile;
+
+    const shouldWarn = formDirty || hasImage;
+
+    return shouldWarn ? this.confirmationDialogService.confirm('You have unsaved changes. Are you sure you want to leave this page?', 'Unsaved Changes') : true
+  }
 
 }
