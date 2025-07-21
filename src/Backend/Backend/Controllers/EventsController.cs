@@ -126,6 +126,7 @@ namespace Backend.Controllers
                 OrganizerName = eventEntity.Organizer.Username,
                 AttendingCount = attendingCount,
                 IsFavorite = isFavorite,
+                Capacity = eventEntity.NumberOfPeople,
                 Agenda = agenda,
                 Category=eventEntity.Category
 
