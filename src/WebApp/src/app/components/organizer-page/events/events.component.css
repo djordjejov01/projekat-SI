@@ -17,7 +17,7 @@ h1{
     max-width: 200px;
 }
 #ev{
-    margin-top: 280px;
+    margin-top: 50px;
 }
 #ae:hover{
     cursor: pointer;
@@ -40,18 +40,37 @@ h1{
     flex-direction: column;
     flex-wrap: wrap;
     width: 100%;
-    gap:250px;
+    gap:50px;
     margin-top: 50px;
 }
+
 #group{
-    display: flex;
-    gap:50px;
-    justify-content: center;
-    width: 100%;
+display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap:50px;
+
+}
+.chart-box {
+  flex: 1 1 47.5%;     
+  min-width: 320px;
+  max-width: 840px;
+  border: 1px solid #EBEBEA;
+  border-radius: 12px;
+  padding: 1rem;
+  box-sizing: border-box;
+  height: 420px;       
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-#group *{
+.pad{
     width: 50%;
+}
+
+.bar{
+    width: 90%;
 }
 
 #card{

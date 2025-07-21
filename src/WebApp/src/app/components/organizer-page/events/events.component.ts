@@ -37,8 +37,31 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 })
 export class EventsComponent implements OnInit {
 
-    statuses!: any[];
+    selectedCategories: any[] = [];
+    selectedStatus: any[] = [];
+    categories = [
+  {name: 'Music', value: 'Music'},
+  {name: 'Sports', value: 'Sports'},
+  {name: 'Entertainment', value: 'Entertainment'},
+  {name: 'Protest', value: 'Protest'},
+  {name: 'Charity', value: 'Charity'},
+  {name: 'Business', value: 'Business'},
+  {name: 'Culture', value: 'Culture'},
+  {name: 'Other', value: 'Other'}
+    ];
+    statuses = [
+      {name:"Draft", value : "Draft"},
+      {name:"Published", value : "Published"},
+      {name:"Canceled", value : "Canceled"}
+    ];
+onRoleFilterChange(selectedOptions: any[], filterFn: (val: any) => void) {
+  this.selectedCategories = selectedOptions || [];
 
+  // Extract the 'value' strings to pass to the filter callback
+  const filterValues = this.selectedCategories.map(role => role.value);
+
+  filterFn(filterValues.length ? filterValues : null);
+}
     loading: boolean = true;
 
     activityValues: number[] = [0, 100];
@@ -58,7 +81,6 @@ export class EventsComponent implements OnInit {
   { name: 'Admin', value: 'Admin'},
   { name: 'Organizer', value: 'Organizer' },
   { name: 'Supplier', value: 'Supplier' },
-  // Add all roles you have
 ];
     data1 = {
       labels: [
@@ -68,7 +90,7 @@ export class EventsComponent implements OnInit {
       datasets: [
         {
           label: 'Broj događaja',
-          backgroundColor: '#42A5F5',
+          backgroundColor: '#636AE8',
           data: [1,3,5,2,6,3,7,10,3,9,7,4]
         }
       ]
@@ -219,15 +241,6 @@ export class EventsComponent implements OnInit {
                       }
               
                     })
-
-        this.statuses = [
-            { label: 'Unqualified', value: 'unqualified' },
-            { label: 'Qualified', value: 'qualified' },
-            { label: 'New', value: 'new' },
-            { label: 'Negotiation', value: 'negotiation' },
-            { label: 'Renewal', value: 'renewal' },
-            { label: 'Proposal', value: 'proposal' }
-        ];
     }
     createEvent(){
     this.router.navigate(["/organizer/create-event"],{
