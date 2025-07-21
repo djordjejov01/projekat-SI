@@ -1,4 +1,4 @@
-﻿using Backend.Helpers;
+using Backend.Helpers;
 using Backend.Models;
 using Backend.Models.Dto;
 using Microsoft.AspNetCore.Mvc;
@@ -62,7 +62,7 @@ namespace Backend.Services
                 StartDate = model.StartDateTime,
                 EndDate = model.EndDateTime,
                 NumberOfPeople = model.Capacity,
-                ImageUrl = imageName ?? "default-image.jpg",
+                ImageUrl = imageName ?? "images/default-image.png",
                 OrganizerID = organizerID,
                 Category = model.Category,
                 Status = EventStatus.Draft
@@ -90,7 +90,6 @@ namespace Backend.Services
                         Description = ticket.Description,
                         validFrom = ticket.ValidFrom,
                         validUntil = ticket.ValidUntil
-
                         //Missing info for valid days
 
                     };
@@ -101,7 +100,7 @@ namespace Backend.Services
             {
                 await _context.SaveChangesAsync();
             }
-            catch (Exception)
+            catch(Exception)
             {
                 throw;
             }

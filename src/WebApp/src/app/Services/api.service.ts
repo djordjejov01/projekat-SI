@@ -26,8 +26,12 @@ export class ApiService{
 
     constructor(private http: HttpClient) {}
 
-    createEvent(eventDto : CreatEventDto, organizerId : number) : Observable<HttpResponse<any>>{
-        return this.http.post(`${this.apiUrl}/Organizer/create-event?organizerID=${organizerId}`,eventDto, {observe: 'response'})
+    createEvent(formData: FormData, organizerId: number): Observable<any> {
+    return this.http.post(
+        `${this.apiUrl}/Organizer/create-event/${organizerId}`,
+        formData,
+        {observe: 'response'}
+    );
     }
 
     getOrganizerEvents(organizerId : number) : Observable<Event[]> {

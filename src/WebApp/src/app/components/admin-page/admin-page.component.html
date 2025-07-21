@@ -145,11 +145,14 @@
                         [showAddButton]="false" 
                         class="ml-auto">
                             <ng-template #filter let-value let-filter="filterCallback">
-                                <p-multiselect [filter]="true"
-                                 [ngModel]="value"
-                                  (ngModelChange)="filter($event)" 
-                                  [options]="roles" placeholder="Any" 
-                                  optionLabel="name" class="w-full">
+                                <p-multiselect 
+                                [filter]="true"
+                                [ngModel]="selectedRoles"
+                                (ngModelChange)="onRoleFilterChange($event, filter)" 
+                                [options]="roles" 
+                                placeholder="Any" 
+                                optionLabel="name" 
+                                class="w-full">
                                     <ng-template let-option #item>
                                         <span> {{ option.name }}</span>
                                     </ng-template>

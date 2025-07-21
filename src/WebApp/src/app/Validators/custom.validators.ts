@@ -1,4 +1,4 @@
-import { AbstractControl, FormGroup, ValidationErrors } from "@angular/forms";
+import { AbstractControl, FormGroup, ValidationErrors, ValidatorFn } from "@angular/forms";
 
 export class CustomValidators{
 
@@ -9,13 +9,25 @@ export class CustomValidators{
         return password === confirm ? null : {passwordsDontMatch: true}
     }
 
-    static startBeforeEndValidator(group: FormGroup): ValidationErrors | null {
-        const start = group.get('startDateTime')?.value;
-        const end = group.get('endDateTime')?.value;
-        if (start && end && new Date(start) >= new Date(end)) {
-        return { startBeforeEnd: true };
-        }
-        return null;
+    // static startBeforeEndValidator(group: FormGroup): ValidationErrors | null {
+    //     const start = group.get('startDateTime')?.value;
+    //     const end = group.get('endDateTime')?.value;
+    //     if (start && end && new Date(start) >= new Date(end)) {
+    //     return { startBeforeEnd: true };
+    //     }
+    //     return null;
+    // }
+
+    static startBeforeEndDates(startKey : string, endKey: string) : ValidatorFn {
+        return (group: AbstractControl) : ValidationErrors | null => {
+
+            const start = group.get(startKey)?.value;
+            const end = group.get(endKey)?.value;
+            if(start && end && new Date(start) >= new Date(end)){
+                return { startBeforeEnd: true };
+            }
+            return null;
+        };
     }
 
   static noWhitespaceValidator(control: AbstractControl): ValidationErrors | null {
