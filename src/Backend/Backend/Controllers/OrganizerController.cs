@@ -126,7 +126,7 @@ namespace Backend.Controllers
         {
             try
             {
-                var events = _organizerService.GetEventsForOrganier(id);
+                var events = _organizerService.GetAllEventsForOrganier(id);
                 return Ok(events);
 
             }
@@ -135,16 +135,30 @@ namespace Backend.Controllers
                 return BadRequest(new { message = ex.Message }); 
             }
         }
-        [HttpPost("create-event")]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> CreateEvent(CreateEventDto model, int organizerID)
+        [HttpGet("upcoming-events")]
+        public async Task<IActionResult> GetUpcomingEventsForOrganier(int id)
         {
             try
             {
-                _organizerService.CreateEventForOrganizer(model, organizerID);
+                var events = _organizerService.GetUpcomingEventsForOrganier(id);
+                return Ok(events);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+        [HttpPost("create-event/{organizerID}")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> CreateEvent([FromForm] CreateEventDto model, [FromRoute] int organizerID)
+        {
+            try
+            {
+                await _organizerService.CreateEventForOrganizer(model, organizerID);
                 return Created("Event created successfully.", null);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }

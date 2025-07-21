@@ -75,9 +75,7 @@ builder.Services.AddSwaggerGen(c =>
             new string[] {}
         }
     });
-});
-builder.Services.AddSwaggerGen(c =>
-{
+
     // vital line:
     c.MapType<IFormFile>(() => new Microsoft.OpenApi.Models.OpenApiSchema
     {
