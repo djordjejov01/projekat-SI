@@ -13,7 +13,7 @@ import { Toast } from 'primeng/toast';
 
 @Component({
   selector: 'app-organizer-page',
-  imports: [MenuBarComponent,RouterModule, FooterBar,ConfirmDialogModule,ToastModule,TranslateModule,Toast],
+  imports: [MenuBarComponent,RouterModule,ConfirmDialogModule,ToastModule,TranslateModule,Toast],
   templateUrl: './organizer-page.component.html',
   styleUrl: './organizer-page.component.css'
 })

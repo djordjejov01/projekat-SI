@@ -1,11 +1,271 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { TableModule } from 'primeng/table';
+import { Tag } from 'primeng/tag';
+import { ButtonModule } from 'primeng/button';
+import { InputIcon } from 'primeng/inputicon';
+import { IconField } from 'primeng/iconfield';
+import { CommonModule } from '@angular/common';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { InputTextModule } from 'primeng/inputtext';
+import { DropdownModule } from 'primeng/dropdown';
+import { Slider } from 'primeng/slider';
+import { ProgressBar } from 'primeng/progressbar';
+import { ApiService } from '../../../Services/api.service';
+import { AuthService } from '../../../Services/auth.service';
+import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
+import { Event } from '../../../Models/Event';
+import { AfterContentInit, AfterViewInit, HostListener, ViewChild } from '@angular/core';
+import { ChartModule } from 'primeng/chart';
+import { isPlatformBrowser } from '@angular/common';
+import { ChangeDetectorRef, inject, PLATFORM_ID } from '@angular/core';
+import { UIChart } from 'primeng/chart'
+import { TableLazyLoadEvent } from 'primeng/table';
+import { FormsModule } from '@angular/forms';
+import { Table } from 'primeng/table';
+import { ToastModule } from 'primeng/toast';
+import { Toast } from 'primeng/toast';
+import { RouterLink } from '@angular/router';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-events',
-  imports: [],
+  imports: [CommonModule,ChartModule,TableModule, ButtonModule,
+      CommonModule, MultiSelectModule, InputTextModule, DropdownModule, FormsModule,IconField, InputIcon,TableModule,ConfirmDialogModule],
   templateUrl: './events.component.html',
   styleUrl: './events.component.css'
 })
-export class EventsComponent {
+export class EventsComponent implements OnInit {
 
+    selectedCategories: any[] = [];
+    selectedStatus: any[] = [];
+    categories = [
+  {name: 'Music', value: 'Music'},
+  {name: 'Sports', value: 'Sports'},
+  {name: 'Entertainment', value: 'Entertainment'},
+  {name: 'Protest', value: 'Protest'},
+  {name: 'Charity', value: 'Charity'},
+  {name: 'Business', value: 'Business'},
+  {name: 'Culture', value: 'Culture'},
+  {name: 'Other', value: 'Other'}
+    ];
+    statuses = [
+      {name:"Draft", value : "Draft"},
+      {name:"Published", value : "Published"},
+      {name:"Canceled", value : "Canceled"}
+    ];
+onRoleFilterChange(selectedOptions: any[], filterFn: (val: any) => void) {
+  this.selectedCategories = selectedOptions || [];
+
+  // Extract the 'value' strings to pass to the filter callback
+  const filterValues = this.selectedCategories.map(role => role.value);
+
+  filterFn(filterValues.length ? filterValues : null);
+}
+    loading: boolean = true;
+
+    activityValues: number[] = [0, 100];
+    allEvents : Event[];
+    selectedEvents: Event[];
+    searchValue : string;
+      currUser : string;
+    constructor(private apiService : ApiService, private authService : AuthService, private messageService : MessageService,
+    private router : Router) {}
+    clear(table: Table) {
+        table.clear();
+        this.selectedEvents = [];
+        this.searchValue = "";
+      }  
+    value: any[] = [];
+    roles = [
+  { name: 'Admin', value: 'Admin'},
+  { name: 'Organizer', value: 'Organizer' },
+  { name: 'Supplier', value: 'Supplier' },
+];
+    data1 = {
+      labels: [
+      'Januar', 'Februar', 'Mart', 'April', 'Maj', 'Jun',
+      'Jul', 'Avgust', 'Septembar', 'Oktobar', 'Novembar', 'Decembar'
+    ],
+      datasets: [
+        {
+          label: 'Broj događaja',
+          backgroundColor: '#636AE8',
+          data: [1,3,5,2,6,3,7,10,3,9,7,4]
+        }
+      ]
+    };
+
+    options1 = {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          labels: {
+            color: '#495057'
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: '#495057'
+          },
+          grid: {
+            color: '#ebedef'
+          }
+        },
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: '#495057',
+            stepSize: 1
+          },
+          grid: {
+            color: '#ebedef'
+          }
+        }
+      }
+    };
+    options2 = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: true,
+      labels: {
+        color: '#495057'
+      }
+    },
+    tooltip: {
+      mode: 'index',
+      intersect: false
+    }
+  },
+  interaction: {
+    mode: 'nearest',
+    axis: 'x',
+    intersect: false
+  },
+  scales: {
+    x: {
+      display: true,
+      title: {
+        display: true,
+        text: 'Mesec',
+        color: '#333'
+      },
+      ticks: {
+        color: '#495057'
+      },
+      grid: {
+        color: '#ebedef'
+      }
+    },
+    y: {
+      display: true,
+      title: {
+        display: true,
+        text: 'Broj događaja',
+        color: '#333'
+      },
+      beginAtZero: true,
+      ticks: {
+        color: '#495057',
+        stepSize: 1
+      },
+      grid: {
+        color: '#ebedef'
+      }
+    }
+  }
+};
+    data3 = {
+  labels: ['Januar', 'Februar', 'Mart', 'April'],
+  datasets: [
+    {
+      data: [12, 19, 3, 5],
+      backgroundColor: ['#42A5F5', '#66BB6A', '#FFA726', '#EF5350'],
+      hoverBackgroundColor: ['#64B5F6', '#81C784', '#FFB74D', '#E57373']
+    }
+  ]
+};
+    options3 = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'bottom',
+      labels: {
+        color: '#495057'
+      }
+    },
+    tooltip: {
+      callbacks: {
+        label: function (context: any) {
+          const label = context.label || '';
+          const value = context.parsed || 0;
+          return `${label}: ${value}`;
+        }
+      }
+    }
+  }
+};
+
+    viewEvent(eID : number)
+    {
+      alert(eID);
+    }
+    editEvent(eID : number)
+    {
+      alert(eID);
+    }
+    deleteEvent(eID : number)
+    {
+      alert(eID);
+    }
+    ngOnInit() {
+        this.currUser = this.authService.getUserName();
+              this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe({
+              
+                      next:(response : Event[]) => {
+                        this.allEvents = response;
+                        this.loading = false;
+                        console.log(response);
+                      },
+                      error:(errorResponse) =>{
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: errorResponse.message,
+                            life: 3000 });
+                      }
+              
+                    })
+    }
+    createEvent(){
+    this.router.navigate(["/organizer/create-event"],{
+        queryParams: { showID: 3}
+      });
+
+  }
+    getSeverity(status: string) {
+        switch (status) {
+            case 'unqualified':
+                return 'danger';
+
+            case 'qualified':
+                return 'success';
+
+            case 'new':
+                return 'info';
+
+            case 'negotiation':
+                return 'warn';
+
+            case 'renewal':
+                return null;
+            default:
+              return null;
+        }
+    }
 }
