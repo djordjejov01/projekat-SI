@@ -18,12 +18,14 @@ export default function ProfileScreen() {
   const { t } = useTranslation();
 
   const [firstName, setFirstName] = useState('');
+  const [ticketsCount, setTicketsCount] = useState(0);
+  
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUserDataAndTickets = async () => {
       const token = await AsyncStorage.getItem('token');
       if (!token) return;
 
@@ -39,12 +41,21 @@ export default function ProfileScreen() {
           setLastName(data.lastName || '');
           setEmail(data.email || '');
         }
+         const resTickets = await fetch(`${API_URL}/ticket/tickets/my`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (resTickets.ok) {
+          const dataCount = await resTickets.json(); // očekuj { count: number }
+          setTicketsCount(dataCount.length);
+       } else {
+          console.warn("Failed to fetch tickets");
+        }
       } catch (error) {
-        console.error('Failed to load user data:', error);
+        console.error('Failed to load user data or tickets:', error);
       }
     };
 
-    fetchUserData();
+    fetchUserDataAndTickets();
   }, []);
 
   const getInitials = () => {
@@ -109,8 +120,8 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.rowContainer}>
-        <TouchableOpacity style={styles.statBox} onPress={() => router.push('../profile/tickets')}>
-          <Text style={styles.statNumber}>12</Text>
+        <TouchableOpacity style={styles.statBox} onPress={() => router.push('../profile/ticketsHistory')}>
+          <Text style={styles.statNumber}>{ticketsCount}</Text>
           <Text style={styles.statLabel}>{t('profile.tickets')}</Text>
         </TouchableOpacity>
 
