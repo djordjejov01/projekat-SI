@@ -30,6 +30,11 @@ export class CategoryService{
         );
     }
 
+    loadCategoriesIfEmpty(): Observable<EventCategoryApiResponse[]>{
+        if(this.categories$.getValue().length === 0) return this.loadCategories();
+        return this.categories$;
+    }
+
     getCategoryName(id : number) : string {
         return this.categoryMap.get(id) ?? 'Unknown';
     }

@@ -55,7 +55,7 @@ export class CreateEventComponent implements OnInit,IDeactivate{
 
     this.minDate = new Date();
 
-    this.categoryService.getCategories()
+    this.categoryService.loadCategoriesIfEmpty()
       .pipe(take(1))
       .subscribe(categories => {
         this.categories = categories.map(cat => ({

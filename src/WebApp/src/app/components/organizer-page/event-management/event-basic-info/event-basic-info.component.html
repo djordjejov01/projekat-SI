@@ -12,7 +12,7 @@
 
                 <div class="title-tag">
                     <h1 class="font-archivo">{{event.getTitle()}}</h1>
-                    <span class="font-inter custom-status-tag"> {{ event.getStatus() }}</span>
+                    <span class="font-inter custom-status-tag"> {{ event.getStatusLabel() }}</span>
                 </div>
 
                 <div class="date-time">
@@ -155,6 +155,7 @@
                         label="Save Changes"
                         icon="pi pi-pen-to-square"
                         [raised]="true"
+                        (onClick)="submitForm()"
                         severity="primary"
                         ></p-button>
 

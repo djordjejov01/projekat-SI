@@ -16,6 +16,7 @@ import { CreatEventDto } from "../Models/CreateEventDto";
 import { EventApiResponse } from "../Interfaces/EventApiResponse";
 import { Event, StatusMap } from "../Models/Event";
 import { EventCategoryApiResponse } from "../Interfaces/EventCategoryApiResponse";
+import { UpdatEventDto } from "../Models/UpdateEventDto";
 
 
 @Injectable({
@@ -26,6 +27,14 @@ export class ApiService{
     private apiUrl = 'https://localhost:7269/api';
 
     constructor(private http: HttpClient) {}
+
+    updateEvent(data : UpdatEventDto, eventId : number) : Observable<EventApiResponse>{
+
+        return this.http.put<EventApiResponse>(`${this.apiUrl}/Organizer/events/${eventId}`,data).pipe(
+            catchError(this.handleError)
+        )
+
+    }
 
     createEvent(formData: FormData, organizerId: number): Observable<any> {
     return this.http.post(
@@ -76,7 +85,7 @@ export class ApiService{
                     organizer,
                     event.imageUrl,            
                     event.isFree,
-                    StatusMap[event.status] || 'Unknown'
+                    event.status
                     );
                 })
             ),

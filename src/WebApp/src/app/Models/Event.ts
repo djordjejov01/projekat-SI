@@ -21,7 +21,7 @@ export class Event
         private organizer : User | null,
         private image : string,
         private isFree : boolean,
-        private status : string
+        private status : number
     ){}
 
     getEventId(): number {
@@ -73,7 +73,11 @@ export class Event
     return this.isFree;
   }
 
-  getStatus() : string{
+  getStatus() : number{
     return this.status
+  }
+
+  getStatusLabel() : string{
+    return StatusMap[this.status] || 'Unknown'
   }
 }

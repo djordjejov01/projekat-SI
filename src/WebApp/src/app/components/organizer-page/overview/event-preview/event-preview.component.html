@@ -1,7 +1,7 @@
 <div id="data">
     <div id="fr">
         <div id="sit">
-            <p id="status">{{event.getStatus()}}</p>
+            <p id="status">{{event.getStatusLabel()}}</p>
             <p id="time">{{event.getStartDateTime() | date: 'MM/dd/yyyy' }}</p>
         </div>
         <img [src]="event.getImage()" alt="">
