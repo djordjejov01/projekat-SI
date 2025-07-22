@@ -1,16 +1,5 @@
 import { User } from "./User";
 
-export const CategoryMap: Record<number, string> = {
-  0: 'Music',
-  1: 'Sports',
-  2: 'Entertainment',
-  3: 'Protest',
-  4: 'Charity',
-  5: 'Business',
-  6: 'Culture',
-  7: 'Other'
-};
-
 export const StatusMap: Record<number, string> = {
   0: 'Draft',
   1: 'Published',
@@ -23,7 +12,7 @@ export class Event
         private eventId : number,
         private organizerId : number,
         private title : string ,
-        private category : string,
+        private category : number,
         private description : string ,
         private location : string,
         private startDateTime : Date,
@@ -47,7 +36,7 @@ export class Event
     return this.title;
   }
 
-  getCategory(): string {
+  getCategoryId(): number {
     return this.category;
   }
 

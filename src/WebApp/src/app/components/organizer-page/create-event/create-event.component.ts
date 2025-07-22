@@ -15,11 +15,11 @@ import { MessageService } from 'primeng/api';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../../Services/api.service';
 import { AuthService } from '../../../Services/auth.service';
-import { CategoryMap } from '../../../Models/Event';
 import { SelectModule } from 'primeng/select';
 import { IDeactivate } from '../../../Interfaces/IDeactivate';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
+import { CategoryService } from '../../../Services/EventCategoryService';
 
 
 @Component({
@@ -48,16 +48,21 @@ export class CreateEventComponent implements OnInit,IDeactivate{
     private route : ActivatedRoute,
     private apiService : ApiService,
     private authService : AuthService,
-    private confirmationDialogService : ConfirmationDialogService) {}
+    private confirmationDialogService : ConfirmationDialogService,
+    private categoryService : CategoryService) {}
 
   ngOnInit(): void {
 
-      this.minDate = new Date();
+    this.minDate = new Date();
 
-      this.categories = Object.entries(CategoryMap).map(([key,label]) => ({
-        label,
-        value: +key
-      }))
+    this.categoryService.getCategories()
+      .pipe(take(1))
+      .subscribe(categories => {
+        this.categories = categories.map(cat => ({
+          label: cat.name,
+          value: cat.id
+        }));
+      });
 
       const currentLang = this.translateService.currentLang || 'en';
       if (currentLang === 'sr') {

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CategoryMap, Event } from '../../../../Models/Event';
+import { Event } from '../../../../Models/Event';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../Validators/custom.validators';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -12,6 +12,8 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { Checkbox } from 'primeng/checkbox';
 import { TextareaModule } from 'primeng/textarea';
+import { CategoryService } from '../../../../Services/EventCategoryService';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-event-basic-info',
@@ -29,14 +31,20 @@ export class EventBasicInfoComponent implements OnInit{
     minDate : Date;
     categories = [];
 
+    constructor(private categoryService : CategoryService) {}
+
     ngOnInit(): void {
 
       this.minDate = new Date();
       
-      this.categories = Object.entries(CategoryMap).map(([key,label]) => ({
-        label,
-        value: +key
-      }))
+    this.categoryService.getCategories()
+      .pipe(take(1))
+      .subscribe(categories => {
+        this.categories = categories.map(cat => ({
+          label: cat.name,
+          value: cat.id
+        }));
+      });
 
 
       this.eventForm = new FormGroup({
@@ -50,7 +58,7 @@ export class EventBasicInfoComponent implements OnInit{
         ),
         startDateTime: new FormControl(this.event.getStartDateTime(), [Validators.required, CustomValidators.notInPast]),
         endDateTime: new FormControl(this.event.getEndDateTime(), Validators.required),
-        category: new FormControl(this.event.getCategory(), Validators.required),
+        category: new FormControl(this.event.getCategoryId(), Validators.required),
       }, { validators: CustomValidators.startBeforeEndDates('startDateTime', 'endDateTime') });
 
 

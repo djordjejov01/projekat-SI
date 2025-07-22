@@ -14,7 +14,8 @@ import { OrganizerDtoResponse } from "../Interfaces/OrganizerDtoResponse";
 import { SuccessfulMessageResponse } from "../Interfaces/SuccessfulMessageResponse";
 import { CreatEventDto } from "../Models/CreateEventDto";
 import { EventApiResponse } from "../Interfaces/EventApiResponse";
-import { CategoryMap, Event, StatusMap } from "../Models/Event";
+import { Event, StatusMap } from "../Models/Event";
+import { EventCategoryApiResponse } from "../Interfaces/EventCategoryApiResponse";
 
 
 @Injectable({
@@ -32,6 +33,12 @@ export class ApiService{
         formData,
         {observe: 'response'}
     );
+    }
+
+    getEventCategories(): Observable<EventCategoryApiResponse[]>{
+        return this.http.get<EventCategoryApiResponse[]>(`${this.apiUrl}/Events/categories`).pipe(
+            catchError(this.handleError)
+        );
     }
 
     getOrganizerEvents(organizerId : number) : Observable<Event[]> {
@@ -60,7 +67,7 @@ export class ApiService{
                     event.eventID,
                     event.organizerID, 
                     event.title,
-                    CategoryMap[event.category] || 'Unknown',
+                    event.category,
                     event.description,
                     event.location,
                     new Date(event.startDate), 
