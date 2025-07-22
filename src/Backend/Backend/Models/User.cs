@@ -34,5 +34,6 @@ namespace Backend.Models
         public string Language { get; set; }
         public string PhoneNumber { get; set; }
         public bool IsActive { get; set; }
+        public decimal Credit { get; set; }
     }
 }
