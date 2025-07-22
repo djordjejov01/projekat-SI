@@ -25,7 +25,22 @@ namespace Backend.Controllers
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
                 return NotFound();
-            return Ok(user.Credit);
+            return Ok(new { Credits = user.Credit });
+        }
+
+        [Authorize]
+        [HttpPost("add")]
+        public async Task<IActionResult> AddCredits([FromBody] decimal amount)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound();
+
+            user.Credit += amount;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Credits = user.Credit });
         }
     }
 }
