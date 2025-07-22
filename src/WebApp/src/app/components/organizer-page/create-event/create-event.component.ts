@@ -13,8 +13,6 @@ import { FileUpload } from 'primeng/fileupload';
 import { CustomValidators } from '../../../Validators/custom.validators';
 import { MessageService } from 'primeng/api';
 import { ActivatedRoute } from '@angular/router';
-import { TicketDto } from '../../../Models/TicketDto';
-import { CreatEventDto } from '../../../Models/CreateEventDto';
 import { ApiService } from '../../../Services/api.service';
 import { AuthService } from '../../../Services/auth.service';
 import { CategoryMap } from '../../../Models/Event';

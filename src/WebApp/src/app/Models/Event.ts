@@ -11,6 +11,12 @@ export const CategoryMap: Record<number, string> = {
   7: 'Other'
 };
 
+export const StatusMap: Record<number, string> = {
+  0: 'Draft',
+  1: 'Published',
+  2: 'Canceled',
+};
+
 export class Event
 {
     constructor(
@@ -25,7 +31,8 @@ export class Event
         private capacity : number,
         private organizer : User | null,
         private image : string,
-        private isFree : boolean
+        private isFree : boolean,
+        private status : string
     ){}
 
     getEventId(): number {
@@ -75,5 +82,9 @@ export class Event
 
   IsFree(): boolean {
     return this.isFree;
+  }
+
+  getStatus() : string{
+    return this.status
   }
 }

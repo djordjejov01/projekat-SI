@@ -1,0 +1,179 @@
+<main>
+
+    <div class="card-desc-container" *ngIf="!editMode">
+        
+        <div class="event-info-card">
+
+            <div class="banner-img">
+                <img [src]="event.getImage()" alt="banner-img" />
+            </div>
+
+            <div class="event-info">
+
+                <div class="title-tag">
+                    <h1 class="font-archivo">{{event.getTitle()}}</h1>
+                    <span class="font-inter custom-status-tag"> {{ event.getStatus() }}</span>
+                </div>
+
+                <div class="date-time">
+                    <div class="date">
+                        <i class="pi pi-calendar" style="color: #636AE8"></i>
+                        <span class="font-inter">{{ event.getStartDateTime() | date: 'MMMM, dd yyyy'}} - {{ event.getEndDateTime() | date: 'MMMM, dd yyyy'}}</span>
+                    </div>
+
+                    <div class="time">
+                        <i class="pi pi-clock" style="color: #636AE8"></i>
+                        <span class="font-inter">{{ event.getStartDateTime() | date: 'HH:mm'}} - {{ event.getEndDateTime() | date: 'HH:mm'}}</span>
+                    </div>
+                </div>
+
+                <div class="location">
+                    <i class="pi pi-map-marker" style="color: #636AE8"></i>
+                    <span class="font-inter">{{ event.getLocation() }}</span>
+                </div>
+
+                <div class="capacity">
+                    <i class="pi pi-users" style="color: #636AE8"></i>
+                    <span class="font-inter">{{ event.getCapacity() }} Attendess</span>
+                </div>
+
+            </div>
+            
+        </div>
+
+        <div class="event-description">
+            <h1 class="font-archivo">Event Description</h1>
+            <hr class="custom-hr">
+            <p>{{ event.getDescription() }}</p>
+        </div>
+
+    </div>
+
+
+    <div class="form-container" *ngIf="editMode">
+        <form action="" class="eventForm" [formGroup]="eventForm">
+
+            <div class="formTitle">
+                <h3>Edit Event</h3>
+                <p>Fill in the details below to edit your event.</p>
+            </div>
+
+            <div class="form-inputs">
+
+                <div  class="input-wrapper">
+
+                    <p>Event Title</p>
+                    <p-floatlabel class="w-full md:w-56" variant="on">
+                        <input  type="text"  pInputText  placeholder=" "  formControlName="title"  inputId="title"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                    <label for="title">Enter Event Title</label>
+                    </p-floatlabel>
+
+                </div>
+
+                    <div  class="input-wrapper">
+
+                        <p>Description</p>
+                        <p-floatlabel class="w-full md:w-56" variant="on">
+                            <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
+                        <label for="description">Describe Your Event</label>
+                        </p-floatlabel>
+
+                    </div>
+
+                    <div class="location-capacity">
+
+                        <div  class="input-wrapper">
+
+                            <p>Location</p>
+                            <p-floatlabel class="w-full md:w-56" variant="on">
+                                <input  type="text"  pInputText  placeholder=" "  formControlName="location"  inputId="location"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                            <label for="location">Enter Event Location (e.g. Zoom, Conference Hall A)</label>
+                            </p-floatlabel>
+
+                        </div>
+
+                        <div  class="input-wrapper">
+
+                            <p>Capacity</p>
+                            
+
+                            <p-floatlabel class="w-full md:w-56" variant="on">
+                            <p-inputnumber
+                                    formControlName="capacity"
+                                    inputId="capacity"
+                                    [min]="1"
+                                    [useGrouping]="false"
+                                    [showButtons]="false"
+                                    [style]="{ width: '100%' }"
+                                    inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                                ></p-inputnumber>
+                            <label for="capacity">Enter Event Capacity</label>
+                            </p-floatlabel>
+
+                            <div class="flex items-center gap-2">
+                                <p-checkbox formControlName="isUnlimitedCapacity" inputId="isUnlimitedCapacity" name="isUnlimitedCapacity" binary="true" size="large" />
+                                <label for="isUnlimitedCapacity" >Unlimited Capacity</label>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="dates">
+
+                        <div  class="input-wrapper">
+                            <p>Start Date</p>
+                            <p-floatlabel class="w-full md:w-56"  variant="on">
+                                <p-datepicker inputId="startDateTime" placeholder=" " formControlName="startDateTime" [showTime]="true" hourFormat="24" [minDate]="minDate"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                                <label for="startDateTime">Start Date and Time</label>
+                            </p-floatlabel>
+                        </div>
+
+                        <div  class="input-wrapper">
+                            <p>End Date</p>
+                            <p-floatlabel class="w-full md:w-56"  variant="on">
+                                <p-datepicker inputId="endDateTime" placeholder=" " formControlName="endDateTime" [showTime]="true" hourFormat="24" [minDate]="minDate"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                                <label for="endDateTime">End Date and Time</label>
+                            </p-floatlabel>
+                        </div>
+
+                    </div>
+
+                    <div  class="input-wrapper">
+
+                        <p>Category</p>
+                        <p-floatlabel class="w-full" variant="on">
+                            <p-select  [options]="categories"  name="category"  formControlName="category"  placeholder=" "  inputId="category"  class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"/>
+                            <label for="category">Select Event Category</label>
+                        </p-floatlabel>
+
+                    </div>
+
+
+                    <div class="form-buttons">
+                        <p-button 
+                        label="Save Changes"
+                        icon="pi pi-pen-to-square"
+                        [raised]="true"
+                        severity="primary"
+                        ></p-button>
+
+                         <p-button 
+                            label="Cancel"
+                            icon="pi pi-times"
+                            [raised]="true"
+                            severity="secondary"
+                            type="button"
+                            (onClick)="onCancle()"
+                        ></p-button>
+                    </div>
+                    
+
+            </div>
+
+
+
+        </form>
+    </div>
+
+</main>

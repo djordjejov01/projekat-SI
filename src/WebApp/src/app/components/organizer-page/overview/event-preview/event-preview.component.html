@@ -1,22 +1,22 @@
 <div id="data">
     <div id="fr">
         <div id="sit">
-            <p id="status">{{status}}</p>
-            <p id="time">{{time}}</p>
+            <p id="status">{{event.getStatus()}}</p>
+            <p id="time">{{event.getStartDateTime() | date: 'MM/dd/yyyy' }}</p>
         </div>
-        <img [src]="image" alt="">
+        <img [src]="event.getImage()" alt="">
     </div>
     <div id="info">
-        <p id="tt">{{title}}</p>
+        <p id="tt">{{event.getTitle()}}</p>
         <div class="in1">
             <i class="pi pi-users"></i>
-            <p>{{host}}</p>
+            <p>{{currentUser}}</p>
         </div>
         <div class="in1">
             <i class="pi pi-building"></i>
-            <p>{{location}}</p>
+            <p>{{event.getLocation()}}</p>
         </div>
         
     </div>
-    <button>{{"MANAGE" | translate}} <i class="pi pi-arrow-right"></i></button>
+    <button (click)="manageEvent(event)">{{"MANAGE" | translate}} <i class="pi pi-arrow-right"></i></button>
 </div>

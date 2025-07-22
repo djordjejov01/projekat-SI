@@ -14,7 +14,7 @@ import { OrganizerDtoResponse } from "../Interfaces/OrganizerDtoResponse";
 import { SuccessfulMessageResponse } from "../Interfaces/SuccessfulMessageResponse";
 import { CreatEventDto } from "../Models/CreateEventDto";
 import { EventApiResponse } from "../Interfaces/EventApiResponse";
-import { CategoryMap, Event } from "../Models/Event";
+import { CategoryMap, Event, StatusMap } from "../Models/Event";
 
 
 @Injectable({
@@ -68,7 +68,8 @@ export class ApiService{
                     event.numberOfPeople,      
                     organizer,
                     event.imageUrl,            
-                    event.isFree
+                    event.isFree,
+                    StatusMap[event.status] || 'Unknown'
                     );
                 })
             ),
