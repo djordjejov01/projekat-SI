@@ -7,22 +7,22 @@
     <div id="infocards">
         <div id="card">
             <p id="cardTitle">Ukupan broj događaja</p>
-            <p id="cardNum">{{allEvents?.length}}</p>
+            <p id="cardNum">{{dashboardMetrics?.totalEvents}}</p>
             <p id="cardDesc">Ukupan broj organizovanih događaja </p>
         </div>
         <div id="card">
             <p id="cardTitle">Ukupna zarada</p>
-            <p id="cardNum">{{allEvents?.length}}</p>
+            <p id="cardNum">{{dashboardMetrics?.totalRevenue}}</p>
             <p id="cardDesc">Ukupna zarada od svih događaja</p>
         </div>
         <div id="card">
             <p id="cardTitle">Broj prodatih karata</p>
-            <p id="cardNum">{{allEvents?.length}}</p>
+            <p id="cardNum">{{dashboardMetrics?.totalTicketsSold}}</p>
             <p id="cardDesc">Ukupan broj prodatih karata</p>
         </div>
         <div id="card">
             <p id="cardTitle">Broj razlicitih lokacija</p>
-            <p id="cardNum">{{allEvents?.length}}</p>
+            <p id="cardNum">{{dashboardMetrics?.uniqueLocations}}</p>
             <p id="cardDesc">Ukupan broj razlicitih lokacija</p>
         </div>
     </div>
@@ -33,12 +33,12 @@
                 <p-chart type="bar" [data]="data1" [options]="options1" class="bar" />
             </div>
             <div class="chart-box pad">
-                <p-chart type="pie" [data]="data3" [options]="options3" class="pad" />
+                <p-chart *ngIf="data2" type="pie" [data]="data2" [options]="options3" class="pad" />
             </div>
         </div>
         <div id="group">
             <div class="chart-box bar"><p-chart type="line" [data]="data1" [options]="options1" class="bar" /></div>
-            <div class="chart-box pad"><p-chart type="doughnut" [data]="data3" [options]="options3" class="pad" /></div>
+            <div class="chart-box pad"><p-chart  *ngIf="data3" type="doughnut" [data]="data3" [options]="options3" class="pad" /></div>
         </div>
 
 
@@ -153,7 +153,7 @@
                     <p-tableCheckbox [value]="event" />
                 </td>
                 <td>
-                    <img [src]="event.image" alt="Event image">
+                    <img [src]="event.getImage()" alt="Event image">
                 </td>
                 <td>
                     {{ event.title }}

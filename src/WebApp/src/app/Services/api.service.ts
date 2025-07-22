@@ -15,6 +15,9 @@ import { SuccessfulMessageResponse } from "../Interfaces/SuccessfulMessageRespon
 import { CreatEventDto } from "../Models/CreateEventDto";
 import { EventApiResponse } from "../Interfaces/EventApiResponse";
 import { CategoryMap, Event } from "../Models/Event";
+import { DashboardMetrics } from "../Interfaces/DashboardMetricsResponse";
+import { StatusMetrics } from "../Interfaces/StatusMetricsResponse";
+import { CategoryMetrics } from "../Interfaces/CategoryMetricsResponse";
 
 
 @Injectable({
@@ -79,7 +82,24 @@ export class ApiService{
     activateUser(userId: number, isActive: boolean = true) {
         return this.http.put(`${this.apiUrl}/Admin/users/${userId}/active?isActive=${isActive}`, {});
     }
-
+    getDashboardMetrics() : Observable<DashboardMetrics>
+    {
+        return this.http.get<DashboardMetrics>(`${this.apiUrl}/Organizer/dashboard-metrics`).pipe(
+            catchError(this.handleError)
+        );
+    }
+    getStatusMetrics() : Observable<StatusMetrics>
+    {
+        return this.http.get<StatusMetrics>(`${this.apiUrl}/Organizer/event-status-stats`).pipe(
+            catchError(this.handleError)
+        );
+    }
+    getCategoryMetrics() : Observable<CategoryMetrics>
+    {
+        return this.http.get<CategoryMetrics>(`${this.apiUrl}/Organizer/event-category-stats`).pipe(
+            catchError(this.handleError)
+        );
+    }
     getAllUsers(): Observable<User[]>{
         return this.http.get<UserApiResponse[]>(`${this.apiUrl}/Admin/users`).pipe(
             
