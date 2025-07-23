@@ -59,20 +59,35 @@ export default function LoginScreen() {
 
       const data = await response.json();
 
-      // 🔒 Proveri da li je korisnik MobileUser
-      // if (data.role !== 'MobileUser') {
-      //   console.log(data.role);
-      //   Alert.alert('Pristup odbijen', 'Dozvoljen je samo pristup korisnicima mobilne aplikacije.');
-      //   return;
-      // }
-
-      if (data.token) {
-        await AsyncStorage.setItem('token', data.token);
-        loadFavorites();
-        router.replace('./(tabs)/events');
-      } else {
+      if (!data.token) {
         Alert.alert(t('error'), t('noToken'));
+        return;
       }
+
+      // 🔐 Proveri rolu korisnika koristeći dobijeni token
+      const roleResponse = await fetch(`${API_URL}/User/role`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${data.token}`,
+        },
+      });
+
+      if (!roleResponse.ok) {
+        throw new Error('Greška pri proveri role');
+      }
+
+      const roleData = await roleResponse.text(); // Vraca string "MobileUser" itd.
+      
+
+      if (roleData !== '{"role":"MobileUser"}') {
+        Alert.alert('Pristup odbijen', 'Dozvoljen je samo pristup korisnicima mobilne aplikacije.');
+        return;
+      }
+
+      // ✅ Rola odgovara, sacuvaj token i nastavi
+      await AsyncStorage.setItem('token', data.token);
+      loadFavorites();
+      router.replace('./(tabs)/events');
     } catch (error: any) {
       Alert.alert(t('loginError'), error.message || t('genericError'));
     }
