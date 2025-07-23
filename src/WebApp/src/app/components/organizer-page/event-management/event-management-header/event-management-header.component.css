@@ -1,0 +1,94 @@
+.font-inter{
+    font-family: "Inter", sans-serif;
+}
+
+.font-archivo{
+    font-family: "Archivo", sans-serif;
+}
+
+/* First breadcrumb label */
+::ng-deep .p-breadcrumb .p-breadcrumb-list > li.p-breadcrumb-item:first-child .p-breadcrumb-item-label {
+  color: #8C8D8B !important;
+}
+
+/* First separator slash */
+::ng-deep .p-breadcrumb .p-breadcrumb-list > li.p-breadcrumb-separator:first-of-type > * {
+  display: none !important; /* hide original arrow */
+}
+
+::ng-deep .p-breadcrumb .p-breadcrumb-list > li.p-breadcrumb-separator:first-of-type::after {
+  content: " / ";
+  color: #8C8D8B !important;
+  font-weight: 600;
+  margin: 0 0.25rem;
+}
+
+/* All other breadcrumb labels */
+::ng-deep .p-breadcrumb .p-breadcrumb-list > li.p-breadcrumb-item:not(:first-child) .p-breadcrumb-item-label {
+  color: black !important;
+}
+
+/* All other separators */
+::ng-deep .p-breadcrumb .p-breadcrumb-list > li.p-breadcrumb-separator:not(:first-of-type) > * {
+  display: none !important; /* hide original arrows */
+}
+
+::ng-deep .p-breadcrumb .p-breadcrumb-list > li.p-breadcrumb-separator:not(:first-of-type)::after {
+  content: "/";
+  color: black !important;
+  font-weight: 600;
+}
+
+::ng-deep .p-breadcrumb {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+header{
+    padding-bottom: 2rem;
+}
+
+.title-buttons{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+}
+
+.buttons{
+    display: flex;
+    gap: 1rem;
+}
+
+.title-buttons h1{
+    font-size: 2.25rem;
+    font-weight: 700;
+}
+
+.edit-btn{
+    background-color: white;
+    border: 1px solid #EBEBEA;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: #242524;
+}
+
+.delete-btn{
+    background-color: #DE3B40;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: white;
+}
+
+.edit-btn i, .delete-btn i{
+    padding-right: 0.5rem;
+}
+
+.custom-hr {
+  height: 1px;
+  background-color: #EBEBEA;
+  border: none;
+}
+

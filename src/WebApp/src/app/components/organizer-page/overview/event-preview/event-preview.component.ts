@@ -1,16 +1,32 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+import { Event } from '../../../../Models/Event';
+import { DatePipe } from '@angular/common';
+import { AuthService } from '../../../../Services/auth.service';
 @Component({
   selector: 'app-event-preview',
-  imports: [TranslateModule],
+  imports: [TranslateModule,DatePipe],
   templateUrl: './event-preview.component.html',
   styleUrl: './event-preview.component.css'
 })
-export class EventPreviewComponent {
-  @Input() title: string;
-  @Input() status: string;
-  @Input() time: string;
-  @Input() host: string;
-  @Input() location: string;
-  @Input() image: string;
+export class EventPreviewComponent implements OnInit{
+  // @Input() title: string;
+  // @Input() status: string;
+  // @Input() time: string;
+  // @Input() host: string;
+  // @Input() location: string;
+  // @Input() image: string;
+  @Input() event : Event;
+  currentUser : string;
+
+  constructor(private router : Router, private authService : AuthService) {}
+
+  ngOnInit(): void {
+    this.currentUser = this.authService.getUserName();
+  }
+
+  manageEvent(event: Event){
+    this.router.navigate(['/organizer/event-management'], {state: {event}})
+  }
 }

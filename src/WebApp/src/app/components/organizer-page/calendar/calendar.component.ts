@@ -11,6 +11,7 @@ import { DatePipe } from '@angular/common';
 import { ApiService } from '../../../Services/api.service';
 import { AuthService } from '../../../Services/auth.service';
 import { Event } from '../../../Models/Event';
+import { CategoryService } from '../../../Services/EventCategoryService';
 
 
 @Component({
@@ -26,7 +27,8 @@ export class CalendarComponent implements OnInit{
     private router : Router,
     private datePipe : DatePipe,
     private apiService : ApiService,
-    private authService : AuthService) {}
+    private authService : AuthService,
+    private categoryService : CategoryService) {}
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin,timeGridPlugin,interactionPlugin,listPlugin],
@@ -37,7 +39,6 @@ export class CalendarComponent implements OnInit{
       return selectInfo.start >= today
     },
     selectMirror: true,
-    selectOverlap: false,
     select : this.handleDateSelect.bind(this),
     initialView: 'dayGridMonth',
     headerToolbar: {
@@ -68,7 +69,7 @@ export class CalendarComponent implements OnInit{
         end: event.getEndDateTime().toISOString(),
         allDay: this.isAllDayEvent(event.getStartDateTime(),event.getEndDateTime()),
         extendedProps: {
-          category: event.getCategory(),
+          category: this.categoryService.getCategoryName(event.getCategoryId()),
           location: event.getLocation(),
           organizer: event.getOrganizer()?.getUsername?.() || 'Unknown'
         }
