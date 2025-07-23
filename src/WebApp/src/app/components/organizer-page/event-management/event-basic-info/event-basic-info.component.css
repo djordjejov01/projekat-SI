@@ -218,3 +218,7 @@ main{
 .buttons button i{
     padding-right: 0.5rem;
 }
+
+button:hover{
+    cursor: pointer;
+}

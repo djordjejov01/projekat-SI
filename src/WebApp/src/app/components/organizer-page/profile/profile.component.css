@@ -111,6 +111,7 @@
     border-radius: 5px;
     pointer-events:all;
     user-select:none;
+    margin-top: 20px;
 }
 
 #upbut:hover{
@@ -133,6 +134,7 @@ input{
 #pass{
     display: flex;
     gap:120px;
+    margin-top: 100px;
 }
 
 #onepass{

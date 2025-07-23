@@ -11,10 +11,12 @@ import { AuthService } from '../../Services/auth.service';
 import { MessageService } from 'primeng/api';
 import { Toast } from 'primeng/toast';
 import { CategoryService } from '../../Services/EventCategoryService';
+import { ApiService } from '../../Services/api.service';
+import { OrganizerDto } from '../../Models/OrganizerDto';
 
 @Component({
   selector: 'app-organizer-page',
-  imports: [MenuBarComponent,RouterModule, FooterBar,ConfirmDialogModule,ToastModule,TranslateModule,Toast],
+  imports: [MenuBarComponent,RouterModule,ConfirmDialogModule,ToastModule,TranslateModule,Toast],
   templateUrl: './organizer-page.component.html',
   styleUrl: './organizer-page.component.css'
 })
@@ -26,10 +28,33 @@ export class OrganizerPageComponent implements AfterContentInit,OnInit{
     private messageService : MessageService,
     private authService : AuthService,
     private cd : ChangeDetectorRef,
-    private categoryService : CategoryService){}
+    private categoryService : CategoryService,
+    private apiService : ApiService){}
 
+    currOrganizer : OrganizerDto;
+    defaultImage = 'assets/default-picture.png';
+    previewUrl: string | ArrayBuffer | null = null;
     ngOnInit(): void {
       this.categoryService.loadCategories().subscribe();
+
+      this.apiService.getOrganizer(this.authService.getUserId()).subscribe({
+      
+              next:(response : OrganizerDto) => {
+                this.currOrganizer = response;
+                if(this.currOrganizer.getImage()!="https://localhost:7269/")
+                {
+                  this.previewUrl = this.currOrganizer.getImage();
+                }
+              },
+              error:(errorResponse) =>{
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: errorResponse.message,
+                    life: 3000 });
+              }
+      
+            })
     }
 
   ngAfterContentInit(): void {
