@@ -1,0 +1,9 @@
+<app-event-management-header 
+[eventTitle]="event.getTitle()" 
+[editMode]="editMode" 
+(editModeChange)="onToggleEditMode($event)"></app-event-management-header>
+
+<app-event-basic-info 
+[event]="event" 
+[editMode]="editMode"
+(cancleEdit)="onToggleEditMode(false)"></app-event-basic-info>

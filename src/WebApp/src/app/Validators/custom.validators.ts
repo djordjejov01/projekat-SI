@@ -8,16 +8,7 @@ export class CustomValidators{
 
         return password === confirm ? null : {passwordsDontMatch: true}
     }
-
-    // static startBeforeEndValidator(group: FormGroup): ValidationErrors | null {
-    //     const start = group.get('startDateTime')?.value;
-    //     const end = group.get('endDateTime')?.value;
-    //     if (start && end && new Date(start) >= new Date(end)) {
-    //     return { startBeforeEnd: true };
-    //     }
-    //     return null;
-    // }
-
+    
     static startBeforeEndDates(startKey : string, endKey: string) : ValidatorFn {
         return (group: AbstractControl) : ValidationErrors | null => {
 

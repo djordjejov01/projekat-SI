@@ -13,15 +13,14 @@ import { FileUpload } from 'primeng/fileupload';
 import { CustomValidators } from '../../../Validators/custom.validators';
 import { MessageService } from 'primeng/api';
 import { ActivatedRoute } from '@angular/router';
-import { TicketDto } from '../../../Models/TicketDto';
-import { CreatEventDto } from '../../../Models/CreateEventDto';
 import { ApiService } from '../../../Services/api.service';
 import { AuthService } from '../../../Services/auth.service';
-import { CategoryMap } from '../../../Models/Event';
 import { SelectModule } from 'primeng/select';
 import { IDeactivate } from '../../../Interfaces/IDeactivate';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
+import { CategoryService } from '../../../Services/EventCategoryService';
+import { FormValidationService } from '../../../Services/FormValidationService';
 
 
 @Component({
@@ -50,16 +49,22 @@ export class CreateEventComponent implements OnInit,IDeactivate{
     private route : ActivatedRoute,
     private apiService : ApiService,
     private authService : AuthService,
-    private confirmationDialogService : ConfirmationDialogService) {}
+    private confirmationDialogService : ConfirmationDialogService,
+    private categoryService : CategoryService,
+    private fromValidationService : FormValidationService) {}
 
   ngOnInit(): void {
 
-      this.minDate = new Date();
+    this.minDate = new Date();
 
-      this.categories = Object.entries(CategoryMap).map(([key,label]) => ({
-        label,
-        value: +key
-      }))
+    this.categoryService.loadCategoriesIfEmpty()
+      .pipe(take(1))
+      .subscribe(categories => {
+        this.categories = categories.map(cat => ({
+          label: cat.name,
+          value: cat.id
+        }));
+      });
 
       const currentLang = this.translateService.currentLang || 'en';
       if (currentLang === 'sr') {
@@ -204,104 +209,9 @@ export class CreateEventComponent implements OnInit,IDeactivate{
     return fieldName.replace(/([A-Z])/g, ' $1').replace(/^./, strr => strr.toUpperCase())
   }
 
-  showValidationErrors()
-  {
-    const errors: string [] = [];
-
-    Object.keys(this.eventForm.controls).forEach(field =>{
-      const control = this.eventForm.get(field);
-
-      if(control instanceof FormArray)
-      {
-        control.controls.forEach((group: AbstractControl, index: number) => {
-          if(group instanceof FormGroup)
-          {
-            Object.keys(group.controls).forEach(nestedField => {
-
-              const nestedControl = group.get(nestedField);
-              if(nestedControl && nestedControl.invalid && nestedControl.errors)
-              {
-                Object.keys(nestedControl.errors).forEach(errorKey => {
-
-                  let errorMsg = '';
-                  switch(errorKey)
-                  {
-                    case 'required': errorMsg = 'is required'; break;
-                    case 'min': errorMsg = `must be at least ${nestedControl.errors![errorKey].min}`; break;
-                    case 'whitespace': errorMsg = 'cannot be empty or just spaces'; break;
-                    default: errorMsg = errorKey;
-                  }
-
-                  errors.push(`*Ticket ${index +1} - ${this.toDisplayName(nestedField)} ${errorMsg}`)
-                });
-              }
-
-            });
-
-            if(group.errors){
-              Object.keys(group.errors).forEach(errorKey => {
-                let errorMsg = '';
-                switch(errorKey){
-                  case 'startBeforeEnd': errorMsg = 'Valid From must be before Valid Until'; break;
-                  default: errorMsg = errorKey;
-                }
-                errors.push(`*Ticket ${index + 1} - ${errorMsg}`)
-              });
-            }
-
-          }
-        });    
-
-        return;
-      }
-
-      if(control && control.invalid)
-      {
-        const fieldErrors = control.errors;
-        if(fieldErrors)
-        {
-          Object.keys(fieldErrors).forEach(errorKey =>{
-
-            let errorMsg = '';
-
-            switch(errorKey)
-            {
-              case 'required': errorMsg = 'is required'; break;
-              case 'min' : errorMsg = `must be at least ${fieldErrors[errorKey].min}`; break;
-              case 'max': errorMsg = `must be at most ${fieldErrors[errorKey].max}`; break;
-              case 'pastDate': errorMsg = 'cannot be in the past'; break;
-              case 'whitespace': errorMsg = 'cannot be empty or just spaces'; break;
-              default: errorMsg = errorKey;
-            }
-
-            errors.push(`*${this.toDisplayName(field)} - ${errorMsg}`)
-          });
-        }
-      }
-    });
-
-    if(this.eventForm.errors){
-      Object.keys(this.eventForm.errors).forEach(errorKey =>{
-        let errorMsg = '';
-
-        switch(errorKey){
-          case 'startBeforeEnd': errorMsg = 'Start Date Time must be before End Date Time'; break;
-          default: errorMsg = errorKey;
-        }
-
-        errors.push(`*Form - ${errorMsg}`);
-      });
-    }
-
-    const summary = 'Form fields are not valid:';
-    const detail = errors.join('\n')
-
-    this.messageService.add({ severity: 'error', summary, detail, sticky: true })
-  }
-
 submitForm(): void {
   if (this.eventForm.invalid) {
-    this.showValidationErrors();
+    this.fromValidationService.showValidationErrors(this.eventForm, 'Create Event');
     return;
   }
 

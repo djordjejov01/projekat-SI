@@ -13,4 +13,5 @@ export interface EventApiResponse {
   organizer: UserApiResponse | null;
   imageUrl: string;
   isFree: boolean;
+  status: number
 }
