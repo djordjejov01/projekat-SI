@@ -30,6 +30,7 @@ export class OrganizerDto{
         }
 
         getImage() : string {
-            return this.image;
+            const backendBaseUrl = 'https://localhost:7269';
+            return `${backendBaseUrl}/${this.image}`;
         }
 }

@@ -32,6 +32,7 @@ import { StatusMetrics } from '../../../Interfaces/StatusMetricsResponse';
 import { CategoryMetrics } from '../../../Interfaces/CategoryMetricsResponse';
 import { CategoryService } from '../../../Services/EventCategoryService';
 import { MonthlyMetrics } from '../../../Interfaces/MonthlyMetricsResponse';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-events',
@@ -43,21 +44,13 @@ import { MonthlyMetrics } from '../../../Interfaces/MonthlyMetricsResponse';
 export class EventsComponent implements OnInit {
 
   selectedCategories: any[] = [];
+  categories : any[] = [];
   selectedStatus: any[] = [];
-  categories = [
-    { name: 'Music', value: 'Music' },
-    { name: 'Sports', value: 'Sports' },
-    { name: 'Entertainment', value: 'Entertainment' },
-    { name: 'Protest', value: 'Protest' },
-    { name: 'Charity', value: 'Charity' },
-    { name: 'Business', value: 'Business' },
-    { name: 'Culture', value: 'Culture' },
-    { name: 'Other', value: 'Other' }
-  ];
+        
   statuses = [
-    { name: "Draft", value: "Draft" },
-    { name: "Published", value: "Published" },
-    { name: "Canceled", value: "Canceled" }
+    { name: "Draft", value: 0 },
+    { name: "Published", value: 1 },
+    { name: "Canceled", value: 2 }
   ];
   onRoleFilterChange(selectedOptions: any[], filterFn: (val: any) => void) {
     this.selectedCategories = selectedOptions || [];
@@ -78,7 +71,7 @@ export class EventsComponent implements OnInit {
   searchValue: string;
   currUser: string;
   constructor(private apiService: ApiService, private authService: AuthService, private messageService: MessageService,
-    private router: Router, private catSer: CategoryService) { }
+    private router: Router, private catSer: CategoryService, private categoryService : CategoryService) { }
   clear(table: Table) {
     table.clear();
     this.selectedEvents = [];
@@ -226,6 +219,17 @@ export class EventsComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.categoryService.loadCategoriesIfEmpty()
+        .pipe(take(1))
+        .subscribe(categories => {
+          this.categories = categories.map(cat => ({
+            name: cat.name,
+            value: cat.id
+          }));
+        });
+    console.log("KER");
+    console.log(this.categories);
     this.currUser = this.authService.getUserName();
     this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe({
 

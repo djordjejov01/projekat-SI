@@ -24,7 +24,7 @@ export class OverviewComponent implements OnInit {
   currUser : string;
   ngOnInit(): void {
       this.currUser = this.authService.getUserName();
-      this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe({
+      this.apiService.getUpcomingOrganizerEvents(this.authService.getUserId()).subscribe({
       
               next:(response : Event[]) => {
                 this.allEvents = response;

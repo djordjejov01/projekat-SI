@@ -10,7 +10,7 @@
             </select>
             <button (click)="onLogoutClick()">{{ 'LOGOUT' | translate }}</button>
             <img src="./assets/bell.svg" alt="">
-            <img src="./assets/A1.jpg" alt="" id="pfp">
+            <img [src]="previewUrl || defaultImage" alt="profile picture" id="pfp">
         </div>
     </div>
     <div id="page">

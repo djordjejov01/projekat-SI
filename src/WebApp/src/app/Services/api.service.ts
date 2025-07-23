@@ -22,6 +22,7 @@ import {StatusMap } from "../Models/Event";
 import { EventCategoryApiResponse } from "../Interfaces/EventCategoryApiResponse";
 import { UpdatEventDto } from "../Models/UpdateEventDto";
 import { MonthlyMetrics } from "../Interfaces/MonthlyMetricsResponse";
+import { ChangePasswordDto } from "../Models/ChangePasswordDto";
 
 
 @Injectable({
@@ -38,7 +39,11 @@ export class ApiService{
             catchError(this.handleError)
         )
     }
-
+    changeOrganizerPicture(formData : FormData){
+        return this.http.post(`${this.apiUrl}/Organizer/change-organizer-picture`,formData).pipe(
+            catchError(this.handleError)
+        )
+    }
     updateEvent(data : UpdatEventDto, eventId : number) : Observable<EventApiResponse>{
 
         return this.http.put<EventApiResponse>(`${this.apiUrl}/Organizer/events/${eventId}`,data).pipe(
@@ -112,6 +117,51 @@ export class ApiService{
             catchError(this.handleError)
         );
     }
+
+    getUpcomingOrganizerEvents(organizerId : number) : Observable<Event[]> {
+        return this.http.get<EventApiResponse[]>(`${this.apiUrl}/Organizer/upcoming-events?id=${organizerId}`).pipe(
+            map(data => 
+                data.map(event => {
+                    console.log(data)
+                    const organizer = event.organizer
+                    ?  new User(
+                        event.organizer.userId,
+                        event.organizer.username,
+                        event.organizer.email,
+                        UserRoleMap[event.organizer.role] || 'Unknown',
+                        new Date(event.organizer.creationTime),
+                        event.organizer.isActive,
+                        event.organizer.lastLoginTime ? new Date(event.organizer.lastLoginTime) : null,
+                        event.organizer.password,
+                        event.organizer.firstName,
+                        event.organizer.lastName,
+                        event.organizer.language,
+                        event.organizer.phoneNumber,
+                        event.organizer.profilePicture
+                    ) : null
+                    
+                    return new Event(
+                    event.eventID,
+                    event.organizerID, 
+                    event.title,
+                    event.category,
+                    event.description,
+                    event.location,
+                    new Date(event.startDate), 
+                    new Date(event.endDate),   
+                    event.numberOfPeople,      
+                    organizer,
+                    event.imageUrl,            
+                    event.isFree,
+                    event.status
+                    );
+                })
+            ),
+            catchError(this.handleError)
+        );
+    }
+
+
 
     activateUser(userId: number, isActive: boolean = true) {
         return this.http.put(`${this.apiUrl}/Admin/users/${userId}/active?isActive=${isActive}`, {});
@@ -201,8 +251,19 @@ export class ApiService{
         )
     }
 
-    updateOrg(data : OrganizerDto, newP : string): Observable<string>{
-        return this.http.post<SuccessfulMessageResponse>(`${this.apiUrl}/Organizer/update-organizer?newPassword=${newP}`,data).pipe(
+
+    changeOrgPass(data : ChangePasswordDto)
+    {
+        return this.http.put(`${this.apiUrl}/User/change-password`, data, { responseType: 'text' as const }).pipe(
+  catchError(this.handleError)
+);
+
+    }
+
+
+
+    updateOrg(data : OrganizerDto): Observable<string>{
+        return this.http.post<SuccessfulMessageResponse>(`${this.apiUrl}/Organizer/update-organizer`,data).pipe(
             map(data => data.message),
             catchError(this.handleError)
         );

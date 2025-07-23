@@ -9,9 +9,9 @@
     align-items: center;
 }
 #pfp{
-    max-width: 30px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background-color: rgb(214, 178, 248);
 }
 main{
 display: flex;
