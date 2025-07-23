@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Helpers;
 using Backend.Services;
+using System.Globalization;
 
 namespace Backend.Controllers
 {
@@ -21,7 +22,7 @@ namespace Backend.Controllers
         private readonly IWebHostEnvironment _env;
 
 
-        public OrganizerController(AppDbContext context,IOrganizerService organizerService, IWebHostEnvironment env)
+        public OrganizerController(AppDbContext context, IOrganizerService organizerService, IWebHostEnvironment env)
         {
             _context = context;
             _organizerService = organizerService;
@@ -39,13 +40,13 @@ namespace Backend.Controllers
                 PhoneNumber = o.PhoneNumber,
                 Image = o.Image
             }).FirstOrDefault();
-            if(Organizer is not null)
+            if (Organizer is not null)
                 return Ok(Organizer);
             return BadRequest(new { message = "Organizer with that ID does not exist." });
         }
         [HttpPost("change-organizer-picture")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadOrganizerPhoto([FromForm]UploadImageDto model)
+        public async Task<IActionResult> UploadOrganizerPhoto([FromForm] UploadImageDto model)
         {
             string ImageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
             Organizer o = _context.Organizers.Where(o => o.Id == model.Id).First();
@@ -58,28 +59,28 @@ namespace Backend.Controllers
             return Ok();
         }
         [HttpPost("update-organizer")]
-        public async Task<IActionResult> UpdateOrganizer([FromBody] OrganizerDto model, string newPassword)
+        public async Task<IActionResult> UpdateOrganizer([FromBody] OrganizerDto model)
         {
             var organizer = _context.Organizers.Where(o => o.Id == model.Id).FirstOrDefault();
-            
+
             if (organizer is null)
             {
                 return BadRequest(new { message = "Organizer with that ID does not exist." });
             }
-            
+
             if (model.Name != organizer.Name && !string.IsNullOrEmpty(model.Name))
                 organizer.Name = model.Name;
 
             if (model.Username != organizer.Username)
             {
-                if(_context.Organizers.Any(o => o.Username == model.Username))
+                if (_context.Organizers.Any(o => o.Username == model.Username))
                 {
                     return BadRequest(new { message = "Username already exists." });
                 }
                 organizer.Username = model.Username;
-                
+
             }
-            
+
             if (model.Email != organizer.Email)
             {
                 if (!CommonHelpers.IsEmailInValidForm(model.Email))
@@ -92,7 +93,7 @@ namespace Backend.Controllers
                 }
                 organizer.Email = model.Email;
             }
-            
+
             if (model.PhoneNumber != organizer.PhoneNumber)
             {
                 if (!CommonHelpers.IsPhoneNumberValid(model.PhoneNumber))
@@ -105,21 +106,10 @@ namespace Backend.Controllers
                 }
                 organizer.PhoneNumber = model.PhoneNumber;
             }
-            
-            var newHash = CommonHelpers.HashPassword(newPassword);
-            
-            if(newHash != _context.Users.Where(o => o.UserId == model.Id).FirstOrDefault().Password) // NOTE: ovaj deo je zahtevan u tasku #45 - 2 user je prakticno pri svakoj promeni da menja sifru sem ako nije direktno ubacena cookies
-            {
-                if (!CommonHelpers.IsPasswordStrong(newPassword))
-                {
-                    return BadRequest(new { message = "Password must be at least 8 characters long, contain one uppercase letter, one lowercase letter, and one digit." });
-                }
-                _context.Users.Where(o => o.UserId == model.Id).FirstOrDefault().Password = newHash;
-            }
-            
+
             await _context.SaveChangesAsync();
-            
-            return Ok(new {message = "User data successfully changed!"});
+
+            return Ok(new { message = "User data successfully changed!" });
         }
         [HttpGet("events")]
         public async Task<IActionResult> GetEventsForOrganier(int id)
@@ -131,8 +121,8 @@ namespace Backend.Controllers
 
             }
             catch (Exception ex)
-            { 
-                return BadRequest(new { message = ex.Message }); 
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
         [HttpGet("upcoming-events")]
@@ -256,6 +246,100 @@ namespace Backend.Controllers
                 UniqueLocations = uniqueLocations
             };
             return Ok(result);
+        }
+
+        [HttpGet("subevents-activities")]
+        public async Task<IActionResult> GetSubeventsAndActivities(int eventId)
+        {
+            try
+            {
+                EventsSubeventsActivitiesDto subeventsActivitiesDto = await _organizerService.GetEventSubeventsActivities(eventId);
+                return Ok(subeventsActivitiesDto);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+        [HttpPost("activity")]
+        public async Task<IActionResult> CreateActivity([FromBody] ActivityDto dto)
+        {
+            try
+            {
+                await _organizerService.CreateActivity(dto);
+                return Created("Activity created successfully.", null);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("monthly-stats")]
+        public async Task<IActionResult> GetMonthlyStats(int organizerId,int? year = null) 
+        {
+            try
+            {
+                int targetYear = year ?? DateTime.Now.Year;
+
+                var eventIds = await _context.Events
+                    .Where(e => e.OrganizerID == organizerId
+                             && e.StartDate.Year == targetYear)
+                    .Select(e => e.EventID)
+                    .ToListAsync();
+
+                var ticketInfos = await _context.Tickets
+                    .Where(t => eventIds.Contains(t.EventID))
+                    .Select(t => new { t.TicketID, t.Price })
+                    .ToListAsync();
+
+                var ticketIds = ticketInfos.Select(t => t.TicketID).ToList();
+
+                var userTicketInfos = await _context.UserTickets
+                    .Where(ut => ticketIds.Contains(ut.TicketID))
+                    .Select(ut => new { ut.TicketID, Month = ut.PurchasedAt.Month })
+                    .ToListAsync();
+
+                var joined = from ut in userTicketInfos
+                             join ti in ticketInfos on ut.TicketID equals ti.TicketID
+                             select new { ut.Month, ti.Price };
+
+                var monthlyData = joined
+                    .GroupBy(x => x.Month)
+                    .Select(g => new
+                    {
+                        MonthNumber = g.Key,
+                        Visitors = g.Count(),
+                        Revenue = g.Sum(x => x.Price)
+                    })
+                    .ToList();
+
+                var monthNames = CultureInfo
+                    .CurrentCulture
+                    .DateTimeFormat
+                    .MonthNames
+                    .Take(12)
+                    .ToArray();
+
+                var result = Enumerable.Range(1, 12)
+                    .Select(m => new OrganizerStatsDto
+                    {
+                        Month = monthNames[m - 1],
+                        Visitors = monthlyData
+                                    .FirstOrDefault(x => x.MonthNumber == m)?
+                                    .Visitors ?? 0,
+                        Revenue = monthlyData
+                                    .FirstOrDefault(x => x.MonthNumber == m)?
+                                    .Revenue ?? 0m
+                    })
+                    .ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }
