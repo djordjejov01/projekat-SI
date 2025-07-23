@@ -120,7 +120,7 @@ export default function ProfileScreen() {
       </View>
 
       <View style={styles.rowContainer}>
-        <TouchableOpacity style={styles.statBox} onPress={() => router.push('../profile/ticketsHistory')}>
+        <TouchableOpacity style={styles.statBox} onPress={() => router.push('../profile/myTickets')}>
           <Text style={styles.statNumber}>{ticketsCount}</Text>
           <Text style={styles.statLabel}>{t('profile.tickets')}</Text>
         </TouchableOpacity>
