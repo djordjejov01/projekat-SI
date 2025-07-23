@@ -9,5 +9,6 @@ namespace Backend.Services
         List<Event> GetUpcomingEventsForOrganier(int id);
         Task<EventsSubeventsActivitiesDto> GetEventSubeventsActivities(int id);
         Task CreateEventForOrganizer(CreateEventDto model, int organizerID);
+        Task CreateActivity(ActivityDto mode);
     }
 }

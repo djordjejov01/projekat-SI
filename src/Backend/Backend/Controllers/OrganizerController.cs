@@ -21,7 +21,7 @@ namespace Backend.Controllers
         private readonly IWebHostEnvironment _env;
 
 
-        public OrganizerController(AppDbContext context,IOrganizerService organizerService, IWebHostEnvironment env)
+        public OrganizerController(AppDbContext context, IOrganizerService organizerService, IWebHostEnvironment env)
         {
             _context = context;
             _organizerService = organizerService;
@@ -39,13 +39,13 @@ namespace Backend.Controllers
                 PhoneNumber = o.PhoneNumber,
                 Image = o.Image
             }).FirstOrDefault();
-            if(Organizer is not null)
+            if (Organizer is not null)
                 return Ok(Organizer);
             return BadRequest(new { message = "Organizer with that ID does not exist." });
         }
         [HttpPost("change-organizer-picture")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadOrganizerPhoto([FromForm]UploadImageDto model)
+        public async Task<IActionResult> UploadOrganizerPhoto([FromForm] UploadImageDto model)
         {
             string ImageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
             Organizer o = _context.Organizers.Where(o => o.Id == model.Id).First();
@@ -61,25 +61,25 @@ namespace Backend.Controllers
         public async Task<IActionResult> UpdateOrganizer([FromBody] OrganizerDto model)
         {
             var organizer = _context.Organizers.Where(o => o.Id == model.Id).FirstOrDefault();
-            
+
             if (organizer is null)
             {
                 return BadRequest(new { message = "Organizer with that ID does not exist." });
             }
-            
+
             if (model.Name != organizer.Name && !string.IsNullOrEmpty(model.Name))
                 organizer.Name = model.Name;
 
             if (model.Username != organizer.Username)
             {
-                if(_context.Organizers.Any(o => o.Username == model.Username))
+                if (_context.Organizers.Any(o => o.Username == model.Username))
                 {
                     return BadRequest(new { message = "Username already exists." });
                 }
                 organizer.Username = model.Username;
-                
+
             }
-            
+
             if (model.Email != organizer.Email)
             {
                 if (!CommonHelpers.IsEmailInValidForm(model.Email))
@@ -92,7 +92,7 @@ namespace Backend.Controllers
                 }
                 organizer.Email = model.Email;
             }
-            
+
             if (model.PhoneNumber != organizer.PhoneNumber)
             {
                 if (!CommonHelpers.IsPhoneNumberValid(model.PhoneNumber))
@@ -105,10 +105,10 @@ namespace Backend.Controllers
                 }
                 organizer.PhoneNumber = model.PhoneNumber;
             }
-            
+
             await _context.SaveChangesAsync();
-            
-            return Ok(new {message = "User data successfully changed!"});
+
+            return Ok(new { message = "User data successfully changed!" });
         }
         [HttpGet("events")]
         public async Task<IActionResult> GetEventsForOrganier(int id)
@@ -120,8 +120,8 @@ namespace Backend.Controllers
 
             }
             catch (Exception ex)
-            { 
-                return BadRequest(new { message = ex.Message }); 
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
         [HttpGet("upcoming-events")]
@@ -255,7 +255,20 @@ namespace Backend.Controllers
                 EventsSubeventsActivitiesDto subeventsActivitiesDto = await _organizerService.GetEventSubeventsActivities(eventId);
                 return Ok(subeventsActivitiesDto);
             }
-            catch(Exception ex)
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+        [HttpPost("activity")]
+        public async Task<IActionResult> CreateActivity([FromBody] ActivityDto dto)
+        {
+            try
+            {
+                await _organizerService.CreateActivity(dto);
+                return Created("Activity created successfully.", null);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }

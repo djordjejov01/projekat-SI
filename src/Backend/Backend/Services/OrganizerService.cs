@@ -54,7 +54,7 @@ namespace Backend.Services
             {
                 imageName = await CommonHelpers.SaveImageAsync(model.ImageFile, _env);
             }
-
+            bool isFree = model.Tickets == null || !model.Tickets.Any() || model.Tickets.All(t => t.Price == 0);
             var newEvent = new Event
             {
                 Title = model.Title,
@@ -67,7 +67,8 @@ namespace Backend.Services
                 OrganizerID = organizerID,
                 Category = model.Category,
                 Status = EventStatus.Draft,
-                ParentEventId = model.ParentEventId
+                ParentEventId = model.ParentEventId,
+                isFree = isFree
             };
             _context.Events.Add(newEvent);
             try
@@ -184,10 +185,33 @@ namespace Backend.Services
                     Title = a.Description,
                     StartDate = a.StartTime,
                     EndDate = a.EndTime,
-                    Description = a.Description
+                    Description = a.Description,
+                    Category = a.Category
                 });
             }
             return EventSubeventsActivitiesDto;
+        }
+        public Task CreateActivity(ActivityDto activity)
+        {
+            if(activity == null) 
+                throw new ArgumentNullException(nameof(activity), "Activity cannot be null.");
+            EventActivity e = new EventActivity
+            {
+                Description = activity.Description,
+                StartTime = activity.StartDate,
+                EndTime = activity.EndDate,
+                Category = activity.Category,
+                EventID = activity.EventId
+            };
+            _context.EventActivities.Add(e);
+            try
+            {
+                return _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }
