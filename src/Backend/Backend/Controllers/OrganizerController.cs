@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Helpers;
 using Backend.Services;
+using System.Globalization;
 
 namespace Backend.Controllers
 {
@@ -267,6 +268,73 @@ namespace Backend.Controllers
             {
                 await _organizerService.CreateActivity(dto);
                 return Created("Activity created successfully.", null);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("monthly-stats")]
+        public async Task<IActionResult> GetMonthlyStats(int organizerId,int? year = null) 
+        {
+            try
+            {
+                int targetYear = year ?? DateTime.Now.Year;
+
+                var eventIds = await _context.Events
+                    .Where(e => e.OrganizerID == organizerId
+                             && e.StartDate.Year == targetYear)
+                    .Select(e => e.EventID)
+                    .ToListAsync();
+
+                var ticketInfos = await _context.Tickets
+                    .Where(t => eventIds.Contains(t.EventID))
+                    .Select(t => new { t.TicketID, t.Price })
+                    .ToListAsync();
+
+                var ticketIds = ticketInfos.Select(t => t.TicketID).ToList();
+
+                var userTicketInfos = await _context.UserTickets
+                    .Where(ut => ticketIds.Contains(ut.TicketID))
+                    .Select(ut => new { ut.TicketID, Month = ut.PurchasedAt.Month })
+                    .ToListAsync();
+
+                var joined = from ut in userTicketInfos
+                             join ti in ticketInfos on ut.TicketID equals ti.TicketID
+                             select new { ut.Month, ti.Price };
+
+                var monthlyData = joined
+                    .GroupBy(x => x.Month)
+                    .Select(g => new
+                    {
+                        MonthNumber = g.Key,
+                        Visitors = g.Count(),
+                        Revenue = g.Sum(x => x.Price)
+                    })
+                    .ToList();
+
+                var monthNames = CultureInfo
+                    .CurrentCulture
+                    .DateTimeFormat
+                    .MonthNames
+                    .Take(12)
+                    .ToArray();
+
+                var result = Enumerable.Range(1, 12)
+                    .Select(m => new OrganizerStatsDto
+                    {
+                        Month = monthNames[m - 1],
+                        Visitors = monthlyData
+                                    .FirstOrDefault(x => x.MonthNumber == m)?
+                                    .Visitors ?? 0,
+                        Revenue = monthlyData
+                                    .FirstOrDefault(x => x.MonthNumber == m)?
+                                    .Revenue ?? 0m
+                    })
+                    .ToList();
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
