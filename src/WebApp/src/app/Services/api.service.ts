@@ -14,13 +14,14 @@ import { OrganizerDtoResponse } from "../Interfaces/OrganizerDtoResponse";
 import { SuccessfulMessageResponse } from "../Interfaces/SuccessfulMessageResponse";
 import { CreatEventDto } from "../Models/CreateEventDto";
 import { EventApiResponse } from "../Interfaces/EventApiResponse";
-import { CategoryMap, Event } from "../Models/Event";
+import { Event } from "../Models/Event";
 import { DashboardMetrics } from "../Interfaces/DashboardMetricsResponse";
 import { StatusMetrics } from "../Interfaces/StatusMetricsResponse";
 import { CategoryMetrics } from "../Interfaces/CategoryMetricsResponse";
-import { Event, StatusMap } from "../Models/Event";
+import {StatusMap } from "../Models/Event";
 import { EventCategoryApiResponse } from "../Interfaces/EventCategoryApiResponse";
 import { UpdatEventDto } from "../Models/UpdateEventDto";
+import { MonthlyMetrics } from "../Interfaces/MonthlyMetricsResponse";
 
 
 @Injectable({
@@ -59,6 +60,15 @@ export class ApiService{
             catchError(this.handleError)
         );
     }
+
+
+    getMonthlyMetrics(organizerId : number, year : number) : Observable<MonthlyMetrics[]>{
+        return this.http.get<MonthlyMetrics[]>(`${this.apiUrl}/Organizer/monthly-stats?organizerId=${organizerId}&year=${year}`).pipe(
+            catchError(this.handleError)
+        );
+    }
+
+
 
     getOrganizerEvents(organizerId : number) : Observable<Event[]> {
         return this.http.get<EventApiResponse[]>(`${this.apiUrl}/Organizer/events?id=${organizerId}`).pipe(

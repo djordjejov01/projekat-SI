@@ -30,15 +30,19 @@
     <div id="graphs">
         <div id="group">
             <div class="chart-box bar">
-                <p-chart type="bar" [data]="data1" [options]="options1" class="bar" />
+                <p-chart *ngIf="data1" type="bar" [data]="data1" [options]="options1" class="bar" />
             </div>
             <div class="chart-box pad">
                 <p-chart *ngIf="data2" type="pie" [data]="data2" [options]="options3" class="pad" />
             </div>
         </div>
         <div id="group">
-            <div class="chart-box bar"><p-chart type="line" [data]="data1" [options]="options1" class="bar" /></div>
-            <div class="chart-box pad"><p-chart  *ngIf="data3" type="doughnut" [data]="data3" [options]="options3" class="pad" /></div>
+            <div class="chart-box bar">
+                <p-chart *ngIf="data4" type="line" [data]="data4" [options]="options1" class="bar" />
+            </div>
+            <div class="chart-box pad">
+                <p-chart  *ngIf="data3" type="doughnut" [data]="data3" [options]="options3" class="pad" />
+            </div>
         </div>
 
 
@@ -165,10 +169,10 @@
                     {{ event.endDateTime | date: 'dd/MM/yyyy' }}
                 </td>
                 <td>
-                    {{ event.category }}
+                    {{ getCatName(event.category) }}
                 </td>
                 <td>
-                    Status
+                    {{ event.getStatusLabel() }}
                 </td>
                 <td>
                     {{ event.location }}

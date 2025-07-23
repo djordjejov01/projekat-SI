@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, numberAttribute, OnInit } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
@@ -30,6 +30,8 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DashboardMetrics } from '../../../Interfaces/DashboardMetricsResponse';
 import { StatusMetrics } from '../../../Interfaces/StatusMetricsResponse';
 import { CategoryMetrics } from '../../../Interfaces/CategoryMetricsResponse';
+import { CategoryService } from '../../../Services/EventCategoryService';
+import { MonthlyMetrics } from '../../../Interfaces/MonthlyMetricsResponse';
 
 @Component({
   selector: 'app-events',
@@ -72,10 +74,11 @@ export class EventsComponent implements OnInit {
   selectedEvents: Event[];
   dashboardMetrics: DashboardMetrics;
   statusMetrics: StatusMetrics;
+  monthlyMetrics: MonthlyMetrics[];
   searchValue: string;
   currUser: string;
   constructor(private apiService: ApiService, private authService: AuthService, private messageService: MessageService,
-    private router: Router) { }
+    private router: Router, private catSer: CategoryService) { }
   clear(table: Table) {
     table.clear();
     this.selectedEvents = [];
@@ -89,21 +92,7 @@ export class EventsComponent implements OnInit {
     { name: 'Organizer', value: 'Organizer' },
     { name: 'Supplier', value: 'Supplier' },
   ];
-  data1 = {
-    labels: [
-      'Januar', 'Februar', 'Mart', 'April', 'Maj', 'Jun',
-      'Jul', 'Avgust', 'Septembar', 'Oktobar', 'Novembar', 'Decembar'
-    ],
-    datasets: [
-      {
-        label: 'Broj događaja',
-        backgroundColor: 'rgba(100,106,232, 0.2)',
-        borderColor: 'rgb(139, 92, 246)',
-        borderWidth: 1,
-        data: [1, 3, 5, 2, 6, 3, 7, 10, 3, 9, 7, 4]
-      }
-    ]
-  };
+
 
   options1 = {
     responsive: true,
@@ -191,10 +180,16 @@ export class EventsComponent implements OnInit {
   };
   data3;
   data2;
+  data1;
+  data4;
+  data4Labels: any[] = [];
+  data1Labels: any[] = [];
   data3Labels: any[] = [];
   data2Labels: any[] = [];
   data3Data: any[] = [];
   data2Data: any[] = [];
+  data1Data: any[] = [];
+  data4Data: any[] = [];
   options3 = {
     responsive: true,
     plugins: {
@@ -225,6 +220,11 @@ export class EventsComponent implements OnInit {
   deleteEvent(eID: number) {
     alert(eID);
   }
+
+  getCatName(catID: number) {
+    return this.catSer.getCategoryName(catID);
+  }
+
   ngOnInit() {
     this.currUser = this.authService.getUserName();
     this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe({
@@ -243,6 +243,9 @@ export class EventsComponent implements OnInit {
       }
 
     })
+
+
+
     this.apiService.getDashboardMetrics().subscribe({
       next: (response: DashboardMetrics) => {
         this.dashboardMetrics = response;
@@ -257,6 +260,64 @@ export class EventsComponent implements OnInit {
         });
       }
     })
+
+    this.apiService.getMonthlyMetrics(this.authService.getUserId(), 2025).subscribe({
+      next: (response: MonthlyMetrics[]) => {
+        this.monthlyMetrics = response;
+        console.log(response);
+        for (const [key, value] of Object.entries(response)) {
+          for (const [key1, value1] of Object.entries(value)) {
+            if(key1 == "month")
+            {
+              this.data1Labels.push(value1);
+              this.data4Labels.push(value1);
+            }
+            if(key1 == "visitors")
+            {
+              this.data1Data.push(value1);
+            }
+            if(key1 == "revenue")
+            {
+              this.data4Data.push(value1);
+            }
+        }
+        }
+
+        this.data1 = {
+          labels: this.data1Labels,
+          datasets: [
+            {
+              label: 'Prihod',
+              backgroundColor: 'rgba(100,106,232, 0.2)',
+              borderColor: 'rgb(139, 92, 246)',
+              borderWidth: 1,
+              data: this.data1Data
+            }
+          ]
+        };
+        this.data4 = {
+          labels: this.data4Labels,
+          datasets: [
+            {
+              label: 'Posetioci',
+              backgroundColor: 'rgba(100,106,232, 0.2)',
+              borderColor: 'rgb(139, 92, 246)',
+              borderWidth: 1,
+              data: this.data4Data
+            }
+          ]
+        };
+      },
+      error: (errorResponse) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: errorResponse.message,
+          life: 3000
+        });
+      }
+    })
+
 
     this.apiService.getStatusMetrics().subscribe({
       next: (response: StatusMetrics) => {
