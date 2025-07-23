@@ -213,7 +213,8 @@ namespace Backend.Controllers
                 Category = eventEntity.Category,
                 Capacity = eventEntity.NumberOfPeople,
                 AttendingCount = attendingCount,
-                ImageUrl = eventEntity.ImageUrl
+                ImageUrl = eventEntity.ImageUrl,
+                ParentEventId=eventEntity.ParentEventId
             };
 
             return Ok(dto);
