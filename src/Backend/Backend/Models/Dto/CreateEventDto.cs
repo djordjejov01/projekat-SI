@@ -28,6 +28,8 @@ namespace Backend.Models.Dto
         public IFormFile? ImageFile { get; set; }
 
         public List<TicketDto>? Tickets { get; set; }
+        public int ParentEventId { get; set; } = 0;
+
     }
     public class TicketDto
     {

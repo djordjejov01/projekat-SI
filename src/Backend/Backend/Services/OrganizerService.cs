@@ -65,7 +65,8 @@ namespace Backend.Services
                 ImageUrl = imageName ?? "images/default-image.png",
                 OrganizerID = organizerID,
                 Category = model.Category,
-                Status = EventStatus.Draft
+                Status = EventStatus.Draft,
+                ParentEventId = model.ParentEventId
             };
             _context.Events.Add(newEvent);
             try

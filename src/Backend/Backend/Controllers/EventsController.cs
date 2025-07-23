@@ -45,7 +45,6 @@ namespace Backend.Controllers
 
             return Ok(events);
         }
-
         [AllowAnonymous]
         [HttpGet("upcomingEvents")]
         public async Task<ActionResult<IEnumerable<EventListDto>>> GetUpcomingEvents()
