@@ -34,17 +34,39 @@
 
                 <div class="capacity">
                     <i class="pi pi-users" style="color: #636AE8"></i>
-                    <span class="font-inter">{{ event.getCapacity() }} Attendess</span>
+                    <span class="font-inter">{{ event.getCapacity() === -1 ? 'Unlimited' :  event.getCapacity()}} Attendess</span>
                 </div>
 
             </div>
+
+             <p-fileUpload
+                #fileUploader
+                mode="basic"
+                maxFileSize="1000000"
+                [customUpload]="true"
+                [auto]="true"
+                accept="image/*"
+                [showUploadButton]="false"
+                [showCancelButton]="false"
+                styleClass="hidden"
+                (uploadHandler)="onImageUpload($event)"
+            ></p-fileUpload>
+
+            <button
+                (click)="triggerFileInput()"
+                class="upload-btn"
+                pTooltip="Change event picture"
+                tooltipPosition="top"
+            >
+                <i class="pi pi-camera text-white text-lg"></i>
+            </button>
             
         </div>
 
         <div class="event-description">
             <h1 class="font-archivo">Event Description</h1>
             <hr class="custom-hr">
-            <p>{{ event.getDescription() }}</p>
+            <p class="">{{ event.getDescription() }}</p>
         </div>
 
     </div>
@@ -176,5 +198,56 @@
 
         </form>
     </div>
+
+
+    <div class="agenda">
+        <div class="agenda-header">
+            <h1 class="font-archivo">Event Agenda</h1>
+            <div class="buttons">
+                    <button  icon="pi pi-plus" (click)="subeventModal.show()"><i class="pi pi-plus"></i>Add Subevent</button>
+                    <button  icon="pi pi-plus" (click)="activityModal.show()" ><i class="pi pi-plus" ></i>Add Activity</button>
+            </div>
+        </div>
+        
+        <hr class="custom-hr">
+        <p-accordion [value]="['0']" [multiple]="true">
+            @for (subevent of agenda; track subevent.id) 
+            {
+                <p-accordion-panel [value]="subevent.id">
+                    <p-accordion-header class="m-0">
+                        
+                        <span class="flex items-center gap-2 w-full">
+                            <span><i class="pi pi-calendar-clock" style="color: #636AE8"></i></span>
+                            <span>{{ subevent.title }}  {{ subevent.startDateTime | date: 'HH:mm' }} - {{ subevent.endDateTime | date: 'HH:mm' }}</span>
+                        </span>
+                    </p-accordion-header>
+                    <p-accordion-content>
+                        <p-accordion [value]="['0']" [multiple]="true">
+                            @for (activity of subevent.activities; track activity.id) 
+                            {
+                                <p-accordion-panel [value]="activity.id">
+                                    <p-accordion-header>
+                                        <span class="flex items-center gap-2 w-full">
+                                            <span><i class="pi pi-check-circle" style="color: #636AE8"></i></span>
+                                            <span>{{ activity.title }}</span>
+                                        </span>
+                                    </p-accordion-header>
+                                    <p-accordion-content>
+                                        <ol>
+                                            <li>Scheduled for: {{ activity.startDateTime | date: 'HH:mm' }} - {{ activity.endDateTime | date: 'HH:mm' }}</li>
+                                            <li>Description: {{ activity.description }}</li>
+                                        </ol>
+                                    </p-accordion-content>
+                                </p-accordion-panel>
+                            }
+                        </p-accordion>
+                    </p-accordion-content>
+                </p-accordion-panel>
+            }
+        </p-accordion>
+    </div>
+
+    <app-activity-modal #activityModal [minDate]="event.getStartDateTime()" [maxDate]="event.getEndDateTime()"></app-activity-modal>
+    <app-subevent-modal #subeventModal [parentEvent]="event"></app-subevent-modal>
 
 </main>

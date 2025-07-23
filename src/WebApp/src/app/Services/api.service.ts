@@ -28,6 +28,12 @@ export class ApiService{
 
     constructor(private http: HttpClient) {}
 
+    changeEventPicture(formData : FormData) : Observable<{ imageUrl: string }>{
+        return this.http.post<{ imageUrl: string }>(`${this.apiUrl}/Events/change-event-picture`,formData).pipe(
+            catchError(this.handleError)
+        )
+    }
+
     updateEvent(data : UpdatEventDto, eventId : number) : Observable<EventApiResponse>{
 
         return this.http.put<EventApiResponse>(`${this.apiUrl}/Organizer/events/${eventId}`,data).pipe(

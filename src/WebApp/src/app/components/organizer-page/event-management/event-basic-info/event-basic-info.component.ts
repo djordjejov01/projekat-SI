@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Event } from '../../../../Models/Event';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -17,10 +17,16 @@ import { take } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { UpdatEventDto } from '../../../../Models/UpdateEventDto';
 import { ApiService } from '../../../../Services/api.service';
+import { mockAgenda, Subevent } from '../../../../MockData/MockAgenda';
+import { AccordionModule } from 'primeng/accordion';
+import { FileUpload } from 'primeng/fileupload';
+import { ActivityModalComponent } from './activity-modal/activity-modal.component';
+import { FormValidationService } from '../../../../Services/FormValidationService';
+import { SubeventModalComponent } from './subevent-modal/subevent-modal.component';
 
 @Component({
   selector: 'app-event-basic-info',
-  imports: [CommonModule,ReactiveFormsModule,FloatLabelModule,InputNumber,DatePickerModule,SelectModule,ButtonModule,InputTextModule,Checkbox,TextareaModule],
+  imports: [CommonModule,ReactiveFormsModule,FloatLabelModule,InputNumber,DatePickerModule,SelectModule,ButtonModule,InputTextModule,Checkbox,TextareaModule,AccordionModule,FileUpload,ActivityModalComponent,SubeventModalComponent],
   templateUrl: './event-basic-info.component.html',
   styleUrl: './event-basic-info.component.css'
 })
@@ -29,28 +35,32 @@ export class EventBasicInfoComponent implements OnInit{
   @Input() event: Event;
   @Input() editMode!: boolean;
   @Output() cancleEdit = new EventEmitter<void>();
+  @ViewChild('fileUploader') fileUploader: any;
 
-    eventForm : FormGroup;
-    minDate : Date;
-    categories = [];
+  eventForm : FormGroup;
+  minDate : Date;
+  categories = [];
+  agenda : Subevent[] = [];
 
     constructor(
       private categoryService : CategoryService,
       private messageService : MessageService,
-      private apiService : ApiService) {}
+      private apiService : ApiService,
+      private formValidationService : FormValidationService) {}
 
     ngOnInit(): void {
 
       this.minDate = new Date();
-      
-    this.categoryService.loadCategoriesIfEmpty()
-      .pipe(take(1))
-      .subscribe(categories => {
-        this.categories = categories.map(cat => ({
-          label: cat.name,
-          value: cat.id
-        }));
-      });
+      this.agenda = mockAgenda;
+        
+      this.categoryService.loadCategoriesIfEmpty()
+        .pipe(take(1))
+        .subscribe(categories => {
+          this.categories = categories.map(cat => ({
+            label: cat.name,
+            value: cat.id
+          }));
+        });
 
 
       this.eventForm = new FormGroup({
@@ -90,61 +100,10 @@ export class EventBasicInfoComponent implements OnInit{
     }
 
 
-  showValidationErrors()
-  {
-    const errors: string [] = [];
-
-    Object.keys(this.eventForm.controls).forEach(field =>{
-      const control = this.eventForm.get(field);
-
-      if(control && control.invalid)
-      {
-        const fieldErrors = control.errors;
-        if(fieldErrors)
-        {
-          Object.keys(fieldErrors).forEach(errorKey =>{
-
-            let errorMsg = '';
-
-            switch(errorKey)
-            {
-              case 'required': errorMsg = 'is required'; break;
-              case 'min' : errorMsg = `must be at least ${fieldErrors[errorKey].min}`; break;
-              case 'max': errorMsg = `must be at most ${fieldErrors[errorKey].max}`; break;
-              case 'pastDate': errorMsg = 'cannot be in the past'; break;
-              case 'whitespace': errorMsg = 'cannot be empty or just spaces'; break;
-              default: errorMsg = errorKey;
-            }
-
-            errors.push(`*${this.toDisplayName(field)} - ${errorMsg}`)
-          });
-        }
-      }
-    });
-
-    if(this.eventForm.errors){
-      Object.keys(this.eventForm.errors).forEach(errorKey =>{
-        let errorMsg = '';
-
-        switch(errorKey){
-          case 'startBeforeEnd': errorMsg = 'Start Date Time must be before End Date Time'; break;
-          default: errorMsg = errorKey;
-        }
-
-        errors.push(`*Form - ${errorMsg}`);
-      });
-    }
-
-    const summary = 'Form fields are not valid:';
-    const detail = errors.join('\n')
-
-    this.messageService.add({ severity: 'error', summary, detail, sticky: true })
-  }
-
   submitForm(){
 
       if(this.eventForm.invalid){
-        this.showValidationErrors();
+        this.formValidationService.showValidationErrors(this.eventForm, 'Edit Form');
         return;
       }
 
@@ -218,6 +177,40 @@ export class EventBasicInfoComponent implements OnInit{
     this.eventForm.markAsUntouched();
   }
 
-     
+  triggerFileInput(){
+    const nativeInput = this.fileUploader?.el?.nativeElement?.querySelector('input[type="file"]');
+
+    if(nativeInput) nativeInput.click();
+    else console.warn('File input element not found');
+  }
+
+  onImageUpload(event : any){
+    console.log("CALLING CHANGE IMAGE");
+    const file: File = event.files[0];
+
+    if(!file) return;
+    const formData = new FormData();
+    formData.append('Image', file);
+    formData.append('Id', this.event.getEventId().toString());
+
+    this.apiService.changeEventPicture(formData).subscribe({
+      next: (response : { imageUrl: string }) =>{
+        this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: 'Image changed successfully.',
+              life: 3000
+            });
+        this.event.setImage(response.imageUrl);
+      },
+      error: (errorResponse) =>{
+              this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000 });
+      }
+    });
+  }
 
 }

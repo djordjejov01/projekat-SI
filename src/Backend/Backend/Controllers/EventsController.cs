@@ -146,7 +146,7 @@ namespace Backend.Controllers
             o.ImageUrl = ImageName;
             _context.Events.Update(o);
             _context.SaveChanges();
-            return Ok();
+            return Ok(new {imageUrl = ImageName});
         }
 
         [AllowAnonymous]

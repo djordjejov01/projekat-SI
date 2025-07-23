@@ -68,6 +68,10 @@ export class Event
     const backendBaseUrl = 'https://localhost:7269';
     return `${backendBaseUrl}/${this.image}`;
   }
+  
+  setImage(url : string){
+    this.image = url;
+  }
 
   IsFree(): boolean {
     return this.isFree;
