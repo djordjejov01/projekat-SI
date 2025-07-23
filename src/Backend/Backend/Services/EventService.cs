@@ -20,6 +20,7 @@ namespace Backend.Services
             
             query = query.Where(e => e.EndDate >= DateTime.UtcNow);
             query = query.Where(e => e.Status == EventStatus.Published);
+
             if (!string.IsNullOrWhiteSpace(name))
             {
                 query = query.Where(e => e.Title.ToLower().Contains(name.ToLower()));

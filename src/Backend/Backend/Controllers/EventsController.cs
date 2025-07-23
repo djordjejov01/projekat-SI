@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Backend.Controllers
 {
@@ -186,5 +187,38 @@ namespace Backend.Controllers
 
             return Ok(categories);
         }
+
+        [Authorize]
+        [HttpGet("BasicInfo/{eventId}")]
+        public async Task<IActionResult> GetEventBasicInfo(int eventId)
+        {
+
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var eventEntity = await _context.Events
+                .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == userId);
+
+            if (eventEntity == null)
+                return NotFound();
+
+            var attendingCount = await _context.UserTickets
+                .Include(ut => ut.Ticket)
+                .CountAsync(ut => ut.Ticket.EventID == eventId);
+
+            var dto = new EventBasicInfoDto
+            {
+                Title = eventEntity.Title,
+                Description = eventEntity.Description,
+                Location = eventEntity.Location,
+                StartDate = eventEntity.StartDate,
+                EndDate = eventEntity.EndDate,
+                Category = eventEntity.Category,
+                Capacity = eventEntity.NumberOfPeople,
+                AttendingCount = attendingCount,
+                ImageUrl = eventEntity.ImageUrl
+            };
+
+            return Ok(dto);
+        }
+
     }
 }
