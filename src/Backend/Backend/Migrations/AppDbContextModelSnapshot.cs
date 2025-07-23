@@ -54,6 +54,9 @@ namespace Backend.Migrations
                     b.Property<int>("OrganizerID")
                         .HasColumnType("integer");
 
+                    b.Property<int>("ParentEventId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
@@ -304,6 +307,9 @@ namespace Backend.Migrations
 
                     b.Property<DateTime>("CreationTime")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("Credit")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("Email")
                         .IsRequired()

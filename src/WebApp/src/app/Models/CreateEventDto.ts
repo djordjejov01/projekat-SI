@@ -12,6 +12,7 @@ export class CreatEventDto
         private image : string,
         private imageFile : File,
         private category: string,
-        private tickets : TicketDto[]
+        private tickets? : TicketDto[] | null,
+        private parentId? : number | null,
     ){}
 }

@@ -1,14 +1,9 @@
 import { User } from "./User";
 
-export const CategoryMap: Record<number, string> = {
-  0: 'Music',
-  1: 'Sports',
-  2: 'Entertainment',
-  3: 'Protest',
-  4: 'Charity',
-  5: 'Business',
-  6: 'Culture',
-  7: 'Other'
+export const StatusMap: Record<number, string> = {
+  0: 'Draft',
+  1: 'Published',
+  2: 'Canceled',
 };
 
 export class Event
@@ -17,7 +12,7 @@ export class Event
         private eventId : number,
         private organizerId : number,
         private title : string ,
-        private category : string,
+        private category : number,
         private description : string ,
         private location : string,
         private startDateTime : Date,
@@ -25,7 +20,8 @@ export class Event
         private capacity : number,
         private organizer : User | null,
         private image : string,
-        private isFree : boolean
+        private isFree : boolean,
+        private status : number
     ){}
 
     getEventId(): number {
@@ -40,7 +36,7 @@ export class Event
     return this.title;
   }
 
-  getCategory(): string {
+  getCategoryId(): number {
     return this.category;
   }
 
@@ -72,8 +68,20 @@ export class Event
     const backendBaseUrl = 'https://localhost:7269';
     return `${backendBaseUrl}/${this.image}`;
   }
+  
+  setImage(url : string){
+    this.image = url;
+  }
 
   IsFree(): boolean {
     return this.isFree;
+  }
+
+  getStatus() : number{
+    return this.status
+  }
+
+  getStatusLabel() : string{
+    return StatusMap[this.status] || 'Unknown'
   }
 }

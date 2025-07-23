@@ -104,7 +104,7 @@ export default function ProfileScreen() {
           <Text style={styles.email}>{email}</Text>
         </View>
         <TouchableOpacity onPress={() => router.push('../profile/personal-info')}>
-          <Text style={styles.edit}>✏️ {t('profile.edit')}</Text>
+          <Text style={styles.edit}>💰 {t('1500')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -127,8 +127,8 @@ export default function ProfileScreen() {
         <Text style={styles.optionArrow}>›</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.option}>
-        <Text>📩 {t('profile.communication')}</Text>
+      <TouchableOpacity style={styles.option} onPress={() => router.push('../profile/token')}> 
+        <Text>💳 {t('Token Store')}</Text>
         <Text style={styles.optionArrow}>›</Text>
       </TouchableOpacity>
 
@@ -199,8 +199,7 @@ const styles = StyleSheet.create({
   },
   edit: {
     color: 'white',
-    textDecorationLine: 'underline',
-    fontSize: 12,
+    fontSize: 18,
   },
   rowContainer: {
     flexDirection: 'row',

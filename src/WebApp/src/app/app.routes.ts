@@ -11,6 +11,7 @@ import { EventsComponent } from './components/organizer-page/events/events.compo
 import { ProfileComponent } from './components/organizer-page/profile/profile.component';
 import { CalendarComponent } from './components/organizer-page/calendar/calendar.component';
 import { CreateEventComponent } from './components/organizer-page/create-event/create-event.component';
+import { EventManagementComponent } from './components/organizer-page/event-management/event-management.component';
 
 
 export const routes: Routes = [
@@ -23,7 +24,8 @@ export const routes: Routes = [
       { path: 'my-profile', component: ProfileComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']} },
       { path: 'events', component: EventsComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']} },
       { path: 'calendar', component: CalendarComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']} },
-      { path: 'create-event', component: CreateEventComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']}, canDeactivate: [(comp: CreateEventComponent) => comp.canExit()] }
+      { path: 'create-event', component: CreateEventComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']}, canDeactivate: [(comp: CreateEventComponent) => comp.canExit()] },
+      {path: 'event-management', component: EventManagementComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']}}
     ]},
     {path: 'register', component: RegisterForm, canDeactivate: [(comp: RegisterForm) => comp.canExit()]},
     {path: 'login', component: LoginForm, canDeactivate: [(comp: LoginForm) => comp.canExit()]},

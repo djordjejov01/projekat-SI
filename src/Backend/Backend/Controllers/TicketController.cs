@@ -41,10 +41,13 @@ namespace Backend.Controllers
         public IActionResult PurchaseTicket([FromBody] List<PurchaseTicketDto> dtos)
         {
 
-                var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            if (user == null)
+                return NotFound("Korisnik nije pronađen.");
 
-            var createdTickets = new List<object>();
-
+            
+            decimal ukupnaCena = 0;
             foreach (var dto in dtos)
             {
                 var ticket = _context.Tickets.FirstOrDefault(t => t.TicketID == dto.TicketID);
@@ -65,25 +68,51 @@ namespace Backend.Controllers
                 if (sold + dto.Quantity > ticket.Quota)
                     return BadRequest($"Nema dovoljno dostupnih ulaznica za tip {ticket.TypeName}.");
 
-                //TODO - ogranicenje
-
-                for (int i = 0; i < dto.Quantity; i++)
-                {
-                    var userTicket = new UserTicket
-                    {
-                        UserID = userId,
-                        TicketID = dto.TicketID,
-                        PurchasedAt = DateTime.UtcNow
-                    };
-                    _context.UserTickets.Add(userTicket);
-                    _context.SaveChanges();
-
-                    createdTickets.Add(new { UserTicketID = userTicket.UserTicketID, TicketID = dto.TicketID });
-                }
+                ukupnaCena += ticket.Price * dto.Quantity;
             }
 
-           
-            return Ok(createdTickets);
+            
+            if (user.Credit < ukupnaCena)
+                return BadRequest("Nedovoljno kredita za kupovinu.");
+
+            
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    
+                    user.Credit -= ukupnaCena;
+                    _context.SaveChanges();
+
+                    var createdTickets = new List<object>();
+
+                    
+                    foreach (var dto in dtos)
+                    {
+                        for (int i = 0; i < dto.Quantity; i++)
+                        {
+                            var userTicket = new UserTicket
+                            {
+                                UserID = userId,
+                                TicketID = dto.TicketID,
+                                PurchasedAt = DateTime.UtcNow
+                            };
+                            _context.UserTickets.Add(userTicket);
+                            _context.SaveChanges();
+
+                            createdTickets.Add(new { UserTicketID = userTicket.UserTicketID, TicketID = dto.TicketID });
+                        }
+                    }
+
+                    transaction.Commit();
+                    return Ok(createdTickets);
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
         }
 
         [Authorize(Roles = "MobileUser")]

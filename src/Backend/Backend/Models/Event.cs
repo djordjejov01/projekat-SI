@@ -28,6 +28,7 @@ namespace Backend.Models
         public string ImageUrl { get; set; }
         public bool isFree { get; set; }
         public EventStatus Status { get; set; }
+        public int ParentEventId { get; set; } = 0;
     }
 
     public enum EventStatus

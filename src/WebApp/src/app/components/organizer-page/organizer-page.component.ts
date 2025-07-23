@@ -1,4 +1,4 @@
-import { AfterContentInit, AfterViewInit, ChangeDetectorRef, Component } from '@angular/core';
+import { AfterContentInit, AfterViewInit, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { MenuBarComponent } from './menu-bar/menu-bar.component';
 import { RouterModule } from '@angular/router';
 import { FooterBar } from '../landing-page/footer-bar/footer-bar';
@@ -10,6 +10,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { AuthService } from '../../Services/auth.service';
 import { MessageService } from 'primeng/api';
 import { Toast } from 'primeng/toast';
+import { CategoryService } from '../../Services/EventCategoryService';
 
 @Component({
   selector: 'app-organizer-page',
@@ -17,14 +18,19 @@ import { Toast } from 'primeng/toast';
   templateUrl: './organizer-page.component.html',
   styleUrl: './organizer-page.component.css'
 })
-export class OrganizerPageComponent implements AfterContentInit{
+export class OrganizerPageComponent implements AfterContentInit,OnInit{
 
   constructor(
     private sessionService : SessionService,
     private translate: TranslateService,
     private messageService : MessageService,
     private authService : AuthService,
-    private cd : ChangeDetectorRef){}
+    private cd : ChangeDetectorRef,
+    private categoryService : CategoryService){}
+
+    ngOnInit(): void {
+      this.categoryService.loadCategories().subscribe();
+    }
 
   ngAfterContentInit(): void {
     this.cd.detectChanges(); // Ensure view is fully initialized

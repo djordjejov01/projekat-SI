@@ -18,6 +18,9 @@ import { CategoryMap, Event } from "../Models/Event";
 import { DashboardMetrics } from "../Interfaces/DashboardMetricsResponse";
 import { StatusMetrics } from "../Interfaces/StatusMetricsResponse";
 import { CategoryMetrics } from "../Interfaces/CategoryMetricsResponse";
+import { Event, StatusMap } from "../Models/Event";
+import { EventCategoryApiResponse } from "../Interfaces/EventCategoryApiResponse";
+import { UpdatEventDto } from "../Models/UpdateEventDto";
 
 
 @Injectable({
@@ -29,12 +32,32 @@ export class ApiService{
 
     constructor(private http: HttpClient) {}
 
+    changeEventPicture(formData : FormData) : Observable<{ imageUrl: string }>{
+        return this.http.post<{ imageUrl: string }>(`${this.apiUrl}/Events/change-event-picture`,formData).pipe(
+            catchError(this.handleError)
+        )
+    }
+
+    updateEvent(data : UpdatEventDto, eventId : number) : Observable<EventApiResponse>{
+
+        return this.http.put<EventApiResponse>(`${this.apiUrl}/Organizer/events/${eventId}`,data).pipe(
+            catchError(this.handleError)
+        )
+
+    }
+
     createEvent(formData: FormData, organizerId: number): Observable<any> {
     return this.http.post(
         `${this.apiUrl}/Organizer/create-event/${organizerId}`,
         formData,
         {observe: 'response'}
     );
+    }
+
+    getEventCategories(): Observable<EventCategoryApiResponse[]>{
+        return this.http.get<EventCategoryApiResponse[]>(`${this.apiUrl}/Events/categories`).pipe(
+            catchError(this.handleError)
+        );
     }
 
     getOrganizerEvents(organizerId : number) : Observable<Event[]> {
@@ -63,7 +86,7 @@ export class ApiService{
                     event.eventID,
                     event.organizerID, 
                     event.title,
-                    CategoryMap[event.category] || 'Unknown',
+                    event.category,
                     event.description,
                     event.location,
                     new Date(event.startDate), 
@@ -71,7 +94,8 @@ export class ApiService{
                     event.numberOfPeople,      
                     organizer,
                     event.imageUrl,            
-                    event.isFree
+                    event.isFree,
+                    event.status
                     );
                 })
             ),
