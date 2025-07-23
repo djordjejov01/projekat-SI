@@ -2,6 +2,7 @@ using Backend.Helpers;
 using Backend.Models;
 using Backend.Models.Dto;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Services
 {
@@ -105,6 +106,88 @@ namespace Backend.Services
             {
                 throw;
             }
+        }
+
+        public async Task<EventsSubeventsActivitiesDto> GetEventSubeventsActivities(int eventId)
+        {
+            List<Event> AllEvents = await _context.Events
+                .Where(e => e.EventID == eventId || e.ParentEventId == eventId)
+                .Select(e => new Event
+                {
+                    EventID = e.EventID,
+                    Title = e.Title,
+                    StartDate = e.StartDate,
+                    EndDate = e.EndDate,
+                    Location = e.Location,
+                    Description = e.Description,
+                    ImageUrl = e.ImageUrl,
+                })
+                .ToListAsync();
+            List<Event> subevents = AllEvents
+                .Where(e => e.ParentEventId != 0)
+                .ToList();
+
+            List<EventActivity> AllActivities = new List<EventActivity>();
+
+            List<EventActivity> mainEventActivities = await _context.EventActivities
+                .Where(a => a.EventID == eventId)
+                .Select(a => new EventActivity
+                {
+                    ActivityID = a.ActivityID,
+                    Description = a.Description,
+                    StartTime = a.StartTime,
+                    EndTime = a.EndTime,
+                    Category = a.Category,
+                    EventID = a.EventID
+                })
+                .ToListAsync();
+            foreach (EventActivity activity in mainEventActivities)
+            {
+                AllActivities.Add(activity);
+            }
+            foreach (Event subevent in subevents)
+            {
+                List<EventActivity> subeventActivities = await _context.EventActivities
+                    .Where(a => a.EventID == subevent.EventID)
+                    .Select(a => new EventActivity
+                    {
+                        ActivityID = a.ActivityID,
+                        Description = a.Description,
+                        StartTime = a.StartTime,
+                        EndTime = a.EndTime,
+                        Category = a.Category,
+                        EventID = a.EventID
+                    })
+                    .ToListAsync();
+                AllActivities.AddRange(subeventActivities);
+            }
+            EventsSubeventsActivitiesDto EventSubeventsActivitiesDto = new EventsSubeventsActivitiesDto();
+            foreach (Event e in AllEvents)
+            {
+                EventSubeventsActivitiesDto.EventsAndSubevents.Add(new EventDto
+                {
+                    EventId = e.EventID,
+                    Title = e.Title,
+                    StartDate = e.StartDate,
+                    EndDate = e.EndDate,
+                    Location = e.Location,
+                    Description = e.Description,
+                    ImageUrl = e.ImageUrl
+                });
+            }
+            foreach (EventActivity a in AllActivities)
+            {
+                EventSubeventsActivitiesDto.Activities.Add(new ActivityDto
+                {
+                    ActivityId = a.ActivityID,
+                    EventId = a.EventID,
+                    Title = a.Description,
+                    StartDate = a.StartTime,
+                    EndDate = a.EndTime,
+                    Description = a.Description
+                });
+            }
+            return EventSubeventsActivitiesDto;
         }
     }
 }

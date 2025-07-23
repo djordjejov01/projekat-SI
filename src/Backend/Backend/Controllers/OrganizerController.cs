@@ -246,5 +246,19 @@ namespace Backend.Controllers
             };
             return Ok(result);
         }
+
+        [HttpGet("subevents-activities")]
+        public async Task<IActionResult> GetSubeventsAndActivities(int eventId)
+        {
+            try
+            {
+                EventsSubeventsActivitiesDto subeventsActivitiesDto = await _organizerService.GetEventSubeventsActivities(eventId);
+                return Ok(subeventsActivitiesDto);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }
