@@ -94,6 +94,7 @@ h2{
 }
 #ae:hover{
     cursor: pointer;
+    background-color: #585dcc;
 }
 #ae{
     display: flex;

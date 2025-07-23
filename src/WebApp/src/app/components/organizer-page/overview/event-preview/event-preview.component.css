@@ -19,7 +19,9 @@
     font-weight: bold;
     color:#8C8D8BFF;
 }
-
+#mngev:hover{
+    background-color: #585dcd;
+}
 #sit{
     display: flex;
     flex-direction: column;
