@@ -22,7 +22,7 @@ export class ActivityModalComponent implements OnInit{
 
   activityForm : FormGroup;
   visible : boolean = false;
-  categories = [];
+categories: { label: string, value: number }[] = [];
 
   @Input() minDate! : Date;
   @Input() maxDate! : Date;
@@ -46,7 +46,7 @@ export class ActivityModalComponent implements OnInit{
       startTime: new FormControl('',Validators.required),
       endTime: new FormControl('',Validators.required),
       category: new FormControl('',Validators.required)
-    }, CustomValidators.startBeforeEndDates('startTime','endTime'))
+    }, { validators: CustomValidators.startBeforeEndDates('startTime','endTime') })
 
   }
 
@@ -56,7 +56,7 @@ export class ActivityModalComponent implements OnInit{
 
   hide() {
     this.visible = false;
-    this,this.activityForm.reset()
+    this.activityForm.reset()
   }
 
   submitForm(){

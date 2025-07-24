@@ -15,7 +15,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { CategoryService } from '../../../../Services/EventCategoryService';
 import { take } from 'rxjs';
 import { MessageService } from 'primeng/api';
-import { UpdatEventDto } from '../../../../Models/UpdateEventDto';
+import { UpdateEventDto } from '../../../../Models/UpdateEventDto';
 import { ApiService } from '../../../../Services/api.service';
 import { mockAgenda, Subevent } from '../../../../MockData/MockAgenda';
 import { AccordionModule } from 'primeng/accordion';
@@ -23,6 +23,7 @@ import { FileUpload } from 'primeng/fileupload';
 import { ActivityModalComponent } from './activity-modal/activity-modal.component';
 import { FormValidationService } from '../../../../Services/FormValidationService';
 import { SubeventModalComponent } from './subevent-modal/subevent-modal.component';
+import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
 
 @Component({
   selector: 'app-event-basic-info',
@@ -32,14 +33,15 @@ import { SubeventModalComponent } from './subevent-modal/subevent-modal.componen
 })
 export class EventBasicInfoComponent implements OnInit{
 
-  @Input() event: Event;
+  @Input() eventBasicInfo: EventBasicInfo;
   @Input() editMode!: boolean;
-  @Output() cancleEdit = new EventEmitter<void>();
+  @Output() cancelEdit  = new EventEmitter<void>();
+  @Output() eventUpdated = new EventEmitter<EventBasicInfo>();
   @ViewChild('fileUploader') fileUploader: any;
 
   eventForm : FormGroup;
   minDate : Date;
-  categories = [];
+  categories:  { label: string, value: number }[] = [];
   agenda : Subevent[] = [];
 
     constructor(
@@ -64,17 +66,17 @@ export class EventBasicInfoComponent implements OnInit{
 
 
       this.eventForm = new FormGroup({
-        title: new FormControl(this.event.getTitle(), [Validators.required, CustomValidators.noWhitespaceValidator]),
-        description: new FormControl(this.event.getDescription(), CustomValidators.noWhitespaceValidator),
-        location: new FormControl(this.event.getLocation(), [Validators.required, CustomValidators.noWhitespaceValidator]),
-        isUnlimitedCapacity: new FormControl(this.event.getCapacity() === -1),
+        title: new FormControl(this.eventBasicInfo.getTitle(), [Validators.required, CustomValidators.noWhitespaceValidator]),
+        description: new FormControl(this.eventBasicInfo.getDescription(), CustomValidators.noWhitespaceValidator),
+        location: new FormControl(this.eventBasicInfo.getLocation(), [Validators.required, CustomValidators.noWhitespaceValidator]),
+        isUnlimitedCapacity: new FormControl(this.eventBasicInfo.getCapacity() === -1),
         capacity: new FormControl(
-          this.event.getCapacity() === -1 ? null : this.event.getCapacity(),
+          this.eventBasicInfo.getCapacity() === -1 ? null : this.eventBasicInfo.getCapacity(),
           [Validators.required, Validators.min(1)]
         ),
-        startDateTime: new FormControl(this.event.getStartDateTime(), [Validators.required, CustomValidators.notInPast]),
-        endDateTime: new FormControl(this.event.getEndDateTime(), Validators.required),
-        category: new FormControl(this.event.getCategoryId(), Validators.required),
+        startDateTime: new FormControl(this.eventBasicInfo.getStartDate(), [Validators.required, CustomValidators.notInPast]),
+        endDateTime: new FormControl(this.eventBasicInfo.getEndDate(), Validators.required),
+        category: new FormControl(this.eventBasicInfo.getCategory(), Validators.required),
       }, { validators: CustomValidators.startBeforeEndDates('startDateTime', 'endDateTime') });
 
 
@@ -87,7 +89,7 @@ export class EventBasicInfoComponent implements OnInit{
         } else {
           capacityControl?.enable();
           capacityControl?.setValidators([Validators.required, Validators.min(1)]);
-          capacityControl?.setValue(this.event.getCapacity() !== -1 ? this.event.getCapacity() : null);
+          capacityControl?.setValue(this.eventBasicInfo.getCapacity() !== -1 ? this.eventBasicInfo.getCapacity() : null);
         }
         capacityControl?.updateValueAndValidity();
       });
@@ -108,7 +110,7 @@ export class EventBasicInfoComponent implements OnInit{
       }
 
       const formValues = this.eventForm.value;
-        const updateDto = new UpdatEventDto(
+        const updateDto = new UpdateEventDto(
           formValues.title,
           formValues.description,
           formValues.location,
@@ -120,25 +122,24 @@ export class EventBasicInfoComponent implements OnInit{
 
         console.log(updateDto)
 
-        this.apiService.updateEvent(updateDto, this.event.getEventId()).subscribe({
+        this.apiService.updateEvent(updateDto, this.eventBasicInfo.getEventID()).subscribe({
           next: (data) =>{
-            this.event = new Event(
+            this.eventBasicInfo = new EventBasicInfo(
               data.eventID,
-              data.organizerID,
               data.title,
-              data.category,
               data.description,
               data.location,
               new Date(data.startDate),
               new Date(data.endDate),
+              data.category,
               data.numberOfPeople,
-              this.event.getOrganizer(),
+              this.eventBasicInfo.getAttendingCount(),
               data.imageUrl,
-              data.isFree,
-              data.status
+              data.status,
+              data.parentEventId
             )
-
-            this.onCancle();
+            this.eventUpdated.emit(this.eventBasicInfo);
+            this.onCancel();
 
             this.messageService.add({
               severity: 'success',
@@ -159,18 +160,18 @@ export class EventBasicInfoComponent implements OnInit{
 
   }
 
-  onCancle(){
-    this.cancleEdit.emit();
+  onCancel(){
+    this.cancelEdit.emit();
 
       this.eventForm.reset({
-      title: this.event.getTitle(),
-      description: this.event.getDescription(),
-      location: this.event.getLocation(),
-      startDateTime: this.event.getStartDateTime(),
-      endDateTime: this.event.getEndDateTime(),
-      category: this.event.getCategoryId(),
-      capacity: this.event.getCapacity() === -1 ? null : this.event.getCapacity(),
-      isUnlimitedCapacity: this.event.getCapacity() === -1
+      title: this.eventBasicInfo.getTitle(),
+      description: this.eventBasicInfo.getDescription(),
+      location: this.eventBasicInfo.getLocation(),
+      startDateTime: this.eventBasicInfo.getStartDate(),
+      endDateTime: this.eventBasicInfo.getEndDate(),
+      category: this.eventBasicInfo.getCategory(),
+      capacity: this.eventBasicInfo.getCapacity() === -1 ? null : this.eventBasicInfo.getCapacity(),
+      isUnlimitedCapacity: this.eventBasicInfo.getCapacity() === -1
     });
 
     this.eventForm.markAsPristine();
@@ -191,7 +192,7 @@ export class EventBasicInfoComponent implements OnInit{
     if(!file) return;
     const formData = new FormData();
     formData.append('Image', file);
-    formData.append('Id', this.event.getEventId().toString());
+    formData.append('Id', this.eventBasicInfo.getEventID().toString());
 
     this.apiService.changeEventPicture(formData).subscribe({
       next: (response : { imageUrl: string }) =>{
@@ -201,7 +202,8 @@ export class EventBasicInfoComponent implements OnInit{
               detail: 'Image changed successfully.',
               life: 3000
             });
-        this.event.setImage(response.imageUrl);
+        this.eventBasicInfo.setImage(response.imageUrl);
+        this.eventUpdated.emit(this.eventBasicInfo); 
       },
       error: (errorResponse) =>{
               this.messageService.add({

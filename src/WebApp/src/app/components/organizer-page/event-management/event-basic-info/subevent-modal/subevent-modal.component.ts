@@ -15,6 +15,7 @@ import { ButtonModule } from 'primeng/button';
 import { FormValidationService } from '../../../../../Services/FormValidationService';
 import { InputNumber } from 'primeng/inputnumber';
 import { Checkbox } from 'primeng/checkbox';
+import { EventBasicInfo } from '../../../../../Models/EventBasicInfo';
 
 @Component({
   selector: 'app-subevent-modal',
@@ -28,13 +29,13 @@ export class SubeventModalComponent implements OnInit{
   subeventForm : FormGroup;
   categories = [];
   visible : boolean = false;
-  @Input() parentEvent! : Event;
+  @Input() parentEventBasicInfo! : EventBasicInfo;
 
   constructor(private categoryService : CategoryService, private formValidationService : FormValidationService) {}
 
   ngOnInit(): void {
     
-    const isParentUnlimited = this.parentEvent.getCapacity() === -1;
+    const isParentUnlimited = this.parentEventBasicInfo.getCapacity() === -1;
 
       this.categoryService.loadCategoriesIfEmpty()
         .pipe(take(1))
@@ -49,17 +50,17 @@ export class SubeventModalComponent implements OnInit{
   }
 
   private initializeForm(): void {
-  const isParentUnlimited = this.parentEvent.getCapacity() === -1;
+  const isParentUnlimited = this.parentEventBasicInfo.getCapacity() === -1;
 
   this.subeventForm = new FormGroup({
     title: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
     description: new FormControl('', CustomValidators.noWhitespaceValidator),
-    location: new FormControl(this.parentEvent.getLocation(), [Validators.required, CustomValidators.noWhitespaceValidator]),
+    location: new FormControl(this.parentEventBasicInfo.getLocation(), [Validators.required, CustomValidators.noWhitespaceValidator]),
     isUnlimitedCapacity: new FormControl({ value: isParentUnlimited, disabled: !isParentUnlimited }),
-    capacity: new FormControl(isParentUnlimited ? '' : this.parentEvent.getCapacity(), isParentUnlimited ? [] : [Validators.required, Validators.min(1)]),
+    capacity: new FormControl(isParentUnlimited ? '' : this.parentEventBasicInfo.getCapacity(), isParentUnlimited ? [] : [Validators.required, Validators.min(1)]),
     startDateTime: new FormControl('', [Validators.required, CustomValidators.notInPast]),
     endDateTime: new FormControl('', Validators.required),
-    category: new FormControl(this.parentEvent.getCategoryId(), Validators.required),
+    category: new FormControl(this.parentEventBasicInfo.getCategory(), Validators.required),
   }, {
     validators: CustomValidators.startBeforeEndDates('startDateTime', 'endDateTime')
   });

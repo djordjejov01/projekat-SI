@@ -25,7 +25,7 @@ export const routes: Routes = [
       { path: 'events', component: EventsComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']} },
       { path: 'calendar', component: CalendarComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']} },
       { path: 'create-event', component: CreateEventComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']}, canDeactivate: [(comp: CreateEventComponent) => comp.canExit()] },
-      {path: 'event-management', component: EventManagementComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']}}
+      {path: 'event-management/:eventId', component: EventManagementComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']}}
     ]},
     {path: 'register', component: RegisterForm, canDeactivate: [(comp: RegisterForm) => comp.canExit()]},
     {path: 'login', component: LoginForm, canDeactivate: [(comp: LoginForm) => comp.canExit()]},

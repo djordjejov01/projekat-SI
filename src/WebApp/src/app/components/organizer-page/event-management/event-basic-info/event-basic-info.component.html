@@ -5,36 +5,36 @@
         <div class="event-info-card">
 
             <div class="banner-img">
-                <img [src]="event.getImage()" alt="banner-img" />
+                <img [src]="eventBasicInfo.getImageUrl()" alt="banner-img" />
             </div>
 
             <div class="event-info">
 
                 <div class="title-tag">
-                    <h1 class="font-archivo">{{event.getTitle()}}</h1>
-                    <span class="font-inter custom-status-tag"> {{ event.getStatusLabel() }}</span>
+                    <h1 class="font-archivo">{{eventBasicInfo.getTitle()}}</h1>
+                    <span class="font-inter custom-status-tag"> {{ eventBasicInfo.getStatusLabel() }}</span>
                 </div>
 
                 <div class="date-time">
                     <div class="date">
                         <i class="pi pi-calendar" style="color: #636AE8"></i>
-                        <span class="font-inter">{{ event.getStartDateTime() | date: 'MMMM, dd yyyy'}} - {{ event.getEndDateTime() | date: 'MMMM, dd yyyy'}}</span>
+                        <span class="font-inter">{{ eventBasicInfo.getStartDate() | date: 'MMMM, dd yyyy'}} - {{ eventBasicInfo.getEndDate() | date: 'MMMM, dd yyyy'}}</span>
                     </div>
 
                     <div class="time">
                         <i class="pi pi-clock" style="color: #636AE8"></i>
-                        <span class="font-inter">{{ event.getStartDateTime() | date: 'HH:mm'}} - {{ event.getEndDateTime() | date: 'HH:mm'}}</span>
+                        <span class="font-inter">{{ eventBasicInfo.getStartDate() | date: 'HH:mm'}} - {{ eventBasicInfo.getEndDate() | date: 'HH:mm'}}</span>
                     </div>
                 </div>
 
                 <div class="location">
                     <i class="pi pi-map-marker" style="color: #636AE8"></i>
-                    <span class="font-inter">{{ event.getLocation() }}</span>
+                    <span class="font-inter">{{ eventBasicInfo.getLocation() }}</span>
                 </div>
 
                 <div class="capacity">
                     <i class="pi pi-users" style="color: #636AE8"></i>
-                    <span class="font-inter">{{ event.getCapacity() === -1 ? 'Unlimited' :  event.getCapacity()}} Attendess</span>
+                    <span class="font-inter">{{ eventBasicInfo.getCapacity() === -1 ? 'Unlimited' :  eventBasicInfo.getCapacity()}} Attendess</span>
                 </div>
 
             </div>
@@ -66,7 +66,7 @@
         <div class="event-description">
             <h1 class="font-archivo">Event Description</h1>
             <hr class="custom-hr">
-            <p class="">{{ event.getDescription() }}</p>
+            <p class="">{{ eventBasicInfo.getDescription() }}</p>
         </div>
 
     </div>
@@ -187,7 +187,7 @@
                             [raised]="true"
                             severity="secondary"
                             type="button"
-                            (onClick)="onCancle()"
+                            (onClick)="onCancel()"
                         ></p-button>
                     </div>
                     
@@ -247,7 +247,7 @@
         </p-accordion>
     </div>
 
-    <app-activity-modal #activityModal [minDate]="event.getStartDateTime()" [maxDate]="event.getEndDateTime()"></app-activity-modal>
-    <app-subevent-modal #subeventModal [parentEvent]="event"></app-subevent-modal>
+    <app-activity-modal #activityModal [minDate]="eventBasicInfo.getStartDate()" [maxDate]="eventBasicInfo.getEndDate()"></app-activity-modal>
+    <app-subevent-modal #subeventModal [parentEventBasicInfo]="eventBasicInfo"></app-subevent-modal>
 
 </main>

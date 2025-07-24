@@ -205,6 +205,7 @@ namespace Backend.Controllers
 
             var dto = new EventBasicInfoDto
             {
+                EventID = eventEntity.EventID,
                 Title = eventEntity.Title,
                 Description = eventEntity.Description,
                 Location = eventEntity.Location,
@@ -214,6 +215,7 @@ namespace Backend.Controllers
                 Capacity = eventEntity.NumberOfPeople,
                 AttendingCount = attendingCount,
                 ImageUrl = eventEntity.ImageUrl,
+                status = eventEntity.Status,
                 ParentEventId=eventEntity.ParentEventId
             };
 

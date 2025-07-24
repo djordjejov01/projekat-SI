@@ -16,7 +16,9 @@ import { CreatEventDto } from "../Models/CreateEventDto";
 import { EventApiResponse } from "../Interfaces/EventApiResponse";
 import { Event, StatusMap } from "../Models/Event";
 import { EventCategoryApiResponse } from "../Interfaces/EventCategoryApiResponse";
-import { UpdatEventDto } from "../Models/UpdateEventDto";
+import { UpdateEventDto } from "../Models/UpdateEventDto";
+import { EventBasicInfo } from "../Models/EventBasicInfo";
+import { EventBasicInfoApiResponse } from "../Interfaces/EventBasicInfoApiResponse";
 
 
 @Injectable({
@@ -28,13 +30,37 @@ export class ApiService{
 
     constructor(private http: HttpClient) {}
 
+    getEventBasicInfo(eventId : number) : Observable<EventBasicInfo>{
+        return this.http.get<EventBasicInfoApiResponse>(`${this.apiUrl}/Events/BasicInfo/${eventId}`).pipe(
+
+            map(data => {
+                return new EventBasicInfo(
+                    data.eventID,
+                    data.title,
+                    data.description,
+                    data.location,
+                    new Date(data.startDate),
+                    new Date(data.endDate),
+                    data.category,
+                    data.capacity,
+                    data.attendingCount,
+                    data.imageUrl,
+                    data.status,
+                    data.parentEventId
+                );
+            }),
+            
+            catchError(this.handleError)
+        );
+    }
+
     changeEventPicture(formData : FormData) : Observable<{ imageUrl: string }>{
         return this.http.post<{ imageUrl: string }>(`${this.apiUrl}/Events/change-event-picture`,formData).pipe(
             catchError(this.handleError)
         )
     }
 
-    updateEvent(data : UpdatEventDto, eventId : number) : Observable<EventApiResponse>{
+    updateEvent(data : UpdateEventDto, eventId : number) : Observable<EventApiResponse>{
 
         return this.http.put<EventApiResponse>(`${this.apiUrl}/Organizer/events/${eventId}`,data).pipe(
             catchError(this.handleError)
