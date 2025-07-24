@@ -155,7 +155,7 @@ const renderEventItem = ({ item }: { item: EventType }) => {
 };
 
   const date = item.startDate ? new Date(item.startDate) : null;
-  const formattedDate = date && !isNaN(date.getTime()) ? date.toLocaleDateString() : 'No date';
+  const formattedDate = date && !isNaN(date.getTime()) ? date.toLocaleDateString('sr-RS') : 'No date';
 
   return (
     <TouchableOpacity
@@ -197,7 +197,7 @@ const renderEventItem = ({ item }: { item: EventType }) => {
         <Text style={styles.eventTitle}>{item.title || 'No title'}</Text>
         <Text style={styles.eventDate}>{formattedDate}</Text>
         <Text style={styles.eventLocation}>{item.location || 'No location'}</Text>
-        <Text style={styles.eventPrice}>{item.price === 0 ? 'Free' : `$${item.price}`}</Text>
+        {/* <Text style={styles.eventPrice}>{item.price === 0 ? 'Free' : `$${item.price}`}</Text> */}
       </View>
 
       <TouchableOpacity
