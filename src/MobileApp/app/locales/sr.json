@@ -208,7 +208,8 @@
   },
   "buttons": {
     "download": "Preuzmi",
-    "share": "Podeli"
+    "share": "Podeli",
+      "backToEvents": "Nazad na događaje"
   },
   "qr": {
     "savedTitle": "Sačuvano!",

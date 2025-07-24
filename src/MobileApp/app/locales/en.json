@@ -210,7 +210,8 @@
   },
   "buttons": {
     "download": "Download",
-    "share": "Share"
+    "share": "Share",
+    "backToEvents": "Back to Events"
   },
   "qr": {
     "savedTitle": "Saved!",

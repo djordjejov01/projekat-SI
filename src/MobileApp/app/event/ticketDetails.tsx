@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'expo-router';
 import {
   View,
   Text,
@@ -20,6 +21,7 @@ export default function TicketDetails() {
   const { t } = useTranslation();
   const params = useLocalSearchParams();
   const { ticketIDs, eventName, ticketType, purchasedAt, price, location } = params;
+  const router = useRouter();
 
   const [fullName, setFullName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -149,6 +151,13 @@ export default function TicketDetails() {
           </View>
         ))}
       </View>
+      <TouchableOpacity
+  style={styles.backToEventsButton}
+  onPress={() => router.replace('/(tabs)/events')}
+>
+  <Text style={styles.backToEventsText}>{t('buttons.backToEvents')}</Text>
+</TouchableOpacity>
+
     </ScrollView>
   );
 }
@@ -189,4 +198,20 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   buttonText: { color: '#fff', fontWeight: '600' },
+  backToEventsButton: {
+  backgroundColor: '#0047FF',
+  paddingVertical: 14,
+  paddingHorizontal: 20,
+  borderRadius: 8,
+  alignItems: 'center',
+  marginBottom: 30,
+  marginTop: 10,
+},
+
+backToEventsText: {
+  color: 'white',
+  fontSize: 16,
+  fontWeight: '600',
+},
+
 });
