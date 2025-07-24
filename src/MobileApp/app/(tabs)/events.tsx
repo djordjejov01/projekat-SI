@@ -102,7 +102,7 @@ export default function EventsScreen() {
 
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.info}>
-          🕒 {new Date(item.startDate).toLocaleDateString('en-US')} |{' '}
+          🕒 {new Date(item.startDate).toLocaleDateString('sr-RS')} |{' '}
           {new Date(item.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h
         </Text>
         <Text style={styles.info}>📍 {item.location}</Text>

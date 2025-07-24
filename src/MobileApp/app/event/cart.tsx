@@ -37,6 +37,8 @@ export default function CartScreen() {
   const [resourceData, setResourceData] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState<string | null>(null);
+  const [eventName, setEventName] = useState('');
+  const [eventLocation, setEventLocation] = useState('');
 
   useEffect(() => {
     AsyncStorage.getItem('token').then(setToken);
@@ -84,11 +86,24 @@ export default function CartScreen() {
         setResourceData(mappedResources);
       } catch {
         Alert.alert(t('cart.errorTitle'), t('cart.fetchError'));
+      }
+    };
 
+    const fetchEvent = async () => {
+      try {
+        const res = await fetch(`${API_URL}/Event/${eventId}`);
+        if (res.ok) {
+          const json = await res.json();
+          setEventName(json.title || '');
+          setEventLocation(json.location || '');
+        }
+      } catch {
+        // fail silently
       }
     };
 
     fetchTicketsAndResources();
+    fetchEvent();
   }, [eventId, token]);
 
   const getTicketInfo = (id: number) => ticketData.find(t => t.id === id);
@@ -107,9 +122,8 @@ export default function CartScreen() {
     return total;
   };
 
-  // ISPRAVLJENA FUNKCIJA
   const handlePurchase = async () => {
-     Alert.alert(t('cart.confirmTitle'), t('cart.confirmMessage'), [
+    Alert.alert(t('cart.confirmTitle'), t('cart.confirmMessage'), [
       { text: t('cart.cancel'), style: 'cancel' },
       {
         text: t('cart.purchase'),
@@ -122,83 +136,90 @@ export default function CartScreen() {
               return;
             }
 
-              // Pripremi payload za kupovinu ulaznica
-              const ticketRequestBody = selectedTickets.map(ticket => ({
-                TicketID: ticket.id,
-                Quantity: ticket.quantity
-              }));
+            // Pripremi payload za kupovinu ulaznica
+            const ticketRequestBody = selectedTickets.map(ticket => ({
+              TicketID: ticket.id,
+              Quantity: ticket.quantity,
+            }));
 
-              // Pošalji zahtev za kupovinu ulaznica
-              const purchaseRes = await fetch(`${API_URL}/Ticket/purchase`, {
+            // Pošalji zahtev za kupovinu ulaznica
+            const purchaseRes = await fetch(`${API_URL}/Ticket/purchase`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify(ticketRequestBody),
+            });
+
+            if (!purchaseRes.ok) {
+              const errorText = await purchaseRes.text();
+              console.error('Purchase failed:', errorText);
+              throw new Error(`Kupovina ulaznica nije uspela. ${errorText}`);
+            }
+
+            // Dobij UserTicketID-ove iz odgovora
+            const createdTickets: { UserTicketID?: number; TicketID?: number; userTicketID?: number; ticketID?: number }[] = await purchaseRes.json();
+
+            // Mapiraj TicketID na listu UserTicketID-ova (ako ima više istih tipova)
+            const ticketIdToUserTicketIds: { [ticketId: number]: number[] } = {};
+            for (const t of createdTickets) {
+              const ticketID = t.TicketID ?? t.ticketID;
+              const userTicketID = t.UserTicketID ?? t.userTicketID;
+              if (typeof ticketID === 'undefined' || typeof userTicketID === 'undefined') {
+                console.warn('Nedostaje ticketID ili userTicketID u objektu:', t);
+                continue;
+              }
+              if (!ticketIdToUserTicketIds[ticketID]) ticketIdToUserTicketIds[ticketID] = [];
+              ticketIdToUserTicketIds[ticketID].push(userTicketID);
+            }
+
+            // Rezerviši svaki izabrani resurs za odgovarajuću kartu (prvi tip ulaznice)
+            for (const resId of selectedResources) {
+              const firstSelectedTicket = selectedTickets[0];
+              const userTicketIds = ticketIdToUserTicketIds[firstSelectedTicket.id] || [];
+              if (userTicketIds.length === 0) continue;
+
+              const userTicketID = userTicketIds.shift();
+
+              await fetch(`${API_URL}/Resource/reserve`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
                   Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(ticketRequestBody),
+                body: JSON.stringify({
+                  EventResourceID: resId,
+                  Quantity: 1,
+                  UserTicketID: userTicketID,
+                }),
               });
+            }
 
-              if (!purchaseRes.ok) {
-                const errorText = await purchaseRes.text();
-                console.error('Purchase failed:', errorText);
-                throw new Error(`Kupovina ulaznica nije uspela. ${errorText}`);
-              }
+            setLoading(false);
 
-              // Dobij UserTicketID-ove iz odgovora
-              const createdTickets: { UserTicketID?: number; TicketID?: number; userTicketID?: number; ticketID?: number }[] = await purchaseRes.json();
-
-              // Mapiraj TicketID na listu UserTicketID-ova (ako ima više istih tipova)
-              const ticketIdToUserTicketIds: { [ticketId: number]: number[] } = {};
-              for (const t of createdTickets) {
-                const ticketID = t.TicketID ?? t.ticketID;
-                const userTicketID = t.UserTicketID ?? t.userTicketID;
-                if (typeof ticketID === "undefined" || typeof userTicketID === "undefined") {
-                  console.warn("Nedostaje ticketID ili userTicketID u objektu:", t);
-                  continue;
-                }
-                if (!ticketIdToUserTicketIds[ticketID]) ticketIdToUserTicketIds[ticketID] = [];
-                ticketIdToUserTicketIds[ticketID].push(userTicketID);
-              }
-
-              // Rezerviši svaki izabrani resurs za odgovarajuću kartu (prvi tip ulaznice)
-              for (const resId of selectedResources) {
-                // Pronađi prvi tip ulaznice (ili možeš proširiti logiku po potrebi)
-                const firstSelectedTicket = selectedTickets[0];
-                const userTicketIds = ticketIdToUserTicketIds[firstSelectedTicket.id] || [];
-                if (userTicketIds.length === 0) continue;
-
-                // Uzmi jedan UserTicketID i ukloni ga iz niza (da ne koristiš isti više puta)
-                const userTicketID = userTicketIds.shift();
-
-                await fetch(`${API_URL}/Resource/reserve`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                  },
-                  body: JSON.stringify({
-                    EventResourceID: resId,
-                    Quantity: 1,
-                    UserTicketID: userTicketID
-                  }),
-                });
-              }
-
-                setLoading(false);
-            Alert.alert(t('cart.successTitle'), t('cart.successMessage'), [
-              { text: t('cart.ok'), onPress: () => router.replace('/(tabs)/events') },
-
-            ]);
+            // Navigacija ka ticketDetails sa svim potrebnim parametrima
+            router.replace({
+              pathname: '../event/ticketDetails',
+              params: {
+                ticketIDs: JSON.stringify(Object.values(ticketIdToUserTicketIds).flat()),
+                eventName,
+                ticketType: getTicketInfo(selectedTickets[0].id)?.name || '',
+                purchasedAt: new Date().toISOString(),
+                price: calculateTotal().toString(),
+                location: eventLocation,
+              },
+            });
           } catch (error: any) {
             setLoading(false);
             Alert.alert(t('cart.errorTitle'), error.message || t('cart.genericError'));
           }
-          },
         },
-      ]
-    );
+      },
+    ]);
   };
-return (
+
+  return (
     <ScrollView contentContainerStyle={styles.container}>
       <TouchableOpacity onPress={() => router.back()} style={styles.backArrow}>
         <Ionicons name="arrow-back" size={24} color="black" />
@@ -213,7 +234,9 @@ return (
         if (!info) return null;
         return (
           <View key={`ticket-${ticket.id}`} style={styles.itemRow}>
-            <Text style={styles.itemText}>{info.name} x {ticket.quantity}</Text>
+            <Text style={styles.itemText}>
+              {info.name} x {ticket.quantity}
+            </Text>
             <Text style={styles.itemPrice}>{info.price * ticket.quantity} RSD</Text>
           </View>
         );

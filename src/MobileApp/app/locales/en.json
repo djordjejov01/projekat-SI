@@ -195,7 +195,44 @@
   "fetchError": "Failed to load data.",
   "ok": "OK",
   "free": "Free"
-}
+},
+
+  "ticketDetails": {
+    "title": "Ticket Details",
+    "location": "Location",
+    "ticketType": "Ticket Type",
+    "purchasedAt": "Purchased At",
+    "price": "Price",
+    "purchasedBy": "Purchased by",
+    "unknownUser": "Unknown user",
+    "noTickets": "No ticket IDs provided.",
+    "ticket": "Ticket"
+  },
+  "buttons": {
+    "download": "Download",
+    "share": "Share",
+    "backToEvents": "Back to Events"
+  },
+  "qr": {
+    "savedTitle": "Saved!",
+    "savedMessage": "QR code saved to {{filename}}",
+    "errorTitle": "Error",
+    "saveError": "Failed to save QR code",
+    "shareError": "Failed to share QR code"
+  
+},
+
+  "profileTickets": {
+    "title": "My Tickets",
+    "ticketType": "Ticket Type",
+    "quantity": "Quantity",
+    "price": "Price",
+    "purchasedOn": "Purchased on",
+    "noTickets": "You currently have no purchased tickets."
+  }
+
+
+
 
 
 
