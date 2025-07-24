@@ -1,54 +1,67 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EventBasicInfoComponent } from './event-basic-info/event-basic-info.component';
 import { EventManagementHeaderComponent } from './event-management-header/event-management-header.component';
-import { Event } from '../../../Models/Event';
+import { MessageService } from 'primeng/api';
+import { ApiService } from '../../../Services/api.service';
+import { EventBasicInfo } from '../../../Models/EventBasicInfo';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-event-management',
-  imports: [EventBasicInfoComponent,EventManagementHeaderComponent],
+  imports: [EventBasicInfoComponent,EventManagementHeaderComponent,CommonModule],
   templateUrl: './event-management.component.html',
   styleUrl: './event-management.component.css'
 })
 export class EventManagementComponent implements OnInit{
 
-  event: Event | null = null;
+  eventBasicInfo: EventBasicInfo | null = null;
   editMode = false;
 
-  constructor(private router : Router){}
+  constructor(
+    private route : ActivatedRoute,
+    private messageService : MessageService,
+    private apiService : ApiService){}
 
   ngOnInit(): void 
   {
-    const nav = history.state;
+    this.route.paramMap.subscribe(params =>{
+      const id = Number(params.get('eventId'));
+      if(!isNaN(id)){
+        this.loadEvent(id);
+      }
+      else{
 
-    if (nav && nav.event) 
-      {
-        const data = nav.event;
-        this.event = new Event(
-              data.eventId,
-              data.organizerId,
-              data.title,
-              data.category,
-              data.description,
-              data.location,
-              new Date(data.startDateTime),
-              new Date(data.endDateTime),
-              data.capacity,
-              data.organizer ?? null,
-              data.image,
-              data.isFree,
-              data.status
-            );
-          console.log('Received event from state:', this.event);
-        } 
-    else {
-      console.warn('No event passed in router state');
-      // Optional: fallback logic here
-    }
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: `Invalid event ID was passed`,
+          life: 3000 });
+      }
+    });
+  }
+
+  loadEvent(id : number){
+    this.apiService.getEventBasicInfo(id).subscribe({
+      next: (data) =>{
+        this.eventBasicInfo = data;
+      },
+      error: (errorResponse) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: errorResponse.message,
+            life: 3000 });
+        }
+    })
   }
 
   onToggleEditMode(editing: boolean){
     this.editMode = editing;
+  }
+
+  onEventUpdated(updatedEvent: EventBasicInfo){
+    this.eventBasicInfo = updatedEvent
   }
 
 }

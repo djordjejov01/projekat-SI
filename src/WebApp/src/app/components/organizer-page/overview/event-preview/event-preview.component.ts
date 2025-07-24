@@ -27,6 +27,6 @@ export class EventPreviewComponent implements OnInit{
   }
 
   manageEvent(event: Event){
-    this.router.navigate(['/organizer/event-management'], {state: {event}})
+    this.router.navigate(['/organizer/event-management', event.getEventId()])
   }
 }

@@ -9,9 +9,9 @@ export class CreatEventDto
         private startDateTime : Date,
         private endDateTime : Date,
         private capacity : number,
-        private image : string,
-        private imageFile : File,
         private category: string,
+        private image? : string | null,
+        private imageFile? : File | null,
         private tickets? : TicketDto[] | null,
         private parentId? : number | null,
     ){}
