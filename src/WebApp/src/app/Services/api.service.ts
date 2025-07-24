@@ -23,28 +23,162 @@ import { EventCategoryApiResponse } from "../Interfaces/EventCategoryApiResponse
 import { UpdatEventDto } from "../Models/UpdateEventDto";
 import { MonthlyMetrics } from "../Interfaces/MonthlyMetricsResponse";
 import { ChangePasswordDto } from "../Models/ChangePasswordDto";
+import { UpdateEventDto } from "../Models/UpdateEventDto";
+import { EventBasicInfo } from "../Models/EventBasicInfo";
+import { EventBasicInfoApiResponse } from "../Interfaces/EventBasicInfoApiResponse";
+import { ActivityDto } from "../Models/ActivityDto";
 
+
+// Match Backend.Models.Dto.EventDto
+export interface EventDto {
+  eventId: number;
+  title: string;
+  location: string;
+  startDate: string;  // use string because DateTime from backend is ISO string
+  endDate: string;
+  imageUrl: string;
+  parentEventId: number;
+  description: string;
+}
+
+// Match Backend.Models.Dto.ActivityDto
+export interface ActivityDtoInterface {
+  activityId: number;
+  eventId: number;
+  title: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+  category: string; // Assuming EventCategory serializes as string
+}
+
+// The full backend response DTO
+export interface EventsSubeventsActivitiesDto {
+  eventsAndSubevents: EventDto[];
+  activities: ActivityDtoInterface[];
+}
+
+// Your frontend models (can keep same shape but camelCase)
+export interface Activity {
+  id: number;
+  title: string;
+  description: string;
+  startDateTime: Date;
+  endDateTime: Date;
+}
+
+export interface Subevent {
+  id: number;
+  title: string;
+  description: string;
+  startDateTime: Date;
+  endDateTime: Date;
+  activities: Activity[];
+}
+
+export function mapBackendResponse(
+  backendData: EventsSubeventsActivitiesDto,
+  mainEventId: number
+): { subevents: Subevent[]; activities: Activity[] } {
+  const subeventsDtos = backendData.eventsAndSubevents.filter(
+    (e) => e.parentEventId === mainEventId
+  );
+
+  const mainEventActivities = backendData.activities
+    .filter((a) => a.eventId === mainEventId)
+    .map((a) => ({
+      id: a.activityId,
+      title: a.title,
+      description: a.description,
+      startDateTime: new Date(a.startDate),
+      endDateTime: new Date(a.endDate),
+    }));
+
+  const subevents = subeventsDtos.map((sub) => ({
+    id: sub.eventId,
+    title: sub.title,
+    description: sub.description,
+    startDateTime: new Date(sub.startDate),
+    endDateTime: new Date(sub.endDate),
+    activities: backendData.activities
+      .filter((a) => a.eventId === sub.eventId)
+      .map((a) => ({
+        id: a.activityId,
+        title: a.title,
+        description: a.description,
+        startDateTime: new Date(a.startDate),
+        endDateTime: new Date(a.endDate),
+      })),
+  }));
+
+  return {
+    subevents,
+    activities: mainEventActivities,
+  };
+}
 
 @Injectable({
     providedIn: "root"
 })
+
 export class ApiService{
     
     private apiUrl = 'https://localhost:7269/api';
 
     constructor(private http: HttpClient) {}
 
+    createActivity(activity : ActivityDto) : Observable<any>{
+        return this.http.post<any>(
+            `${this.apiUrl}/Organizer/activity`,
+            activity,
+            {observe: 'response'}
+        );
+    }
+
+    getAgenda(eventId : number): Observable<{ subevents: Subevent[], activities: Activity[] }> {
+        return this.http.get<EventsSubeventsActivitiesDto>(`${this.apiUrl}/Organizer/subevents-activities?eventId=${eventId}`).pipe(
+            map(data => mapBackendResponse(data,eventId)),
+
+            catchError(this.handleError)
+        );
+    }
+
+    getEventBasicInfo(eventId : number) : Observable<EventBasicInfo>{
+        return this.http.get<EventBasicInfoApiResponse>(`${this.apiUrl}/Events/BasicInfo/${eventId}`).pipe(
+
+            map(data => {
+                return new EventBasicInfo(
+                    data.eventID,
+                    data.title,
+                    data.description,
+                    data.location,
+                    new Date(data.startDate),
+                    new Date(data.endDate),
+                    data.category,
+                    data.capacity,
+                    data.attendingCount,
+                    data.imageUrl,
+                    data.status,
+                    data.parentEventId
+                );
+            }),
+            
+            catchError(this.handleError)
+        );
+    }
+
     changeEventPicture(formData : FormData) : Observable<{ imageUrl: string }>{
         return this.http.post<{ imageUrl: string }>(`${this.apiUrl}/Events/change-event-picture`,formData).pipe(
             catchError(this.handleError)
         )
     }
+
     changeOrganizerPicture(formData : FormData){
         return this.http.post(`${this.apiUrl}/Organizer/change-organizer-picture`,formData).pipe(
             catchError(this.handleError)
         )
     }
-    updateEvent(data : UpdatEventDto, eventId : number) : Observable<EventApiResponse>{
+    updateEvent(data : UpdateEventDto, eventId : number) : Observable<EventApiResponse>{
 
         return this.http.put<EventApiResponse>(`${this.apiUrl}/Organizer/events/${eventId}`,data).pipe(
             catchError(this.handleError)

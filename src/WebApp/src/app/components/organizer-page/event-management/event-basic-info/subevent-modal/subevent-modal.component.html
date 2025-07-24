@@ -75,7 +75,7 @@
                 <div  class="input-wrapper">
                     <p>Start Date and Time</p>
                     <p-floatlabel class="w-full md:w-56"  variant="on">
-                        <p-datepicker inputId="startDateTime" placeholder=" " formControlName="startDateTime" [showTime]="true" hourFormat="24" [minDate]="parentEvent.getStartDateTime()" [maxDate]="parentEvent.getEndDateTime()" [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                        <p-datepicker inputId="startDateTime" placeholder=" " formControlName="startDateTime" [showTime]="true" hourFormat="24" [minDate]="parentEventBasicInfo.getStartDate()" [maxDate]="parentEventBasicInfo.getEndDate()" [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
                             <label for="startDateTime">Start Date And Time</label>
                     </p-floatlabel>
                 </div>
@@ -83,7 +83,7 @@
                  <div  class="input-wrapper">
                     <p>End Date And Time</p>
                     <p-floatlabel class="w-full md:w-56"  variant="on">
-                        <p-datepicker inputId="endDateTime" placeholder=" " formControlName="endDateTime" [showTime]="true" hourFormat="24" [minDate]="parentEvent.getStartDateTime()" [maxDate]="parentEvent.getEndDateTime()" [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                        <p-datepicker inputId="endDateTime" placeholder=" " formControlName="endDateTime" [showTime]="true" hourFormat="24" [minDate]="parentEventBasicInfo.getStartDate()" [maxDate]="parentEventBasicInfo.getEndDate()" [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
                         <label for="endDateTime">End Date And Time</label>
                     </p-floatlabel>
                 </div>

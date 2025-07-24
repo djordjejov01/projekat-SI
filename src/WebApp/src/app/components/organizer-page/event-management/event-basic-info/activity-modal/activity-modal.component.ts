@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../../Validators/custom.validators';
 import { DialogModule } from 'primeng/dialog';
@@ -11,6 +11,10 @@ import { take } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { FormValidationService } from '../../../../../Services/FormValidationService';
+import { EventBasicInfo } from '../../../../../Models/EventBasicInfo';
+import { ActivityDto } from '../../../../../Models/ActivityDto';
+import { ApiService } from '../../../../../Services/api.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-activity-modal',
@@ -22,12 +26,15 @@ export class ActivityModalComponent implements OnInit{
 
   activityForm : FormGroup;
   visible : boolean = false;
-  categories = [];
+  categories: { label: string, value: number }[] = [];
+  @Input() parentEventBasicInfo : EventBasicInfo;
+  @Output() activityCreated = new EventEmitter<void>();
 
-  @Input() minDate! : Date;
-  @Input() maxDate! : Date;
-
-  constructor(private categoryService : CategoryService, private formValidationService : FormValidationService) {}
+  constructor(
+    private categoryService : CategoryService,
+    private formValidationService : FormValidationService,
+    private apiService : ApiService,
+    private messageService : MessageService) {}
 
   ngOnInit(): void {
 
@@ -46,7 +53,7 @@ export class ActivityModalComponent implements OnInit{
       startTime: new FormControl('',Validators.required),
       endTime: new FormControl('',Validators.required),
       category: new FormControl('',Validators.required)
-    }, CustomValidators.startBeforeEndDates('startTime','endTime'))
+    }, { validators: CustomValidators.startBeforeEndDates('startTime','endTime') })
 
   }
 
@@ -56,16 +63,43 @@ export class ActivityModalComponent implements OnInit{
 
   hide() {
     this.visible = false;
-    this,this.activityForm.reset()
+    this.activityForm.reset()
   }
 
   submitForm(){
 
     if(this.activityForm.invalid){
       this.formValidationService.showValidationErrors(this.activityForm,'Activity Form');
+      return;
     }
 
-    console.log(this.activityForm.value)
+    const formValue = this.activityForm.value;
+
+    const activity = new ActivityDto(
+      this.parentEventBasicInfo.getEventID(),
+      formValue.title,
+      new Date(formValue.startTime).toISOString(),
+      new Date(formValue.endTime).toISOString(),
+      formValue.description,
+      formValue.category
+    )
+
+    this.apiService.createActivity(activity).subscribe({
+      next: (response) => {
+        const message = response.headers?.get('Location') || 'Activity created successfully!';
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: message });
+        this.hide()
+        this.activityCreated.emit()
+      },
+      error: (errorResponse) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: errorResponse.message,
+          life: 3000 });
+        }
+    });
+    
   }
 
 }

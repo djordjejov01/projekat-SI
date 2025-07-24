@@ -1,9 +1,14 @@
-<app-event-management-header 
-[eventTitle]="event.getTitle()" 
-[editMode]="editMode" 
-(editModeChange)="onToggleEditMode($event)"></app-event-management-header>
+<ng-container *ngIf="eventBasicInfo">
+  <app-event-management-header 
+    [eventTitle]="eventBasicInfo.getTitle()" 
+    [editMode]="editMode" 
+    (editModeChange)="onToggleEditMode($event)">
+  </app-event-management-header>
 
-<app-event-basic-info 
-[event]="event" 
-[editMode]="editMode"
-(cancleEdit)="onToggleEditMode(false)"></app-event-basic-info>
+  <app-event-basic-info 
+    [eventBasicInfo]="eventBasicInfo" 
+    [editMode]="editMode"
+    (cancelEdit)="onToggleEditMode(false)"
+    (eventUpdated)="onEventUpdated($event)">
+  </app-event-basic-info>
+</ng-container>

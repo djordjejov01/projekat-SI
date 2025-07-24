@@ -1,4 +1,4 @@
-export class UpdatEventDto{
+export class UpdateEventDto{
     constructor(
         private title : string,
         private description : string,
