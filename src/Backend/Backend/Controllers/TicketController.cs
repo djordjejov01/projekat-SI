@@ -124,6 +124,7 @@ namespace Backend.Controllers
             var myTickets = _context.UserTickets
                 .Where(ut => ut.UserID == userId)
                 .Select(ut => new {
+                    ut.UserTicketID,
                     ut.TicketID,
                     ut.PurchasedAt,
                     TicketType = ut.Ticket.TypeName,
