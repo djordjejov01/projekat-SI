@@ -219,7 +219,18 @@
     "saveError": "Failed to save QR code",
     "shareError": "Failed to share QR code"
   
-}
+},
+
+  "profileTickets": {
+    "title": "My Tickets",
+    "ticketType": "Ticket Type",
+    "quantity": "Quantity",
+    "price": "Price",
+    "purchasedOn": "Purchased on",
+    "noTickets": "You currently have no purchased tickets."
+  }
+
+
 
 
 

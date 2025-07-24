@@ -216,7 +216,18 @@
     "errorTitle": "Greška",
     "saveError": "Neuspešno čuvanje QR koda",
     "shareError": "Neuspešno deljenje QR koda"
+  },
+  
+  "profileTickets": {
+    "title": "Moje karte",
+    "ticketType": "Tip karte",
+    "quantity": "Količina",
+    "price": "Cena",
+    "purchasedOn": "Kupljeno",
+    "noTickets": "Trenutno nemate nijednu kupljenu kartu."
   }
+
+
 
 
 
