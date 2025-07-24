@@ -20,7 +20,7 @@ namespace Backend.Services
         {
             var now = DateTime.Now;
             var events = _context.Events
-                .Where(e => e.OrganizerID == id).ToList();
+                .Where(e => e.OrganizerID == id && e.ParentEventId == 0).ToList();
             if (events == null || !events.Any())
             {
                 throw new Exception("No events found for this organizer.");
@@ -32,7 +32,7 @@ namespace Backend.Services
         {
             var now = DateTime.Now;
             var events = _context.Events
-                .Where(e => e.OrganizerID == id).ToList();
+                .Where(e => e.OrganizerID == id && e.ParentEventId == 0).ToList();
             if (events == null || !events.Any())
             {
                 throw new Exception("No events found for this organizer.");
