@@ -92,3 +92,6 @@ header{
   border: none;
 }
 
+button:hover{
+    cursor: pointer;
+}

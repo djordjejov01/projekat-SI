@@ -55,8 +55,13 @@ button{
 }
 
 
-
+button{
+    transition: 0.3s;
+}
 
 button:hover{
     cursor: pointer;
+    background-color: #636AE8;
+    color:white;
+    transition: 0.3s;
 }

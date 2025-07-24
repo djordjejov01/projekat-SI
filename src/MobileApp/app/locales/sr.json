@@ -193,6 +193,42 @@
   "ok": "U redu",
   "free": "Besplatno"
 }
+,
+
+  "ticketDetails": {
+    "title": "Detalji karte",
+    "location": "Lokacija",
+    "ticketType": "Tip karte",
+    "purchasedAt": "Kupljeno",
+    "price": "Cena",
+    "purchasedBy": "Kupljeno od strane",
+    "unknownUser": "Nepoznat korisnik",
+    "noTickets": "Nijedan ID karte nije prosleđen.",
+    "ticket": "Karta"
+  },
+  "buttons": {
+    "download": "Preuzmi",
+    "share": "Podeli",
+      "backToEvents": "Nazad na događaje"
+  },
+  "qr": {
+    "savedTitle": "Sačuvano!",
+    "savedMessage": "QR kod je sačuvan u {{filename}}",
+    "errorTitle": "Greška",
+    "saveError": "Neuspešno čuvanje QR koda",
+    "shareError": "Neuspešno deljenje QR koda"
+  },
+  
+  "profileTickets": {
+    "title": "Moje karte",
+    "ticketType": "Tip karte",
+    "quantity": "Količina",
+    "price": "Cena",
+    "purchasedOn": "Kupljeno",
+    "noTickets": "Trenutno nemate nijednu kupljenu kartu."
+  }
+
+
 
 
 
