@@ -93,6 +93,7 @@
   "error": "Greška",
   "logoutError": "Neuspešna odjava."
 },
+  "aboutEvent": "O događaju",
 "aboutScreen": {
   "heading": "O nama",
   "description": "SyncUp je vaš idealan saputnik za događaje. Pomažemo ljudima da pronađu, prisustvuju i budu informisani o događajima koje vole – od koncerata i IT okupljanja do radionica i umetničkih festivala.",
@@ -147,6 +148,7 @@
   "selectLocation": "Izaberite lokaciju...",
   "sortBy": "Sortiraj po...",
   "dateAsc": "Datum ↑",
+  "selectCategory": "Izaberi kategoriju",
   "dateDesc": "Datum ↓",
   "priceAsc": "Cena ↑",
   "priceDesc": "Cena ↓",
@@ -155,6 +157,7 @@
   "reset": "Poništi sve filtere",
   "noResults": "Nema događaja koji odgovaraju filterima."
 }
+, "freeEvent": "Besplatan događaj"
 ,
 "tabs": {
   "events": "Događaji",
