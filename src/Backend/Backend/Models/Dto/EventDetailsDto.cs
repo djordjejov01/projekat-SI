@@ -14,6 +14,8 @@ namespace Backend.Models.Dto
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string Description { get; set; }
+        public decimal? MaxPrice { get; set; }
+        public decimal? MinPrice { get; set; }
         public int? Capacity { get; set; }
         public int OrganizerId { get; set; }
         public string OrganizerName { get; set; }

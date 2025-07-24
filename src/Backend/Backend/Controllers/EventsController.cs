@@ -111,8 +111,15 @@ namespace Backend.Controllers
                 isFavorite = await _context.FavoriteEvents
                 .AnyAsync(f => f.UserId == userId && f.EventId == id);
             }
-            
-            
+
+            var prices = await _context.Tickets
+                .Where(t => t.EventID == id)
+                .Select(t => t.Price)
+                .ToListAsync();
+
+            decimal? minPrice = prices.Count > 0 ? prices.Min() : (decimal?)null;
+            decimal? maxPrice = prices.Count > 0 ? prices.Max() : (decimal?)null;
+
             var dto = new EventDetailsDto
             {
                 Id = eventEntity.EventID,
@@ -128,7 +135,9 @@ namespace Backend.Controllers
                 IsFavorite = isFavorite,
                 Capacity = eventEntity.NumberOfPeople,
                 Agenda = agenda,
-                Category=eventEntity.Category
+                Category=eventEntity.Category,
+                MinPrice = minPrice,
+                MaxPrice = maxPrice
 
             };
 
