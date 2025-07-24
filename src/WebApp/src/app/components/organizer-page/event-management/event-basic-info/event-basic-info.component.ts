@@ -16,7 +16,7 @@ import { CategoryService } from '../../../../Services/EventCategoryService';
 import { take } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { UpdateEventDto } from '../../../../Models/UpdateEventDto';
-import { ApiService } from '../../../../Services/api.service';
+import { Activity, ApiService } from '../../../../Services/api.service';
 import { mockAgenda, Subevent } from '../../../../MockData/MockAgenda';
 import { AccordionModule } from 'primeng/accordion';
 import { FileUpload } from 'primeng/fileupload';
@@ -42,7 +42,9 @@ export class EventBasicInfoComponent implements OnInit{
   eventForm : FormGroup;
   minDate : Date;
   categories:  { label: string, value: number }[] = [];
-  agenda : Subevent[] = [];
+  //agenda : Subevent[] = [];
+  subevents : Subevent[] = [];
+  activities : Activity[] = [];
 
     constructor(
       private categoryService : CategoryService,
@@ -53,7 +55,8 @@ export class EventBasicInfoComponent implements OnInit{
     ngOnInit(): void {
 
       this.minDate = new Date();
-      this.agenda = mockAgenda;
+
+        this.loadAgenda();
         
       this.categoryService.loadCategoriesIfEmpty()
         .pipe(take(1))
@@ -213,6 +216,34 @@ export class EventBasicInfoComponent implements OnInit{
               life: 3000 });
       }
     });
+  }
+
+  loadAgenda(){
+      this.apiService.getAgenda(this.eventBasicInfo.getEventID()).subscribe({
+        next: ({subevents, activities}) => {
+          this.subevents = subevents;
+          this.activities = activities;
+
+          console.log(subevents)
+          console.log(activities)
+        },
+          error: err => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error loading agenda',
+              detail: err.message || 'Unknown error',
+              life: 5000
+            });
+          }
+      })
+  }
+
+  onActivityCreated(){
+      this.loadAgenda()
+  }
+
+  onSubeventCreated(){
+    this.loadAgenda();
   }
 
 }

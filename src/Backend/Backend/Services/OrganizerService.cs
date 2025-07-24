@@ -112,7 +112,7 @@ namespace Backend.Services
         public async Task<EventsSubeventsActivitiesDto> GetEventSubeventsActivities(int eventId)
         {
             List<Event> AllEvents = await _context.Events
-                .Where(e => e.EventID == eventId || e.ParentEventId == eventId)
+                .Where(e => e.ParentEventId == eventId)
                 .Select(e => new Event
                 {
                     EventID = e.EventID,
@@ -122,6 +122,7 @@ namespace Backend.Services
                     Location = e.Location,
                     Description = e.Description,
                     ImageUrl = e.ImageUrl,
+                    ParentEventId = e.ParentEventId
                 })
                 .ToListAsync();
             List<Event> subevents = AllEvents
@@ -139,7 +140,8 @@ namespace Backend.Services
                     StartTime = a.StartTime,
                     EndTime = a.EndTime,
                     Category = a.Category,
-                    EventID = a.EventID
+                    EventID = a.EventID,
+                    Title = a.Title
                 })
                 .ToListAsync();
             foreach (EventActivity activity in mainEventActivities)
@@ -157,7 +159,8 @@ namespace Backend.Services
                         StartTime = a.StartTime,
                         EndTime = a.EndTime,
                         Category = a.Category,
-                        EventID = a.EventID
+                        EventID = a.EventID,
+                        Title = a.Title
                     })
                     .ToListAsync();
                 AllActivities.AddRange(subeventActivities);
@@ -173,7 +176,8 @@ namespace Backend.Services
                     EndDate = e.EndDate,
                     Location = e.Location,
                     Description = e.Description,
-                    ImageUrl = e.ImageUrl
+                    ImageUrl = e.ImageUrl,
+                    ParentEventId = e.ParentEventId
                 });
             }
             foreach (EventActivity a in AllActivities)
@@ -182,7 +186,7 @@ namespace Backend.Services
                 {
                     ActivityId = a.ActivityID,
                     EventId = a.EventID,
-                    Title = a.Description,
+                    Title = a.Title,
                     StartDate = a.StartTime,
                     EndDate = a.EndTime,
                     Description = a.Description,
@@ -193,16 +197,22 @@ namespace Backend.Services
         }
         public Task CreateActivity(ActivityDto activity)
         {
-            if(activity == null) 
+            if (activity == null)
                 throw new ArgumentNullException(nameof(activity), "Activity cannot be null.");
+
+            var startUtc = DateTime.SpecifyKind(activity.StartDate, DateTimeKind.Utc);
+            var endUtc = DateTime.SpecifyKind(activity.EndDate, DateTimeKind.Utc);
+
             EventActivity e = new EventActivity
             {
                 Description = activity.Description,
-                StartTime = activity.StartDate,
-                EndTime = activity.EndDate,
+                StartTime = startUtc,
+                EndTime = endUtc,
                 Category = activity.Category,
-                EventID = activity.EventId
+                EventID = activity.EventId,
+                Title = activity.Title
             };
+
             _context.EventActivities.Add(e);
             try
             {
@@ -212,6 +222,7 @@ namespace Backend.Services
             {
                 throw;
             }
+
         }
     }
 }

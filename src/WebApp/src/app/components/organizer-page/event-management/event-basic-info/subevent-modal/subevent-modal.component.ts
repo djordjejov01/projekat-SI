@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CustomValidators } from '../../../../../Validators/custom.validators';
@@ -16,6 +16,9 @@ import { FormValidationService } from '../../../../../Services/FormValidationSer
 import { InputNumber } from 'primeng/inputnumber';
 import { Checkbox } from 'primeng/checkbox';
 import { EventBasicInfo } from '../../../../../Models/EventBasicInfo';
+import { AuthService } from '../../../../../Services/auth.service';
+import { MessageService } from 'primeng/api';
+import { ApiService } from '../../../../../Services/api.service';
 
 @Component({
   selector: 'app-subevent-modal',
@@ -30,8 +33,14 @@ export class SubeventModalComponent implements OnInit{
   categories = [];
   visible : boolean = false;
   @Input() parentEventBasicInfo! : EventBasicInfo;
+  @Output() subeventCreated = new EventEmitter<void>();
 
-  constructor(private categoryService : CategoryService, private formValidationService : FormValidationService) {}
+  constructor(
+    private categoryService : CategoryService,
+    private formValidationService : FormValidationService,
+    private authService : AuthService,
+    private messageService : MessageService,
+    private apiService : ApiService) {}
 
   ngOnInit(): void {
     
@@ -80,9 +89,40 @@ export class SubeventModalComponent implements OnInit{
 
     if(this.subeventForm.invalid){
       this.formValidationService.showValidationErrors(this.subeventForm,'Subevent Form');
+      return;
     }
 
-    console.log(this.subeventForm.value)
+    const formValues = this.subeventForm.getRawValue();
+    const capacity = formValues.isUnlimitedCapacity ? -1 : formValues.capacity;
+
+     const formData = new FormData();
+
+      formData.append('Title', formValues.title);
+      formData.append('Description', formValues.description);
+      formData.append('Location', formValues.location);
+      formData.append('StartDateTime', new Date(formValues.startDateTime).toISOString());
+      formData.append('EndDateTime', new Date(formValues.endDateTime).toISOString());
+      formData.append('Capacity', capacity.toString());
+
+      // Assuming Category is a string or enum, convert it accordingly
+      formData.append('Category', formValues.category.toString());
+      formData.append('ParentEventId', this.parentEventBasicInfo.getEventID().toString())
+
+      const organizerId = this.authService.getUserId();
+
+        this.apiService.createEvent(formData, organizerId).subscribe({
+          next: (response) => {
+            const message = response.headers?.get('Location') || 'Event created successfully!';
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: message });
+            this.subeventForm.reset()
+            this.hide()
+            this.subeventCreated.emit()
+          },
+          error: () => {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to create event.' });
+          }
+        });
+    
   }
 
 }

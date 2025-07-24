@@ -204,14 +204,17 @@
         <div class="agenda-header">
             <h1 class="font-archivo">Event Agenda</h1>
             <div class="buttons">
-                    <button  icon="pi pi-plus" (click)="subeventModal.show()"><i class="pi pi-plus"></i>Add Subevent</button>
+                    <button *ngIf="eventBasicInfo.getParentEventId() === 0"  icon="pi pi-plus" (click)="subeventModal.show()"><i class="pi pi-plus"></i>Add Subevent</button>
                     <button  icon="pi pi-plus" (click)="activityModal.show()" ><i class="pi pi-plus" ></i>Add Activity</button>
             </div>
         </div>
         
         <hr class="custom-hr">
+
+        <!-- Subevents and their activities -->
+
         <p-accordion [value]="['0']" [multiple]="true">
-            @for (subevent of agenda; track subevent.id) 
+            @for (subevent of subevents; track subevent.id) 
             {
                 <p-accordion-panel [value]="subevent.id">
                     <p-accordion-header class="m-0">
@@ -244,10 +247,33 @@
                     </p-accordion-content>
                 </p-accordion-panel>
             }
+
+            <!-- Current event activities -->
+             
+            <p-accordion [value]="['0']" [multiple]="true">
+                @for (activity of activities; track activity.id) 
+                {
+                    <p-accordion-panel [value]="activity.id">
+                        <p-accordion-header>
+                            <span class="flex items-center gap-2 w-full">
+                                <span><i class="pi pi-check-circle" style="color: #636AE8"></i></span>
+                                <span>{{ activity.title }}</span>
+                            </span>
+                        </p-accordion-header>
+                        <p-accordion-content>
+                            <ol>
+                                <li>Scheduled for: {{ activity.startDateTime | date: 'HH:mm' }} - {{ activity.endDateTime | date: 'HH:mm' }}</li>
+                                <li>Description: {{ activity.description }}</li>
+                            </ol>
+                        </p-accordion-content>
+                    </p-accordion-panel>
+                }
+            </p-accordion>
+
         </p-accordion>
     </div>
 
-    <app-activity-modal #activityModal [minDate]="eventBasicInfo.getStartDate()" [maxDate]="eventBasicInfo.getEndDate()"></app-activity-modal>
-    <app-subevent-modal #subeventModal [parentEventBasicInfo]="eventBasicInfo"></app-subevent-modal>
+    <app-activity-modal #activityModal [parentEventBasicInfo]="eventBasicInfo" (activityCreated)="onActivityCreated()"></app-activity-modal>
+    <app-subevent-modal #subeventModal [parentEventBasicInfo]="eventBasicInfo" (subeventCreated)="onSubeventCreated()"></app-subevent-modal>
 
 </main>
