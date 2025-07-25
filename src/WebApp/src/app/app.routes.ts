@@ -13,6 +13,7 @@ import { CalendarComponent } from './components/organizer-page/calendar/calendar
 import { CreateEventComponent } from './components/organizer-page/create-event/create-event.component';
 import { EventManagementComponent } from './components/organizer-page/event-management/event-management.component';
 import { GuestGuard } from './Guards/guest.guard';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 
 
 export const routes: Routes = [
@@ -31,5 +32,6 @@ export const routes: Routes = [
     {path: 'register', component: RegisterForm, canDeactivate: [(comp: RegisterForm) => comp.canExit()], canActivate: [GuestGuard]},
     {path: 'login', component: LoginForm, canDeactivate: [(comp: LoginForm) => comp.canExit()], canActivate: [GuestGuard]},
     {path: 'admin', component: AdminPage, canActivate: [AuthGuard], data : { roles: ['Admin']}},
-    {path: 'supplier', component: SupplierPageComponent, canActivate: [AuthGuard], data : { roles: ['Supplier']}}
+    {path: 'supplier', component: SupplierPageComponent, canActivate: [AuthGuard], data : { roles: ['Supplier']}},
+    {path: '**', component: NotFoundComponent}
 ];
