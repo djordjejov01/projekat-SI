@@ -470,7 +470,9 @@ namespace Backend.Controllers
         [HttpDelete("tickets")]
         public async Task<IActionResult> DeleteTicket([FromBody] int ticketId)
         {
-            
+            if (ticketId <= 0)
+                return BadRequest("Neispravan ID karte.");
+
             int organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
             
