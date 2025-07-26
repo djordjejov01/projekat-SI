@@ -348,13 +348,13 @@ namespace Backend.Controllers
         {
             var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
-            var eventEntity =_context.Events
-            .FirstOrDefault(e => e.EventID == eventId && e.OrganizerID == organizerId);
+            var eventEntity =await _context.Events
+            .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
 
             if (eventEntity == null)
-                return Forbid("Nemate pristup ovom događaju.");
+                return NotFound("Nemate pristup ovom događaju.");
 
-            var tickets = _context.Tickets
+            var tickets = await _context.Tickets
             .Where(t => t.EventID == eventId)
             .Select(t => new {
                 t.TicketID,
@@ -365,10 +365,9 @@ namespace Backend.Controllers
                 t.Quota,
                 //Available = t.Quota - _context.UserTickets.Count(ut => ut.TicketID == t.TicketID),
                 t.validFrom,
-                t.validUntil,
-                EventTitle = t.Event.Title
+                t.validUntil
             })
-            .ToList();
+            .ToListAsync();
 
             return Ok(tickets);
 
