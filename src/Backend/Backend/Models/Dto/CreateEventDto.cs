@@ -34,7 +34,7 @@ namespace Backend.Models.Dto
     public class TicketDto
     {
         [Required]
-        public int TicketId { get; set; }
+        public int EventId { get; set; }
         [Required]
         public string Name { get; set; }
 
