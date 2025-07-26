@@ -373,7 +373,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost("tickets")]
-        public async Task<IActionResult> CreateTicket(int eventId, [FromBody] TicketDto ticketDto)
+        public async Task<IActionResult> CreateTicket([FromBody] TicketDto ticketDto)
         {
             if (ticketDto==null)
             {
@@ -383,7 +383,7 @@ namespace Backend.Controllers
             var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
             var eventEntity = await _context.Events
-                .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
+                .FirstOrDefaultAsync(e => e.EventID == ticketDto.EventId && e.OrganizerID == organizerId);
             if (eventEntity == null)
                 return NotFound("Event nije pronađen ili nemate pravo da dodate kartu za ovaj event.");
 
@@ -391,7 +391,7 @@ namespace Backend.Controllers
             {
                 TypeName = ticketDto.Name,
                 Price = ticketDto.Price,
-                EventID = eventId,
+                EventID = ticketDto.EventId,
                 Quota = ticketDto.Quota,
                 Description = ticketDto.Description,
                 validFrom = ticketDto.ValidFrom,
