@@ -154,11 +154,11 @@ namespace Backend.Controllers
             }
         }
 
-        [Authorize(Roles = "Organizer")]
-        [HttpPut("events/{eventId}")]
-        public async Task<IActionResult> UpdateEvent(int eventId, [FromBody] UpdateEventDto dto)
+        
+        [HttpPut("events")]
+        public async Task<IActionResult> UpdateEvent([FromBody] UpdateEventDto dto)
         {
-            var eventEntity = await _context.Events.FindAsync(eventId);
+            var eventEntity = await _context.Events.FindAsync(dto.EventId);
             if (eventEntity == null)
                 return NotFound();
 
@@ -342,35 +342,77 @@ namespace Backend.Controllers
             }
         }
 
-        [Authorize(Roles ="Organizer")]
+        
         [HttpGet("tickets/{eventId}")]
         public async Task<IActionResult> GetTicketsForOrganizer(int eventId)
         {
             var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
             var eventEntity =await _context.Events
-            .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
+                .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
 
             if (eventEntity == null)
                 return NotFound("Nemate pristup ovom događaju.");
 
             var tickets = await _context.Tickets
-            .Where(t => t.EventID == eventId)
-            .Select(t => new {
-                t.TicketID,
-                t.EventID,
-                t.TypeName,
-                t.Description,
-                t.Price,
-                t.Quota,
-                //Available = t.Quota - _context.UserTickets.Count(ut => ut.TicketID == t.TicketID),
-                t.validFrom,
-                t.validUntil
-            })
-            .ToListAsync();
+                .Where(t => t.EventID == eventId)
+                .Select(t => new {
+                    t.TicketID,
+                    t.EventID,
+                    t.TypeName,
+                    t.Description,
+                    t.Price,
+                    t.Quota,
+                    t.validFrom,
+                    t.validUntil
+                })
+                .ToListAsync();
 
             return Ok(tickets);
 
+        }
+
+        [HttpPost("tickets")]
+        public async Task<IActionResult> CreateTicket(int eventId, [FromBody] TicketDto ticketDto)
+        {
+            if (ticketDto==null)
+            {
+                return BadRequest("Podaci o karti nisu prosleđeni.");
+            }
+
+            var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var eventEntity = await _context.Events
+                .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
+            if (eventEntity == null)
+                return NotFound("Event nije pronađen ili nemate pravo da dodate kartu za ovaj event.");
+
+            var newTicket = new Ticket
+            {
+                TypeName = ticketDto.Name,
+                Price = ticketDto.Price,
+                EventID = eventId,
+                Quota = ticketDto.Quota,
+                Description = ticketDto.Description,
+                validFrom = ticketDto.ValidFrom,
+                validUntil = ticketDto.ValidUntil
+            };
+            _context.Tickets.Add(newTicket);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return Ok(new
+            {
+                message = "Karta uspešno kreirana.",
+                ticketId = newTicket.TicketID
+            });
         }
     }
 }
