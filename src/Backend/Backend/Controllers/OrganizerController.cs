@@ -466,5 +466,38 @@ namespace Backend.Controllers
                 ticketId = existingTicket.TicketID
             });
         }
+
+        [HttpDelete("tickets")]
+        public async Task<IActionResult> DeleteTicket([FromBody] int ticketId)
+        {
+            
+            int organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            
+            var existingTicket = await _context.Tickets
+                .Include(t => t.Event)
+                .FirstOrDefaultAsync(t => t.TicketID == ticketId && t.Event.OrganizerID == organizerId);
+
+            if (existingTicket == null)
+                return NotFound("Karta nije pronađena ili nemate pravo da je obrišete.");
+
+            
+
+            try
+            {
+                _context.Tickets.Remove(existingTicket);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return Ok(new
+            {
+                message = "Karta uspešno obrisana.",
+                ticketId = ticketId
+            });
+        }
     }
 }
