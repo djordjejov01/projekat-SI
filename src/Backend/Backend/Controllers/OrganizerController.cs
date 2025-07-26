@@ -164,7 +164,7 @@ namespace Backend.Controllers
 
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             if (eventEntity.OrganizerID != userId)
-                return Forbid();
+                return NotFound("Nemate pravo da izmenite ovaj event.");
 
 
             eventEntity.Title = dto.Title;
