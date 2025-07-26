@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Event } from '../../../../Models/Event';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -13,7 +13,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Checkbox } from 'primeng/checkbox';
 import { TextareaModule } from 'primeng/textarea';
 import { CategoryService } from '../../../../Services/EventCategoryService';
-import { take } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { UpdateEventDto } from '../../../../Models/UpdateEventDto';
 import { Activity, ApiService } from '../../../../Services/api.service';
@@ -24,6 +24,7 @@ import { ActivityModalComponent } from './activity-modal/activity-modal.componen
 import { FormValidationService } from '../../../../Services/FormValidationService';
 import { SubeventModalComponent } from './subevent-modal/subevent-modal.component';
 import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-event-basic-info',
@@ -31,7 +32,7 @@ import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
   templateUrl: './event-basic-info.component.html',
   styleUrl: './event-basic-info.component.css'
 })
-export class EventBasicInfoComponent implements OnInit{
+export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
 
   @Input() eventBasicInfo: EventBasicInfo;
   @Input() editMode!: boolean;
@@ -46,11 +47,15 @@ export class EventBasicInfoComponent implements OnInit{
   subevents : Subevent[] = [];
   activities : Activity[] = [];
 
+  private unlimitedCapacitySub?: Subscription;
+
     constructor(
       private categoryService : CategoryService,
       private messageService : MessageService,
       private apiService : ApiService,
-      private formValidationService : FormValidationService) {}
+      private formValidationService : FormValidationService,
+      private router : Router,
+      private route: ActivatedRoute) {}
 
     ngOnInit(): void {
 
@@ -67,7 +72,23 @@ export class EventBasicInfoComponent implements OnInit{
           }));
         });
 
+        this.initFormWithEvent()
+    }
 
+    ngOnChanges(changes: SimpleChanges): void {
+      if (changes['eventBasicInfo'] && changes['eventBasicInfo'].currentValue) {
+        this.loadAgenda();
+        this.initFormWithEvent();
+      }
+    }
+
+    ngOnDestroy(): void {
+      this.unlimitedCapacitySub?.unsubscribe();
+    }
+
+
+    initFormWithEvent(){
+      
       this.eventForm = new FormGroup({
         title: new FormControl(this.eventBasicInfo.getTitle(), [Validators.required, CustomValidators.noWhitespaceValidator]),
         description: new FormControl(this.eventBasicInfo.getDescription(), CustomValidators.noWhitespaceValidator),
@@ -82,8 +103,9 @@ export class EventBasicInfoComponent implements OnInit{
         category: new FormControl(this.eventBasicInfo.getCategory(), Validators.required),
       }, { validators: CustomValidators.startBeforeEndDates('startDateTime', 'endDateTime') });
 
+      if(this.unlimitedCapacitySub) this.unlimitedCapacitySub.unsubscribe();
 
-      this.eventForm.get('isUnlimitedCapacity')?.valueChanges.subscribe((unlimited) => {
+      this.unlimitedCapacitySub = this.eventForm.get('isUnlimitedCapacity')?.valueChanges.subscribe((unlimited) => {
         const capacityControl = this.eventForm.get('capacity');
         if (unlimited) {
           capacityControl?.disable();
@@ -98,12 +120,8 @@ export class EventBasicInfoComponent implements OnInit{
       });
 
       this.eventForm.get('isUnlimitedCapacity')?.updateValueAndValidity({onlySelf: true, emitEvent: true});
-    }
 
-    toDisplayName(fieldName : string): string{
-      return fieldName.replace(/([A-Z])/g, ' $1').replace(/^./, strr => strr.toUpperCase())
     }
-
 
   submitForm(){
 
@@ -236,6 +254,10 @@ export class EventBasicInfoComponent implements OnInit{
             });
           }
       })
+  }
+
+  goToSubeventManagement(subeventId : number){
+    this.router.navigate(['/organizer/event-management', subeventId])
   }
 
   onActivityCreated(){
