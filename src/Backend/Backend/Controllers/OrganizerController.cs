@@ -482,6 +482,12 @@ namespace Backend.Controllers
                 return NotFound("Karta nije pronađena ili nemate pravo da je obrišete.");
 
             
+            var purchasedTickets = await _context.UserTickets
+                .CountAsync(ut => ut.TicketID == ticketId);
+
+            if (purchasedTickets > 0)
+                return BadRequest("Nije moguće obrisati kartu jer postoje kupljene karte.");
+
 
             try
             {
