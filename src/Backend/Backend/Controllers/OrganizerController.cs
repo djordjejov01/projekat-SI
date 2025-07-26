@@ -414,5 +414,57 @@ namespace Backend.Controllers
                 ticketId = newTicket.TicketID
             });
         }
+
+        [HttpPut("tickets")]
+        public async Task<IActionResult> UpdateTicket([FromBody] TicketDto ticketDto)
+        {
+            if (ticketDto == null)
+                return BadRequest();
+
+            
+            int organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            
+            var existingTicket = await _context.Tickets
+                .Include(t => t.Event)
+                .FirstOrDefaultAsync(t => t.TicketID == ticketDto.TicketId && t.Event.OrganizerID == organizerId);
+
+            if (existingTicket == null)
+                return NotFound("Karta nije pronađena ili nemate pravo da je izmenite.");
+
+            
+            if (ticketDto.EventId != existingTicket.EventID)
+            {
+                var newEventEntity = await _context.Events
+                    .FirstOrDefaultAsync(e => e.EventID == ticketDto.EventId && e.OrganizerID == organizerId);
+
+                if (newEventEntity == null)
+                    return NotFound("Event nije pronađen ili nemate pravo da koristite ovaj event.");
+            }
+
+            
+            existingTicket.TypeName = ticketDto.Name;
+            existingTicket.Price = ticketDto.Price;
+            existingTicket.EventID = ticketDto.EventId;
+            existingTicket.Quota = ticketDto.Quota;
+            existingTicket.Description = ticketDto.Description;
+            existingTicket.validFrom = ticketDto.ValidFrom;
+            existingTicket.validUntil = ticketDto.ValidUntil;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return Ok(new
+            {
+                message = "Karta uspešno izmenjena.",
+                ticketId = existingTicket.TicketID
+            });
+        }
     }
 }
