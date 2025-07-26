@@ -341,5 +341,37 @@ namespace Backend.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [Authorize(Roles ="Organizer")]
+        [HttpGet("tickets/{eventId}")]
+        public async Task<IActionResult> GetTicketsForOrganizer(int eventId)
+        {
+            var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var eventEntity =_context.Events
+            .FirstOrDefault(e => e.EventID == eventId && e.OrganizerID == organizerId);
+
+            if (eventEntity == null)
+                return Forbid("Nemate pristup ovom događaju.");
+
+            var tickets = _context.Tickets
+            .Where(t => t.EventID == eventId)
+            .Select(t => new {
+                t.TicketID,
+                t.EventID,
+                t.TypeName,
+                t.Description,
+                t.Price,
+                t.Quota,
+                //Available = t.Quota - _context.UserTickets.Count(ut => ut.TicketID == t.TicketID),
+                t.validFrom,
+                t.validUntil,
+                EventTitle = t.Event.Title
+            })
+            .ToList();
+
+            return Ok(tickets);
+
+        }
     }
 }
