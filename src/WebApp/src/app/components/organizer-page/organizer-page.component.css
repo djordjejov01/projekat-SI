@@ -109,3 +109,6 @@ hr{
 select:hover, option:hover{
     cursor: pointer;
 }
+#username:hover{
+    cursor: pointer;
+}

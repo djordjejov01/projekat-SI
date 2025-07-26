@@ -12,6 +12,9 @@ import { ProfileComponent } from './components/organizer-page/profile/profile.co
 import { CalendarComponent } from './components/organizer-page/calendar/calendar.component';
 import { CreateEventComponent } from './components/organizer-page/create-event/create-event.component';
 import { EventManagementComponent } from './components/organizer-page/event-management/event-management.component';
+import { DashboardComponent } from './components/supplier-page/dashboard/dashboard.component';
+import { MyProfileComponent } from './components/supplier-page/my-profile/my-profile.component';
+import { SupplierCalendarComponent } from './components/supplier-page/supplier-calendar/supplier-calendar.component';
 
 
 export const routes: Routes = [
@@ -30,5 +33,12 @@ export const routes: Routes = [
     {path: 'register', component: RegisterForm, canDeactivate: [(comp: RegisterForm) => comp.canExit()]},
     {path: 'login', component: LoginForm, canDeactivate: [(comp: LoginForm) => comp.canExit()]},
     {path: 'admin', component: AdminPage, canActivate: [AuthGuard], data : { roles: ['Admin']}},
-    {path: 'supplier', component: SupplierPageComponent, canActivate: [AuthGuard], data : { roles: ['Supplier']}}
+    {path: 'supplier', component: SupplierPageComponent, canActivate: [AuthGuard], data : { roles: ['Supplier']},
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full'},
+      { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard], data : {roles: ['Supplier']} },
+      { path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard], data : {roles: ['Supplier']} },
+      { path: 'calendar', component: SupplierCalendarComponent, canActivate: [AuthGuard], data : {roles: ['Supplier']} },
+    ]
+  }
 ];

@@ -1,1 +1,27 @@
-<p>supplier-page works!</p>
+<main>
+    <p-toast />
+    <p-confirmdialog />
+    <div id="head">
+        <img src="./assets/logo91.png" alt="" id="logo" routerLink="/home">
+        <div id="right">
+            <select (change)="changeLanguage($event)">
+                <option value="sr">Srpski</option>
+                <option value="en">English</option>
+            </select>
+            <button (click)="onLogoutClick()" id="lgbtn">{{ 'LOGOUT' | translate }}</button>
+            <img src="./assets/bell.svg" alt="">
+            <p (click) = "myProfile()" id="username">{{username}}</p>
+            <img [src]="previewUrl || defaultImage" alt="profile picture" id="pfp" (click) = "myProfile()">
+        </div>
+    </div>
+    <div id="page">
+        <app-menu-bar
+            [items]="[{ title: 'DASHBOARD', image: './assets/eye.svg', imageWhite: './assets/eyeWhite.svg', link: 'dashboard'},
+            { title: 'CALENDAR', image: './assets/cal.svg', imageWhite: './assets/calWhite.svg' , link: 'calendar'},
+            { title: 'MYPROFILE', image: './assets/profile.svg', imageWhite: './assets/profileWhite.svg', link: 'my-profile' }]"></app-menu-bar>
+        <div id="show">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+    <hr>
+</main>

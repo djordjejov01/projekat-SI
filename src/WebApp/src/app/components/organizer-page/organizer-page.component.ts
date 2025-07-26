@@ -37,7 +37,7 @@ export class OrganizerPageComponent implements AfterContentInit, OnInit {
   currOrganizer: OrganizerDto;
   defaultImage = 'assets/default-picture.png';
   previewUrl: string | ArrayBuffer | null = null;
-
+  username : string;
   getOrganizerCall() {
     this.apiService.getOrganizer(this.authService.getUserId()).subscribe({
 
@@ -62,6 +62,8 @@ export class OrganizerPageComponent implements AfterContentInit, OnInit {
 
 
   ngOnInit(): void {
+    this.username = this.authService.getUserName();
+
     this.sharedService.profileImageChanged$.subscribe(changed => {
       if (changed) {
         this.getOrganizerCall(); // metoda koja uzima novu sliku iz baze/backenda
