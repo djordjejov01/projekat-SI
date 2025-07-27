@@ -2,7 +2,7 @@
 
     <div class="table-styles-header">
         <h1>Event Tickets</h1>
-        <button  icon="pi pi-plus"><i class="pi pi-plus" ></i>Add Ticket</button>
+        <button  icon="pi pi-plus" (click)="ticketModal.show()"><i class="pi pi-plus"></i>Add Ticket</button>
     </div>
 
     <hr class="custom-hr">
@@ -164,3 +164,5 @@
     </p-table>
     
 </div>
+
+<app-ticket-modal [eventBasicInfo]="eventBasicInfo" #ticketModal></app-ticket-modal>

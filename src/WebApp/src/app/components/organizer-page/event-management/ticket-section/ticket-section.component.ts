@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { MOCK_TICKETS, Ticket } from '../../../../MockData/MockTickets';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -11,15 +11,19 @@ import { IconField } from 'primeng/iconfield';
 import { Table } from 'primeng/table';
 import { DatePipe } from '@angular/common';
 import { TooltipModule } from 'primeng/tooltip';
+import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
+import { TicketModalComponent } from './ticket-modal/ticket-modal.component';
 
 @Component({
   selector: 'app-ticket-section',
-  imports: [TableModule,ButtonModule,MultiSelectModule,InputTextModule,DropdownModule,FormsModule,InputIcon,IconField,TooltipModule, DatePipe],
+  imports: [TableModule,ButtonModule,MultiSelectModule,InputTextModule,DropdownModule,FormsModule,InputIcon,IconField,TooltipModule, DatePipe,TicketModalComponent],
   templateUrl: './ticket-section.component.html',
   styleUrl: './ticket-section.component.css'
 })
 export class TicketSectionComponent {
 
+
+  @Input() eventBasicInfo : EventBasicInfo;
 
   tickets : Ticket[] = MOCK_TICKETS;
   selectedTickets : Ticket [] = [];
