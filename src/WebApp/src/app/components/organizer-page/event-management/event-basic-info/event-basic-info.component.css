@@ -8,7 +8,7 @@
 
 main{
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
     gap: 2rem;
 }
 
@@ -173,6 +173,7 @@ main{
 .agenda{
     border: 1px solid #EBEBEA;
     border-radius: 8px;
+    height: 100%;
 }
 
 .agenda-header{

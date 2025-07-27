@@ -25,10 +25,11 @@ import { FormValidationService } from '../../../../Services/FormValidationServic
 import { SubeventModalComponent } from './subevent-modal/subevent-modal.component';
 import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-event-basic-info',
-  imports: [CommonModule,ReactiveFormsModule,FloatLabelModule,InputNumber,DatePickerModule,SelectModule,ButtonModule,InputTextModule,Checkbox,TextareaModule,AccordionModule,FileUpload,ActivityModalComponent,SubeventModalComponent],
+  imports: [CommonModule,ReactiveFormsModule,FloatLabelModule,InputNumber,DatePickerModule,SelectModule,ButtonModule,InputTextModule,Checkbox,TextareaModule,AccordionModule,FileUpload,ActivityModalComponent,SubeventModalComponent,TooltipModule],
   templateUrl: './event-basic-info.component.html',
   styleUrl: './event-basic-info.component.css'
 })

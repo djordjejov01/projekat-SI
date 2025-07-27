@@ -33,11 +33,12 @@ import { CategoryMetrics } from '../../../Interfaces/CategoryMetricsResponse';
 import { CategoryService } from '../../../Services/EventCategoryService';
 import { MonthlyMetrics } from '../../../Interfaces/MonthlyMetricsResponse';
 import { take } from 'rxjs';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-events',
   imports: [CommonModule, ChartModule, TableModule, ButtonModule,
-    CommonModule, MultiSelectModule, InputTextModule, DropdownModule, FormsModule, IconField, InputIcon, TableModule, ConfirmDialogModule],
+    CommonModule, MultiSelectModule, InputTextModule, DropdownModule, FormsModule, IconField, InputIcon, TableModule, ConfirmDialogModule,TooltipModule],
   templateUrl: './events.component.html',
   styleUrl: './events.component.css'
 })

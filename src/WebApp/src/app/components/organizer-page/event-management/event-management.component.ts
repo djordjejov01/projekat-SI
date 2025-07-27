@@ -6,10 +6,11 @@ import { MessageService } from 'primeng/api';
 import { ApiService } from '../../../Services/api.service';
 import { EventBasicInfo } from '../../../Models/EventBasicInfo';
 import { CommonModule } from '@angular/common';
+import { TicketSectionComponent } from './ticket-section/ticket-section.component';
 
 @Component({
   selector: 'app-event-management',
-  imports: [EventBasicInfoComponent,EventManagementHeaderComponent,CommonModule],
+  imports: [EventBasicInfoComponent,EventManagementHeaderComponent,CommonModule,TicketSectionComponent],
   templateUrl: './event-management.component.html',
   styleUrl: './event-management.component.css'
 })

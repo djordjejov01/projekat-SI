@@ -1,15 +1,23 @@
 <ng-container *ngIf="eventBasicInfo">
+<header>
   <app-event-management-header 
-    [eventTitle]="eventBasicInfo.getTitle()" 
-    [editMode]="editMode" 
-    (editModeChange)="onToggleEditMode($event)"
-    [parentEventId]="eventBasicInfo.getParentEventId()">
+      [eventTitle]="eventBasicInfo.getTitle()" 
+      [editMode]="editMode" 
+      (editModeChange)="onToggleEditMode($event)"
+      [parentEventId]="eventBasicInfo.getParentEventId()">
   </app-event-management-header>
+</header>
 
   <app-event-basic-info 
     [eventBasicInfo]="eventBasicInfo" 
     [editMode]="editMode"
     (cancelEdit)="onToggleEditMode(false)"
     (eventUpdated)="onEventUpdated($event)">
-  </app-event-basic-info>
+    </app-event-basic-info>
+
+      <app-ticket-section></app-ticket-section>
 </ng-container>
+
+
+
+
