@@ -219,10 +219,16 @@
                 <p-accordion-panel [value]="subevent.id">
                     <p-accordion-header class="m-0">
                         
-                        <span class="flex items-center gap-2 w-full">
-                            <span><i class="pi pi-calendar-clock" style="color: #636AE8"></i></span>
+                        <span class="flex items-center justify-between w-full">
+                        <span class="flex items-center gap-2">
+                            <i class="pi pi-calendar-clock" style="color: #636AE8"></i>
                             <span>{{ subevent.title }}  {{ subevent.startDateTime | date: 'HH:mm' }} - {{ subevent.endDateTime | date: 'HH:mm' }}</span>
                         </span>
+
+                        <button pButton type="button" icon="pi pi-external-link" class="p-button-text p-button-sm"
+                                (click)="goToSubeventManagement(subevent.id)" title="Manage Subevent"></button>
+                        </span>
+
                     </p-accordion-header>
                     <p-accordion-content>
                         <p-accordion [value]="['0']" [multiple]="true">
