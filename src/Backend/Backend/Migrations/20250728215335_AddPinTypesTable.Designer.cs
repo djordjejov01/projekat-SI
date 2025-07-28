@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250728155834_AddEventPinTable")]
-    partial class AddEventPinTable
+    [Migration("20250728215335_AddPinTypesTable")]
+    partial class AddPinTypesTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -143,9 +143,8 @@ namespace Backend.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("EventId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("EventId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Label")
                         .IsRequired()
@@ -156,6 +155,9 @@ namespace Backend.Migrations
 
                     b.Property<double>("Longitude")
                         .HasColumnType("double precision");
+
+                    b.Property<int>("PinCategory")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("PinnedAt")
                         .HasColumnType("timestamp with time zone");
@@ -262,6 +264,85 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Organizers");
+                });
+
+            modelBuilder.Entity("Backend.Models.PinType", b =>
+                {
+                    b.Property<int>("PinTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PinTypeId"));
+
+                    b.Property<string>("PinCategory")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("PinTypeId");
+
+                    b.ToTable("PinTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            PinTypeId = 1,
+                            PinCategory = "Booth"
+                        },
+                        new
+                        {
+                            PinTypeId = 2,
+                            PinCategory = "Stage"
+                        },
+                        new
+                        {
+                            PinTypeId = 3,
+                            PinCategory = "Entrance"
+                        },
+                        new
+                        {
+                            PinTypeId = 4,
+                            PinCategory = "Exit"
+                        },
+                        new
+                        {
+                            PinTypeId = 5,
+                            PinCategory = "FirstAid"
+                        },
+                        new
+                        {
+                            PinTypeId = 6,
+                            PinCategory = "Food"
+                        },
+                        new
+                        {
+                            PinTypeId = 7,
+                            PinCategory = "Drink"
+                        },
+                        new
+                        {
+                            PinTypeId = 8,
+                            PinCategory = "Restroom"
+                        },
+                        new
+                        {
+                            PinTypeId = 9,
+                            PinCategory = "Info"
+                        },
+                        new
+                        {
+                            PinTypeId = 10,
+                            PinCategory = "Security"
+                        },
+                        new
+                        {
+                            PinTypeId = 11,
+                            PinCategory = "Parking"
+                        },
+                        new
+                        {
+                            PinTypeId = 12,
+                            PinCategory = "LostAndFound"
+                        });
                 });
 
             modelBuilder.Entity("Backend.Models.Resource", b =>
