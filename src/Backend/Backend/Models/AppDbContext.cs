@@ -20,7 +20,7 @@ namespace Backend.Models
         public DbSet<UserResourceReservation> UserResourceReservations { get; set; }
         public DbSet<Organizer> Organizers { get; set; }
         public DbSet<EventCategories> EventCategories { get; set; }
-
+        public DbSet<EventPin> EventPin { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Ticket>()
