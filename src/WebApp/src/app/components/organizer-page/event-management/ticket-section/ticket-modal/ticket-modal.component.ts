@@ -29,7 +29,7 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy{
 
   currencyCode : string;
   localeCode : string;
-  private langChangeSub: Subscription;
+  private langChangeSub: Subscription | undefined;
 
   constructor(private messageService : MessageService, private formValidationService : FormValidationService, private translateService : TranslateService) {}
 
@@ -47,7 +47,7 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy{
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes['eventBasicInfo' ] && this.eventBasicInfo){
+    if(changes['eventBasicInfo' ] && this.eventBasicInfo && this.ticketForm){
       this.ticketForm.reset()
     }
 

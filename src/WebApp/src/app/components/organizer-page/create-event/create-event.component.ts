@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormControl, FormGroup, Validators,ReactiveFormsModule, AbstractControl} from '@angular/forms';
 import { FloatLabelModule } from "primeng/floatlabel"
 import { InputTextModule } from 'primeng/inputtext';
@@ -17,7 +17,7 @@ import { ApiService } from '../../../Services/api.service';
 import { AuthService } from '../../../Services/auth.service';
 import { SelectModule } from 'primeng/select';
 import { IDeactivate } from '../../../Interfaces/IDeactivate';
-import { Observable, take } from 'rxjs';
+import { Observable, Subscription, take } from 'rxjs';
 import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
 import { CategoryService } from '../../../Services/EventCategoryService';
 import { FormValidationService } from '../../../Services/FormValidationService';
@@ -29,7 +29,7 @@ import { FormValidationService } from '../../../Services/FormValidationService';
   templateUrl: './create-event.component.html',
   styleUrl: './create-event.component.css'
 })
-export class CreateEventComponent implements OnInit,IDeactivate{
+export class CreateEventComponent implements OnInit,IDeactivate,OnDestroy{
 
   eventForm : FormGroup;
   currencyCode : string;
@@ -40,6 +40,8 @@ export class CreateEventComponent implements OnInit,IDeactivate{
 
   eventStart: Date | null = null;
   eventEnd: Date | null = null;
+
+  private subscriptions  = new Subscription();
 
   @ViewChild('fileUpload') fileUpload: FileUpload | undefined;
 
@@ -75,7 +77,7 @@ export class CreateEventComponent implements OnInit,IDeactivate{
         this.localeCode = 'en-US';
       }
 
-   this.translateService.onLangChange.subscribe(lang => {
+   this.subscriptions.add(this.translateService.onLangChange.subscribe(lang => {
       if (lang.lang === 'sr') {
         this.currencyCode = 'RSD';
         this.localeCode = 'sr-RS';
@@ -83,7 +85,7 @@ export class CreateEventComponent implements OnInit,IDeactivate{
         this.currencyCode = 'EUR';
         this.localeCode = 'en-US';
       }
-    });
+    }));
 
     this.eventForm = new FormGroup({
       title: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
@@ -108,7 +110,7 @@ export class CreateEventComponent implements OnInit,IDeactivate{
     }, {validators: CustomValidators.startBeforeEndDates('startDateTime','endDateTime') })
 
 
-    this.eventForm.get('isUnlimitedCapacity')?.valueChanges.subscribe((unlimited)=>{
+    this.subscriptions.add(this.eventForm.get('isUnlimitedCapacity')?.valueChanges.subscribe((unlimited)=>{
 
         const capacityControl = this.eventForm.get('capacity');
         if(unlimited){
@@ -122,21 +124,21 @@ export class CreateEventComponent implements OnInit,IDeactivate{
           capacityControl.updateValueAndValidity();
         }
 
-      });
+      }));
 
-      this.eventForm.get('startDateTime')?.valueChanges.subscribe( value =>{
+      this.subscriptions.add(this.eventForm.get('startDateTime')?.valueChanges.subscribe( value =>{
         this.eventStart = value;
         this.toggleTicketDateControls()
-      });
+      }));
 
-      this.eventForm.get('endDateTime')?.valueChanges.subscribe( value =>{
+      this.subscriptions.add(this.eventForm.get('endDateTime')?.valueChanges.subscribe( value =>{
         this.eventEnd = value;
         this.toggleTicketDateControls()
-      });
+      }));
 
       this.eventForm.get('isUnlimitedCapacity')?.updateValueAndValidity({onlySelf: true, emitEvent: true});
 
-      this.route.queryParams.subscribe(params =>{
+      this.subscriptions.add(this.route.queryParams.subscribe(params =>{
         const start = params['start'];
         const end = params['end'];
 
@@ -152,7 +154,11 @@ export class CreateEventComponent implements OnInit,IDeactivate{
           this.eventForm.patchValue({ endDateTime: parsedEnd});
           this.eventForm.markAsDirty()
         }
-      });
+      }));
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   get tickets(): FormArray{
