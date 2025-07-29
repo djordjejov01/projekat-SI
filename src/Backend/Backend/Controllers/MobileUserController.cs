@@ -1,4 +1,5 @@
-﻿using Backend.Models;
+﻿using Backend.Helpers;
+using Backend.Models;
 using Backend.Models.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -73,10 +74,10 @@ namespace Backend.Controllers
             if (_context.Users.Any(u => u.Email == dto.Email && u.UserId != userId))
                 return BadRequest("Korisnik sa ovom email adresom već postoji.");
 
-            if (string.IsNullOrWhiteSpace(dto.Email) || !Regex.IsMatch(dto.Email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            if (string.IsNullOrWhiteSpace(dto.Email) || !CommonHelpers.IsEmailInValidForm(dto.Email))
                 return BadRequest("Neispravan format email adrese.");
 
-            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber) && !Regex.IsMatch(dto.PhoneNumber, @"^[+]?\d[\d\s-]{5,19}$"))
+            if (!string.IsNullOrWhiteSpace(dto.PhoneNumber) && !CommonHelpers.IsPhoneNumberValid(dto.PhoneNumber))
                 return BadRequest("Neispravan format broja telefona.");
 
             user.FirstName = dto.FirstName;
