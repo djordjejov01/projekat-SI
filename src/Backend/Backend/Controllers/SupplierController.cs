@@ -14,10 +14,12 @@ namespace Backend.Controllers
     public class SupplierController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public SupplierController(AppDbContext context)
+        public SupplierController(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         [HttpGet("profile")]
@@ -94,6 +96,31 @@ namespace Backend.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Podaci dobavljača su uspešno ažurirani!" });
+        }
+
+        [HttpPost("change-supplier-picture")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadSupplierPhoto([FromForm] UploadImageDto model)
+        {
+           
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var supplier = await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == userId);
+            if (supplier == null)
+                return BadRequest("Supplier not found!");
+
+           
+            string imageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
+
+            
+            await CommonHelpers.RemovePhoto(supplier.Image, _env);
+
+            
+            supplier.Image = imageName;
+            _context.Suppliers.Update(supplier);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }
