@@ -22,11 +22,11 @@ namespace Backend.Controllers
 
 
         [HttpGet("reservations")]
-        public IActionResult GetUserReservations()
+        public async Task<IActionResult> GetUserReservations()
         {
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
-            var reservations = _context.UserResourceReservations
+            var reservations = await _context.UserResourceReservations
                 .Where(r => r.UserID == userId)
                 .Select(r => new {
                     r.Id,
@@ -36,18 +36,18 @@ namespace Backend.Controllers
                     ResourceName = r.EventResource.Resource.Name,
                     EventName = r.EventResource.Event.Title
                 })
-                .ToList();
+                .ToListAsync();
 
             return Ok(reservations);
         }
 
         
         [HttpGet("profile")]
-        public IActionResult GetProfile()
+        public async Task<IActionResult> GetProfile()
         {
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
-            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            var user =await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
                 return NotFound("Korisnik nije pronađen.");
 
@@ -62,10 +62,10 @@ namespace Backend.Controllers
 
         
         [HttpPut("profileUpdate")]
-        public IActionResult UpdateProfile([FromBody] UpdateProfileDto dto)
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto dto)
         {
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            var user =await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
                 return NotFound("Korisnik nije pronađen.");
 
@@ -84,7 +84,7 @@ namespace Backend.Controllers
             user.Email = dto.Email;
             user.PhoneNumber = dto.PhoneNumber;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return Ok("Profil uspešno izmenjen.");
         }
 
