@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
 import { ApiService } from '../../../../Services/api.service';
 import 'leaflet/dist/leaflet.css';
@@ -23,11 +23,12 @@ Leaflet.Icon.Default.mergeOptions({
   templateUrl: './map-section.component.html',
   styleUrl: './map-section.component.css'
 })
-export class MapSectionComponent implements AfterViewInit{
+export class MapSectionComponent implements AfterViewInit, OnChanges{
 
   @Input() eventBasicInfo! : EventBasicInfo;
   @ViewChild('pinModal') pinModal!: PinModalComponent;
   private map!: Leaflet.Map;
+  private mainEventMarker?: Leaflet.Marker;
   private isPlacingPin = false;
 
   constructor(private apiService : ApiService, private messageService : MessageService){}
@@ -37,6 +38,13 @@ export class MapSectionComponent implements AfterViewInit{
 
     if(this.eventBasicInfo){
       this.geocodeAddress();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['eventBasicInfo'] && !changes['eventBasicInfo'].firstChange){
+      const newInfo = changes['eventBasicInfo'].currentValue as EventBasicInfo
+      if(newInfo) this.geocodeAddress()
     }
   }
 
@@ -54,6 +62,8 @@ export class MapSectionComponent implements AfterViewInit{
 
   private geocodeAddress(){
 
+    if(this.mainEventMarker) this.map.removeLayer(this.mainEventMarker);
+
     this.apiService.geocodeAddress(this.eventBasicInfo.getLocation()).subscribe({
       next: (results) => {
         if(results.length > 0){
@@ -63,7 +73,7 @@ export class MapSectionComponent implements AfterViewInit{
 
           this.map.setView([lat,lon],17);
 
-          Leaflet.marker([lat,lon],{
+        this.mainEventMarker =  Leaflet.marker([lat,lon],{
             icon: Leaflet.icon({
               iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
               shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
