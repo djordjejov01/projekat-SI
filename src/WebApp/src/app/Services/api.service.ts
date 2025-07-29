@@ -116,6 +116,14 @@ export function mapBackendResponse(
   };
 }
 
+
+export interface GeocodingResult {
+  lat: string;
+  lon: string;
+  display_name: string;
+  [key: string]: any; // to avoid TS complaints for other fields
+}
+
 @Injectable({
     providedIn: "root"
 })
@@ -125,6 +133,17 @@ export class ApiService{
     private apiUrl = 'https://localhost:7269/api';
 
     constructor(private http: HttpClient) {}
+
+    geocodeAddress(address: string): Observable<GeocodingResult[]>{
+
+        const encoded = encodeURIComponent(address);
+        const url = `https://nominatim.openstreetmap.org/search?q=${encoded}&format=json&limit=1`;
+
+        return this.http.get<GeocodingResult[]>(url).pipe(
+            catchError(this.handleError)
+        );
+
+    }
 
     createActivity(activity : ActivityDto) : Observable<any>{
         return this.http.post<any>(

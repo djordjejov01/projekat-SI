@@ -7,10 +7,11 @@ import { ApiService } from '../../../Services/api.service';
 import { EventBasicInfo } from '../../../Models/EventBasicInfo';
 import { CommonModule } from '@angular/common';
 import { TicketSectionComponent } from './ticket-section/ticket-section.component';
+import { MapSectionComponent } from './map-section/map-section.component';
 
 @Component({
   selector: 'app-event-management',
-  imports: [EventBasicInfoComponent,EventManagementHeaderComponent,CommonModule,TicketSectionComponent],
+  imports: [EventBasicInfoComponent,EventManagementHeaderComponent,CommonModule,TicketSectionComponent,MapSectionComponent],
   templateUrl: './event-management.component.html',
   styleUrl: './event-management.component.css'
 })
