@@ -103,7 +103,7 @@ main{
 }
 
 .form-container , .agenda{
-  max-width: 737px;
+  min-width: 737px;
   width: 100%;
 }
 

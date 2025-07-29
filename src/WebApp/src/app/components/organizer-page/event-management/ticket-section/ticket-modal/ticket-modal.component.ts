@@ -15,6 +15,7 @@ import { ButtonModule } from 'primeng/button';
 import { Subscription } from 'rxjs';
 import { ApiService } from '../../../../../Services/api.service';
 import { TicketDto } from '../../../../../Models/TicketDto';
+import { Ticket } from '../../../../../Models/Ticket';
 
 @Component({
   selector: 'app-ticket-modal',
@@ -26,8 +27,10 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy{
 
 
   @Input() eventBasicInfo : EventBasicInfo;
+  @Input() ticketToEdit?: Ticket;
   ticketForm : FormGroup;
   visible : boolean = false;
+  isEditMode = false;
   @Output() ticketCreated = new EventEmitter<void>();
 
   currencyCode : string;
@@ -56,6 +59,7 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy{
   ngOnChanges(changes: SimpleChanges): void {
     if(changes['eventBasicInfo' ] && this.eventBasicInfo && this.ticketForm){
       this.ticketForm.reset()
+      this.isEditMode = false;
     }
 
   }
@@ -71,6 +75,27 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy{
   hide() {
     this.visible = false;
     this.ticketForm.reset();
+    this.ticketToEdit = undefined;
+    this.isEditMode = false;
+  }
+
+  showForEdit(ticket : Ticket){
+
+    if(!ticket) return;
+
+    this.ticketToEdit = ticket;
+    this.isEditMode = true;
+
+    this.ticketForm.patchValue({
+        name: this.ticketToEdit.getTypeName(),
+        price: this.ticketToEdit.getPrice(),
+        description: this.ticketToEdit.getDescription(),
+        quota: this.ticketToEdit.getQuota(),
+        validFrom: new Date(this.ticketToEdit.getValidFrom()),
+        validUntil: new Date(this.ticketToEdit.getValidUntil()),
+      });
+
+    this.visible = true;
   }
 
   initializeForm(){
@@ -116,16 +141,35 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy{
       this.eventBasicInfo.getEventID()
     )
 
-    this.apiService.createTicket(ticketDto).subscribe({
-      next: (msg) =>{
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: msg });
-        this.ticketCreated.emit();
-        this.hide();
-      },
-      error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
-      }
-    });
+    if(this.isEditMode && this.ticketToEdit){
+      ticketDto.setTicketId(this.ticketToEdit.getTicketID());
+
+      this.apiService.updateTicket(ticketDto).subscribe({
+        next: (msg) => {
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: msg });
+          this.ticketCreated.emit();
+          this.hide();
+        },
+        error: (err) => {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+        }
+      });
+    }
+    else{
+
+      this.apiService.createTicket(ticketDto).subscribe({
+        next: (msg) =>{
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: msg });
+          this.ticketCreated.emit();
+          this.hide();
+        },
+        error: (err) => {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+        }
+      });
+
+    }
+
   }
 
 }

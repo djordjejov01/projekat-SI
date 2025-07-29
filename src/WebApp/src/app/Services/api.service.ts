@@ -137,6 +137,13 @@ export class ApiService{
 
     constructor(private http: HttpClient) {}
 
+    updateTicket(ticketDto : TicketDto):Observable<string>{
+        return this.http.put<{message: string}>(`${this.apiUrl}/Organizer/tickets`, ticketDto).pipe(
+            map(res => res.message),
+            catchError(this.handleError)
+        );
+    }
+
     createTicket(ticketDto : TicketDto) : Observable<string>{
 
         return this.http.post<{message: string}>(`${this.apiUrl}/Organizer/tickets`, ticketDto).pipe(
