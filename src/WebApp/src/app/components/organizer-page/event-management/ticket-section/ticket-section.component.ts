@@ -15,6 +15,7 @@ import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
 import { TicketModalComponent } from './ticket-modal/ticket-modal.component';
 import { ApiService } from '../../../../Services/api.service';
 import { MessageService } from 'primeng/api';
+import { ConfirmationDialogService } from '../../../../Services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-ticket-section',
@@ -32,7 +33,7 @@ export class TicketSectionComponent implements OnInit{
   loading: boolean = false;
   searchValue : string = '';
 
-  constructor(private apiService : ApiService, private messageService : MessageService) {}
+  constructor(private apiService : ApiService, private messageService : MessageService, private confirmationDialogService : ConfirmationDialogService) {}
 
   ngOnInit(): void {
     this.loadTickets()
@@ -69,4 +70,24 @@ export class TicketSectionComponent implements OnInit{
     this.loadTickets()
   }
 
+
+  onDeleteTicket(ticket : Ticket){
+
+    this.confirmationDialogService
+    .confirm(`Are you sure you want to delete the ticket "${ticket.getTypeName()}"?`)
+    .then(confirmed => {
+
+      if(!confirmed) return;
+
+      this.apiService.deleteTicket(ticket.getTicketID()).subscribe({
+        next: (msg) =>{
+          this.messageService.add({ severity: 'success', summary: 'Deleted', detail: msg });
+          this.loadTickets(); // Refresh ticket list
+        },  error: (err) => {
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+        }
+      });
+    });
+
+  }
 }

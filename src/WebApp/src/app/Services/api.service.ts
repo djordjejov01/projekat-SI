@@ -137,6 +137,13 @@ export class ApiService{
 
     constructor(private http: HttpClient) {}
 
+    deleteTicket(ticketId: number) : Observable<string>{
+        return this.http.delete<{message: string}>(`${this.apiUrl}/Organizer/tickets`,{body: ticketId}).pipe(
+            map(res => res.message),
+            catchError(this.handleError)
+        );
+    }
+
     updateTicket(ticketDto : TicketDto):Observable<string>{
         return this.http.put<{message: string}>(`${this.apiUrl}/Organizer/tickets`, ticketDto).pipe(
             map(res => res.message),
