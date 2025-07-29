@@ -6,6 +6,7 @@ export class TicketDto{
         private description : string,
         private quota: number,
         private validFrom: Date,
-        private validUntil : Date
+        private validUntil : Date,
+        private eventId? : number
     ){}
 }

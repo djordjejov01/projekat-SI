@@ -165,4 +165,4 @@
     
 </div>
 
-<app-ticket-modal [eventBasicInfo]="eventBasicInfo" #ticketModal></app-ticket-modal>
+<app-ticket-modal [eventBasicInfo]="eventBasicInfo" (ticketCreated)="onTicketCreated()" #ticketModal></app-ticket-modal>

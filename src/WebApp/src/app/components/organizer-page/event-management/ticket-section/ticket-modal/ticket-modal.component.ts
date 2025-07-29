@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { EventBasicInfo } from '../../../../../Models/EventBasicInfo';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../../Validators/custom.validators';
@@ -13,6 +13,8 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { Subscription } from 'rxjs';
+import { ApiService } from '../../../../../Services/api.service';
+import { TicketDto } from '../../../../../Models/TicketDto';
 
 @Component({
   selector: 'app-ticket-modal',
@@ -26,12 +28,17 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy{
   @Input() eventBasicInfo : EventBasicInfo;
   ticketForm : FormGroup;
   visible : boolean = false;
+  @Output() ticketCreated = new EventEmitter<void>();
 
   currencyCode : string;
   localeCode : string;
   private langChangeSub: Subscription | undefined;
 
-  constructor(private messageService : MessageService, private formValidationService : FormValidationService, private translateService : TranslateService) {}
+  constructor(
+    private messageService : MessageService,
+    private formValidationService : FormValidationService,
+    private translateService : TranslateService,
+    private apiService : ApiService) {}
 
   ngOnInit(): void {
 
@@ -97,7 +104,28 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy{
       return;
     }
 
-    console.log(this.ticketForm.value)
+    const formValue = this.ticketForm.value;
+
+    const ticketDto = new TicketDto(
+      formValue.name,
+      formValue.price,
+      formValue.description,
+      formValue.quota,
+      formValue.validFrom,
+      formValue.validUntil,
+      this.eventBasicInfo.getEventID()
+    )
+
+    this.apiService.createTicket(ticketDto).subscribe({
+      next: (msg) =>{
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: msg });
+        this.ticketCreated.emit();
+        this.hide();
+      },
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+      }
+    });
   }
 
 }

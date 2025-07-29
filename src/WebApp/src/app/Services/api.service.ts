@@ -28,6 +28,7 @@ import { EventBasicInfoApiResponse } from "../Interfaces/EventBasicInfoApiRespon
 import { ActivityDto } from "../Models/ActivityDto";
 import { TicketApiResponse } from "../Interfaces/TicketApiResponse";
 import { Ticket } from "../Models/Ticket";
+import { TicketDto } from "../Models/TicketDto";
 
 
 // Match Backend.Models.Dto.EventDto
@@ -135,6 +136,15 @@ export class ApiService{
     private apiUrl = 'https://localhost:7269/api';
 
     constructor(private http: HttpClient) {}
+
+    createTicket(ticketDto : TicketDto) : Observable<string>{
+
+        return this.http.post<{message: string}>(`${this.apiUrl}/Organizer/tickets`, ticketDto).pipe(
+            map(res => res.message),
+            catchError(this.handleError)
+        )
+     
+    }
 
     getTicketsForEvent(eventId : number): Observable<Ticket[]>{
         return this.http.get<TicketApiResponse[]>(`${this.apiUrl}/Organizer/tickets/${eventId}`).pipe(
@@ -450,6 +460,10 @@ export class ApiService{
         //Client side error (e.g no internet, DNS failure, frontend bug)
         if(errorResponse.error instanceof ErrorEvent) {
             errorMsg = `Error: ${errorResponse.error.message}`;
+        }
+        else if (typeof errorResponse.error === 'string') {
+            // Plain string message from backend
+            errorMsg = errorResponse.error;
         }
         //If there is an error from backend and if that error has a message property use that
         else if (errorResponse.error && errorResponse.error.message){

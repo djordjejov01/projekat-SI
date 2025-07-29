@@ -65,4 +65,8 @@ export class TicketSectionComponent implements OnInit{
     })
   }
 
+  onTicketCreated(){
+    this.loadTickets()
+  }
+
 }
