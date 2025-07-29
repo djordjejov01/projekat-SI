@@ -213,3 +213,8 @@ input{
     flex-direction: column;
     width: 45%;
 }
+
+#user{
+    font-size: 18px;
+    font-weight: bold;
+}

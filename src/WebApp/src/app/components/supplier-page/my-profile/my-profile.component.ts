@@ -126,9 +126,10 @@ export class MyProfileComponent implements OnInit {
 
 
   }
+  username : string;
   ngOnInit(): void {
     console.log(this.authService.getUserId())
-
+    this.username = this.authService.getUserName();
   }
 
   changePass: ChangePasswordDto;
