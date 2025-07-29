@@ -1,0 +1,22 @@
+<div id="data">
+    <div id="fr">
+        <div id="sit">
+            <p id="status">{{event.getStatusLabel()}}</p>
+            <p id="time">{{event.getStartDateTime() | date: 'MM/dd/yyyy' }}</p>
+        </div>
+        <img [src]="event.getImage()" alt="">
+    </div>
+    <div id="info">
+        <p id="tt">{{event.getTitle()}}</p>
+        <div class="in1">
+            <i class="pi pi-users"></i>
+            <p>{{currentUser}}</p>
+        </div>
+        <div class="in1">
+            <i class="pi pi-building"></i>
+            <p>{{event.getLocation()}}</p>
+        </div>
+        
+    </div>
+    <button (click)="manageEvent(event)" id="mngev">{{"MANAGE" | translate}} <i class="pi pi-arrow-right"></i></button>
+</div>

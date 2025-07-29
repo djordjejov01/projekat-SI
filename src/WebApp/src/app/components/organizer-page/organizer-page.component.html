@@ -1,0 +1,25 @@
+<main>
+    <p-toast />
+    <p-confirmdialog />
+    <div id="head">
+        <img src="./assets/logo91.png" alt="" id="logo" routerLink="/home">
+        <div id="right">
+            <select (change)="changeLanguage($event)">
+                <option value="sr">Srpski</option>
+                <option value="en">English</option>
+            </select>
+            <button (click)="onLogoutClick()" id="lgbtn">{{ 'LOGOUT' | translate }}</button>
+            <img src="./assets/bell.svg" alt="">
+            <img [src]="previewUrl || defaultImage" alt="profile picture" id="pfp" (click) = "myProfile()">
+        </div>
+    </div>
+    <div id="page">
+        <app-menu-bar></app-menu-bar>
+        <div id="show">
+            <router-outlet></router-outlet>
+        </div>
+        <!-- <div></div> Nkola Menjao-->
+    </div>
+    <hr>
+    <!-- <app-footer-bar></app-footer-bar> -->
+</main>

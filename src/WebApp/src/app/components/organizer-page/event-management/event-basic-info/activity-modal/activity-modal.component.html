@@ -1,0 +1,84 @@
+<p-dialog [modal]="true" [(visible)]="visible" [style]="{ width: '45rem', height: '55rem'}">
+    <ng-template #header>
+        <div class="formTitle">
+            <h3>Create New Activity</h3>
+            <p>Fill in the details below to set up your activity.</p>
+        </div>
+    </ng-template>
+    
+    <form action="" [formGroup]="activityForm" class="activityForm">
+
+        <div class="form-inputs">
+
+            <div  class="input-wrapper">
+
+                <p>Activity Title</p>
+                <p-floatlabel class="w-full md:w-56" variant="on">
+                    <input  type="text"  pInputText  placeholder=" "  formControlName="title"  inputId="title"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                <label for="title">Enter Activity Title</label>
+                </p-floatlabel>
+
+            </div>
+
+            <div  class="input-wrapper">
+
+                <p>Description</p>
+                <p-floatlabel class="w-full md:w-56" variant="on">
+                    <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
+                <label for="description">Describe Your Activity</label>
+                </p-floatlabel>
+
+            </div>
+
+
+            <div class="dates">
+
+                <div  class="input-wrapper">
+                    <p>Start Time</p>
+                    <p-floatlabel class="w-full md:w-56"  variant="on">
+                        <p-datepicker inputId="startTime" placeholder=" " formControlName="startTime" [showTime]="true" hourFormat="24" [minDate]="parentEventBasicInfo.getStartDate()" [maxDate]="parentEventBasicInfo.getEndDate()" [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                            <label for="startTime">Start Time</label>
+                    </p-floatlabel>
+                </div>
+
+                 <div  class="input-wrapper">
+                    <p>End Time</p>
+                    <p-floatlabel class="w-full md:w-56"  variant="on">
+                        <p-datepicker inputId="endTime" placeholder=" " formControlName="endTime" [showTime]="true" hourFormat="24" [minDate]="parentEventBasicInfo.getStartDate()" [maxDate]="parentEventBasicInfo.getEndDate()" [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                        <label for="endTime">End Time</label>
+                    </p-floatlabel>
+                </div>
+
+            </div>
+
+            <div  class="input-wrapper">
+
+                <p>Category</p>
+                <p-floatlabel class="w-full" variant="on">
+                    <p-select  [options]="categories"  name="category"  formControlName="category"  placeholder=" "  inputId="category"  class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"/>
+                    <label for="category">Select Event Category</label>
+                </p-floatlabel>
+
+            </div>
+
+            <div class="form-buttons">
+                <p-button 
+                label="Save Changes"
+                icon="pi pi-pen-to-square"
+                [raised]="true"
+                (onClick)="submitForm()"
+                severity="primary"
+                ></p-button>
+
+                <p-button 
+                    label="Cancel"
+                    icon="pi pi-times"
+                    [raised]="true"
+                    severity="secondary"
+                    type="button"
+                    (onClick)="hide()"
+                    ></p-button>
+            </div>
+        </div>
+    </form>
+</p-dialog>

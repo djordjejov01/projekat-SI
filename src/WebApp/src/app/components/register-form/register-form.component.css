@@ -1,0 +1,136 @@
+.form-container{
+    font-family: "Inter", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /*height: 100vh;*/
+}
+
+.form-and-sidebar{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 3rem;
+    margin: 5rem 2rem;
+    /*gap: 5rem;*/
+    border-radius: 14px;
+    box-shadow: 0px 0px 10px 3px rgb(214, 214, 214);
+    max-width: 1200px;
+}
+
+.register-form{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+
+.form-header{
+    display: flex;
+}
+
+.title{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-header h1{
+    font-weight: bold;
+    font-size: 2.25rem;
+}
+
+.form-header p{
+    max-width: 70%;
+}
+
+.form-header img{
+    max-height: 64px;
+}
+
+.form-inputs{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.input-wrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.input-wrapper p{
+    color: #8C8D8B;
+}
+
+.passwords{
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.passwords > .input-wrapper{
+    flex: 1 1 47.5%;
+}
+
+.have-account{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap:10px;
+}
+
+.have-account p{
+    cursor: pointer;
+}
+.have-account p:hover{
+    text-decoration: underline;
+}
+
+@media screen and (width <= 900px){
+
+    .form-and-sidebar{
+        padding-top: 5rem;
+    }
+
+    .form-header {
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    .title{
+        align-items: center;
+        text-align: center;
+    }
+    
+}
+
+@media screen and (width <= 690px){
+    
+    
+    .form-header h1{
+        font-weight: bold;
+        font-size: 1.50rem;
+    }
+
+    .passwords{
+        flex-direction: column;
+        align-items: center;
+    } 
+} 
+
+img:hover{
+    cursor: pointer;
+}
+
+button:hover{
+    cursor: pointer;
+}
+
+select:hover{
+    cursor: pointer;
+}

@@ -1,0 +1,124 @@
+<p-dialog [modal]="true" [(visible)]="visible" [style]="{ width: '50rem', height: '55rem'}">
+    <ng-template #header>
+        <div class="formTitle">
+            <h3>Create New Subevent</h3>
+            <p>Fill in the details below to set up your subevent.</p>
+        </div>
+    </ng-template>
+    
+    <form action="" [formGroup]="subeventForm" class="activityForm">
+
+        <div class="form-inputs">
+
+            <div  class="input-wrapper">
+
+                <p>Subevent Title</p>
+                <p-floatlabel class="w-full md:w-56" variant="on">
+                    <input  type="text"  pInputText  placeholder=" "  formControlName="title"  inputId="title"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                <label for="title">Enter Subevent Title</label>
+                </p-floatlabel>
+
+            </div>
+
+            <div  class="input-wrapper">
+
+                <p>Description</p>
+                <p-floatlabel class="w-full md:w-56" variant="on">
+                    <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
+                <label for="description">Describe Your Subevent</label>
+                </p-floatlabel>
+
+            </div>
+
+            <div class="location-capacity">
+
+                <div  class="input-wrapper">
+
+                    <p>Location</p>
+                    <p-floatlabel class="w-full md:w-56" variant="on">
+                        <input  type="text"  pInputText  placeholder=" "  formControlName="location"  inputId="location"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                    <label for="location">Enter Event Location (e.g. Zoom, Conference Hall A)</label>
+                    </p-floatlabel>
+
+                </div>
+
+                <div  class="input-wrapper">
+
+                    <p>Capacity</p>
+                        
+
+                    <p-floatlabel class="w-full md:w-56" variant="on">
+                        <p-inputnumber
+                            formControlName="capacity"
+                            inputId="capacity"
+                            [min]="1"
+                            [useGrouping]="false"
+                            [showButtons]="false"
+                            [max]="parentEventBasicInfo.getCapacity()"
+                            [style]="{ width: '100%' }"
+                            inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                        ></p-inputnumber>
+                        <label for="capacity">Enter Event Capacity</label>
+                    </p-floatlabel>
+
+                    <div class="flex items-center gap-2">
+                        <p-checkbox formControlName="isUnlimitedCapacity" inputId="isUnlimitedCapacity" name="isUnlimitedCapacity" binary="true" size="large" />
+                        <label for="isUnlimitedCapacity" >Unlimited Capacity</label>
+                    </div>
+
+                    </div>
+
+            </div>
+
+
+            <div class="dates">
+
+                <div  class="input-wrapper">
+                    <p>Start Date and Time</p>
+                    <p-floatlabel class="w-full md:w-56"  variant="on">
+                        <p-datepicker inputId="startDateTime" placeholder=" " formControlName="startDateTime" [showTime]="true" hourFormat="24" [minDate]="parentEventBasicInfo.getStartDate()" [maxDate]="parentEventBasicInfo.getEndDate()" [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                            <label for="startDateTime">Start Date And Time</label>
+                    </p-floatlabel>
+                </div>
+
+                 <div  class="input-wrapper">
+                    <p>End Date And Time</p>
+                    <p-floatlabel class="w-full md:w-56"  variant="on">
+                        <p-datepicker inputId="endDateTime" placeholder=" " formControlName="endDateTime" [showTime]="true" hourFormat="24" [minDate]="parentEventBasicInfo.getStartDate()" [maxDate]="parentEventBasicInfo.getEndDate()" [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                        <label for="endDateTime">End Date And Time</label>
+                    </p-floatlabel>
+                </div>
+
+            </div>
+
+            <div  class="input-wrapper">
+
+                <p>Category</p>
+                <p-floatlabel class="w-full" variant="on">
+                    <p-select  [options]="categories"  name="category"  formControlName="category"  placeholder=" "  inputId="category"  class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"/>
+                    <label for="category">Select Event Category</label>
+                </p-floatlabel>
+
+            </div>
+
+            <div class="form-buttons">
+                <p-button 
+                label="Save Changes"
+                icon="pi pi-pen-to-square"
+                [raised]="true"
+                (onClick)="submitForm()"
+                severity="primary"
+                ></p-button>
+
+                <p-button 
+                    label="Cancel"
+                    icon="pi pi-times"
+                    [raised]="true"
+                    severity="secondary"
+                    type="button"
+                    (onClick)="hide()"
+                ></p-button>
+            </div>
+        </div>
+    </form>
+</p-dialog>

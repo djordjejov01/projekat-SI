@@ -1,0 +1,257 @@
+header{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 1rem 5rem;
+}
+
+header h1{
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-and-nav{
+    display: flex;
+    gap: 5rem;
+}
+
+.logo-and-nav ul{
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+#lgout{
+    cursor: pointer;
+}
+.logo-and-nav img{
+    max-height: 44px;
+}
+#lg:hover{
+    cursor: pointer;
+}
+.user-actions{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-actions button{
+    padding: 0.25rem 0.75rem;
+    border: 1px solid #EBEBEAFF;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.user-actions i{
+    color: #8C8D8BFF;
+}
+
+.pfp{
+    background-color: #CED0F8FF;
+    border-radius: 9999px;
+}
+
+.pfp img{
+    width: 32px;
+    height: 32px;
+    border-radius: 9999px;
+}
+
+.title p{
+    color: #8C8D8BFF;
+}
+
+.cards{
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.active-link{
+    color: #636AE8;
+    font-weight: bold;
+}
+
+.chart-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5rem;          
+  margin: 0 auto;
+  padding: 4.5rem;
+  box-sizing: border-box;
+}
+
+.chart-box {
+  flex: 1 1 47.5%;     
+  min-width: 320px;
+  max-width: 840px;
+  border: 1px solid #EBEBEA;
+  border-radius: 12px;
+  padding: 1rem;
+  box-sizing: border-box;
+  height: 420px;       
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+ .bar p-chart {
+  flex-grow: 1;
+  /* width: 100% !important;
+  height: 100% !important;*/
+  max-width: 100%;
+  max-height: 100%; 
+}
+
+.table-styles{
+    border: 1px solid #EBEBEAFF;
+    border-radius: 12px;
+    margin: 2rem;
+}
+
+:host ::ng-deep {
+        .p-paginator {
+            .p-paginator-current {
+                margin-left: auto;
+            }
+        }
+
+        .p-progressbar {
+            height: .5rem;
+            background-color: #D8DADC;
+
+            .p-progressbar-value {
+                background-color: #607D8B;
+            }
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .p-calendar .p-datepicker {
+            min-width: 25rem;
+
+            td {
+                font-weight: 400;
+            }
+        }
+
+        .p-datatable.p-datatable-customers {
+            .p-datatable-header {
+                padding: 1rem;
+                text-align: left;
+                font-size: 1.5rem;
+            }
+
+            .p-paginator {
+                padding: 1rem;
+            }
+
+            .p-datatable-thead > tr > th {
+                text-align: left;
+            }
+
+            .p-datatable-tbody > tr > td {
+                cursor: auto;
+            }
+
+            .p-dropdown-label:not(.p-placeholder) {
+                text-transform: uppercase;
+            }
+        }
+
+        .p-w-100 {
+            width: 100%;
+        }
+
+        /* Responsive */
+        .p-datatable-customers .p-datatable-tbody > tr > td .p-column-title {
+            display: none;
+        }
+    }
+
+    @media screen and (max-width: 960px) {
+        :host ::ng-deep {
+            .p-datatable {
+                &.p-datatable-customers {
+                    .p-datatable-thead > tr > th,
+                    .p-datatable-tfoot > tr > td {
+                        display: none !important;
+                    }
+
+                    .p-datatable-tbody > tr {
+                        border-bottom: 1px solid var(--layer-2);
+
+                        > td {
+                            text-align: left;
+                            width: 100%;
+                            display: flex;
+                            align-items: center;
+                            border: 0 none;
+
+                            .p-column-title {
+                                min-width: 30%;
+                                display: inline-block;
+                                font-weight: bold;
+                            }
+
+                            p-progressbar {
+                                width: 100%;
+                            }
+
+                            &:last-child {
+                                border-bottom: 1px solid var(--surface-d);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @media screen and (width <= 768px){
+
+        header{
+            padding: 1rem 2rem;
+        }
+
+        nav{
+            align-items: start;
+        }
+
+        .logo-and-nav{
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .logo-and-nav ul{
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            gap: 1rem;
+        }
+        
+    }
+
+    @media screen and (width <= 400px){
+        
+        nav{
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            gap: 2rem;
+        }
+
+    }
+

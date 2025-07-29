@@ -1,0 +1,50 @@
+<main>
+    <app-newest-event *ngIf="allEvents && allEvents.length > 0; else noEvents" image="./assets/ne.jpg"
+        [title]="allEvents[0].getTitle()" [location]="allEvents[0].getLocation()"
+        [time]="allEvents[0].getStartDateTime().toString()" [desc]="allEvents[0].getDescription()" [event]="allEvents[0]"></app-newest-event>
+    <ng-template #noEvents>
+        <p>No events found.</p>
+        <button id="ae" (click) = "createEvent()"><i class="pi pi-plus"></i>{{'ADDEV' | translate }}</button>
+    </ng-template>
+    <div id="botside" *ngIf="allEvents && allEvents.length > 0">
+        <div id="ls">
+            <div id="timeline">
+                <img src="./assets/cal.svg" alt="">
+                <div id="linija"></div>
+            </div>
+            <div id="leftside">
+                <div id="track">
+                    <h2>{{'UPEV' | translate }}</h2>
+                    <button id="ae" (click) = "createEvent()"><i class="pi pi-plus"></i>{{'ADDEV' | translate }}</button>
+                </div>
+                <div id="events">
+                    <!-- <app-event-preview *ngFor="let event of allEvents; index as i" [image]="event.getImage()" status="Upcoming"
+                        [time]="event.getStartDateTime().toLocaleDateString()" [title]="event.getTitle()"
+                        [host]="currUser" [location]="event.getLocation()">
+                    </app-event-preview> -->
+                    <app-event-preview *ngFor="let event of allEvents; index as i" [event]="event">
+                    </app-event-preview>
+
+                </div>
+            </div>
+        </div>
+
+        <div id="rightside">
+            <div id="stat">
+                <img src="./assets/calendar.svg" alt="">
+                <div id="tin">
+                    <p id="n1">{{'TE' | translate }}</p>
+                    <p id="n2">{{allEvents.length}}</p>
+                </div>
+            </div>
+            <div id="stat">
+                <img src="./assets/people.svg" alt="">
+                <div id="tin">
+                    <p id="n1">{{'UA' | translate }}</p>
+                    <p id="n2">1.2k</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>

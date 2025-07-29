@@ -1,0 +1,84 @@
+#data{
+    display: flex;
+    flex-direction: column;
+    border: 2px solid rgb(232, 232, 232);
+    border-radius: 10px;
+    padding: 15px;
+}
+
+#status{
+    background-color: rgb(225, 227, 255);
+    padding-left: 15px;
+    padding-right: 15px;
+    color:rgb(62, 159, 238);
+    font-weight: bold;
+    border-radius: 20px;
+    text-align: center;
+}
+#time{
+    font-weight: bold;
+    color:#8C8D8BFF;
+}
+#mngev:hover{
+    background-color: #585dcd;
+}
+#sit{
+    display: flex;
+    flex-direction: column;
+    gap:5px;
+}
+
+#fr{
+    display: flex;
+    justify-content: space-between;
+    gap:550px;
+}
+
+@media screen and (width <= 890px) {
+    #fr{
+    gap:150px;
+}
+}
+@media screen and (width <= 500px) {
+    #fr{
+    gap:0px;
+}
+}
+
+img{
+    max-width: 120px;
+    border-radius: 10px;
+}
+#tt{
+    font-size: 20px;
+    font-weight: bold;
+}
+#info{
+    display: flex;
+    flex-direction: column;
+}
+
+button{
+    display: flex;
+    background-color: #636AE8;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    margin-top: 50px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    gap:10px;
+}
+
+button:hover{
+    cursor: pointer;
+}
+.in1{
+    display: flex;
+    align-items: center;
+    gap:5px;
+    color:#8C8D8BFF;
+}
