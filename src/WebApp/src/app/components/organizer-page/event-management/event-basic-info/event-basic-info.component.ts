@@ -17,7 +17,7 @@ import { Subscription, take } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { UpdateEventDto } from '../../../../Models/UpdateEventDto';
 import { Activity, ApiService } from '../../../../Services/api.service';
-import { mockAgenda, Subevent } from '../../../../MockData/MockAgenda';
+import { Subevent } from '../../../../Services/api.service';
 import { AccordionModule } from 'primeng/accordion';
 import { FileUpload } from 'primeng/fileupload';
 import { ActivityModalComponent } from './activity-modal/activity-modal.component';

@@ -26,6 +26,8 @@ import { UpdateEventDto } from "../Models/UpdateEventDto";
 import { EventBasicInfo } from "../Models/EventBasicInfo";
 import { EventBasicInfoApiResponse } from "../Interfaces/EventBasicInfoApiResponse";
 import { ActivityDto } from "../Models/ActivityDto";
+import { TicketApiResponse } from "../Interfaces/TicketApiResponse";
+import { Ticket } from "../Models/Ticket";
 
 
 // Match Backend.Models.Dto.EventDto
@@ -133,6 +135,25 @@ export class ApiService{
     private apiUrl = 'https://localhost:7269/api';
 
     constructor(private http: HttpClient) {}
+
+    getTicketsForEvent(eventId : number): Observable<Ticket[]>{
+        return this.http.get<TicketApiResponse[]>(`${this.apiUrl}/Organizer/tickets/${eventId}`).pipe(
+            map(response => response.map(
+                ticket => new Ticket(
+                    ticket.ticketID,
+                    ticket.eventID,
+                    ticket.typeName,
+                    ticket.description,
+                    ticket.price,
+                    ticket.quota,
+                    new Date(ticket.validFrom),
+                    new Date(ticket.validUntil)
+                )
+            )),
+
+            catchError(this.handleError)
+        )
+    }
 
     geocodeAddress(address: string): Observable<GeocodingResult[]>{
 
