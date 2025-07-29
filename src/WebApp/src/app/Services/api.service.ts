@@ -196,9 +196,9 @@ export class ApiService{
             catchError(this.handleError)
         )
     }
-    updateEvent(data : UpdateEventDto, eventId : number) : Observable<EventApiResponse>{
+    updateEvent(data : UpdateEventDto) : Observable<EventApiResponse>{
 
-        return this.http.put<EventApiResponse>(`${this.apiUrl}/Organizer/events/${eventId}`,data).pipe(
+        return this.http.put<EventApiResponse>(`${this.apiUrl}/Organizer/events`,data).pipe(
             catchError(this.handleError)
         )
 

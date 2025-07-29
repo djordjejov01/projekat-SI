@@ -133,6 +133,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
 
       const formValues = this.eventForm.value;
         const updateDto = new UpdateEventDto(
+          this.eventBasicInfo.getEventID(),
           formValues.title,
           formValues.description,
           formValues.location,
@@ -144,7 +145,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
 
         console.log(updateDto)
 
-        this.apiService.updateEvent(updateDto, this.eventBasicInfo.getEventID()).subscribe({
+        this.apiService.updateEvent(updateDto).subscribe({
           next: (data) =>{
             this.eventBasicInfo = new EventBasicInfo(
               data.eventID,
