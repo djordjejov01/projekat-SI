@@ -3,7 +3,7 @@
     public class UploadImageDto
     {
         public IFormFile Image { get; set; }
-        public int Id { get; set; }
+        //public int Id { get; set; }
 
     }
 }
