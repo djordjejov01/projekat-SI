@@ -47,11 +47,9 @@ namespace Backend.Controllers
         [HttpPost("change-organizer-picture")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadOrganizerPhoto([FromForm] UploadImageDto model)
-        {
-            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-
+        { 
             string ImageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
-            Organizer o = _context.Organizers.Where(o => o.Id == userId).First();
+            Organizer o = _context.Organizers.Where(o => o.Id == model.Id).First();
             if (o is null)
                 return BadRequest("ERROR!");
             await CommonHelpers.RemovePhoto(o.Image, _env);
