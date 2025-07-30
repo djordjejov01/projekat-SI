@@ -1,7 +1,7 @@
 <main>
     <app-newest-event *ngIf="allEvents && allEvents.length > 0; else noEvents" image="./assets/ne.jpg"
         [title]="allEvents[0].getTitle()" [location]="allEvents[0].getLocation()"
-        [time]="allEvents[0].getStartDateTime().toString()" [desc]="allEvents[0].getDescription()"></app-newest-event>
+        [time]="allEvents[0].getStartDateTime().toString()" [desc]="allEvents[0].getDescription()" [event]="allEvents[0]"></app-newest-event>
     <ng-template #noEvents>
         <p>No events found.</p>
         <button id="ae" (click) = "createEvent()"><i class="pi pi-plus"></i>{{'ADDEV' | translate }}</button>

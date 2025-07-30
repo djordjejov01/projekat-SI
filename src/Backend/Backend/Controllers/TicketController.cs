@@ -3,6 +3,7 @@ using Backend.Models.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Controllers
 {
@@ -18,9 +19,9 @@ namespace Backend.Controllers
         }
 
         [HttpGet("events/{eventId}/tickets")]
-        public IActionResult GetTicketsForEvent(int eventId)
+        public async Task<IActionResult> GetTicketsForEvent(int eventId)
         {
-            var tickets = _context.Tickets
+            var tickets = await _context.Tickets
                 .Where(t => t.EventID == eventId)
                 .Select(t => new {
                     t.TicketID,
@@ -30,7 +31,7 @@ namespace Backend.Controllers
                     t.Quota,
                     Available = t.Quota - _context.UserTickets.Count(ut => ut.TicketID == t.TicketID)
                 })
-                .ToList();
+                .ToListAsync();
 
             return Ok(tickets);
         }
@@ -38,11 +39,11 @@ namespace Backend.Controllers
         
         [Authorize(Roles = "MobileUser")]
         [HttpPost("purchase")]
-        public IActionResult PurchaseTicket([FromBody] List<PurchaseTicketDto> dtos)
+        public async Task<IActionResult> PurchaseTicket([FromBody] List<PurchaseTicketDto> dtos)
         {
 
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
                 return NotFound("Korisnik nije pronađen.");
 
@@ -50,11 +51,11 @@ namespace Backend.Controllers
             decimal ukupnaCena = 0;
             foreach (var dto in dtos)
             {
-                var ticket = _context.Tickets.FirstOrDefault(t => t.TicketID == dto.TicketID);
+                var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.TicketID == dto.TicketID);
                 if (ticket == null)
                     return NotFound($"Ulaznica sa ID {dto.TicketID} ne postoji.");
 
-                var eventEntity = _context.Events.FirstOrDefault(e => e.EventID == ticket.EventID);
+                var eventEntity = await _context.Events.FirstOrDefaultAsync(e => e.EventID == ticket.EventID);
                 if (eventEntity == null)
                     return NotFound($"Događaj za ulaznicu {dto.TicketID} nije pronađen.");
 
@@ -64,7 +65,7 @@ namespace Backend.Controllers
                 if (eventEntity.isFree)
                     return BadRequest($"Nije moguće kupiti kartu za besplatan događaj ({eventEntity.Title}).");
 
-                int sold = _context.UserTickets.Count(ut => ut.TicketID == dto.TicketID);
+                int sold =await _context.UserTickets.CountAsync(ut => ut.TicketID == dto.TicketID);
                 if (sold + dto.Quantity > ticket.Quota)
                     return BadRequest($"Nema dovoljno dostupnih ulaznica za tip {ticket.TypeName}.");
 
@@ -76,13 +77,13 @@ namespace Backend.Controllers
                 return BadRequest("Nedovoljno kredita za kupovinu.");
 
             
-            using (var transaction = _context.Database.BeginTransaction())
+            using (var transaction =await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
                     
                     user.Credit -= ukupnaCena;
-                    _context.SaveChanges();
+                    await _context.SaveChangesAsync();
 
                     var createdTickets = new List<object>();
 
@@ -98,18 +99,18 @@ namespace Backend.Controllers
                                 PurchasedAt = DateTime.UtcNow
                             };
                             _context.UserTickets.Add(userTicket);
-                            _context.SaveChanges();
+                            await _context.SaveChangesAsync();
 
                             createdTickets.Add(new { UserTicketID = userTicket.UserTicketID, TicketID = dto.TicketID });
                         }
                     }
 
-                    transaction.Commit();
+                    transaction.CommitAsync();
                     return Ok(createdTickets);
                 }
                 catch
                 {
-                    transaction.Rollback();
+                    await transaction.RollbackAsync();
                     throw;
                 }
             }
@@ -117,11 +118,11 @@ namespace Backend.Controllers
 
         [Authorize(Roles = "MobileUser")]
         [HttpGet("tickets/my")]
-        public IActionResult GetMyTickets()
+        public async Task<IActionResult> GetMyTickets()
         {
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
-            var myTickets = _context.UserTickets
+            var myTickets =await _context.UserTickets
                 .Where(ut => ut.UserID == userId)
                 .Select(ut => new {
                     ut.UserTicketID,
@@ -132,7 +133,7 @@ namespace Backend.Controllers
                     EventID = ut.Ticket.Event.EventID,
                     ut.Ticket.Price
                 })
-                .ToList();
+                .ToListAsync();
 
             return Ok(myTickets);
         }
