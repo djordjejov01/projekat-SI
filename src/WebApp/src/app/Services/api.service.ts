@@ -26,6 +26,8 @@ import { UpdateEventDto } from "../Models/UpdateEventDto";
 import { EventBasicInfo } from "../Models/EventBasicInfo";
 import { EventBasicInfoApiResponse } from "../Interfaces/EventBasicInfoApiResponse";
 import { ActivityDto } from "../Models/ActivityDto";
+import { SupplierDto } from "../Models/SupplierDto";
+import { SupplierDtoResponse } from "../Interfaces/SupplierDtoResponse";
 
 
 // Match Backend.Models.Dto.EventDto
@@ -384,6 +386,23 @@ export class ApiService{
         )
     }
 
+    getSupplier() : Observable<SupplierDto>{
+        return this.http.get<SupplierDtoResponse>(`${this.apiUrl}/Supplier/profile`).pipe(
+            map(data => {
+                return new SupplierDto(
+                    data.id,
+                    data.username,
+                    data.companyName,
+                    data.email,
+                    data.phoneNumber,
+                    data.website,
+                    data.companyBio,
+                    data.image
+                )
+            }),
+            catchError(this.handleError)
+        )
+    }
 
     changeOrgPass(data : ChangePasswordDto)
     {

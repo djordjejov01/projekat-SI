@@ -23,29 +23,29 @@
                 <div id="row">
                     <div id="field">
                         <label for="name">Name</label>
-                        <input id="name" type="text" [value]="1" class="form-control" />
+                        <input id="name" type="text" [value]="currSupplier?.getCompanyName()" class="form-control" />
                     </div>
                     <div id="field">
                         <label for="username">Username</label>
-                        <input id="username" type="text" [value]="2" class="form-control" />
+                        <input id="username" type="text" [value]="currSupplier?.getUsername()" class="form-control" />
                     </div>
 
                 </div>
                 <div id="row">
                     <div id="field">
                         <label for="email">Email</label>
-                        <input id="email" type="text" [value]="3" class="form-control" />
+                        <input id="email" type="text" [value]="currSupplier?.getEmail()" class="form-control" />
                     </div>
                     <div id="field">
                         <label for="phone">Phone Number</label>
-                        <input id="phone" type="text" [value]="4" class="form-control" />
+                        <input id="phone" type="text" [value]="currSupplier?.getPhoneNumber()" class="form-control" />
                     </div>
 
                 </div>
                 <label for="bio">Bio</label>
-                <textarea name="bio" id="bio"></textarea>
+                <textarea name="bio" id="bio">{{currSupplier?.getCompanyBio()}}</textarea>
                 <label for="website">Website</label>
-                <input id="website" type="text" [value]="5" class="form-control" />
+                <input id="website" type="text" [value]="currSupplier?.getWebsite()" class="form-control" />
                 <button id="upp" (click)="update()">Update Profile</button>
 
                 <div id="pass">

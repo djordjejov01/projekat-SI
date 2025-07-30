@@ -9,6 +9,7 @@ import { DashboardMetrics } from '../../../Interfaces/DashboardMetricsResponse';
 import { ViewChild } from '@angular/core';
 import { SharedService } from '../../../Services/shared.service';
 import { Select } from 'primeng/select';
+import { SupplierDto } from '../../../Models/SupplierDto';
 
 
 @Component({
@@ -130,10 +131,31 @@ export class MyProfileComponent implements OnInit {
   ngOnInit(): void {
     console.log(this.authService.getUserId())
     this.username = this.authService.getUserName();
+    this.getSupplierCall();
   }
-
+  currSupplier : SupplierDto;
   changePass: ChangePasswordDto;
+  getSupplierCall(){
+    this.apiService.getSupplier().subscribe({
 
+        next:(response : SupplierDto) => {
+          this.currSupplier = response;
+          if(this.currSupplier.getImage()!="https://localhost:7269/")
+          {
+            this.previewUrl = this.currSupplier.getImage();
+          }
+          console.log(response);
+        },
+        error:(errorResponse) =>{
+          this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000 });
+        }
+
+      })
+  }
   update() {
     const name = (document.getElementById('name') as HTMLInputElement).value;
     const username = (document.getElementById('username') as HTMLInputElement).value;
