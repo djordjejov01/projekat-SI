@@ -66,7 +66,7 @@ export class OrganizerPageComponent implements AfterContentInit, OnInit {
 
     this.sharedService.profileImageChanged$.subscribe(changed => {
       if (changed) {
-        this.getOrganizerCall(); // metoda koja uzima novu sliku iz baze/backenda
+        this.getOrganizerCall();
       }
     });
 
@@ -76,7 +76,7 @@ export class OrganizerPageComponent implements AfterContentInit, OnInit {
   }
 
   ngAfterContentInit(): void {
-    this.cd.detectChanges(); // Ensure view is fully initialized
+    this.cd.detectChanges();
 
     const shouldShowWelcome = sessionStorage.getItem('showWelcome') === 'true';
     if (shouldShowWelcome) {

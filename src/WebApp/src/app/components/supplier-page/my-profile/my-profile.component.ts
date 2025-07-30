@@ -132,6 +132,7 @@ export class MyProfileComponent implements OnInit {
           console.log(response);
           this.previewUrl = this.currSupplier.getImage();
           this.getSupplierCall();
+          this.sharedService.notifyProfileImageChanged();
         },
         error:(errorResponse) =>{
           this.messageService.add({
@@ -185,6 +186,7 @@ export class MyProfileComponent implements OnInit {
     this.apiService.updateSupplier(toUpdate).subscribe({
       next:(response : string) =>{
         this.getSupplierCall();
+        this.sharedService.updateUsername(this.currSupplier.getUsername());
         this.messageService.add({
               severity: 'success',
               summary: 'Success',

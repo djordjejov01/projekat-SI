@@ -61,6 +61,15 @@ export class SupplierPageComponent implements OnInit{
     ngOnInit(): void {
         this.username = this.authService.getUserName();
         this.getSupplierCall();
+
+        this.sharedService.currentUsername$.subscribe(username => {
+          this.getSupplierCall();
+  });
+        this.sharedService.profileImageChanged$.subscribe(changed => {
+      if (changed) {
+        this.getSupplierCall();
+      }
+    });
     }
   onLogoutClick() {
     this.sessionService.logoutWithConfirmation();
