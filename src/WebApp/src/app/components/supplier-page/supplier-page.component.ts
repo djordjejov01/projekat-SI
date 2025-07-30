@@ -14,6 +14,7 @@ import { ApiService } from '../../Services/api.service';
 import { SharedService } from '../../Services/shared.service';
 import { Router } from '@angular/router';
 import { MenuBarComponent } from '../organizer-page/menu-bar/menu-bar.component';
+import { SupplierDto } from '../../Models/SupplierDto';
 
 @Component({
   selector: 'app-supplier-page',
@@ -36,8 +37,30 @@ export class SupplierPageComponent implements OnInit{
     private sharedService: SharedService,
     private router: Router) { }
 
+    currSupplier : SupplierDto;
+    getSupplierCall() {
+        this.apiService.getSupplier().subscribe({
+    
+          next: (response: SupplierDto) => {
+            this.currSupplier = response;
+            if (this.currSupplier.getImage() != "https://localhost:7269/") {
+              this.previewUrl = this.currSupplier.getImage();
+            }
+          },
+          error: (errorResponse) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000
+            });
+          }
+    
+        })
+      }
     ngOnInit(): void {
         this.username = this.authService.getUserName();
+        this.getSupplierCall();
     }
   onLogoutClick() {
     this.sessionService.logoutWithConfirmation();

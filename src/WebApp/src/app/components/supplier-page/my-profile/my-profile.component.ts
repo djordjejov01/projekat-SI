@@ -10,6 +10,7 @@ import { ViewChild } from '@angular/core';
 import { SharedService } from '../../../Services/shared.service';
 import { Select } from 'primeng/select';
 import { SupplierDto } from '../../../Models/SupplierDto';
+import { UpdateSupplierDto } from '../../../Models/UpdateSupplierDto';
 
 
 @Component({
@@ -125,7 +126,22 @@ export class MyProfileComponent implements OnInit {
     formData.append('Image', this.selectedFile);
     formData.append('Id', this.authService.getUserId().toString());
 
+    this.apiService.changeSupplierPicture(formData).subscribe({
 
+        next:(response : any) => {
+          console.log(response);
+          this.previewUrl = this.currSupplier.getImage();
+          this.getSupplierCall();
+        },
+        error:(errorResponse) =>{
+          this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000 });
+        }
+
+      })
   }
   username : string;
   ngOnInit(): void {
@@ -158,9 +174,31 @@ export class MyProfileComponent implements OnInit {
   }
   update() {
     const name = (document.getElementById('name') as HTMLInputElement).value;
-    const username = (document.getElementById('username') as HTMLInputElement).value;
+    const username1 = (document.getElementById('username1') as HTMLInputElement).value;
     const email = (document.getElementById('email') as HTMLInputElement).value;
     const phone = (document.getElementById('phone') as HTMLInputElement).value;
+    const bio = (document.getElementById('bio') as HTMLInputElement).value;
+    const website = (document.getElementById('website') as HTMLInputElement).value;
+    const toUpdate = new UpdateSupplierDto(username1,name,email,phone,website,bio);
+    console.log("SALJEM: ");
+    console.log(toUpdate);
+    this.apiService.updateSupplier(toUpdate).subscribe({
+      next:(response : string) =>{
+        this.getSupplierCall();
+        this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: response,
+              life: 3000 });
+        },
+        error:(errorResponse) =>{
+          this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000 });
+      }
+    })
 
   }
   updatePass() {
@@ -172,7 +210,7 @@ export class MyProfileComponent implements OnInit {
     if (newPassword != "" && newPassword == confirmNewPassword) {
       this.changePass = new ChangePasswordDto(currentPassword, newPassword);
 
-      this.apiService.changeOrgPass(this.changePass).subscribe({
+      this.apiService.changeUserPass(this.changePass).subscribe({
         next: (response: any) => {
           (document.getElementById('cpass') as HTMLInputElement).value = "";
           (document.getElementById('npass') as HTMLInputElement).value = "";

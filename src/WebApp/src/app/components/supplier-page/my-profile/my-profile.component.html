@@ -12,7 +12,7 @@
                     <img [src]="previewUrl || defaultImage" class="profile-img" alt="Profile" />
                     <input type="file" id="fileUpload" (change)="onFileSelected($event)" accept="image/*" hidden />
                 </label>
-                <p id="user">{{username}}</p>
+                <p id="user">{{currSupplier?.getUsername()}}</p>
                 <button id="upbut" (click)="triggerFileUpload()">
                     <i class="pi pi-upload"></i>Choose
                 </button>
@@ -26,8 +26,8 @@
                         <input id="name" type="text" [value]="currSupplier?.getCompanyName()" class="form-control" />
                     </div>
                     <div id="field">
-                        <label for="username">Username</label>
-                        <input id="username" type="text" [value]="currSupplier?.getUsername()" class="form-control" />
+                        <label for="username1">Username</label>
+                        <input id="username1" type="text" [value]="currSupplier?.getUsername()" class="form-control" />
                     </div>
 
                 </div>
