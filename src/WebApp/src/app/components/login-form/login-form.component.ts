@@ -146,7 +146,7 @@ export class LoginForm implements OnInit,IDeactivate{
               }
           }
 
-        this.messageService.add({ severity: 'warn', summary: 'Warn Message', detail: warningString , life: 3000 });
+        this.messageService.add({ severity: 'error', summary: 'Form fields are not valid:', detail: warningString , life: 3000 });
         return;
 
       }

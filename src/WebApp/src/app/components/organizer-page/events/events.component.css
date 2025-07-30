@@ -1,8 +1,19 @@
+main{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 h1{
     font-weight: bold;
     font-size: 1.5rem;
     padding-bottom: 50px;
 }
+
+.title{
+    width: 100%;
+}
+
 #ae{
     color: white;
     font-weight: bold;
@@ -16,9 +27,7 @@ h1{
     text-align: center;
     max-width: 200px;
 }
-#ev{
-    margin-top: 50px;
-}
+
 #ae:hover{
     cursor: pointer;
     background-color: #575dcb;
@@ -31,6 +40,7 @@ h1{
 }
 
 #infocards{
+    width: 100%;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
@@ -99,6 +109,27 @@ display: flex;
 }
 #cardDesc{
     color:gray;
+}
+
+.events-table{
+    border: 1px solid #EBEBEAFF;
+    border-radius: 12px;
+    margin: 2rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.events-table h1{
+    padding: 1rem 2rem;
+
+}
+
+.custom-hr {
+  height: 2px;
+  background-color: #EBEBEA;
+  border: none;
 }
 
  :host ::ng-deep {
