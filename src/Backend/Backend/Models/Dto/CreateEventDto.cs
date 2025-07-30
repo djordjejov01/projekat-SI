@@ -33,6 +33,9 @@ namespace Backend.Models.Dto
     }
     public class TicketDto
     {
+        public int TicketId { get; set; }
+        [Required]
+        public int EventId { get; set; }
         [Required]
         public string Name { get; set; }
 

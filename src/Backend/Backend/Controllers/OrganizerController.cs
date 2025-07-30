@@ -47,7 +47,7 @@ namespace Backend.Controllers
         [HttpPost("change-organizer-picture")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadOrganizerPhoto([FromForm] UploadImageDto model)
-        {
+        { 
             string ImageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
             Organizer o = _context.Organizers.Where(o => o.Id == model.Id).First();
             if (o is null)
@@ -154,17 +154,17 @@ namespace Backend.Controllers
             }
         }
 
-        [Authorize(Roles = "Organizer")]
-        [HttpPut("events/{eventId}")]
-        public async Task<IActionResult> UpdateEvent(int eventId, [FromBody] UpdateEventDto dto)
+        
+        [HttpPut("events")]
+        public async Task<IActionResult> UpdateEvent([FromBody] UpdateEventDto dto)
         {
-            var eventEntity = await _context.Events.FindAsync(eventId);
+            var eventEntity = await _context.Events.FindAsync(dto.EventId);
             if (eventEntity == null)
                 return NotFound();
 
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             if (eventEntity.OrganizerID != userId)
-                return Forbid();
+                return NotFound("Nemate pravo da izmenite ovaj event.");
 
 
             eventEntity.Title = dto.Title;
@@ -275,6 +275,37 @@ namespace Backend.Controllers
             }
         }
 
+        [HttpDelete("activity")]
+        public async Task<IActionResult> DeleteActivity([FromBody] int activityId)
+        {
+            try
+            {
+                var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+                
+                var activity = await _context.EventActivities
+                    .Include(a => a.Event)
+                    .FirstOrDefaultAsync(a => a.ActivityID == activityId);
+
+                if (activity == null)
+                    return NotFound(new { message = "Aktivnost nije pronađena." });
+
+                
+                if (activity.Event.OrganizerID != organizerId)
+                    return StatusCode(403, new { message = "Možete da brišete samo aktivnosti iz svojih događaja." });
+
+
+                _context.EventActivities.Remove(activity);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Aktivnost uspešno obrisana." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpGet("monthly-stats")]
         public async Task<IActionResult> GetMonthlyStats(int organizerId,int? year = null) 
         {
@@ -340,6 +371,172 @@ namespace Backend.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        
+        [HttpGet("tickets/{eventId}")]
+        public async Task<IActionResult> GetTicketsForOrganizer(int eventId)
+        {
+            var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var eventEntity =await _context.Events
+                .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
+
+            if (eventEntity == null)
+                return NotFound("Nemate pristup ovom događaju.");
+
+            var tickets = await _context.Tickets
+                .Where(t => t.EventID == eventId)
+                .Select(t => new {
+                    t.TicketID,
+                    t.EventID,
+                    t.TypeName,
+                    t.Description,
+                    t.Price,
+                    t.Quota,
+                    t.validFrom,
+                    t.validUntil
+                })
+                .ToListAsync();
+
+            return Ok(tickets);
+
+        }
+
+        [HttpPost("tickets")]
+        public async Task<IActionResult> CreateTicket([FromBody] TicketDto ticketDto)
+        {
+            if (ticketDto==null)
+            {
+                return BadRequest("Podaci o karti nisu prosleđeni.");
+            }
+
+            var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var eventEntity = await _context.Events
+                .FirstOrDefaultAsync(e => e.EventID == ticketDto.EventId && e.OrganizerID == organizerId);
+            if (eventEntity == null)
+                return NotFound("Event nije pronađen ili nemate pravo da dodate kartu za ovaj event.");
+
+            var newTicket = new Ticket
+            {
+                TypeName = ticketDto.Name,
+                Price = ticketDto.Price,
+                EventID = ticketDto.EventId,
+                Quota = ticketDto.Quota,
+                Description = ticketDto.Description,
+                validFrom = ticketDto.ValidFrom,
+                validUntil = ticketDto.ValidUntil
+            };
+            _context.Tickets.Add(newTicket);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return Ok(new
+            {
+                message = "Karta uspešno kreirana.",
+                ticketId = newTicket.TicketID
+            });
+        }
+
+        [HttpPut("tickets")]
+        public async Task<IActionResult> UpdateTicket([FromBody] TicketDto ticketDto)
+        {
+            if (ticketDto == null)
+                return BadRequest();
+
+            
+            int organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            
+            var existingTicket = await _context.Tickets
+                .Include(t => t.Event)
+                .FirstOrDefaultAsync(t => t.TicketID == ticketDto.TicketId && t.Event.OrganizerID == organizerId);
+
+            if (existingTicket == null)
+                return NotFound("Karta nije pronađena ili nemate pravo da je izmenite.");
+
+            
+            if (ticketDto.EventId != existingTicket.EventID)
+            {
+                var newEventEntity = await _context.Events
+                    .FirstOrDefaultAsync(e => e.EventID == ticketDto.EventId && e.OrganizerID == organizerId);
+
+                if (newEventEntity == null)
+                    return NotFound("Event nije pronađen ili nemate pravo da koristite ovaj event.");
+            }
+
+            
+            existingTicket.TypeName = ticketDto.Name;
+            existingTicket.Price = ticketDto.Price;
+            existingTicket.EventID = ticketDto.EventId;
+            existingTicket.Quota = ticketDto.Quota;
+            existingTicket.Description = ticketDto.Description;
+            existingTicket.validFrom = ticketDto.ValidFrom;
+            existingTicket.validUntil = ticketDto.ValidUntil;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return Ok(new
+            {
+                message = "Karta uspešno izmenjena.",
+                ticketId = existingTicket.TicketID
+            });
+        }
+
+        [HttpDelete("tickets")]
+        public async Task<IActionResult> DeleteTicket([FromBody] int ticketId)
+        {
+            if (ticketId <= 0)
+                return BadRequest("Neispravan ID karte.");
+
+            int organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            
+            var existingTicket = await _context.Tickets
+                .Include(t => t.Event)
+                .FirstOrDefaultAsync(t => t.TicketID == ticketId && t.Event.OrganizerID == organizerId);
+
+            if (existingTicket == null)
+                return NotFound("Karta nije pronađena ili nemate pravo da je obrišete.");
+
+            
+            var purchasedTickets = await _context.UserTickets
+                .CountAsync(ut => ut.TicketID == ticketId);
+
+            if (purchasedTickets > 0)
+                return BadRequest("Nije moguće obrisati kartu jer postoje kupljene karte.");
+
+
+            try
+            {
+                _context.Tickets.Remove(existingTicket);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return Ok(new
+            {
+                message = "Karta uspešno obrisana.",
+                ticketId = ticketId
+            });
         }
     }
 }

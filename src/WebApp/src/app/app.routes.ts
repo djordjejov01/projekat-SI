@@ -15,6 +15,8 @@ import { EventManagementComponent } from './components/organizer-page/event-mana
 import { DashboardComponent } from './components/supplier-page/dashboard/dashboard.component';
 import { MyProfileComponent } from './components/supplier-page/my-profile/my-profile.component';
 import { SupplierCalendarComponent } from './components/supplier-page/supplier-calendar/supplier-calendar.component';
+import { GuestGuard } from './Guards/guest.guard';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 
 
 export const routes: Routes = [
@@ -30,8 +32,8 @@ export const routes: Routes = [
       { path: 'create-event', component: CreateEventComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']}, canDeactivate: [(comp: CreateEventComponent) => comp.canExit()] },
       {path: 'event-management/:eventId', component: EventManagementComponent, canActivate: [AuthGuard], data : {roles: ['Organizer']}}
     ]},
-    {path: 'register', component: RegisterForm, canDeactivate: [(comp: RegisterForm) => comp.canExit()]},
-    {path: 'login', component: LoginForm, canDeactivate: [(comp: LoginForm) => comp.canExit()]},
+    {path: 'register', component: RegisterForm, canDeactivate: [(comp: RegisterForm) => comp.canExit()], canActivate: [GuestGuard]},
+    {path: 'login', component: LoginForm, canDeactivate: [(comp: LoginForm) => comp.canExit()], canActivate: [GuestGuard]},
     {path: 'admin', component: AdminPage, canActivate: [AuthGuard], data : { roles: ['Admin']}},
     {path: 'supplier', component: SupplierPageComponent, canActivate: [AuthGuard], data : { roles: ['Supplier']},
     children: [
@@ -40,5 +42,6 @@ export const routes: Routes = [
       { path: 'my-profile', component: MyProfileComponent, canActivate: [AuthGuard], data : {roles: ['Supplier']} },
       { path: 'calendar', component: SupplierCalendarComponent, canActivate: [AuthGuard], data : {roles: ['Supplier']} },
     ]
-  }
+  },
+    {path: '**', component: NotFoundComponent}
 ];

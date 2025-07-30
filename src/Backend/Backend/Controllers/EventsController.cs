@@ -206,7 +206,7 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == userId);
 
             if (eventEntity == null)
-                return NotFound();
+                return NotFound("Nemate pristup ovom događaju.");
 
             var attendingCount = await _context.UserTickets
                 .Include(ut => ut.Ticket)
