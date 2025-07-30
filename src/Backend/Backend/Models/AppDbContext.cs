@@ -24,6 +24,8 @@ namespace Backend.Models
 
         public DbSet<PinType> PinTypes { get; set; }
 
+        public DbSet<Supplier> Suppliers { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Ticket>()
