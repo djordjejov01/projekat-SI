@@ -209,7 +209,8 @@
     "purchasedBy": "Purchased by",
     "unknownUser": "Unknown user",
     "noTickets": "No ticket IDs provided.",
-    "ticket": "Ticket"
+    "ticket": "Ticket",
+      "viewEventDetails": "View event details"
   },
   "buttons": {
     "download": "Download",
