@@ -18,10 +18,10 @@ export default function ProfileScreen() {
   const { t } = useTranslation();
 
   const [firstName, setFirstName] = useState('');
-  const [ticketsCount, setTicketsCount] = useState(0);
-  
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [ticketsCount, setTicketsCount] = useState(0);
+  const [credits, setCredits] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -30,6 +30,7 @@ export default function ProfileScreen() {
       if (!token) return;
 
       setIsLoggedIn(true);
+
       try {
         const res = await fetch(`${API_URL}/MobileUser/profile`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -41,15 +42,25 @@ export default function ProfileScreen() {
           setLastName(data.lastName || '');
           setEmail(data.email || '');
         }
-         const resTickets = await fetch(`${API_URL}/ticket/tickets/my`, {
+
+        const resTickets = await fetch(`${API_URL}/ticket/tickets/my`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
         if (resTickets.ok) {
-          const dataCount = await resTickets.json(); // očekuj { count: number }
+          const dataCount = await resTickets.json();
           setTicketsCount(dataCount.length);
-       } else {
-          console.warn("Failed to fetch tickets");
         }
+
+        const resCredits = await fetch(`${API_URL}/Credit`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (resCredits.ok) {
+          const data = await resCredits.json();
+          setCredits(data.credits);
+        }
+
       } catch (error) {
         console.error('Failed to load user data or tickets:', error);
       }
@@ -115,7 +126,7 @@ export default function ProfileScreen() {
           <Text style={styles.email}>{email}</Text>
         </View>
         <TouchableOpacity onPress={() => router.push('../profile/personal-info')}>
-          <Text style={styles.edit}>💰 {t('1500')}</Text>
+          <Text style={styles.edit}>💰 {credits}</Text>
         </TouchableOpacity>
       </View>
 
@@ -162,7 +173,6 @@ export default function ProfileScreen() {
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -262,11 +272,10 @@ const styles = StyleSheet.create({
   },
   loginText: { color: '#fff', fontWeight: 'bold' },
   centeredContainer: {
-  flex: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-  backgroundColor: '#fff',
-  padding: 20,
-},
-
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 20,
+  },
 });
