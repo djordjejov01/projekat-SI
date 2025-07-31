@@ -9,4 +9,11 @@ export class SharedService {
   notifyProfileImageChanged() {
     this.profileImageChanged.next(true);
   }
+
+  private usernameSource = new BehaviorSubject<string | null>(null);
+  currentUsername$ = this.usernameSource.asObservable();
+
+  updateUsername(newUsername: string) {
+    this.usernameSource.next(newUsername);
+  }
 }

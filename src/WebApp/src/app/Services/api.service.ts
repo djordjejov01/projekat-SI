@@ -26,6 +26,15 @@ import { UpdateEventDto } from "../Models/UpdateEventDto";
 import { EventBasicInfo } from "../Models/EventBasicInfo";
 import { EventBasicInfoApiResponse } from "../Interfaces/EventBasicInfoApiResponse";
 import { ActivityDto } from "../Models/ActivityDto";
+import { TicketApiResponse } from "../Interfaces/TicketApiResponse";
+import { Ticket } from "../Models/Ticket";
+import { TicketDto } from "../Models/TicketDto";
+import { PinCategory } from "./PinCategoryService";
+import { EventPinDto } from "../Models/EventPinDto";
+import { EventPinApiResponse } from "../Interfaces/EventPinApiResponse";
+import { SupplierDto } from "../Models/SupplierDto";
+import { SupplierDtoResponse } from "../Interfaces/SupplierDtoResponse";
+import { UpdateSupplierDto } from "../Models/UpdateSupplierDto";
 
 
 // Match Backend.Models.Dto.EventDto
@@ -116,6 +125,14 @@ export function mapBackendResponse(
   };
 }
 
+
+export interface GeocodingResult {
+  lat: string;
+  lon: string;
+  display_name: string;
+  [key: string]: any; // to avoid TS complaints for other fields
+}
+
 @Injectable({
     providedIn: "root"
 })
@@ -125,6 +142,94 @@ export class ApiService{
     private apiUrl = 'https://localhost:7269/api';
 
     constructor(private http: HttpClient) {}
+
+    createMapPin(pinData : EventPinDto) : Observable<string>{
+        return this.http.post(`${this.apiUrl}/EventPin`, pinData, { responseType: 'text' }).pipe(
+            catchError(this.handleError)
+        )
+    }
+
+    getEventPins(eventId : number) : Observable<EventPinDto[]>{
+        return this.http.get<EventPinApiResponse[]>(`${this.apiUrl}/EventPin/event?eventId=${eventId}`).pipe(
+
+            map(response => response.map(
+                pin => new EventPinDto(
+                    pin.eventId,
+                    pin.latitude,
+                    pin.longitude,
+                    pin.label,
+                    new Date(pin.pinnedAt),
+                    pin.pinCategory,
+                    pin.description,
+                    pin.id,
+                )
+            )),
+
+            catchError(this.handleError)
+
+        );
+    }
+
+    getPinCategories() : Observable<PinCategory[]>{
+
+        return this.http.get<PinCategory[]>(`${this.apiUrl}/EventPin/categories`).pipe(
+            catchError(this.handleError)
+        )
+
+    }
+
+    deleteTicket(ticketId: number) : Observable<string>{
+        return this.http.delete<{message: string}>(`${this.apiUrl}/Organizer/tickets`,{body: ticketId}).pipe(
+            map(res => res.message),
+            catchError(this.handleError)
+        );
+    }
+
+    updateTicket(ticketDto : TicketDto):Observable<string>{
+        return this.http.put<{message: string}>(`${this.apiUrl}/Organizer/tickets`, ticketDto).pipe(
+            map(res => res.message),
+            catchError(this.handleError)
+        );
+    }
+
+    createTicket(ticketDto : TicketDto) : Observable<string>{
+
+        return this.http.post<{message: string}>(`${this.apiUrl}/Organizer/tickets`, ticketDto).pipe(
+            map(res => res.message),
+            catchError(this.handleError)
+        )
+     
+    }
+
+    getTicketsForEvent(eventId : number): Observable<Ticket[]>{
+        return this.http.get<TicketApiResponse[]>(`${this.apiUrl}/Organizer/tickets/${eventId}`).pipe(
+            map(response => response.map(
+                ticket => new Ticket(
+                    ticket.ticketID,
+                    ticket.eventID,
+                    ticket.typeName,
+                    ticket.description,
+                    ticket.price,
+                    ticket.quota,
+                    new Date(ticket.validFrom),
+                    new Date(ticket.validUntil)
+                )
+            )),
+
+            catchError(this.handleError)
+        )
+    }
+
+    geocodeAddress(address: string): Observable<GeocodingResult[]>{
+
+        const encoded = encodeURIComponent(address);
+        const url = `https://nominatim.openstreetmap.org/search?q=${encoded}&format=json&limit=1`;
+
+        return this.http.get<GeocodingResult[]>(url).pipe(
+            catchError(this.handleError)
+        );
+
+    }
 
     createActivity(activity : ActivityDto) : Observable<any>{
         return this.http.post<any>(
@@ -177,9 +282,16 @@ export class ApiService{
             catchError(this.handleError)
         )
     }
-    updateEvent(data : UpdateEventDto, eventId : number) : Observable<EventApiResponse>{
 
-        return this.http.put<EventApiResponse>(`${this.apiUrl}/Organizer/events/${eventId}`,data).pipe(
+    changeSupplierPicture(formData : FormData){
+        return this.http.post(`${this.apiUrl}/Supplier/change-supplier-picture`,formData).pipe(
+            catchError(this.handleError)
+        )
+    }
+
+    updateEvent(data : UpdateEventDto) : Observable<EventApiResponse>{
+
+        return this.http.put<EventApiResponse>(`${this.apiUrl}/Organizer/events`,data).pipe(
             catchError(this.handleError)
         )
 
@@ -384,8 +496,25 @@ export class ApiService{
         )
     }
 
+    getSupplier() : Observable<SupplierDto>{
+        return this.http.get<SupplierDtoResponse>(`${this.apiUrl}/Supplier/profile`).pipe(
+            map(data => {
+                return new SupplierDto(
+                    data.id,
+                    data.username,
+                    data.companyName,
+                    data.email,
+                    data.phoneNumber,
+                    data.website,
+                    data.companyBio,
+                    data.image
+                )
+            }),
+            catchError(this.handleError)
+        )
+    }
 
-    changeOrgPass(data : ChangePasswordDto)
+    changeUserPass(data : ChangePasswordDto)
     {
         return this.http.put(`${this.apiUrl}/User/change-password`, data, { responseType: 'text' as const }).pipe(
   catchError(this.handleError)
@@ -401,6 +530,14 @@ export class ApiService{
             catchError(this.handleError)
         );
     }
+
+    updateSupplier(data : UpdateSupplierDto): Observable<string>{
+        return this.http.put<SuccessfulMessageResponse>(`${this.apiUrl}/Supplier/profile`,data).pipe(
+            map(data => data.message),
+            catchError(this.handleError)
+        );
+    }
+
     //Observable<never> means: "This observable will never emit a real value, and only exists to throw an error."
     handleError(errorResponse : HttpErrorResponse) : Observable<never>{
 
@@ -410,6 +547,10 @@ export class ApiService{
         //Client side error (e.g no internet, DNS failure, frontend bug)
         if(errorResponse.error instanceof ErrorEvent) {
             errorMsg = `Error: ${errorResponse.error.message}`;
+        }
+        else if (typeof errorResponse.error === 'string') {
+            // Plain string message from backend
+            errorMsg = errorResponse.error;
         }
         //If there is an error from backend and if that error has a message property use that
         else if (errorResponse.error && errorResponse.error.message){

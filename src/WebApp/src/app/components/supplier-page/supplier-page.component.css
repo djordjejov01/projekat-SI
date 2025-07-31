@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Rubik+Wet+Paint&display=swap');
+
+* {
+    font-family: "Archivo", 'Courier New', Courier, monospace, sans-serif;
+    flex-wrap: wrap;
+}
+
+#prof {
+    display: flex;
+    align-items: center;
+}
+
+#pfp {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+#pfp:hover {
+    transition: 0.3s;
+    box-shadow: 0px 0px 5px 2px #636AE8;
+}
+
+#lgbtn {
+    transition: 0.3s;
+}
+
+#lgbtn:hover {
+    box-shadow: 0px 0px 5px 2px rgb(213, 213, 213);
+    transition: 0.3s;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+}
+
+#head {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 5px;
+    border-bottom: 2px solid rgb(232, 232, 232);
+    padding-top: 10px;
+    background-color: white;
+    position: fixed;
+    width: 100%;
+    z-index: 10;
+}
+
+#right {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    gap: 1rem;
+}
+
+#right button {
+    padding: 0.25rem 0.75rem;
+    border: 1px solid #EBEBEAFF;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#logo {
+    max-width: 120px;
+    margin-left: 25px;
+}
+
+#page {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+
+#show {
+    padding: 2rem;
+    padding-left: 0.25rem;
+    max-width: 1500px;
+    width: 100%;
+    padding-top: 5rem;
+    /*max-height: 800px;
+    overflow-y: auto;*/
+}
+
+img:hover {
+    cursor: pointer;
+}
+
+hr {
+    color: rgb(232, 232, 232);
+}
+
+@media screen and (width <=1666px) {
+
+    /*#page{
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap:10px;
+    }*/
+    #show {
+        padding: 0;
+        padding-left: 290px;
+        padding-right: 10px;
+    }
+}
+
+#lgout {
+    border: 1px solid rgb(232, 232, 232);
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 5px;
+}
+
+#lgout:hover {
+    cursor: pointer;
+}
+
+select:hover,
+option:hover {
+    cursor: pointer;
+}
+
+#username:hover{
+    cursor: pointer;
+}

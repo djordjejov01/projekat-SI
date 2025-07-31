@@ -165,7 +165,7 @@ export class RegisterForm implements OnInit,IDeactivate{
 
         if(this.registerForm.errors?.['passwordsDontMatch']) warningString += "  * Password and Confirmation must match\n";
 
-       this.messageService.add({ severity: 'warn', summary: 'Warn Message', detail: warningString , life: 3000 });
+       this.messageService.add({ severity: 'error', summary: 'Form fields are not valid:', detail: warningString , life: 3000 });
        return;
 
     }

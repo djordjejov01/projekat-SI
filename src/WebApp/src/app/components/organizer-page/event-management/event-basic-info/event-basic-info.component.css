@@ -103,7 +103,7 @@ main{
 }
 
 .form-container , .agenda{
-  max-width: 737px;
+  min-width: 737px;
   width: 100%;
 }
 
@@ -173,6 +173,7 @@ main{
 .agenda{
     border: 1px solid #EBEBEA;
     border-radius: 8px;
+    height: 100%;
 }
 
 .agenda-header{

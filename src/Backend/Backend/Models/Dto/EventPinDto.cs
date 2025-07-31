@@ -15,5 +15,7 @@ namespace Backend.Models.Dto
         public string? Description { get; set; }
 
         public DateTime PinnedAt { get; set; }
+
+        public PinTypes PinCategory { get; set; }
     }
 }

@@ -24,12 +24,6 @@
     gap:5px;
     height: 100%;
 }
-#item4{
-    margin-top: 50px;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-}
 
 @media screen and (width <= 1529px) {
 #bar{
