@@ -207,7 +207,9 @@
     "purchasedBy": "Kupljeno od strane",
     "unknownUser": "Nepoznat korisnik",
     "noTickets": "Nijedan ID karte nije prosleđen.",
-    "ticket": "Karta"
+    "ticket": "Karta",
+      "viewEventDetails": "Pogledaj detalje događaja"
+
   },
   "buttons": {
     "download": "Preuzmi",

@@ -29,7 +29,7 @@ type Resource = {
 export default function CartScreen() {
   const router = useRouter();
   const { t } = useTranslation();
-  const { tickets, resources, eventId } = useLocalSearchParams();
+  const { tickets, resources, eventId, eventName, eventLocation } = useLocalSearchParams();
 
   const [selectedTickets, setSelectedTickets] = useState<{ id: number; quantity: number }[]>([]);
   const [selectedResources, setSelectedResources] = useState<number[]>([]);
@@ -37,8 +37,6 @@ export default function CartScreen() {
   const [resourceData, setResourceData] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(false);
   const [token, setToken] = useState<string | null>(null);
-  const [eventName, setEventName] = useState('');
-  const [eventLocation, setEventLocation] = useState('');
 
   useEffect(() => {
     AsyncStorage.getItem('token').then(setToken);
@@ -89,21 +87,7 @@ export default function CartScreen() {
       }
     };
 
-    const fetchEvent = async () => {
-      try {
-        const res = await fetch(`${API_URL}/Event/${eventId}`);
-        if (res.ok) {
-          const json = await res.json();
-          setEventName(json.title || '');
-          setEventLocation(json.location || '');
-        }
-      } catch {
-        // fail silently
-      }
-    };
-
     fetchTicketsAndResources();
-    fetchEvent();
   }, [eventId, token]);
 
   const getTicketInfo = (id: number) => ticketData.find(t => t.id === id);
@@ -176,10 +160,12 @@ export default function CartScreen() {
 
             // Rezerviši svaki izabrani resurs za odgovarajuću kartu (prvi tip ulaznice)
             for (const resId of selectedResources) {
+              // Pronađi prvi tip ulaznice (ili možeš proširiti logiku po potrebi)
               const firstSelectedTicket = selectedTickets[0];
               const userTicketIds = ticketIdToUserTicketIds[firstSelectedTicket.id] || [];
               if (userTicketIds.length === 0) continue;
 
+              // Uzmi jedan UserTicketID i ukloni ga iz niza (da ne koristiš isti više puta)
               const userTicketID = userTicketIds.shift();
 
               await fetch(`${API_URL}/Resource/reserve`, {
@@ -196,20 +182,34 @@ export default function CartScreen() {
               });
             }
 
-            setLoading(false);
-
-            // Navigacija ka ticketDetails sa svim potrebnim parametrima
-            router.replace({
-              pathname: '../event/ticketDetails',
-              params: {
-                ticketIDs: JSON.stringify(Object.values(ticketIdToUserTicketIds).flat()),
-                eventName,
-                ticketType: getTicketInfo(selectedTickets[0].id)?.name || '',
-                purchasedAt: new Date().toISOString(),
-                price: calculateTotal().toString(),
-                location: eventLocation,
-              },
+            // Pripremi ticketTypes za prosleđivanje
+            const ticketTypes = selectedTickets.map(t => {
+              const info = getTicketInfo(t.id);
+              return {
+                id: t.id,
+                name: info?.name || '',
+                quantity: t.quantity,
+              };
             });
+
+            setLoading(false);
+            Alert.alert(t('cart.successTitle'), t('cart.successMessage'), [
+              {
+                text: t('cart.ok'),
+                onPress: () =>
+                  router.replace({
+                    pathname: '../event/ticketDetails',
+                    params: {
+                      ticketIDs: JSON.stringify(Object.values(ticketIdToUserTicketIds).flat()),
+                      eventName: eventName ?? '',
+                      ticketTypes: JSON.stringify(ticketTypes),
+                      purchasedAt: new Date().toISOString(),
+                      price: calculateTotal().toString(),
+                      location: eventLocation ?? '',
+                    },
+                  }),
+              },
+            ]);
           } catch (error: any) {
             setLoading(false);
             Alert.alert(t('cart.errorTitle'), error.message || t('cart.genericError'));
