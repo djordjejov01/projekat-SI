@@ -190,7 +190,7 @@ defaultImage = 'assets/default-picture.png';
     {
       this.changePass = new ChangePasswordDto(currentPassword, newPassword);
 
-      this.apiService.changeOrgPass(this.changePass).subscribe({
+      this.apiService.changeUserPass(this.changePass).subscribe({
       next:(response : any) =>{
         (document.getElementById('cpass') as HTMLInputElement).value = "";
         (document.getElementById('npass') as HTMLInputElement).value = "";

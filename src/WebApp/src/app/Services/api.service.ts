@@ -26,6 +26,9 @@ import { UpdateEventDto } from "../Models/UpdateEventDto";
 import { EventBasicInfo } from "../Models/EventBasicInfo";
 import { EventBasicInfoApiResponse } from "../Interfaces/EventBasicInfoApiResponse";
 import { ActivityDto } from "../Models/ActivityDto";
+import { SupplierDto } from "../Models/SupplierDto";
+import { SupplierDtoResponse } from "../Interfaces/SupplierDtoResponse";
+import { UpdateSupplierDto } from "../Models/UpdateSupplierDto";
 
 
 // Match Backend.Models.Dto.EventDto
@@ -174,6 +177,12 @@ export class ApiService{
 
     changeOrganizerPicture(formData : FormData){
         return this.http.post(`${this.apiUrl}/Organizer/change-organizer-picture`,formData).pipe(
+            catchError(this.handleError)
+        )
+    }
+
+    changeSupplierPicture(formData : FormData){
+        return this.http.post(`${this.apiUrl}/Supplier/change-supplier-picture`,formData).pipe(
             catchError(this.handleError)
         )
     }
@@ -384,8 +393,25 @@ export class ApiService{
         )
     }
 
+    getSupplier() : Observable<SupplierDto>{
+        return this.http.get<SupplierDtoResponse>(`${this.apiUrl}/Supplier/profile`).pipe(
+            map(data => {
+                return new SupplierDto(
+                    data.id,
+                    data.username,
+                    data.companyName,
+                    data.email,
+                    data.phoneNumber,
+                    data.website,
+                    data.companyBio,
+                    data.image
+                )
+            }),
+            catchError(this.handleError)
+        )
+    }
 
-    changeOrgPass(data : ChangePasswordDto)
+    changeUserPass(data : ChangePasswordDto)
     {
         return this.http.put(`${this.apiUrl}/User/change-password`, data, { responseType: 'text' as const }).pipe(
   catchError(this.handleError)
@@ -401,6 +427,14 @@ export class ApiService{
             catchError(this.handleError)
         );
     }
+
+    updateSupplier(data : UpdateSupplierDto): Observable<string>{
+        return this.http.put<SuccessfulMessageResponse>(`${this.apiUrl}/Supplier/profile`,data).pipe(
+            map(data => data.message),
+            catchError(this.handleError)
+        );
+    }
+
     //Observable<never> means: "This observable will never emit a real value, and only exists to throw an error."
     handleError(errorResponse : HttpErrorResponse) : Observable<never>{
 

@@ -130,6 +130,7 @@ namespace Backend.Controllers
                     ut.PurchasedAt,
                     TicketType = ut.Ticket.TypeName,
                     EventName = ut.Ticket.Event.Title,
+                    EventID = ut.Ticket.Event.EventID,
                     ut.Ticket.Price
                 })
                 .ToListAsync();

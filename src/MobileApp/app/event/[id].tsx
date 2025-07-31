@@ -40,10 +40,13 @@ type Event = {
   attendingCount: number;
   isFavorite: boolean;
   agenda: AgendaItem[];
+  minPrice: number | null;
+  maxPrice: number | null;
+  isFree: boolean;
 };
 
 export default function EventDetailScreen() {
-  const { id,from} = useLocalSearchParams();
+  const { id, from } = useLocalSearchParams();
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -67,16 +70,21 @@ export default function EventDetailScreen() {
         const headers: any = {};
         if (token) headers.Authorization = `Bearer ${token}`;
 
-             const response = await fetch(`${API_URL}/Events/Details?id=${currentId}`, {
+        const response = await fetch(`${API_URL}/Events/Details?id=${currentId}`, {
           headers,
         });
 
         if (!response.ok) throw new Error(t('failedToLoadEvent'));
 
         const data: Event = await response.json();
-        setEvent(data);
 
-//console.log('Event location:', data.location);
+        // Izračunaj da li je event free (ako su minPrice i maxPrice null ili 0)
+        const isFreeCalculated =
+          (data.minPrice === null || data.minPrice === 0) &&
+          (data.maxPrice === null || data.maxPrice === 0);
+
+        setEvent({ ...data, isFree: isFreeCalculated });
+
         geocodeLocation(data.location);
       } catch (err) {
         console.error(err);
@@ -89,41 +97,39 @@ export default function EventDetailScreen() {
     fetchEvent();
   }, [currentId]);
 
-const geocodeLocation = async (location: string) => {
-  try {
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`,
-      {
-        headers: {
-          'User-Agent': 'SyncUpApp/1.0 (support@syncupapp.com)',
+  const geocodeLocation = async (location: string) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`,
+        {
+          headers: {
+            'User-Agent': 'SyncUpApp/1.0 (support@syncupapp.com)',
+            'Accept-Language': 'en',
+          },
+        }
+      );
 
-          'Accept-Language': 'en',
-        },
+      if (!response.ok) {
+        console.warn('Nominatim API returned error status:', response.status);
+        const text = await response.text();
+        console.warn('Response text:', text);
+        return;
       }
-    );
 
-    if (!response.ok) {
-      console.warn('Nominatim API returned error status:', response.status);
-      const text = await response.text();
-      console.warn('Response text:', text);
-      return; 
+      const data = await response.json();
+
+      if (data && data.length > 0) {
+        setCoords({
+          latitude: parseFloat(data[0].lat),
+          longitude: parseFloat(data[0].lon),
+        });
+      } else {
+        console.warn('No results for location:', location);
+      }
+    } catch (err) {
+      console.warn('Error geocoding location:', err);
     }
-
-    const data = await response.json();
-    //console.log('Geocode result:', data);
-
-    if (data && data.length > 0) {
-      setCoords({
-        latitude: parseFloat(data[0].lat),
-        longitude: parseFloat(data[0].lon),
-      });
-    } else {
-      console.warn('No results for location:', location);
-    }
-  } catch (err) {
-    console.warn('Error geocoding location:', err);
-  }
-};
+  };
 
   const toggleFavorite = async () => {
     if (!event) return;
@@ -147,7 +153,7 @@ const geocodeLocation = async (location: string) => {
 
       const method = event.isFavorite ? 'DELETE' : 'POST';
 
-    const res = await fetch(`${API_URL}/Favorites`, {
+      const res = await fetch(`${API_URL}/Favorites`, {
         method,
         headers: {
           'Content-Type': 'application/json',
@@ -189,19 +195,22 @@ const geocodeLocation = async (location: string) => {
 
   return (
     <ScrollView style={styles.container}>
-
-   <TouchableOpacity  onPress={() => {
-    if (from === 'search') {
-      router.replace('/search');
-    } else if (from === 'favorites') {
-      router.replace('/favorites');
-    } else {
-      router.replace('/events');
-    }
-  }}
-   style={styles.backButton}>
-             <Ionicons name="arrow-back" size={24} color="#333" />
-           </TouchableOpacity>
+      
+      {/* <TouchableOpacity
+        onPress={() => {
+          if (from === 'search') {
+            router.replace('/search');
+          } else if (from === 'favorites') {
+            router.replace('/favorites');
+          } else {
+            router.replace('/events');
+          }
+        }}
+        style={styles.backButton}
+      >
+        <Ionicons name="arrow-back" size={24} color="#333" />
+      </TouchableOpacity> */}
+      <Text style={styles.title}>{t('aboutEvent')}</Text>
 
       <View style={styles.imageWrapper}>
         {imageLoading && (
@@ -243,9 +252,21 @@ const geocodeLocation = async (location: string) => {
           })}
           h
         </Text>
-        <Text style={styles.info}>📍 {t('location')}: {event.location}</Text>
-        <Text style={styles.info}>🏢 {t('organizer')}: {event.organizerName}</Text>
-        <Text style={styles.info}>👥 {t('attending')}: {event.attendingCount || 0}</Text>
+        <Text style={styles.info}>
+          📍 {t('location')}: {event.location}
+        </Text>
+        <Text style={styles.info}>
+          🏢 {t('organizer')}: {event.organizerName}
+        </Text>
+        {/* <Text style={styles.info}>👥 {t('attending')}: {event.attendingCount || 0}</Text> */}
+        {!event.isFree && event.minPrice != null && event.maxPrice != null && (
+          <Text style={styles.info}>
+            💸 {t('price')}:{' '}
+            {event.minPrice === event.maxPrice
+              ? `${event.minPrice} RSD`
+              : `${event.minPrice} - ${event.maxPrice} RSD`}
+          </Text>
+        )}
       </View>
 
       <View style={styles.actions}>
@@ -270,20 +291,25 @@ const geocodeLocation = async (location: string) => {
           </Text>
         </TouchableOpacity>
 
-          <TouchableOpacity
-          style={styles.buyBtn}
-          activeOpacity={0.7}
+        <TouchableOpacity
+          style={[
+            styles.buyBtn,
+            event.isFree && styles.buyBtnDisabled, // primeni stil za onemogućeno dugme ako je besplatno
+          ]}
+          activeOpacity={event.isFree ? 1 : 0.7} // onemogući "klik" efekt ako je besplatno
           onPress={() =>
+            !event.isFree &&
             router.push({
               pathname: './tickets',
-              params: { eventId: event.id.toString() }, 
+              params: { eventId: event.id.toString() },
             })
           }
+          disabled={event.isFree} // onemogući dugme ako je besplatno
         >
-          <Text style={styles.buyText}>{t('buyTicket')}</Text>
+          <Text style={styles.buyText}>
+            {event.isFree ? t('freeEvent') : t('buyTicket')}
+          </Text>
         </TouchableOpacity>
-
-
       </View>
 
       <Text style={styles.sectionTitle}>{t('eventDescription')}</Text>
@@ -315,18 +341,17 @@ const geocodeLocation = async (location: string) => {
       {coords && (
         <>
           <Text style={styles.sectionTitle}>{t('location')}</Text>
-         <MapView
-            style={styles.map}
-            mapType="none"
+          <MapView
+             style={styles.map}
             initialRegion={{
-              latitude: coords.latitude,
-              longitude: coords.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            }}
+              latitude: coords?.latitude || 44.7866,
+              longitude: coords?.longitude || 20.4489,
+              latitudeDelta: 0.06,
+              longitudeDelta: 0.06,
+  }}
           >
             <UrlTile
-              urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              urlTemplate="https://a.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
               maximumZ={19}
               flipY={false}
               shouldReplaceMapContent={true}
@@ -340,12 +365,8 @@ const geocodeLocation = async (location: string) => {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 15,
-    backgroundColor: '#fff',
-    paddingBottom: 40,
-  },
+  container: { flex: 1, backgroundColor: '#fff', padding: 20,marginTop:20 },
+  header: { fontSize: 20, fontWeight: '700' },
   center: {
     flex: 1,
     justifyContent: 'center',
@@ -361,6 +382,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  buyBtnDisabled: {
+    backgroundColor: '#cccccc', // svetlo siva boja za disabled stanje
+  },
+
   image: {
     width: '100%',
     height: '100%',
@@ -368,7 +393,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    marginBottom: 6,
   },
   date: {
     fontSize: 16,
@@ -447,10 +471,10 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 10,
     marginTop: 10,
-    marginBottom:40
+    marginBottom: 40,
   },
   backButton: {
-    padding:20
+    padding: 20,
   },
   backText: {
     fontSize: 16,
@@ -458,5 +482,3 @@ const styles = StyleSheet.create({
   },
 
 });
-
-
