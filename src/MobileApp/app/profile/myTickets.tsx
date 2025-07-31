@@ -18,6 +18,7 @@ type PurchasedTicket = {
   ticketType: string;
   eventName: string;
   price: number;
+  eventID: number; 
   userTicketID: number;
     eventImage?: string;
 };
@@ -27,6 +28,7 @@ type GroupedTicket = {
   eventName: string;
   price: number;
   quantity: number;
+  eventID: number; 
   purchasedAt: string;
   ticketIDs: number[];
 };
@@ -47,6 +49,7 @@ export default function ProfileTickets() {
 
       try {
         const res = await fetch(`${API_URL}/ticket/tickets/my`, {
+          
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -57,22 +60,27 @@ export default function ProfileTickets() {
 
           const grouped: { [key: string]: GroupedTicket } = {};
 
-          data.forEach((ticket) => {
-            const key = `${ticket.eventName}_${ticket.ticketType}`;
-            if (!grouped[key]) {
-              grouped[key] = {
-                ticketType: ticket.ticketType,
-                eventName: ticket.eventName,
-                price: ticket.price,
-                quantity: 1,
-                purchasedAt: ticket.purchasedAt,
-                ticketIDs: [ticket.ticketID],
-              };
-            } else {
-              grouped[key].quantity += 1;
-              grouped[key].ticketIDs.push(ticket.ticketID);
-            }
-          });
+//      data.forEach((ticket) => {
+//   console.log('Ticket item:', ticket);
+// });
+
+data.forEach((ticket) => {
+  const key = `${ticket.eventName}_${ticket.ticketType}`;
+  if (!grouped[key]) {
+    grouped[key] = {
+      ticketType: ticket.ticketType,
+      eventName: ticket.eventName,
+      price: ticket.price,
+      quantity: 1,
+      eventID: ticket.eventID ?? ticket.eventID ?? 0, // pokušaj da vidiš da li postoji
+      purchasedAt: ticket.purchasedAt,
+      ticketIDs: [ticket.userTicketID],
+    };
+  } else {
+    grouped[key].quantity += 1;
+    grouped[key].ticketIDs.push(ticket.userTicketID);
+  }
+});
 
           setGroupedTickets(Object.values(grouped));
         } else {
@@ -89,21 +97,31 @@ export default function ProfileTickets() {
   }, []);
 
   const renderItem = ({ item }: { item: GroupedTicket }) => (
-    <TouchableOpacity
-      style={styles.ticketItem}
-      onPress={() =>
-        router.push({
-          pathname: '../event/ticketDetails',
-          params: {
-            ticketIDs: JSON.stringify(item.ticketIDs),
-            eventName: item.eventName,
-            ticketType: item.ticketType,
-            purchasedAt: item.purchasedAt,
-            price: item.price.toString(),
-          },
-        })
-      }
-    >
+   <TouchableOpacity
+    style={styles.ticketItem}
+    onPress={() => {
+      // console.log('Navigating with params:', {
+      //   ticketIDs: JSON.stringify(item.ticketIDs),
+      //   eventName: item.eventName,
+      //   ticketType: item.ticketType,
+      //   eventID: item.eventID,
+      //   purchasedAt: item.purchasedAt,
+      //   price: item.price.toString(),
+      // });
+
+      router.push({
+        pathname: '../event/ticketDetails',
+        params: {
+          ticketIDs: JSON.stringify(item.ticketIDs),
+          eventName: item.eventName,
+          ticketType: item.ticketType,
+          eventID: item.eventID,
+          purchasedAt: item.purchasedAt,
+          price: item.price.toString(),
+        },
+      });
+    }}
+  >
       <Text style={styles.title}>{item.eventName}</Text>
       <Text style={styles.details}>
         {t('profileTickets.ticketType')}: {item.ticketType}

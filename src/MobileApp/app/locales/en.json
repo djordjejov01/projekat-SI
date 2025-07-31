@@ -147,6 +147,8 @@
   "favorites": "Favorites",
   "profile": "Profile"
 },
+"aboutEvent": "About Event",
+  "freeEvent": "Free Event",
 "search": {
   "header": "Search Events",
   "placeholder": "Search by title or description...",
@@ -154,6 +156,7 @@
   "endDate": "End Date",
   "selectLocation": "Select location...",
   "sortBy": "Sort by...",
+  "selectCategory": "Select category",
   "dateAsc": "Date ↑",
   "dateDesc": "Date ↓",
   "priceAsc": "Price ↑",
@@ -206,7 +209,8 @@
     "purchasedBy": "Purchased by",
     "unknownUser": "Unknown user",
     "noTickets": "No ticket IDs provided.",
-    "ticket": "Ticket"
+    "ticket": "Ticket",
+      "viewEventDetails": "View event details"
   },
   "buttons": {
     "download": "Download",

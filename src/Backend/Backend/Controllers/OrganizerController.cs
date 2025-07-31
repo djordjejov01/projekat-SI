@@ -47,7 +47,7 @@ namespace Backend.Controllers
         [HttpPost("change-organizer-picture")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadOrganizerPhoto([FromForm] UploadImageDto model)
-        {
+        { 
             string ImageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
             Organizer o = _context.Organizers.Where(o => o.Id == model.Id).First();
             if (o is null)
@@ -268,6 +268,37 @@ namespace Backend.Controllers
             {
                 await _organizerService.CreateActivity(dto);
                 return Created("Activity created successfully.", null);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpDelete("activity")]
+        public async Task<IActionResult> DeleteActivity([FromBody] int activityId)
+        {
+            try
+            {
+                var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+                
+                var activity = await _context.EventActivities
+                    .Include(a => a.Event)
+                    .FirstOrDefaultAsync(a => a.ActivityID == activityId);
+
+                if (activity == null)
+                    return NotFound(new { message = "Aktivnost nije pronađena." });
+
+                
+                if (activity.Event.OrganizerID != organizerId)
+                    return StatusCode(403, new { message = "Možete da brišete samo aktivnosti iz svojih događaja." });
+
+
+                _context.EventActivities.Remove(activity);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Aktivnost uspešno obrisana." });
             }
             catch (Exception ex)
             {

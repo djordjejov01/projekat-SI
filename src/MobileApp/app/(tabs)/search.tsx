@@ -25,13 +25,15 @@ import { AntDesign } from '@expo/vector-icons';
 import { useFavorites } from '../context/FavoriteContext';
 
 const SEARCH_API_URL = `${BASE_URL}/Events/search`;
+const DETAILS_API_URL = `${BASE_URL}/Events/Details`;
 
 interface EventType {
-  id: number
+  id: number;
   title: string;
   startDate: string;
   location: string;
-  price: number;
+  minPrice?: number | null;
+  maxPrice?: number | null;
   imageUrl: string;
 }
 
@@ -43,6 +45,7 @@ interface LocationType {
 const SearchScreen = () => {
   const router = useRouter();
   const { favorites, toggleFavorite } = useFavorites();
+  const { t } = useTranslation();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [events, setEvents] = useState<EventType[]>([]);
@@ -55,6 +58,21 @@ const SearchScreen = () => {
   const [showEndPicker, setShowEndPicker] = useState(false);
 
   const [isFree, setIsFree] = useState(false);
+  
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const categoryOptions = [
+    { label: 'Music', value: 'Music' },
+    { label: 'Sports', value: 'Sports' },
+    { label: 'Entertainment', value: 'Entertainment' },
+    { label: 'Protest', value: 'Protest' },
+    { label: 'Charity', value: 'Charity' },
+    { label: 'Business', value: 'Business' },
+    { label: 'Culture', value: 'Culture' },
+    { label: 'Other', value: 'Other' },
+  ];
+
 
   const [locations, setLocations] = useState<LocationType[]>([]);
   const [locationOpen, setLocationOpen] = useState(false);
@@ -62,14 +80,36 @@ const SearchScreen = () => {
 
   const [sortOpen, setSortOpen] = useState(false);
   const [sortBy, setSortBy] = useState<string | null>(null);
+
+  // Mapa za cene: eventId -> { minPrice, maxPrice }
+  const [eventPrices, setEventPrices] = useState<Record<number, { minPrice: number | null; maxPrice: number | null }>>({});
+
   const clearFilters = () => {
-  setSearchQuery('');
-  setSelectedLocation(null);
-  setStartDate(null);
-  setEndDate(null);
-  setIsFree(false);
-  setSortBy(null);
-};
+    setSearchQuery('');
+    setSelectedLocation(null);
+    setStartDate(null);
+    setEndDate(null);
+    setIsFree(false);
+    setSortBy(null);
+    setSelectedCategory(null); 
+  };
+
+  const fetchEventDetailsPrice = async (eventId: number) => {
+    try {
+      const response = await fetch(`${DETAILS_API_URL}?id=${eventId}`);
+      if (!response.ok) throw new Error('Failed to fetch event details');
+      const data = await response.json();
+      setEventPrices(prev => ({
+        ...prev,
+        [eventId]: {
+          minPrice: data.minPrice ?? null,
+          maxPrice: data.maxPrice ?? null,
+        },
+      }));
+    } catch (error) {
+      console.error('Error fetching event details for price:', error);
+    }
+  };
 
   const fetchEvents = useCallback(async () => {
     setLoading(true);
@@ -104,11 +144,21 @@ const SearchScreen = () => {
             break;
         }
       }
+      if (selectedCategory) params.append('category', selectedCategory);
+
 
       const response = await fetch(`${SEARCH_API_URL}?${params.toString()}`);
       const data: EventType[] = await response.json();
 
       setEvents(data);
+
+      // Reset prices jer došli novi eventi
+      setEventPrices({});
+
+      // fetchuj detalje za svaki event da dobijes cene
+      data.forEach(event => {
+        fetchEventDetailsPrice(event.id);
+      });
 
       // Lokacije iz eventa, kao label + value
       const uniqueLocs = Array.from(new Set(data.map(e => String(e.location)))).map(loc => ({
@@ -121,7 +171,7 @@ const SearchScreen = () => {
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, selectedLocation, startDate, endDate, isFree, sortBy]);
+  }, [searchQuery, selectedLocation, selectedCategory ,startDate, endDate, isFree, sortBy]);
 
   useEffect(() => {
     fetchEvents();
@@ -131,203 +181,220 @@ const SearchScreen = () => {
   const handleToggleFavorite = async (eventID: number) => {
     const token = await AsyncStorage.getItem('token');
     if (!token) {
-     Alert.alert(
-             t('notLoggedIn'),
-             t('loginToAddFavorites'),
-             [
-               { text: t('continueAsGuest') },
-               {
-                 text: t('logIn'),
-                 onPress: () => router.push('/login'),
-               },
-             ],
-             { cancelable: true }
-           );
-           return;
+      Alert.alert(
+        t('notLoggedIn'),
+        t('loginToAddFavorites'),
+        [
+          { text: t('continueAsGuest') },
+          {
+            text: t('logIn'),
+            onPress: () => router.push('/login'),
+          },
+        ],
+        { cancelable: true }
+      );
+      return;
     }
     await toggleFavorite(eventID);
   };
 
-const renderEventItem = ({ item }: { item: EventType }) => {
-  const isFavorite = favorites.includes(item.id);
   const renderEventItem = ({ item }: { item: EventType }) => {
-  console.log('Event item:', item);
-};
+    const isFavorite = favorites.includes(item.id);
+    const date = item.startDate ? new Date(item.startDate) : null;
+    const formattedDate = date && !isNaN(date.getTime()) ? date.toLocaleDateString('sr-RS') : 'No date';
 
-  const date = item.startDate ? new Date(item.startDate) : null;
-  const formattedDate = date && !isNaN(date.getTime()) ? date.toLocaleDateString('sr-RS') : 'No date';
+    // uzmi cene iz eventPrices mape
+    const priceObj = eventPrices[item.id];
 
-  return (
-    <TouchableOpacity
-      style={styles.eventItem}
- onPress={() => {
-  // console.log('Navigating to event id:', item.id);
-  router.push({ pathname: '/event/[id]', params: { id: String(item.id) } });
-}}
-
-    >
-            <View style={{ position: 'relative' }}>
-        {imageLoading[item.id] && (
-          <ActivityIndicator
-            size="small"
-            color="#007AFF"
-            style={{ 
-              position: 'absolute', 
-              top: '50%', 
-              left: '50%', 
-              transform: [{ translateX: -12 }, { translateY: -12 }],
-              zIndex: 1,
-              width: 24,
-              height: 24,
-            }}
-          />
-        )}
-        <Image
-          source={{ uri: item.imageUrl }}
-          style={styles.eventImage}
-          onLoadStart={() =>
-            setImageLoading((prev) => ({ ...prev, [item.id]: true }))
-          }
-          onLoadEnd={() =>
-            setImageLoading((prev) => ({ ...prev, [item.id]: false }))
-          }
-        />
-      </View>
-      <View style={styles.eventContent}>
-        <Text style={styles.eventTitle}>{item.title || 'No title'}</Text>
-        <Text style={styles.eventDate}>{formattedDate}</Text>
-        <Text style={styles.eventLocation}>{item.location || 'No location'}</Text>
-        {/* <Text style={styles.eventPrice}>{item.price === 0 ? 'Free' : `$${item.price}`}</Text> */}
-      </View>
-
+    return (
       <TouchableOpacity
-        style={styles.favoriteIcon}
-        onPress={() => handleToggleFavorite(item.id)}
+        style={styles.eventItem}
+        onPress={() => {
+          router.push({ pathname: '/event/[id]', params: { id: String(item.id) } });
+        }}
       >
-        <AntDesign name="heart" size={24} color={isFavorite ? '#FF2D55' : '#ccc'} />
-      </TouchableOpacity>
-    </TouchableOpacity>
-  );
-};
-
-  const { t } = useTranslation();
-
-return (
-  <KeyboardAvoidingView
-    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    style={{ flex: 1 }}
-  >
-    <View style={styles.container}>
-      <Text style={styles.header}>{t('search.header')}</Text>
-
-      <TextInput
-        style={styles.searchInput}
-        placeholder={t('search.placeholder')}
-        value={searchQuery}
-        onChangeText={setSearchQuery}
-      />
-
-      <DropDownPicker
-        open={locationOpen}
-        setOpen={setLocationOpen}
-        value={selectedLocation}
-        setValue={setSelectedLocation}
-        items={locations}
-        placeholder={t('search.selectLocation')}
-        style={styles.dropdown}
-        dropDownContainerStyle={styles.dropdownContainer}
-        zIndex={3000}
-        zIndexInverse={1000}
-        multiple={false}
-        searchable={true}
-      />
-
-      <View style={styles.dateRow}>
-        <TouchableOpacity onPress={() => setShowStartPicker(true)} style={styles.dateButton}>
-          <Ionicons name="calendar-outline" size={18} color="black" />
-          <Text style={styles.dateButtonText}>
-            {startDate ? startDate.toDateString() : t('search.startDate')}
-          </Text>
-        </TouchableOpacity>
-        {showStartPicker && (
-          <DateTimePicker
-            value={startDate || new Date()}
-            mode="date"
-            display="default"
-            onChange={(_, date) => {
-              setShowStartPicker(false);
-              if (date) setStartDate(date);
-            }}
+        <View style={{ position: 'relative' }}>
+          {imageLoading[item.id] && (
+            <ActivityIndicator
+              size="small"
+              color="#007AFF"
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: [{ translateX: -12 }, { translateY: -12 }],
+                zIndex: 1,
+                width: 24,
+                height: 24,
+              }}
+            />
+          )}
+          <Image
+            source={{ uri: item.imageUrl }}
+            style={styles.eventImage}
+            onLoadStart={() => setImageLoading(prev => ({ ...prev, [item.id]: true }))}
+            onLoadEnd={() => setImageLoading(prev => ({ ...prev, [item.id]: false }))}
           />
-        )}
+        </View>
+        <View style={styles.eventContent}>
+          <Text style={styles.eventTitle}>{item.title || 'No title'}</Text>
+          <Text style={styles.eventDate}>{formattedDate}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}>
+            <Text style={[styles.eventLocation, { marginRight: 8 }]}>
+              {item.location || 'No location'}
+            </Text>
+            </View>
+<Text style={styles.eventPrice}>
+  {priceObj
+    ? ( (!priceObj.minPrice && !priceObj.maxPrice) || (priceObj.minPrice === 0 && priceObj.maxPrice === 0) )
+      ? t('freeEvent')
+      : priceObj.minPrice === priceObj.maxPrice
+        ? `${priceObj.minPrice} RSD`
+        : `${priceObj.minPrice} - ${priceObj.maxPrice} RSD`
+    : t('search.loadingPrice')}
+</Text>
 
-        <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.dateButton}>
-          <Ionicons name="calendar-outline" size={18} color="black" />
-          <Text style={styles.dateButtonText}>
-            {endDate ? endDate.toDateString() : t('search.endDate')}
-          </Text>
-        </TouchableOpacity>
-        {showEndPicker && (
-          <DateTimePicker
-            value={endDate || new Date()}
-            mode="date"
-            display="default"
-            onChange={(_, date) => {
-              setShowEndPicker(false);
-              if (date) setEndDate(date);
-            }}
-          />
-        )}
-      </View>
 
-      <DropDownPicker
-        open={sortOpen}
-        setOpen={setSortOpen}
-        value={sortBy}
-        setValue={setSortBy}
-        items={[
-          { label: t('search.dateAsc'), value: 'dateAsc' },
-          { label: t('search.dateDesc'), value: 'dateDesc' },
-          { label: t('search.priceAsc') || 'Price Ascending', value: 'priceAsc' }, // možeš dodati i priceAsc u json
-          { label: t('search.priceDesc') || 'Price Descending', value: 'priceDesc' }, // isto za priceDesc
-          { label: t('search.popularityDesc'), value: 'popularity' },
-        ]}
-        placeholder={t('search.sortBy')}
-        style={styles.dropdown}
-        dropDownContainerStyle={styles.dropdownContainer}
-        zIndex={2000}
-        zIndexInverse={2000}
-        multiple={false}
-      />
-
-      <View style={styles.filterRowBottom}>
-        <View style={styles.filterRow}>
-          <Text style={styles.filterLabel}>{t('search.freeOnly') || 'Free Only'}</Text>
-          <Switch value={isFree} onValueChange={setIsFree} />
+          
         </View>
 
-        <TouchableOpacity onPress={clearFilters} style={styles.clearButton}>
-          <Text style={styles.clearButtonText}>{t('search.reset')}</Text>
+        <TouchableOpacity
+          style={styles.favoriteIcon}
+          onPress={() => handleToggleFavorite(item.id)}
+        >
+          <AntDesign name="heart" size={24} color={isFavorite ? '#FF2D55' : '#ccc'} />
         </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
+    );
+  };
 
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />
-      ) : events.length === 0 ? (
-        <Text style={{ textAlign: 'center', marginTop: 20 }}>{t('search.noResults')}</Text>
-      ) : (
-        <FlatList
-          data={events}
-          renderItem={renderEventItem}
-          keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
-          contentContainerStyle={{ paddingBottom: 40 }}
-          style={{ marginTop: 10 }}
+  return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={{ flex: 1 }}
+    >
+      <View style={styles.container}>
+        <Text style={styles.header}>{t('search.header')}</Text>
+
+        <TextInput
+          style={styles.searchInput}
+          placeholder={t('search.placeholder')}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
         />
-      )}
-    </View>
-  </KeyboardAvoidingView>
-);
 
+        <DropDownPicker
+          open={locationOpen}
+          setOpen={setLocationOpen}
+          value={selectedLocation}
+          setValue={setSelectedLocation}
+          items={locations}
+          placeholder={t('search.selectLocation')}
+          style={styles.dropdown}
+          dropDownContainerStyle={styles.dropdownContainer}
+          zIndex={3000}
+          zIndexInverse={1000}
+          multiple={false}
+          searchable={true}
+        />
+        <DropDownPicker
+          open={categoryOpen}
+          setOpen={setCategoryOpen}
+          value={selectedCategory}
+          setValue={setSelectedCategory}
+          items={categoryOptions}
+          placeholder={t('search.selectCategory') || 'Select Category'}
+          style={styles.dropdown}
+          dropDownContainerStyle={styles.dropdownContainer}
+          zIndex={2500}
+          zIndexInverse={1500}
+        />
+
+        <View style={styles.dateRow}>
+          <TouchableOpacity onPress={() => setShowStartPicker(true)} style={styles.dateButton}>
+            <Ionicons name="calendar-outline" size={18} color="black" />
+            <Text style={styles.dateButtonText}>
+              {startDate ? startDate.toDateString() : t('search.startDate')}
+            </Text>
+          </TouchableOpacity>
+          {showStartPicker && (
+            <DateTimePicker
+              value={startDate || new Date()}
+              mode="date"
+              display="default"
+              onChange={(_, date) => {
+                setShowStartPicker(false);
+                if (date) setStartDate(date);
+              }}
+            />
+          )}
+
+          <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.dateButton}>
+            <Ionicons name="calendar-outline" size={18} color="black" />
+            <Text style={styles.dateButtonText}>
+              {endDate ? endDate.toDateString() : t('search.endDate')}
+            </Text>
+          </TouchableOpacity>
+          {showEndPicker && (
+            <DateTimePicker
+              value={endDate || new Date()}
+              mode="date"
+              display="default"
+              onChange={(_, date) => {
+                setShowEndPicker(false);
+                if (date) setEndDate(date);
+              }}
+            />
+          )}
+        </View>
+
+        <DropDownPicker
+          open={sortOpen}
+          setOpen={setSortOpen}
+          value={sortBy}
+          setValue={setSortBy}
+          items={[
+            { label: t('search.dateAsc'), value: 'dateAsc' },
+            { label: t('search.dateDesc'), value: 'dateDesc' },
+            { label: t('search.priceAsc') || 'Price Ascending', value: 'priceAsc' },
+            { label: t('search.priceDesc') || 'Price Descending', value: 'priceDesc' },
+            { label: t('search.popularityDesc'), value: 'popularity' },
+          ]}
+          placeholder={t('search.sortBy')}
+          style={styles.dropdown}
+          dropDownContainerStyle={styles.dropdownContainer}
+          zIndex={2000}
+          zIndexInverse={2000}
+          multiple={false}
+        />
+
+        <View style={styles.filterRowBottom}>
+          <View style={styles.filterRow}>
+            <Text style={styles.filterLabel}>{t('search.freeOnly') || 'Free Only'}</Text>
+            <Switch value={isFree} onValueChange={setIsFree} />
+          </View>
+
+          <TouchableOpacity onPress={clearFilters} style={styles.clearButton}>
+            <Text style={styles.clearButtonText}>{t('search.reset')}</Text>
+          </TouchableOpacity>
+        </View>
+
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" style={{ marginTop: 20 }} />
+        ) : events.length === 0 ? (
+          <Text style={{ textAlign: 'center', marginTop: 20 }}>{t('search.noResults')}</Text>
+        ) : (
+          <FlatList
+            data={events}
+            renderItem={renderEventItem}
+            keyExtractor={(item, index) => (item.id ? item.id.toString() : index.toString())}
+            contentContainerStyle={{ paddingBottom: 40 }}
+            style={{ marginTop: 10 }}
+          />
+        )}
+      </View>
+    </KeyboardAvoidingView>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -345,7 +412,6 @@ const styles = StyleSheet.create({
     height: 40,
     marginBottom: 12,
   },
-  
   dropdown: {
     marginBottom: 12,
   },
@@ -358,12 +424,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   header: {
-  fontSize: 20,
-  fontWeight: '700',
-  marginBottom: 15,
-  marginTop: 10,
-},
-
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 15,
+    marginTop: 10,
+  },
   dateButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -396,7 +461,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     padding: 8,
     alignItems: 'center',
-
   },
   eventImage: {
     width: 100,
@@ -409,33 +473,30 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   filterRowBottom: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: 12,
-},
-
-clearButton: {
-  backgroundColor: '#e74c3c',
-  paddingVertical: 8,
-  paddingHorizontal: 16,
-  borderRadius: 8,
-},
-clearButtonText: {
-  color: 'white',
-  fontWeight: 'bold',
-  fontSize: 14,
-},
-
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  clearButton: {
+    backgroundColor: '#e74c3c',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  clearButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 14,
+  },
   eventTitle: {
     fontWeight: 'bold',
     fontSize: 16,
   },
   favoriteIcon: {
-  justifyContent: 'center',
-  paddingHorizontal: 8,
-},
-
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+  },
   eventDate: {
     color: 'gray',
     marginTop: 4,
@@ -449,6 +510,5 @@ clearButtonText: {
     fontWeight: '600',
   },
 });
+
 export default SearchScreen;
-
-

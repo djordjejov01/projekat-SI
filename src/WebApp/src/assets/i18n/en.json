@@ -56,5 +56,6 @@
   "RACC" : "Register Account",
   "YESACC" : "Already have an account? Sign in",
   "ORGANIZER" : "Organizer",
-  "Supplier" : "Supplier"
+  "Supplier" : "Supplier",
+  "DASHBOARD" : "Dashboard"
 }

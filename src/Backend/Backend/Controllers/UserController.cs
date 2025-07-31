@@ -106,10 +106,10 @@ namespace Backend.Controllers
 
         [Authorize]
         [HttpPut("change-password")]
-        public IActionResult ChangePassword([FromBody] ChangePasswordDto dto)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
         {
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-            var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
+            var user =await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
                 return NotFound("Korisnik nije pronađen.");
 
@@ -126,7 +126,7 @@ namespace Backend.Controllers
 
             
             user.Password = CommonHelpers.HashPassword(dto.NewPassword);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return Ok("Lozinka uspešno promenjena.");
         }
 
