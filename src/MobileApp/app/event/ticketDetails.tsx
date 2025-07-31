@@ -128,7 +128,10 @@ export default function TicketDetails() {
     <ScrollView style={styles.container}>
       <Text style={styles.header}>🎟️ {t('ticketDetails.title')}</Text>
 
-      <TouchableOpacity onPress={() => router.push(`/event/${eventID}`)}>
+      <TouchableOpacity onPress={() => router.push({
+          pathname: `../event/${eventID}`,
+          params: { from: 'ticketDetails'},
+        })}>
         <Text style={styles.eventName}>{displayEventName}</Text>
       </TouchableOpacity>
 

@@ -196,20 +196,24 @@ export default function EventDetailScreen() {
   return (
     <ScrollView style={styles.container}>
       
-      {/* <TouchableOpacity
+      { <TouchableOpacity
         onPress={() => {
           if (from === 'search') {
             router.replace('/search');
           } else if (from === 'favorites') {
             router.replace('/favorites');
-          } else {
+          }
+          else if (from === 'ticketDetails') {
+            router.back();
+          } 
+          else {
             router.replace('/events');
           }
         }}
         style={styles.backButton}
       >
         <Ionicons name="arrow-back" size={24} color="#333" />
-      </TouchableOpacity> */}
+      </TouchableOpacity>}
       <Text style={styles.title}>{t('aboutEvent')}</Text>
 
       <View style={styles.imageWrapper}>
