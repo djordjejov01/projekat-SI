@@ -34,17 +34,17 @@ export default function TokenPurchaseScreen() {
 
       setLoading(true);
       const token = await AsyncStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/User/Credit/add`, {
+      const response = await fetch(`${API_URL}/Credit/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ amount: parsedAmount }),
+        body: JSON.stringify(parsedAmount),
       });
 
       if (response.ok) {
-        Alert.alert('Uspešno', `Dodata su ${parsedAmount} tokena na tvoj račun.`);
+        Alert.alert('Uspešno', `Dodato je ${parsedAmount} tokena na tvoj račun.`);
         setAmount('');
       } else {
         Alert.alert('Greška', 'Došlo je do greške prilikom uplate.');
@@ -59,7 +59,7 @@ export default function TokenPurchaseScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+      <TouchableOpacity style={styles.backBtn} onPress={() => router.push('../(tabs)/profile')}>
         <Ionicons name="arrow-back" size={28} color="#333" />
       </TouchableOpacity>
 
@@ -90,7 +90,7 @@ export default function TokenPurchaseScreen() {
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.btnText}>Simuliraj uplatu</Text>
+          <Text style={styles.btnText}>Uplati</Text>
         )}
       </TouchableOpacity>
     </View>

@@ -20,9 +20,9 @@ namespace Backend.Controllers
 
         [Authorize(Roles ="MobileUser")]
         [HttpGet("{eventId}/resources")]
-        public IActionResult GetResourcesForEvent(int eventId)
+        public async Task<IActionResult> GetResourcesForEvent(int eventId)
         {
-            var resources = _context.EventResources
+            var resources =await _context.EventResources
                 .Where(er => er.EventID == eventId && er.IsReservable && er.Event.EndDate > DateTime.UtcNow)
                 .Select(er => new {
                     id = er.ID,                            
@@ -32,7 +32,7 @@ namespace Backend.Controllers
                     measure = er.Measure,
                     name = er.Resource.Name
                 })
-                .ToList();
+                .ToListAsync();
 
             return Ok(resources);
         }
@@ -40,7 +40,7 @@ namespace Backend.Controllers
 
         [Authorize(Roles = "MobileUser")]
         [HttpPost("reserve")]
-        public IActionResult ReserveResource([FromBody] ResourceReservationDto dto)
+        public async Task<IActionResult> ReserveResource([FromBody] ResourceReservationDto dto)
         {
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
@@ -48,9 +48,9 @@ namespace Backend.Controllers
                 return BadRequest("Količina mora biti veća od nule.");
 
             
-            var eventResource = _context.EventResources
+            var eventResource =await _context.EventResources
                 .Include(er => er.Event)
-                .FirstOrDefault(er => er.ID == dto.EventResourceID);
+                .FirstOrDefaultAsync(er => er.ID == dto.EventResourceID);
 
             if (eventResource == null)
                 return NotFound("Resurs ne postoji.");
@@ -101,8 +101,8 @@ namespace Backend.Controllers
                 ReservedAt = DateTime.UtcNow
             };
 
-            _context.UserResourceReservations.Add(reservation);
-            _context.SaveChanges();
+            await _context.UserResourceReservations.AddAsync(reservation);
+            await _context.SaveChangesAsync();
 
             return Ok("Rezervacija uspešna.");
         }

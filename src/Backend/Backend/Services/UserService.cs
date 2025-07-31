@@ -65,6 +65,22 @@ namespace Backend.Services
                 _context.Organizers.Add(o);
                 await _context.SaveChangesAsync();
             }
+            if (user.Role == UserRole.Supplier)
+            {
+                Supplier s = new Supplier
+                {
+                    Id = user.UserId,
+                    Username = user.Username,
+                    CompanyName="",
+                    Email = user.Email,
+                    PhoneNumber = "",
+                    Website="",
+                    CompanyBio="",
+                    Image = "",
+                };
+                _context.Suppliers.Add(s);
+                await _context.SaveChangesAsync();
+            }
 
             var userDto = new UserDto
             {
