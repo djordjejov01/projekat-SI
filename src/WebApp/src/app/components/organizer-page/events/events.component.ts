@@ -33,11 +33,12 @@ import { CategoryMetrics } from '../../../Interfaces/CategoryMetricsResponse';
 import { CategoryService } from '../../../Services/EventCategoryService';
 import { MonthlyMetrics } from '../../../Interfaces/MonthlyMetricsResponse';
 import { take } from 'rxjs';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-events',
   imports: [CommonModule, ChartModule, TableModule, ButtonModule,
-    CommonModule, MultiSelectModule, InputTextModule, DropdownModule, FormsModule, IconField, InputIcon, TableModule, ConfirmDialogModule],
+    CommonModule, MultiSelectModule, InputTextModule, DropdownModule, FormsModule, IconField, InputIcon, TableModule, ConfirmDialogModule,TooltipModule],
   templateUrl: './events.component.html',
   styleUrl: './events.component.css'
 })
@@ -204,7 +205,7 @@ export class EventsComponent implements OnInit {
     }
   };
 
-  viewEvent(eID: number) {
+  manageEvent(eID: number) {
     this.router.navigate(['organizer/event-management',eID]);
   }
   editEvent(eID: number) {
@@ -365,9 +366,36 @@ export class EventsComponent implements OnInit {
           datasets: [
             {
               data: this.data2Data,
-              backgroundColor: ['rgba(100,106,232, 0.2)', 'rgba(126, 230, 78, 0.2)', 'rgba(180, 180, 180, 0.2)', 'rgba(233, 99, 141, 0.2)'],
-              hoverBackgroundColor: ['rgba(100,106,232, 0.4)', 'rgba(126, 230, 78, 0.4)', 'rgba(180, 180, 180, 0.4)', 'rgba(233, 99, 141, 0.4)'],
-              borderColor: ['rgba(100,106,232, 0.7)', 'rgba(126, 230, 78, 0.7)', 'rgba(180, 180, 180, 0.7)', 'rgba(233, 99, 141, 0.7)'],
+             backgroundColor: [
+                'rgba(100,106,232, 0.2)',  // Music
+                'rgba(126, 230, 78, 0.2)', // Sports
+                'rgba(180, 180, 180, 0.2)',// Entertainment
+                'rgba(233, 99, 141, 0.2)', // Protest
+                'rgba(255, 193, 7, 0.2)',  // Charity
+                'rgba(23, 162, 184, 0.2)', // Business
+                'rgba(153, 102, 255, 0.2)',// Culture
+                'rgba(108, 117, 125, 0.2)' // Other
+              ],
+              hoverBackgroundColor: [
+                'rgba(100,106,232, 0.4)',
+                'rgba(126, 230, 78, 0.4)',
+                'rgba(180, 180, 180, 0.4)',
+                'rgba(233, 99, 141, 0.4)',
+                'rgba(255, 193, 7, 0.4)',
+                'rgba(23, 162, 184, 0.4)',
+                'rgba(153, 102, 255, 0.4)',
+                'rgba(108, 117, 125, 0.4)'
+              ],
+              borderColor: [
+                'rgba(100,106,232, 0.7)',
+                'rgba(126, 230, 78, 0.7)',
+                'rgba(180, 180, 180, 0.7)',
+                'rgba(233, 99, 141, 0.7)',
+                'rgba(255, 193, 7, 0.7)',
+                'rgba(23, 162, 184, 0.7)',
+                'rgba(153, 102, 255, 0.7)',
+                'rgba(108, 117, 125, 0.7)'
+              ],
               borderWidth: 1
             }
           ]

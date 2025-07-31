@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../../Validators/custom.validators';
 import { DialogModule } from 'primeng/dialog';
@@ -22,7 +22,7 @@ import { MessageService } from 'primeng/api';
   templateUrl: './activity-modal.component.html',
   styleUrl: './activity-modal.component.css'
 })
-export class ActivityModalComponent implements OnInit{
+export class ActivityModalComponent implements OnInit, OnChanges{
 
   activityForm : FormGroup;
   visible : boolean = false;
@@ -47,6 +47,16 @@ export class ActivityModalComponent implements OnInit{
           }));
         });
     
+        this.initializeForm()
+
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['parentEventBasicInfo'] && !changes['parentEventBasicInfo'].firstChange) this.initializeForm()
+  }
+
+  initializeForm(){
+
     this.activityForm = new FormGroup({
       title: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
       description: new FormControl('', CustomValidators.noWhitespaceValidator),

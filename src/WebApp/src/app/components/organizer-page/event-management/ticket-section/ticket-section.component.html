@@ -1,0 +1,168 @@
+<div class="card table-styles">
+
+    <div class="table-styles-header">
+        <h1>Event Tickets</h1>
+        <button  icon="pi pi-plus" (click)="ticketModal.show()"><i class="pi pi-plus"></i>Add Ticket</button>
+    </div>
+
+    <hr class="custom-hr">
+
+    <p-table
+        #dt
+        [value]="tickets"
+        [(selection)]="selectedTickets"
+        dataKey="id"
+        [rowHover]="true"
+        [rows]="10"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [loading]="loading"
+        [paginator]="true"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [filterDelay]="0"
+        [globalFilterFields]="['typeName', 'price', 'quota', 'validFrom', 'validUntil', 'description']"
+    >
+        <ng-template #caption>
+            <div class="flex justify-between">
+                <p-button [outlined]="true" icon="pi pi-filter-slash" label="Clear" (click)="clear(dt)" />
+                <p-iconField iconPosition="left">
+                    <p-inputIcon>
+                        <i class="pi pi-search"></i>
+                    </p-inputIcon>
+                    <input pInputText type="text" [(ngModel)]="searchValue" (input)="dt.filterGlobal($any($event.target).value, 'contains')" placeholder="Keyboard Search" />
+                </p-iconField>
+            </div>
+        </ng-template>
+
+        <ng-template #header>
+            <tr>
+
+                <th style="width: 4rem">
+                    <p-tableHeaderCheckbox />
+                </th>
+
+                <th pSortableColumn="typeName" style="min-width: 14rem">
+                    <div class="flex justify-between items-center gap-2">
+                        Type Name
+                        <p-sortIcon field="typeName" />
+                        <p-columnFilter type="text" field="typeName" display="menu" class="ml-auto" />
+                    </div>
+                </th>
+
+                <th pSortableColumn="price" style="min-width: 14rem">
+                    <div class="flex justify-between items-center gap-2">
+                        Price
+                        <p-sortIcon field="price" />
+                        <p-columnFilter type="text" field="price" display="menu" class="ml-auto" />
+                    </div>
+                </th>
+
+
+                <th pSortableColumn="quota" style="min-width: 14rem">
+                    <div class="flex justify-between items-center gap-2">
+                        Quota
+                        <p-sortIcon field="quota" />
+                        <p-columnFilter type="text" field="quota" display="menu" class="ml-auto" />
+                    </div>
+                </th>
+
+                <th pSortableColumn="validFrom" style="min-width: 14rem">
+                    <div class="flex justify-between items-center gap-2">
+                        Valid From
+                        <p-sortIcon field="validFrom" />
+                        <p-columnFilter type="date" field="validFrom" display="menu" class="ml-auto" />
+                    </div>
+                </th>
+
+                <th pSortableColumn="validUntil" style="min-width: 14rem">
+                    <div class="flex justify-between items-center gap-2">
+                        Valid Until
+                        <p-sortIcon field="validUntil" />
+                        <p-columnFilter type="date" field="validUntil" display="menu" class="ml-auto" />
+                    </div>
+                </th>
+
+                <th pSortableColumn="description" style="min-width: 14rem">
+                    <div class="flex justify-between items-center gap-2">
+                        Description
+                        <p-sortIcon field="description" />
+                        <p-columnFilter type="text" field="description" display="menu" class="ml-auto" />
+                    </div>
+                </th>
+
+                <th style="width: 5rem">Actions</th>
+            </tr>
+        </ng-template>
+
+        <ng-template #body let-ticket>
+            <tr class="p-selectable-row">
+
+                <td>
+                    <p-tableCheckbox [value]="ticket" />
+                </td>
+
+                <td>
+                    {{ ticket.typeName }}
+                </td>
+
+                <td>
+                    {{ ticket.price }}
+                </td>
+
+                <td>
+                    {{ ticket.quota }}
+                </td>
+
+                <td>
+                    {{ ticket.validFrom | date: 'dd.MM.yyyy, HH:mm' }}
+                </td>
+
+                <td>
+                    {{ ticket.validUntil | date: 'dd.MM.yyyy, HH:mm' }}
+                </td>
+
+                <td>
+                    {{ ticket.description }}
+                </td>
+
+               <td >
+
+                <div class="flex gap-2">
+                    <button
+                        pButton
+                        type="button"
+                        icon="pi pi-pencil"
+                        class="p-button-rounded p-button-text p-button-sm"
+                        (click)="ticketModal.showForEdit(ticket)"
+                        pTooltip="Edit Ticket"
+                        tooltipPosition="top">
+                    </button>
+
+                    <button
+                        pButton
+                        type="button"
+                        icon="pi pi-trash"
+                        class="p-button-rounded p-button-text p-button-sm p-button-danger"
+                        (click)="onDeleteTicket(ticket)"
+                        pTooltip="Delete Ticket"
+                        tooltipPosition="top">
+                    </button>
+                </div>
+                    
+                </td>
+
+
+            </tr>
+        </ng-template>
+
+        <ng-template #emptymessage>
+            <tr>
+                <td colspan="8">No tickets found.</td>
+            </tr>
+        </ng-template>
+
+    </p-table>
+    
+</div>
+
+<app-ticket-modal [eventBasicInfo]="eventBasicInfo" (ticketCreated)="onTicketCreated()" #ticketModal></app-ticket-modal>

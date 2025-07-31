@@ -1,0 +1,14 @@
+<div class="map-section">
+
+    <div class="map-header">
+        <h1>Location Map</h1>
+        <button  icon="pi pi-plus" (click)="startPlacingPin()"><i class="pi pi-plus"></i>Add Pin</button>
+    </div>
+
+        <hr class="custom-hr">
+
+    <div id="map" class="map-container"></div>
+
+    <app-pin-modal #pinModal (pinSaved)="onPinSaved($event)" [eventId]="eventBasicInfo.getEventID()"></app-pin-modal>
+</div>
+

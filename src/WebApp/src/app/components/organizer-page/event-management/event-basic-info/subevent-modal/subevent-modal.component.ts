@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CustomValidators } from '../../../../../Validators/custom.validators';
@@ -9,7 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { DatePickerModule } from 'primeng/datepicker';
 import { CategoryService } from '../../../../../Services/EventCategoryService';
-import { take } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { FormValidationService } from '../../../../../Services/FormValidationService';
@@ -26,7 +26,7 @@ import { ApiService } from '../../../../../Services/api.service';
   templateUrl: './subevent-modal.component.html',
   styleUrl: './subevent-modal.component.css'
 })
-export class SubeventModalComponent implements OnInit{
+export class SubeventModalComponent implements OnInit,OnDestroy, OnChanges{
 
 
   subeventForm : FormGroup;
@@ -34,6 +34,8 @@ export class SubeventModalComponent implements OnInit{
   visible : boolean = false;
   @Input() parentEventBasicInfo! : EventBasicInfo;
   @Output() subeventCreated = new EventEmitter<void>();
+
+  private unlimitedSub: Subscription | undefined;
 
   constructor(
     private categoryService : CategoryService,
@@ -58,31 +60,70 @@ export class SubeventModalComponent implements OnInit{
         this.initializeForm()
   }
 
-  private initializeForm(): void {
-  const isParentUnlimited = this.parentEventBasicInfo.getCapacity() === -1;
+  ngOnChanges(changes: SimpleChanges): void {
+    if(changes['parentEventBasicInfo'] && !changes['parentEventBasicInfo'].firstChange) this.initializeForm();
+  }
 
-  this.subeventForm = new FormGroup({
-    title: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
-    description: new FormControl('', CustomValidators.noWhitespaceValidator),
-    location: new FormControl(this.parentEventBasicInfo.getLocation(), [Validators.required, CustomValidators.noWhitespaceValidator]),
-    isUnlimitedCapacity: new FormControl({ value: isParentUnlimited, disabled: !isParentUnlimited }),
-    capacity: new FormControl(isParentUnlimited ? '' : this.parentEventBasicInfo.getCapacity(), isParentUnlimited ? [] : [Validators.required, Validators.min(1)]),
-    startDateTime: new FormControl('', [Validators.required, CustomValidators.notInPast]),
-    endDateTime: new FormControl('', Validators.required),
-    category: new FormControl(this.parentEventBasicInfo.getCategory(), Validators.required),
-  }, {
-    validators: CustomValidators.startBeforeEndDates('startDateTime', 'endDateTime')
-  });
+  ngOnDestroy(): void {
+    this.unlimitedSub?.unsubscribe();
+  }
+
+  private initializeForm(): void {
+    const isParentUnlimited = this.parentEventBasicInfo.getCapacity() === -1;
+    const capacityValue = isParentUnlimited ? null : this.parentEventBasicInfo.getCapacity();
+
+     this.subeventForm = new FormGroup({
+      title: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
+      description: new FormControl('', CustomValidators.noWhitespaceValidator),
+      location: new FormControl(this.parentEventBasicInfo.getLocation(), [Validators.required, CustomValidators.noWhitespaceValidator]),
+      isUnlimitedCapacity: new FormControl({ value: isParentUnlimited, disabled: !isParentUnlimited }),
+      capacity: new FormControl({value : capacityValue, disabled: isParentUnlimited} ,[Validators.required, Validators.min(1)]),
+      startDateTime: new FormControl('', [Validators.required, CustomValidators.notInPast]),
+      endDateTime: new FormControl('', Validators.required),
+      category: new FormControl(this.parentEventBasicInfo.getCategory(), Validators.required),
+    }, {
+      validators: CustomValidators.startBeforeEndDates('startDateTime', 'endDateTime')
+    });
+
+    if(isParentUnlimited){
+
+      if(this.unlimitedSub) this.unlimitedSub.unsubscribe();
+
+      const capacityControl = this.subeventForm.get('capacity');
+      capacityControl?.disable();
+      capacityControl?.clearValidators();
+      capacityControl?.updateValueAndValidity();
+
+        this.unlimitedSub = this.subeventForm.get('isUnlimitedCapacity')?.valueChanges.subscribe((unlimited)=>{
+
+        
+        if(unlimited){
+          capacityControl?.disable();
+          capacityControl?.clearValidators();
+          capacityControl?.setValue(null);
+        }else{
+          capacityControl?.enable()
+          capacityControl?.setValidators([Validators.required,Validators.min(1)]);
+          
+        }
+
+        capacityControl.updateValueAndValidity();
+      });
+    }else{
+      this.subeventForm.get('capacity')?.setValue(this.parentEventBasicInfo.getCapacity());
+    }
 }
 
 
   show(){
+    this.initializeForm();
     this.visible = true;
   }
 
   hide() {
     this.visible = false;
-    this.initializeForm()
+    this.unlimitedSub?.unsubscribe();
+    this.subeventForm.reset()
   }
 
   submitForm(){

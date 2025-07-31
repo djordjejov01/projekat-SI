@@ -1,0 +1,52 @@
+.map-section{
+    min-width: 700px;
+    min-height: 517px;
+    border-radius: 8px;
+    border: 1px solid #EBEBEAFF;
+    border-radius: 12px;
+    /* max-width: 700px; */
+}
+
+.map-section h1{
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.map-container{
+    max-width: 700px;
+    min-height: 517px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative; /* important: NOT absolute/fixed */
+    z-index: 0; /* prevent overlay */
+}
+
+.map-header{
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.map-header button{
+    background-color: white;
+    border: 1px solid #EBEBEA;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: #242524;
+    display: flex;
+    align-items: center;
+}
+
+.map-header button i {
+    padding-right: 0.5rem;
+}
+
+.custom-hr {
+  height: 2px;
+  background-color: #EBEBEA;
+  border: none;
+}
