@@ -99,13 +99,29 @@ namespace Backend.Controllers
                                 PurchasedAt = DateTime.UtcNow
                             };
                             _context.UserTickets.Add(userTicket);
-                            await _context.SaveChangesAsync();
+                        }
+                    }
+                    await _context.SaveChangesAsync();
 
-                            createdTickets.Add(new { UserTicketID = userTicket.UserTicketID, TicketID = dto.TicketID });
+                    
+                    foreach (var dto in dtos)
+                    {
+                        for (int i = 0; i < dto.Quantity; i++)
+                        {
+                            
+                            var lastUserTicket = await _context.UserTickets
+                                .Where(ut => ut.UserID == userId && ut.TicketID == dto.TicketID)
+                                .OrderByDescending(ut => ut.UserTicketID)
+                                .FirstOrDefaultAsync();
+
+                            if (lastUserTicket != null)
+                            {
+                                createdTickets.Add(new { UserTicketID = lastUserTicket.UserTicketID, TicketID = dto.TicketID });
+                            }
                         }
                     }
 
-                    transaction.CommitAsync();
+                    await transaction.CommitAsync();
                     return Ok(createdTickets);
                 }
                 catch
