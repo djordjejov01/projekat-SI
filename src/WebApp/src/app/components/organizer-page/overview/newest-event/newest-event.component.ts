@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
+import { Router } from '@angular/router';
+import { Event } from '../../../../Models/Event';
 @Component({
   selector: 'app-newest-event',
   imports: [TranslateModule],
@@ -12,4 +14,9 @@ export class NewestEventComponent {
   @Input() location: string;
   @Input() time: string;
   @Input() desc: string;
+  @Input() event: Event;
+  constructor(private router : Router){}
+  manageEvent(event: Event){
+      this.router.navigate(['/organizer/event-management', event.getEventId()])
+    }
 }

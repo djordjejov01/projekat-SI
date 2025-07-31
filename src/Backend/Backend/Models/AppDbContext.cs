@@ -20,6 +20,11 @@ namespace Backend.Models
         public DbSet<UserResourceReservation> UserResourceReservations { get; set; }
         public DbSet<Organizer> Organizers { get; set; }
         public DbSet<EventCategories> EventCategories { get; set; }
+        public DbSet<EventPin> EventPin { get; set; }
+
+        public DbSet<PinType> PinTypes { get; set; }
+
+        public DbSet<Supplier> Suppliers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,6 +38,16 @@ namespace Backend.Models
                    v => v.ToString(),
                    v => (EventCategory)Enum.Parse(typeof(EventCategory), v)
                 );
+            modelBuilder.Entity<PinType>().HasData(
+                Enum.GetValues(typeof(PinTypes))
+                    .Cast<PinTypes>()
+                    .Select(e => new PinType
+                    {
+                        PinTypeId = (int)e+1,
+                        PinCategory = e.ToString()
+                    })
+                    .ToArray()
+            );
         }
     }
 }

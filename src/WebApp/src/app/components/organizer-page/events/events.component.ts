@@ -205,7 +205,7 @@ export class EventsComponent implements OnInit {
   };
 
   viewEvent(eID: number) {
-    alert(eID);
+    this.router.navigate(['organizer/event-management',eID]);
   }
   editEvent(eID: number) {
     alert(eID);

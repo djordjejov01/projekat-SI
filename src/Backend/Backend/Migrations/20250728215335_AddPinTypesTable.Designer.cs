@@ -3,6 +3,7 @@ using System;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250728215335_AddPinTypesTable")]
+    partial class AddPinTypesTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,8 +111,6 @@ namespace Backend.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.HasKey("ActivityID");
-
-                    b.HasIndex("EventID");
 
                     b.ToTable("EventActivities");
                 });
@@ -373,47 +374,6 @@ namespace Backend.Migrations
                     b.ToTable("Resources");
                 });
 
-            modelBuilder.Entity("Backend.Models.Supplier", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CompanyBio")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("CompanyName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Image")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Website")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Suppliers");
-                });
-
             modelBuilder.Entity("Backend.Models.Ticket", b =>
                 {
                     b.Property<int>("TicketID")
@@ -603,17 +563,6 @@ namespace Backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Organizer");
-                });
-
-            modelBuilder.Entity("Backend.Models.EventActivity", b =>
-                {
-                    b.HasOne("Backend.Models.Event", "Event")
-                        .WithMany()
-                        .HasForeignKey("EventID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Event");
                 });
 
             modelBuilder.Entity("Backend.Models.EventResource", b =>

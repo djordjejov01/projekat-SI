@@ -20,7 +20,6 @@ import { StatusMetrics } from "../Interfaces/StatusMetricsResponse";
 import { CategoryMetrics } from "../Interfaces/CategoryMetricsResponse";
 import {StatusMap } from "../Models/Event";
 import { EventCategoryApiResponse } from "../Interfaces/EventCategoryApiResponse";
-import { UpdatEventDto } from "../Models/UpdateEventDto";
 import { MonthlyMetrics } from "../Interfaces/MonthlyMetricsResponse";
 import { ChangePasswordDto } from "../Models/ChangePasswordDto";
 import { UpdateEventDto } from "../Models/UpdateEventDto";

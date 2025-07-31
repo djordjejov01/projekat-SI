@@ -7,6 +7,7 @@ import { MessageService } from 'primeng/api';
 import { ChangePasswordDto } from '../../../Models/ChangePasswordDto';
 import { DashboardMetrics } from '../../../Interfaces/DashboardMetricsResponse';
 import { ViewChild } from '@angular/core';
+import { SharedService } from '../../../Services/shared.service';
 
 @Component({
   selector: 'app-profile',
@@ -23,7 +24,7 @@ defaultImage = 'assets/default-picture.png';
   
 
 
-  constructor(private apiService : ApiService, private authService : AuthService, private messageService : MessageService){}
+  constructor(private apiService : ApiService, private authService : AuthService, private messageService : MessageService, private sharedService : SharedService){}
   
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -62,6 +63,7 @@ defaultImage = 'assets/default-picture.png';
           console.log(response);
           this.previewUrl = this.currOrganizer.getImage();
           this.getOrganizerCall();
+          this.sharedService.notifyProfileImageChanged();
         },
         error:(errorResponse) =>{
           this.messageService.add({
