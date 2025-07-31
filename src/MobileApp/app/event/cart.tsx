@@ -204,6 +204,7 @@ export default function CartScreen() {
                       eventName: eventName ?? '',
                       ticketTypes: JSON.stringify(ticketTypes),
                       purchasedAt: new Date().toISOString(),
+                      eventID: eventId?.toString() ?? '',
                       price: calculateTotal().toString(),
                       location: eventLocation ?? '',
                     },

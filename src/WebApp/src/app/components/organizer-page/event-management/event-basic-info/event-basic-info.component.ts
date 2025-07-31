@@ -17,7 +17,7 @@ import { Subscription, take } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { UpdateEventDto } from '../../../../Models/UpdateEventDto';
 import { Activity, ApiService } from '../../../../Services/api.service';
-import { mockAgenda, Subevent } from '../../../../MockData/MockAgenda';
+import { Subevent } from '../../../../Services/api.service';
 import { AccordionModule } from 'primeng/accordion';
 import { FileUpload } from 'primeng/fileupload';
 import { ActivityModalComponent } from './activity-modal/activity-modal.component';
@@ -25,10 +25,11 @@ import { FormValidationService } from '../../../../Services/FormValidationServic
 import { SubeventModalComponent } from './subevent-modal/subevent-modal.component';
 import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-event-basic-info',
-  imports: [CommonModule,ReactiveFormsModule,FloatLabelModule,InputNumber,DatePickerModule,SelectModule,ButtonModule,InputTextModule,Checkbox,TextareaModule,AccordionModule,FileUpload,ActivityModalComponent,SubeventModalComponent],
+  imports: [CommonModule,ReactiveFormsModule,FloatLabelModule,InputNumber,DatePickerModule,SelectModule,ButtonModule,InputTextModule,Checkbox,TextareaModule,AccordionModule,FileUpload,ActivityModalComponent,SubeventModalComponent,TooltipModule],
   templateUrl: './event-basic-info.component.html',
   styleUrl: './event-basic-info.component.css'
 })
@@ -44,8 +45,9 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
   minDate : Date;
   categories:  { label: string, value: number }[] = [];
   //agenda : Subevent[] = [];
-  subevents : Subevent[] = [];
-  activities : Activity[] = [];
+  @Input() subevents : Subevent[] = [];
+  @Input() activities : Activity[] = [];
+  @Output() agendaChanged = new EventEmitter<void>();
 
   private unlimitedCapacitySub?: Subscription;
 
@@ -60,8 +62,6 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
     ngOnInit(): void {
 
       this.minDate = new Date();
-
-        this.loadAgenda();
         
       this.categoryService.loadCategoriesIfEmpty()
         .pipe(take(1))
@@ -77,7 +77,6 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
 
     ngOnChanges(changes: SimpleChanges): void {
       if (changes['eventBasicInfo'] && changes['eventBasicInfo'].currentValue) {
-        this.loadAgenda();
         this.initFormWithEvent();
       }
     }
@@ -132,6 +131,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
 
       const formValues = this.eventForm.value;
         const updateDto = new UpdateEventDto(
+          this.eventBasicInfo.getEventID(),
           formValues.title,
           formValues.description,
           formValues.location,
@@ -143,7 +143,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
 
         console.log(updateDto)
 
-        this.apiService.updateEvent(updateDto, this.eventBasicInfo.getEventID()).subscribe({
+        this.apiService.updateEvent(updateDto).subscribe({
           next: (data) =>{
             this.eventBasicInfo = new EventBasicInfo(
               data.eventID,
@@ -236,36 +236,17 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
     });
   }
 
-  loadAgenda(){
-      this.apiService.getAgenda(this.eventBasicInfo.getEventID()).subscribe({
-        next: ({subevents, activities}) => {
-          this.subevents = subevents;
-          this.activities = activities;
-
-          console.log(subevents)
-          console.log(activities)
-        },
-          error: err => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Error loading agenda',
-              detail: err.message || 'Unknown error',
-              life: 5000
-            });
-          }
-      })
-  }
 
   goToSubeventManagement(subeventId : number){
     this.router.navigate(['/organizer/event-management', subeventId])
   }
 
   onActivityCreated(){
-      this.loadAgenda()
+      this.agendaChanged.emit()
   }
 
   onSubeventCreated(){
-    this.loadAgenda();
+    this.agendaChanged.emit()
   }
 
 }

@@ -1,5 +1,6 @@
 export class UpdateEventDto{
     constructor(
+        private eventId : number,
         private title : string,
         private description : string,
         private location : string,
