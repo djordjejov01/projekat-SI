@@ -29,6 +29,9 @@ import { ActivityDto } from "../Models/ActivityDto";
 import { TicketApiResponse } from "../Interfaces/TicketApiResponse";
 import { Ticket } from "../Models/Ticket";
 import { TicketDto } from "../Models/TicketDto";
+import { PinCategory } from "./PinCategoryService";
+import { EventPinDto } from "../Models/EventPinDto";
+import { EventPinApiResponse } from "../Interfaces/EventPinApiResponse";
 
 
 // Match Backend.Models.Dto.EventDto
@@ -136,6 +139,41 @@ export class ApiService{
     private apiUrl = 'https://localhost:7269/api';
 
     constructor(private http: HttpClient) {}
+
+    createMapPin(pinData : EventPinDto) : Observable<string>{
+        return this.http.post(`${this.apiUrl}/EventPin`, pinData, { responseType: 'text' }).pipe(
+            catchError(this.handleError)
+        )
+    }
+
+    getEventPins(eventId : number) : Observable<EventPinDto[]>{
+        return this.http.get<EventPinApiResponse[]>(`${this.apiUrl}/EventPin/event?eventId=${eventId}`).pipe(
+
+            map(response => response.map(
+                pin => new EventPinDto(
+                    pin.eventId,
+                    pin.latitude,
+                    pin.longitude,
+                    pin.label,
+                    new Date(pin.pinnedAt),
+                    pin.pinCategory,
+                    pin.description,
+                    pin.id,
+                )
+            )),
+
+            catchError(this.handleError)
+
+        );
+    }
+
+    getPinCategories() : Observable<PinCategory[]>{
+
+        return this.http.get<PinCategory[]>(`${this.apiUrl}/EventPin/categories`).pipe(
+            catchError(this.handleError)
+        )
+
+    }
 
     deleteTicket(ticketId: number) : Observable<string>{
         return this.http.delete<{message: string}>(`${this.apiUrl}/Organizer/tickets`,{body: ticketId}).pipe(

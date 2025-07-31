@@ -9,6 +9,6 @@
 
     <div id="map" class="map-container"></div>
 
-    <app-pin-modal #pinModal (pinSaved)="onPinSaved($event)"></app-pin-modal>
+    <app-pin-modal #pinModal (pinSaved)="onPinSaved($event)" [eventId]="eventBasicInfo.getEventID()"></app-pin-modal>
 </div>
 

@@ -1,5 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
-import { PinDataDto, PinTypeMap } from '../../../../../Models/PinDataDto';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../../Validators/custom.validators';
 import { FormValidationService } from '../../../../../Services/FormValidationService';
@@ -11,6 +10,11 @@ import { SelectModule } from 'primeng/select';
 import { CommonModule } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
+import { EventPinDto } from '../../../../../Models/EventPinDto';
+import { PinCategoryService } from '../../../../../Services/PinCategoryService';
+import { take } from 'rxjs';
+import { ApiService } from '../../../../../Services/api.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-pin-modal',
@@ -20,15 +24,16 @@ import { TextareaModule } from 'primeng/textarea';
 })
 export class PinModalComponent {
 
-  @Output() pinSaved = new EventEmitter<PinDataDto>();
+  @Output() pinSaved = new EventEmitter<EventPinDto>();
+  @Input() eventId!: number;
   visible = false;
   pinForm!: FormGroup;
   lat!: number;
   lon!: number;
 
-  pinTypeOptions : any;
+  pinTypeOptions : any[] = [];
 
-  constructor(private formValidationService : FormValidationService) {}
+  constructor(private formValidationService : FormValidationService, private pinCategoryService : PinCategoryService, private apiService : ApiService, private messageService : MessageService) {}
 
 
   open(lat: number, lon: number){
@@ -36,10 +41,14 @@ export class PinModalComponent {
     this.lon = lon,
     this.visible = true;
 
-    this.pinTypeOptions = Object.entries(PinTypeMap).map(([value, label]) => ({
-      label,
-      value: +value // convert string key to number
-    }));
+    this.pinCategoryService.loadCategoriesIfEmpty()
+    .pipe(take(1))
+    .subscribe(categories => {
+      this.pinTypeOptions = categories.map(cat => ({
+        label: cat.name,
+        value: cat.id
+      }));
+    });
 
 
     this.pinForm = new FormGroup({
@@ -57,18 +66,36 @@ export class PinModalComponent {
 
     const {title, type, description} = this.pinForm.value
 
-    this.pinSaved.emit(
-      new PinDataDto(
-        this.lat,
-        this.lon,
-        title,
-        type,
-        new Date(),
-        description
-      )
+    const pinToSave = new EventPinDto(
+      this.eventId,
+      this.lat,
+      this.lon,
+      title,
+      new Date(),
+      type,
+      description
     )
 
-    this.cancel()
+      this.apiService.createMapPin(pinToSave).subscribe({
+        next: (message) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Pin Saved',
+            detail: message,
+            life: 3000
+          });
+          this.pinSaved.emit(); // Notify parent to reload pins
+          this.cancel();
+        },
+        error: (err) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Save Failed',
+            detail: err.message || 'Unknown error',
+            life: 3000
+          });
+        }
+      });
 
   }
 

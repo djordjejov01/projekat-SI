@@ -30,7 +30,8 @@ namespace Backend.Controllers
                     Longitude = pin.Longitude,
                     Label = pin.Label,
                     Description = pin.Description,
-                    PinnedAt = DateTime.UtcNow
+                    PinnedAt = DateTime.UtcNow,
+                    PinCategory = pin.PinCategory
                 };
                 _context.EventPin.Add(eventPin);
                 await _context.SaveChangesAsync();
@@ -55,6 +56,7 @@ namespace Backend.Controllers
                 eventPin.Longitude = pin.Longitude;
                 eventPin.Label = pin.Label;
                 eventPin.Description = pin.Description;
+                eventPin.PinCategory = pin.PinCategory;
 
                 await _context.SaveChangesAsync();
                 return Ok("Event pin updated!");
@@ -102,7 +104,8 @@ namespace Backend.Controllers
                     Longitude = p.Longitude,
                     Label = p.Label,
                     Description = p.Description,
-                    PinnedAt = p.PinnedAt
+                    PinnedAt = p.PinnedAt,
+                    PinCategory = p.PinCategory
                 }).ToList();
 
                 return Ok(pinDtos);
@@ -111,6 +114,16 @@ namespace Backend.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        [HttpGet("categories")]
+        public IActionResult GetPinCategories()
+        {
+            var values = Enum.GetValues(typeof(PinTypes))
+                .Cast<PinTypes>()
+                .Select(e => new { Id = (int)e, Name = e.ToString() });
+
+            return Ok(values);
         }
 
     }

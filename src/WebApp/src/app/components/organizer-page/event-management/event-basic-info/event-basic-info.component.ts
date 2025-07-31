@@ -45,8 +45,9 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
   minDate : Date;
   categories:  { label: string, value: number }[] = [];
   //agenda : Subevent[] = [];
-  subevents : Subevent[] = [];
-  activities : Activity[] = [];
+  @Input() subevents : Subevent[] = [];
+  @Input() activities : Activity[] = [];
+  @Output() agendaChanged = new EventEmitter<void>();
 
   private unlimitedCapacitySub?: Subscription;
 
@@ -61,8 +62,6 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
     ngOnInit(): void {
 
       this.minDate = new Date();
-
-        this.loadAgenda();
         
       this.categoryService.loadCategoriesIfEmpty()
         .pipe(take(1))
@@ -78,7 +77,6 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
 
     ngOnChanges(changes: SimpleChanges): void {
       if (changes['eventBasicInfo'] && changes['eventBasicInfo'].currentValue) {
-        this.loadAgenda();
         this.initFormWithEvent();
       }
     }
@@ -238,36 +236,17 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
     });
   }
 
-  loadAgenda(){
-      this.apiService.getAgenda(this.eventBasicInfo.getEventID()).subscribe({
-        next: ({subevents, activities}) => {
-          this.subevents = subevents;
-          this.activities = activities;
-
-          console.log(subevents)
-          console.log(activities)
-        },
-          error: err => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Error loading agenda',
-              detail: err.message || 'Unknown error',
-              life: 5000
-            });
-          }
-      })
-  }
 
   goToSubeventManagement(subeventId : number){
     this.router.navigate(['/organizer/event-management', subeventId])
   }
 
   onActivityCreated(){
-      this.loadAgenda()
+      this.agendaChanged.emit()
   }
 
   onSubeventCreated(){
-    this.loadAgenda();
+    this.agendaChanged.emit()
   }
 
 }

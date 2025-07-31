@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
 import { ApiService } from '../../../../Services/api.service';
 import 'leaflet/dist/leaflet.css';
@@ -7,7 +7,10 @@ import { PinModalComponent } from './pin-modal/pin-modal.component';
 
 import * as Leaflet from 'leaflet'
 import { MessageService } from 'primeng/api';
-import { PinDataDto, PinTypeMap } from '../../../../Models/PinDataDto';
+import { EventPinDto } from '../../../../Models/EventPinDto';
+import { PinCategoryService } from '../../../../Services/PinCategoryService';
+import { catchError, map, Observable, of, tap } from 'rxjs';
+
 
 // Fix Leaflet icon paths
 delete (Leaflet.Icon.Default.prototype as any)._getIconUrl;
@@ -29,22 +32,36 @@ export class MapSectionComponent implements AfterViewInit, OnChanges{
   @ViewChild('pinModal') pinModal!: PinModalComponent;
   private map!: Leaflet.Map;
   private mainEventMarker?: Leaflet.Marker;
+  private pinMarkers: Leaflet.Marker[] = [];
   private isPlacingPin = false;
 
-  constructor(private apiService : ApiService, private messageService : MessageService){}
+  @Input() pins: EventPinDto[] = [];
+  @Output() pinSaved = new EventEmitter<void>();
+
+
+  constructor(
+    private apiService : ApiService,
+    private messageService : MessageService,
+    private pinCategoryService : PinCategoryService){}
 
   ngAfterViewInit(): void {
     this.initMap();
 
     if(this.eventBasicInfo){
-      this.geocodeAddress();
+      this.geocodeAddress().subscribe({
+        complete: () => this.renderPins()
+      });
     }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if(changes['eventBasicInfo'] && !changes['eventBasicInfo'].firstChange){
       const newInfo = changes['eventBasicInfo'].currentValue as EventBasicInfo
-      if(newInfo) this.geocodeAddress()
+      if(newInfo) this.geocodeAddress().subscribe()
+    }
+
+    if(changes['pins']){
+      this.renderPins();
     }
   }
 
@@ -60,33 +77,70 @@ export class MapSectionComponent implements AfterViewInit, OnChanges{
     }).addTo(this.map);
   }
 
-  private geocodeAddress(){
+ private geocodeAddress(): Observable<void> {
+  const location = this.eventBasicInfo.getLocation();
 
-    if(this.mainEventMarker) this.map.removeLayer(this.mainEventMarker);
+  return this.apiService.geocodeAddress(location).pipe(
+    tap((results) => {
+      if (results && results.length > 0) {
+        const result = results[0];
+        const lat = parseFloat(result.lat);
+        const lon = parseFloat(result.lon);
 
-    this.apiService.geocodeAddress(this.eventBasicInfo.getLocation()).subscribe({
-      next: (results) => {
-        if(results.length > 0){
-          const result = results[0]
-          const lat = parseFloat(result.lat);
-          const lon = parseFloat(result.lon);
+        this.map.setView([lat, lon], 17);
 
-          this.map.setView([lat,lon],17);
-
-        this.mainEventMarker =  Leaflet.marker([lat,lon],{
-            icon: Leaflet.icon({
-              iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
-              shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
-              iconSize: [25, 41],
-              iconAnchor: [12, 41]
-            })
-          }).addTo(this.map).bindPopup(this.eventBasicInfo.getLocation()).openPopup();
+        if (this.mainEventMarker) {
+          this.map.removeLayer(this.mainEventMarker);
         }
-      },
 
-      error: (err) =>{
-        console.error("Geocoding error:", err);
+        this.mainEventMarker = Leaflet.marker([lat, lon], {
+          icon: Leaflet.icon({
+            iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
+            shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+          }),
+        })
+          .addTo(this.map)
+          .bindPopup(this.eventBasicInfo.getLocation())
+          .openPopup();
       }
+    }),
+    catchError((err) => {
+      console.error('Geocoding error:', err);
+      return of(void 0); // continue the stream with void
+    }),
+    map(() => void 0) // ensure return type is Observable<void>
+  );
+}
+
+
+  renderPins(){
+    if(!this.map) return;
+
+    this.pinMarkers.forEach(marker => this.map.removeLayer(marker));
+    this.pinMarkers = [];
+
+    this.pins.forEach(pin => {
+      const marker = Leaflet.marker([pin.getLatitude(),pin.getLongitude()],{
+        icon: Leaflet.icon({
+          iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
+          shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+        })
+      });
+
+      marker.bindPopup(`
+        <div style="min-width: 200px">
+          <h4 style="margin: 0 0 0.3rem 0;">📍 ${pin.getLabel()}</h4>
+          <p style="margin: 0 0 0.3rem 0;"><strong>Type:</strong> ${this.pinCategoryService.getCategoryName(pin.getPinCategory())}</p>
+          <p style="margin: 0;">${pin.getDescription() || '<em>No description</em>'}</p>
+        </div>
+      `);
+
+      marker.addTo(this.map);
+      this.pinMarkers.push(marker);
     });
   }
 
@@ -117,27 +171,31 @@ export class MapSectionComponent implements AfterViewInit, OnChanges{
   }
 
 
-  onPinSaved(pinData : PinDataDto){
+  onPinSaved(pinData : EventPinDto){
 
-    const marker = Leaflet.marker([pinData.getLat(), pinData.getLon()], 
-      {
-      icon: Leaflet.icon({
-        iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-      })
-    });
+    // if (!this.map) return;
 
-    marker.bindPopup(`
-      <div style="min-width: 200px">
-        <h4 style="margin: 0 0 0.3rem 0;">📍 ${pinData.getTitle()}</h4>
-        <p style="margin: 0 0 0.3rem 0;"><strong>Type:</strong> ${PinTypeMap[pinData.getType()]}</p>
-        <p style="margin: 0;">${pinData.getDescription() || '<em>No description</em>'}</p>
-      </div>
-    `);
+    // const marker = Leaflet.marker([pinData.getLatitude(), pinData.getLongitude()], 
+    //   {
+    //   icon: Leaflet.icon({
+    //     iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
+    //     shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+    //     iconSize: [25, 41],
+    //     iconAnchor: [12, 41],
+    //   })
+    // });
 
-      marker.addTo(this.map);
+    // marker.bindPopup(`
+    //   <div style="min-width: 200px">
+    //     <h4 style="margin: 0 0 0.3rem 0;">📍 ${pinData.getLabel()}</h4>
+    //     <p style="margin: 0 0 0.3rem 0;"><strong>Type:</strong> ${this.pinCategoryService.getCategoryName(pinData.getPinCategory())}</p>
+    //     <p style="margin: 0;">${pinData.getDescription() || '<em>No description</em>'}</p>
+    //   </div>
+    // `);
+
+    //   marker.addTo(this.map);
+    //   this.pinMarkers.push(marker)
+      this.pinSaved.emit(); // Tell parent to refresh pins
     // Store for backend sync if needed
     // this.pins.push(pinData);
 

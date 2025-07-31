@@ -16,11 +16,14 @@
         [eventBasicInfo]="eventBasicInfo" 
         [editMode]="editMode"
         (cancelEdit)="onToggleEditMode(false)"
-        (eventUpdated)="onEventUpdated($event)">
+        (eventUpdated)="onEventUpdated($event)"
+        (agendaChanged)="onAgendaChanged()"
+        [activities]="activities"
+        [subevents]="subevents">
       </app-event-basic-info>
 
 
-      <app-map-section [eventBasicInfo]="eventBasicInfo"></app-map-section>
+      <app-map-section [eventBasicInfo]="eventBasicInfo" [pins]="pins" (pinSaved)="onPinSaved()"></app-map-section>
 
     </div>
 
