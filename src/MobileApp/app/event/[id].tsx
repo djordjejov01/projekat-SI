@@ -342,17 +342,16 @@ export default function EventDetailScreen() {
         <>
           <Text style={styles.sectionTitle}>{t('location')}</Text>
           <MapView
-            style={styles.map}
-            mapType="none"
+             style={styles.map}
             initialRegion={{
-              latitude: coords.latitude,
-              longitude: coords.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
-            }}
+              latitude: coords?.latitude || 44.7866,
+              longitude: coords?.longitude || 20.4489,
+              latitudeDelta: 0.06,
+              longitudeDelta: 0.06,
+  }}
           >
             <UrlTile
-              urlTemplate="https://a.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              urlTemplate="https://a.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
               maximumZ={19}
               flipY={false}
               shouldReplaceMapContent={true}
