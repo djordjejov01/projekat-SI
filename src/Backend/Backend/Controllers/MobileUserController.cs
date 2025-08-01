@@ -62,23 +62,23 @@ namespace Backend.Controllers
         }
 
         
+        [Authorize]
         [HttpPut("profileUpdate")]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto dto)
         {
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-            var user =await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound("Korisnik nije pronađen.");
-
+                return NotFound(new { message = "Korisnik nije pronađen." });
 
             if (_context.Users.Any(u => u.Email == dto.Email && u.UserId != userId))
-                return BadRequest("Korisnik sa ovom email adresom već postoji.");
+                return BadRequest(new { message = "Korisnik sa ovom email adresom već postoji." });
 
             if (string.IsNullOrWhiteSpace(dto.Email) || !CommonHelpers.IsEmailInValidForm(dto.Email))
-                return BadRequest("Neispravan format email adrese.");
+                return BadRequest(new { message = "Neispravan format email adrese." });
 
             if (!string.IsNullOrWhiteSpace(dto.PhoneNumber) && !CommonHelpers.IsPhoneNumberValid(dto.PhoneNumber))
-                return BadRequest("Neispravan format broja telefona.");
+                return BadRequest(new { message = "Neispravan format broja telefona." });
 
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
@@ -86,7 +86,7 @@ namespace Backend.Controllers
             user.PhoneNumber = dto.PhoneNumber;
 
             await _context.SaveChangesAsync();
-            return Ok("Profil uspešno izmenjen.");
+            return Ok(new { message = "Profil uspešno izmenjen." });
         }
 
     }
