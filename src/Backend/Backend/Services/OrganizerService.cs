@@ -109,6 +109,61 @@ namespace Backend.Services
             }
         }
 
+        public async Task DeleteEvent(int eventId,int organizerId)
+        {
+            var eventEntity = await _context.Events
+                .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
+
+            if (eventEntity == null)
+                throw new ArgumentException("Event not found or you don't have permission to delete it.");
+
+            
+            if (eventEntity.Status != EventStatus.Draft)
+                throw new InvalidOperationException("Event can only be deleted if it's in draft status.");
+
+            
+            var activities = await _context.EventActivities
+                .Where(a => a.EventID == eventId)
+                .ToListAsync();
+            _context.EventActivities.RemoveRange(activities);
+
+            
+            var subevents = await _context.Events
+                .Where(e => e.ParentEventId == eventId)
+                .ToListAsync();
+
+            
+            foreach (var subevent in subevents)
+            {
+                var subeventActivities = await _context.EventActivities
+                    .Where(a => a.EventID == subevent.EventID)
+                    .ToListAsync();
+                _context.EventActivities.RemoveRange(subeventActivities);
+            }
+
+            
+            _context.Events.RemoveRange(subevents);
+
+            
+            var tickets = await _context.Tickets
+                .Where(t => t.EventID == eventId)
+                .ToListAsync();
+            _context.Tickets.RemoveRange(tickets);
+
+
+            
+            _context.Events.Remove(eventEntity);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         public async Task<EventsSubeventsActivitiesDto> GetEventSubeventsActivities(int eventId)
         {
             List<Event> AllEvents = await _context.Events
