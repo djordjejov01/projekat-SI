@@ -10,5 +10,22 @@
     <div id="map" class="map-container"></div>
 
     <app-pin-modal #pinModal (pinSaved)="onPinSaved($event)" [eventId]="eventBasicInfo.getEventID()"></app-pin-modal>
+
+   <p-dialog header="Pin Actions" [(visible)]="displayPinDialog" [modal]="true" [closable]="true" (onHide)="onPinDialogClose()">
+    <div>
+        <p><strong>📍 {{ selectedPin?.getLabel() }}</strong></p>
+        
+    </div>
+    <div class="action">
+        <p>Choose an action:</p>
+        <div class="action-buttons">
+            <button pButton label="Cancel" icon="pi pi-times" (click)="displayPinDialog=false"></button>
+            <button pButton label="Edit" icon="pi pi-pencil" (click)="openEditPinModal(selectedPin)"></button>
+            <button pButton label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deletePin(selectedPin)"></button>
+        </div>
+    </div>
+    
+    </p-dialog>
+
 </div>
 

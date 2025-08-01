@@ -143,6 +143,18 @@ export class ApiService{
 
     constructor(private http: HttpClient) {}
 
+    deleteMapPin(id : number): Observable<string>{
+        return this.http.delete(`${this.apiUrl}/EventPin/${id}`, { responseType: 'text' }).pipe(
+            catchError(this.handleError)
+        )
+    }
+
+    updateMapPin(pin : EventPinDto) : Observable<string>{
+        return this.http.put(`${this.apiUrl}/EventPin`, pin , {responseType: 'text'}).pipe(
+            catchError(this.handleError)
+        );
+    }
+
     createMapPin(pinData : EventPinDto) : Observable<string>{
         return this.http.post(`${this.apiUrl}/EventPin`, pinData, { responseType: 'text' }).pipe(
             catchError(this.handleError)

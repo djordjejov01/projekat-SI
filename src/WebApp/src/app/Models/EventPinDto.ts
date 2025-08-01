@@ -11,7 +11,7 @@ export class EventPinDto{
         private id? : number | null
     ){}
 
-    getId(): number {
+  getId(): number {
     return this.id;
   }
 
@@ -41,5 +41,17 @@ export class EventPinDto{
 
   getDescription(): string | null | undefined {
     return this.description;
+  }
+
+  setId(id : number) {
+    this.id = id
+  }
+
+  setLatitude(lat : number){
+    this.latitude = lat;
+  }
+
+  setLongitude(lng : number){
+    this.longitude = lng;
   }
 }

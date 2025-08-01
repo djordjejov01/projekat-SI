@@ -50,3 +50,49 @@
   background-color: #EBEBEA;
   border: none;
 }
+
+.action{
+    padding-top: 1rem;
+}
+
+.action-buttons{
+    padding: 2rem;
+    padding-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+
+/* Pulse marker styles for Leaflet main event marker */
+.leaflet-container .pulse-marker{
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 0, 0, 0.7);
+  box-shadow: 0 0 6px 2px rgba(255, 0, 0, 0.5);
+  position: relative;
+}
+
+.pulse-marker::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  background-color: rgba(255, 0, 0, 0.4);
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
