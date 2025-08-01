@@ -79,7 +79,8 @@ const SearchScreen = () => {
   const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
 
   const [sortOpen, setSortOpen] = useState(false);
-  const [sortBy, setSortBy] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<string>('popularity');
+
 
   // Mapa za cene: eventId -> { minPrice, maxPrice }
   const [eventPrices, setEventPrices] = useState<Record<number, { minPrice: number | null; maxPrice: number | null }>>({});
@@ -90,7 +91,7 @@ const SearchScreen = () => {
     setStartDate(null);
     setEndDate(null);
     setIsFree(false);
-    setSortBy(null);
+    setSortBy('popularity');
     setSelectedCategory(null); 
   };
 
