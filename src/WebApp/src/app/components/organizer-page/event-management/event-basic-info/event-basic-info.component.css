@@ -68,13 +68,13 @@ main{
     gap: 0.5rem;
 }
 
-.event-description h1, p, .agenda h1, p{
+.event-description h1, p, p{
     padding-left: 1rem;
     padding-top: 1rem;
 
 }
 
-.event-description h1, .agenda h1{
+.event-description h1{
     font-size: 1.25rem;
     font-weight: bold;
 }
@@ -102,7 +102,7 @@ main{
   padding: 0rem 1rem;
 }
 
-.form-container , .agenda{
+.form-container{
   min-width: 737px;
   width: 100%;
 }
@@ -170,28 +170,6 @@ main{
     gap: 1rem;
 }
 
-.agenda{
-    border: 1px solid #EBEBEA;
-    border-radius: 8px;
-    height: 100%;
-}
-
-.agenda-header{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.buttons{
-    display: flex;
-    gap: 1rem;
-    padding-right: 1rem;
-}
-
-.agenda h1{
-    padding-bottom: 1rem;
-}
-
 .upload-btn{
     position: absolute;
     top: 2.5%;
@@ -203,21 +181,6 @@ main{
     align-items: center;
     border-radius: 9999px;
     background-color: rgba(255, 255, 255, 0.3);
-}
-
-.buttons button{
-    background-color: white;
-    border: 1px solid #EBEBEA;
-    border-radius: 6px;
-    padding: 0.5rem 1rem;
-    font-size: 0.875rem;
-    color: #242524;
-    display: flex;
-    align-items: center;
-}
-
-.buttons button i{
-    padding-right: 0.5rem;
 }
 
 button:hover{

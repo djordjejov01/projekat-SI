@@ -1,10 +1,29 @@
-<p-dialog [modal]="true" [(visible)]="visible" [style]="{ width: '50rem', height: '55rem'}">
-    <ng-template #header>
-        <div class="formTitle">
-            <h3>Create New Subevent</h3>
-            <p>Fill in the details below to set up your subevent.</p>
-        </div>
-    </ng-template>
+<p-dialog
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '50rem', height: '55rem' }"
+  (onHide)="onCancleClick()"
+  [closable]="false"
+  [dismissableMask]="false"
+  [closeOnEscape]="false"
+>
+  <ng-template pTemplate="header">
+    <div class="flex justify-between items-start w-full">
+      <div class="formTitle">
+        <h3>Create New Subevent</h3>
+        <p>Fill in the details below to set up your subevent.</p>
+      </div>
+      <button
+        type="button"
+        class="p-dialog-header-icon p-link p-button-rounded p-button-text exit-button"
+        (click)="onCancleClick()"
+        pTooltip="Close"
+        tooltipPosition="left"
+      >
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  </ng-template>
     
     <form action="" [formGroup]="subeventForm" class="activityForm">
 
@@ -116,7 +135,7 @@
                     [raised]="true"
                     severity="secondary"
                     type="button"
-                    (onClick)="hide()"
+                    (onClick)="onCancleClick()"
                 ></p-button>
             </div>
         </div>

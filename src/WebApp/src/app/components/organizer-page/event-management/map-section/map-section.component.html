@@ -13,15 +13,45 @@
 
    <p-dialog header="Pin Actions" [(visible)]="displayPinDialog" [modal]="true" [closable]="true" (onHide)="onPinDialogClose()">
     <div>
-        <p><strong>📍 {{ selectedPin?.getLabel() }}</strong></p>
+        <p><strong>Pin📌: {{ selectedPin?.getLabel() }}</strong></p>
         
     </div>
     <div class="action">
         <p>Choose an action:</p>
         <div class="action-buttons">
-            <button pButton label="Cancel" icon="pi pi-times" (click)="displayPinDialog=false"></button>
-            <button pButton label="Edit" icon="pi pi-pencil" (click)="openEditPinModal(selectedPin)"></button>
-            <button pButton label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deletePin(selectedPin)"></button>
+            <!-- Edit Button -->
+            <button
+            pButton
+            type="button"
+            icon="pi pi-pencil"
+            class="p-button-rounded p-button-text p-button-sm"
+            (click)="openEditPinModal(selectedPin)"
+            pTooltip="Edit Pin"
+            tooltipPosition="top">
+            </button>
+
+            <!-- Delete Button -->
+            <button
+            pButton
+            type="button"
+            icon="pi pi-trash"
+            class="p-button-rounded p-button-text p-button-sm p-button-danger"
+            (click)="deletePin(selectedPin)"
+            pTooltip="Delete Pin"
+            tooltipPosition="top">
+            </button>
+
+            <!-- Cancel Button -->
+            <!-- <button
+            pButton
+            type="button"
+            icon="pi pi-times"
+            class="p-button-rounded p-button-text p-button-sm p-button-secondary"
+            (click)="displayPinDialog = false"
+            pTooltip="Cancel"
+            tooltipPosition="top">
+            </button> -->
+
         </div>
     </div>
     

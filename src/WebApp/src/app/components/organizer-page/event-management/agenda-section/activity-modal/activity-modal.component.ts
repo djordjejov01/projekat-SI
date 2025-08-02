@@ -7,7 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { DatePickerModule } from 'primeng/datepicker';
 import { CategoryService } from '../../../../../Services/EventCategoryService';
-import { take } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { FormValidationService } from '../../../../../Services/FormValidationService';
@@ -15,6 +15,8 @@ import { EventBasicInfo } from '../../../../../Models/EventBasicInfo';
 import { ActivityDto } from '../../../../../Models/ActivityDto';
 import { ApiService } from '../../../../../Services/api.service';
 import { MessageService } from 'primeng/api';
+import { IDeactivate } from '../../../../../Interfaces/IDeactivate';
+import { ConfirmationDialogService } from '../../../../../Services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-activity-modal',
@@ -22,7 +24,7 @@ import { MessageService } from 'primeng/api';
   templateUrl: './activity-modal.component.html',
   styleUrl: './activity-modal.component.css'
 })
-export class ActivityModalComponent implements OnInit, OnChanges{
+export class ActivityModalComponent implements OnInit, OnChanges,IDeactivate{
 
   activityForm : FormGroup;
   visible : boolean = false;
@@ -34,7 +36,8 @@ export class ActivityModalComponent implements OnInit, OnChanges{
     private categoryService : CategoryService,
     private formValidationService : FormValidationService,
     private apiService : ApiService,
-    private messageService : MessageService) {}
+    private messageService : MessageService,
+    private confirmationDialogService : ConfirmationDialogService) {}
 
   ngOnInit(): void {
 
@@ -76,6 +79,13 @@ export class ActivityModalComponent implements OnInit, OnChanges{
     this.activityForm.reset()
   }
 
+  async onCancleClick(){
+    const canLeave = await this.canExit();
+    if(canLeave){
+      this.hide()
+    }
+  }
+
   submitForm(){
 
     if(this.activityForm.invalid){
@@ -111,5 +121,15 @@ export class ActivityModalComponent implements OnInit, OnChanges{
     });
     
   }
+
+    canExit () : boolean | Observable<boolean> | Promise<boolean>{
+  
+      return (this.activityForm.dirty || this.activityForm.touched) ? this.confirmationDialogService.confirm(
+          'You have unsaved changes. Are you sure you want to close the modal?',
+          'Unsaved Changes'
+        )
+      : true;
+  
+    }
 
 }

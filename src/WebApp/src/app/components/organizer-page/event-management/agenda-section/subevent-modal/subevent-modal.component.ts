@@ -2,14 +2,13 @@ import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, S
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CustomValidators } from '../../../../../Validators/custom.validators';
-import { Event } from '../../../../../Models/Event';
 import { DialogModule } from 'primeng/dialog';
 import { FloatLabelModule } from "primeng/floatlabel"
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { DatePickerModule } from 'primeng/datepicker';
 import { CategoryService } from '../../../../../Services/EventCategoryService';
-import { Subscription, take } from 'rxjs';
+import { Observable, Subscription, take } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { FormValidationService } from '../../../../../Services/FormValidationService';
@@ -19,14 +18,17 @@ import { EventBasicInfo } from '../../../../../Models/EventBasicInfo';
 import { AuthService } from '../../../../../Services/auth.service';
 import { MessageService } from 'primeng/api';
 import { ApiService } from '../../../../../Services/api.service';
+import { IDeactivate } from '../../../../../Interfaces/IDeactivate';
+import { ConfirmationDialogService } from '../../../../../Services/confirmation-dialog.service';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-subevent-modal',
-  imports: [ReactiveFormsModule,DialogModule,FloatLabelModule,InputTextModule,TextareaModule,DatePickerModule,SelectModule,ButtonModule,InputNumber,Checkbox],
+  imports: [ReactiveFormsModule,DialogModule,FloatLabelModule,InputTextModule,TextareaModule,DatePickerModule,SelectModule,ButtonModule,InputNumber,Checkbox,TooltipModule],
   templateUrl: './subevent-modal.component.html',
   styleUrl: './subevent-modal.component.css'
 })
-export class SubeventModalComponent implements OnInit,OnDestroy, OnChanges{
+export class SubeventModalComponent implements OnInit,OnDestroy, OnChanges, IDeactivate{
 
 
   subeventForm : FormGroup;
@@ -42,7 +44,8 @@ export class SubeventModalComponent implements OnInit,OnDestroy, OnChanges{
     private formValidationService : FormValidationService,
     private authService : AuthService,
     private messageService : MessageService,
-    private apiService : ApiService) {}
+    private apiService : ApiService,
+    private confirmationDialogService : ConfirmationDialogService) {}
 
   ngOnInit(): void {
     
@@ -126,6 +129,13 @@ export class SubeventModalComponent implements OnInit,OnDestroy, OnChanges{
     this.subeventForm.reset()
   }
 
+  async onCancleClick(){
+    const canLeave = await this.canExit();
+    if(canLeave){
+      this.hide()
+    }
+  }
+
   submitForm(){
 
     if(this.subeventForm.invalid){
@@ -165,5 +175,15 @@ export class SubeventModalComponent implements OnInit,OnDestroy, OnChanges{
         });
     
   }
+
+    canExit () : boolean | Observable<boolean> | Promise<boolean>{
+  
+      return (this.subeventForm.dirty || this.subeventForm.touched) ? this.confirmationDialogService.confirm(
+          'You have unsaved changes. Are you sure you want to close the modal?',
+          'Unsaved Changes'
+        )
+      : true;
+  
+    }
 
 }

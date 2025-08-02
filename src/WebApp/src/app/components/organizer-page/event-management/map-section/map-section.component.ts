@@ -3,15 +3,17 @@ import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
 import { ApiService } from '../../../../Services/api.service';
 import 'leaflet/dist/leaflet.css';
 import { PinModalComponent } from './pin-modal/pin-modal.component';
-
-
-import * as Leaflet from 'leaflet'
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { EventPinDto } from '../../../../Models/EventPinDto';
 import { PinCategoryService } from '../../../../Services/PinCategoryService';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
+import { TooltipModule } from 'primeng/tooltip';
+
+
+import * as Leaflet from 'leaflet'
+
 
 
 // Fix Leaflet icon paths
@@ -24,7 +26,7 @@ Leaflet.Icon.Default.mergeOptions({
 
 @Component({
   selector: 'app-map-section',
-  imports: [PinModalComponent,DialogModule,ButtonModule],
+  imports: [PinModalComponent,DialogModule,ButtonModule,TooltipModule],
   templateUrl: './map-section.component.html',
   styleUrl: './map-section.component.css',
   encapsulation: ViewEncapsulation.None
@@ -117,7 +119,7 @@ private createIcon(filename: string): Leaflet.Icon {
     }).addTo(this.map);
   }
 
- private geocodeAddress(): Observable<void> {
+private geocodeAddress(): Observable<void> {
   const location = this.eventBasicInfo.getLocation();
 
   return this.apiService.geocodeAddress(location).pipe(
@@ -133,27 +135,36 @@ private createIcon(filename: string): Leaflet.Icon {
           this.map.removeLayer(this.mainEventMarker);
         }
 
-      this.mainEventMarker = Leaflet.marker([lat, lon], {
-        icon: Leaflet.divIcon({
-          className: 'pulse-marker',
-          iconSize: [36, 36],
-          iconAnchor: [18, 36],
-          popupAnchor: [0, -36],
-          html: `<div></div>`
-
-        }),
-      }).addTo(this.map)
-        .bindPopup(this.eventBasicInfo.getLocation())
-        .openPopup();
+        this.mainEventMarker = Leaflet.marker([lat, lon], {
+          icon: Leaflet.divIcon({
+            className: 'pulse-marker',
+            iconSize: [36, 36],
+            iconAnchor: [18, 36],
+            popupAnchor: [0, -36],
+            html: `<div></div>`
+          }),
+        }).addTo(this.map)
+          .bindTooltip(
+            `<div class="event-tooltip">
+               <strong>Event Location</strong><br/>
+               ${location}
+             </div>`,
+            {
+              direction: 'top',
+              offset: [0, -20],
+              className: 'leaflet-tooltip-event'
+            }
+          );
       }
     }),
     catchError((err) => {
       console.error('Geocoding error:', err);
-      return of(void 0); // continue the stream with void
+      return of(void 0);
     }),
-    map(() => void 0) // ensure return type is Observable<void>
+    map(() => void 0)
   );
 }
+
 
 
   renderPins(){
@@ -175,12 +186,20 @@ private createIcon(filename: string): Leaflet.Icon {
 
 
       marker.bindTooltip(`
-        <div style="min-width: 200px">
-          <h4 style="margin: 0 0 0.3rem 0;"><strong>Pin📍:</strong> ${pin.getLabel()}</h4>
+        <div style="min-width: 200px; max-width: 400px; word-wrap: break-word; overflow-wrap: break-word;">
+          <h4 style="margin: 0 0 0.3rem 0;"><strong>Pin📌:</strong> ${pin.getLabel()}</h4>
           <p style="margin: 0 0 0.3rem 0;"><strong>Type:</strong> ${this.pinCategoryService.getCategoryName(pin.getPinCategory())}</p>
-          <p style="margin: 0;"><strong>Description: </strong>${pin.getDescription() || '<em>No description</em>'}</p>
+          <p style="margin: 0; white-space: normal; word-wrap: break-word; overflow-wrap: break-word;">
+            <strong>Description:</strong> ${pin.getDescription() || '<em>No description</em>'}
+          </p>
         </div>
-      `, { permanent: false, direction: 'top', offset: [0, -20] , interactive: false});
+      `, {
+        permanent: false,
+        direction: 'top',
+        offset: [0, -20],
+        interactive: false,
+      });
+
 
 
       marker.on('click', (e: Leaflet.LeafletMouseEvent) => {
