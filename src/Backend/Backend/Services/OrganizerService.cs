@@ -164,6 +164,80 @@ namespace Backend.Services
             }
         }
 
+        public async Task CancelEvent(int eventId,int organizerId)
+        {
+            if (eventId <= 0)
+                throw new ArgumentException("Invalid event ID.", nameof(eventId));
+
+            if (organizerId <= 0)
+                throw new ArgumentException("Invalid organizer ID.", nameof(organizerId));
+
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try { 
+                var eventEntity = await _context.Events
+                       .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
+
+                if (eventEntity == null)
+                    throw new ArgumentException("Event not found or you don't have permission to cancel it.");
+
+            
+                if (eventEntity.Status == EventStatus.Canceled)
+                    throw new InvalidOperationException("Event is already canceled.");
+
+                if (eventEntity.Status == EventStatus.Draft)
+                    throw new InvalidOperationException("Draft events should be deleted, not canceled.");
+
+            
+                if (eventEntity.StartDate <= DateTime.UtcNow)
+                    throw new InvalidOperationException("Cannot cancel an event that has already started.");
+
+
+                var hasPurchasedTickets = await _context.UserTickets
+                    .AnyAsync(ut => ut.Ticket.EventID == eventId);
+
+                if (hasPurchasedTickets)
+                {
+                    await RefundPurchasedTickets(eventId);
+                }
+
+                
+
+                // TODO(oslobadjanje resursa)
+
+            
+                eventEntity.Status = EventStatus.Canceled;
+
+            
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }
+        private async Task RefundPurchasedTickets(int eventId)
+        {
+            
+            var purchasedTickets = await _context.UserTickets
+                .Include(ut => ut.Ticket)
+                .Include(ut => ut.User)
+                .Where(ut => ut.Ticket.EventID == eventId)
+                .ToListAsync();
+
+            foreach (var userTicket in purchasedTickets)
+            {
+                
+                var user = await _context.Users.FindAsync(userTicket.UserID);
+                if (user != null)
+                {
+                    user.Credit += userTicket.Ticket.Price;
+                }
+            }
+        }
+
         public async Task<EventsSubeventsActivitiesDto> GetEventSubeventsActivities(int eventId)
         {
             List<Event> AllEvents = await _context.Events
