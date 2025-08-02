@@ -141,6 +141,8 @@ namespace Backend.Services
                 _context.EventActivities.RemoveRange(subeventActivities);
             }
 
+            //TODO (oslobadjanje resursa)
+
             
             _context.Events.RemoveRange(subevents);
 

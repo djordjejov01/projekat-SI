@@ -11,5 +11,6 @@ namespace Backend.Services
         Task CreateEventForOrganizer(CreateEventDto model, int organizerID);
         Task CreateActivity(ActivityDto mode);
         Task DeleteEvent(int eventId,int organizerId);
+        Task CancelEvent(int eventId,int organizerId);
     }
 }
