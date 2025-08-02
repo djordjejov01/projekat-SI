@@ -38,7 +38,6 @@ export class SupplierCalendarComponent implements OnInit {
       return selectInfo.start >= today
     },
     selectMirror: true,
-    select : this.handleDateSelect.bind(this),
     initialView: 'dayGridMonth',
     headerToolbar: {
       left: 'prev,next today',
@@ -59,23 +58,26 @@ export class SupplierCalendarComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    /*
-    this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe((events: Event[]) => {
-      console.log(events)
-      const calendarEvents : EventInput[] = events.map( event => ({
-        title: event.getTitle(),
-        start: event.getStartDateTime().toISOString(),
-        end: event.getEndDateTime().toISOString(),
-        allDay: this.isAllDayEvent(event.getStartDateTime(),event.getEndDateTime()),
-        extendedProps: {
-          category: this.categoryService.getCategoryName(event.getCategoryId()),
-          location: event.getLocation(),
-          organizer: event.getOrganizer()?.getUsername?.() || 'Unknown'
-        }
-      }));
 
-      this.calendarOptions.events = calendarEvents
-    });*/
+      this.calendarOptions.events = [
+    {
+        "title": "Mikrofon",
+        "start": "2025-07-23T22:00:00.000Z",
+        "end": "2025-07-26T21:59:59.999Z",
+        "allDay": false
+    },
+    {
+        "title": "Zvucnici",
+        "start": "2025-07-28T22:00:00.000Z",
+        "end": "2025-07-31T21:59:59.999Z",
+        "allDay": false
+    },
+    {
+        "title": "Bina",
+        "start": "2025-08-09T22:00:00.000Z",
+        "end": "2025-08-15T22:00:00.000Z",
+        "allDay": true
+    }];
 
   }
 
@@ -87,27 +89,5 @@ export class SupplierCalendarComponent implements OnInit {
       end.getMinutes() === 0 &&
       end.getTime() - start.getTime() >= 24 * 60 * 60 * 1000
     );
-  }
-
-  async handleDateSelect(selectInfo: DateSelectArg){
-
-    const { start, end } = selectInfo
-    
-    const startDateFormatted = this.datePipe.transform(start, 'MMM d, y, HH:mm:ss');
-    const endDateFormatted = this.datePipe.transform(end,'MMM d, y, HH:mm:ss');
-
-    const confirmed = await this.confirmationDialogService.confirm(
-      `Create and event from ${startDateFormatted} to ${endDateFormatted}?`,
-      'Create Event'
-    );
-
-    if(confirmed){
-      this.router.navigate(['/organizer/create-event'],{
-        queryParams: { start: start.toISOString(), end: end.toISOString(), showID: 3}
-      });
-    }
-
-    selectInfo.view.calendar.unselect();
-
   }
 }
