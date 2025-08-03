@@ -21,11 +21,13 @@ import { Observable, Subscription, take } from 'rxjs';
 import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
 import { CategoryService } from '../../../Services/EventCategoryService';
 import { FormValidationService } from '../../../Services/FormValidationService';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+
 
 
 @Component({
   selector: 'app-create-event',
-  imports: [CommonModule,ReactiveFormsModule,FloatLabelModule,InputTextModule,Checkbox,TextareaModule,DatePickerModule,InputNumber,ButtonModule,FileUpload,SelectModule],
+  imports: [CommonModule,ReactiveFormsModule,FloatLabelModule,InputTextModule,Checkbox,TextareaModule,DatePickerModule,InputNumber,ButtonModule,FileUpload,SelectModule,AutoCompleteModule],
   templateUrl: './create-event.component.html',
   styleUrl: './create-event.component.css'
 })
@@ -40,6 +42,7 @@ export class CreateEventComponent implements OnInit,IDeactivate,OnDestroy{
 
   eventStart: Date | null = null;
   eventEnd: Date | null = null;
+  filteredLocations: any[] = [];
 
   private subscriptions  = new Subscription();
 
@@ -211,9 +214,21 @@ export class CreateEventComponent implements OnInit,IDeactivate,OnDestroy{
     this.selectedImageFile = null;
   }
 
-  toDisplayName(fieldName : string): string{
-    return fieldName.replace(/([A-Z])/g, ' $1').replace(/^./, strr => strr.toUpperCase())
+  searchLocations(event: any){
+    const query = event.query.trim();
+    if(!query) return;
+
+    this.apiService.searchLocations(query).subscribe((results) => {
+      this.filteredLocations = results
+    })
+
   }
+
+   onLocationSelect(event: any) {
+      const location = event.value;
+      this.eventForm.patchValue({ location: location.display_name });
+      console.log(this.eventForm.get('location')?.value);
+    }
 
 submitForm(): void {
   if (this.eventForm.invalid) {

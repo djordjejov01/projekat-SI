@@ -58,6 +58,10 @@ main{
     gap: 0.25rem;
 }
 
+.location{
+    align-items: baseline;
+}
+
 .date span, .time span, .location span, .capacity span{
     color: #8C8D8B;
 }

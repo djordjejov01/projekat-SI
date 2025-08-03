@@ -21,10 +21,11 @@ import { ApiService } from '../../../../../Services/api.service';
 import { IDeactivate } from '../../../../../Interfaces/IDeactivate';
 import { ConfirmationDialogService } from '../../../../../Services/confirmation-dialog.service';
 import { TooltipModule } from 'primeng/tooltip';
+import { AutoComplete } from 'primeng/autocomplete';
 
 @Component({
   selector: 'app-subevent-modal',
-  imports: [ReactiveFormsModule,DialogModule,FloatLabelModule,InputTextModule,TextareaModule,DatePickerModule,SelectModule,ButtonModule,InputNumber,Checkbox,TooltipModule],
+  imports: [ReactiveFormsModule,DialogModule,FloatLabelModule,InputTextModule,TextareaModule,DatePickerModule,SelectModule,ButtonModule,InputNumber,Checkbox,TooltipModule,AutoComplete],
   templateUrl: './subevent-modal.component.html',
   styleUrl: './subevent-modal.component.css'
 })
@@ -36,6 +37,7 @@ export class SubeventModalComponent implements OnInit,OnDestroy, OnChanges, IDea
   visible : boolean = false;
   @Input() parentEventBasicInfo! : EventBasicInfo;
   @Output() subeventCreated = new EventEmitter<void>();
+  filteredLocations: any[] = [];
 
   private unlimitedSub: Subscription | undefined;
 
@@ -116,6 +118,24 @@ export class SubeventModalComponent implements OnInit,OnDestroy, OnChanges, IDea
       this.subeventForm.get('capacity')?.setValue(this.parentEventBasicInfo.getCapacity());
     }
 }
+
+  searchLocations(event: any){
+      const query = event.query.trim();
+      if(!query) return;
+
+      this.apiService.searchLocations(query).subscribe((results) => {
+        this.filteredLocations = results
+      })
+
+    }
+
+    onLocationSelect(event: any) {
+      const location = event.value;
+      this.subeventForm.patchValue({ location: location.display_name });
+      console.log(this.subeventForm.get('location')?.value);
+    }
+
+
 
 
   show(){

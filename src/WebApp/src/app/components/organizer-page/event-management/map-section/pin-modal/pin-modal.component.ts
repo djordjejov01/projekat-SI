@@ -147,7 +147,6 @@ export class PinModalComponent implements OnInit,IDeactivate{
 
   }
 
-
   cancel(){
     this.pinForm.reset();
     this.editingPin = null;

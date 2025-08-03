@@ -143,6 +143,19 @@ export class ApiService{
 
     constructor(private http: HttpClient) {}
 
+    searchLocations(query) : Observable<any[]>{
+       return this.http.get<any[]>('https://nominatim.openstreetmap.org/search', {
+        params: {
+          q: query,
+          format: 'json',
+          addressdetails: '1',
+          limit: '5'
+        }
+      }).pipe(
+        catchError(this.handleError)
+      )
+    }
+
     deleteMapPin(id : number): Observable<string>{
         return this.http.delete(`${this.apiUrl}/EventPin/${id}`, { responseType: 'text' }).pipe(
             catchError(this.handleError)

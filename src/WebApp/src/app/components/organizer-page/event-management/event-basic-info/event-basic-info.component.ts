@@ -21,10 +21,11 @@ import { FormValidationService } from '../../../../Services/FormValidationServic
 import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
 import { ActivatedRoute } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
+import { AutoComplete } from 'primeng/autocomplete';
 
 @Component({
   selector: 'app-event-basic-info',
-  imports: [CommonModule,ReactiveFormsModule,FloatLabelModule,InputNumber,DatePickerModule,SelectModule,ButtonModule,InputTextModule,Checkbox,TextareaModule,FileUpload,TooltipModule],
+  imports: [CommonModule,ReactiveFormsModule,FloatLabelModule,InputNumber,DatePickerModule,SelectModule,ButtonModule,InputTextModule,Checkbox,TextareaModule,FileUpload,TooltipModule,AutoComplete],
   templateUrl: './event-basic-info.component.html',
   styleUrl: './event-basic-info.component.css'
 })
@@ -39,7 +40,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
   eventForm : FormGroup;
   minDate : Date;
   categories:  { label: string, value: number }[] = [];
-  //agenda : Subevent[] = [];
+  filteredLocations: any[] = [];
 
   private unlimitedCapacitySub?: Subscription;
 
@@ -113,6 +114,23 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
 
     }
 
+  searchLocations(event: any){
+      const query = event.query.trim();
+      if(!query) return;
+
+      this.apiService.searchLocations(query).subscribe((results) => {
+        this.filteredLocations = results
+      })
+
+    }
+
+    onLocationSelect(event: any) {
+      const location = event.value;
+      this.eventForm.patchValue({ location: location.display_name });
+      console.log(this.eventForm.get('location')?.value);
+    }
+
+
   submitForm(){
 
       if(this.eventForm.invalid){
@@ -121,6 +139,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
       }
 
       const formValues = this.eventForm.value;
+      console.log(formValues)
         const updateDto = new UpdateEventDto(
           this.eventBasicInfo.getEventID(),
           formValues.title,

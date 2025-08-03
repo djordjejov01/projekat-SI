@@ -34,7 +34,20 @@
 
                         <p>Location</p>
                         <p-floatlabel class="w-full md:w-56" variant="on">
-                            <input  type="text"  pInputText  placeholder=" "  formControlName="location"  inputId="location"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+
+                              <p-autoComplete
+                                inputId="location"
+                                formControlName="location"
+                                [suggestions]="filteredLocations"
+                                (completeMethod)="searchLocations($event)"
+                                field="display_name"
+                                [minLength]="2"
+                                class="w-full md:w-56"
+                                (onSelect)="onLocationSelect($event)"
+                                [style]="{ width: '100%' }"
+                                inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                                >
+                            </p-autoComplete>
                         <label for="location">Enter Event Location (e.g. Zoom, Conference Hall A)</label>
                         </p-floatlabel>
 

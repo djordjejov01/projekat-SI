@@ -145,16 +145,17 @@ private geocodeAddress(): Observable<void> {
           }),
         }).addTo(this.map)
           .bindTooltip(
-            `<div class="event-tooltip">
-               <strong>Event Location</strong><br/>
-               ${location}
-             </div>`,
+            `<div style="min-width: 200px; max-width: 400px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
+              <strong>Event Location</strong><br/>
+              ${location}
+            </div>`,
             {
               direction: 'top',
               offset: [0, -20],
               className: 'leaflet-tooltip-event'
             }
-          );
+  );
+
       }
     }),
     catchError((err) => {
