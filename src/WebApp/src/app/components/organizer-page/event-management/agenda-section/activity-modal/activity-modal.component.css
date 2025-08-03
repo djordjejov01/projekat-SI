@@ -60,3 +60,8 @@
     gap: 1rem;
     padding-top: 1rem;
 }
+
+.exit-button{
+    height: 32px;
+    width: 32px;
+}
