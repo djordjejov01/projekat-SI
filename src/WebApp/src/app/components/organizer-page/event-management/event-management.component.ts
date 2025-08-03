@@ -10,10 +10,11 @@ import { TicketSectionComponent } from './ticket-section/ticket-section.componen
 import { MapSectionComponent } from './map-section/map-section.component';
 import { EventPinDto } from '../../../Models/EventPinDto';
 import { forkJoin } from 'rxjs';
+import { AgendaSectionComponent } from './agenda-section/agenda-section.component';
 
 @Component({
   selector: 'app-event-management',
-  imports: [EventBasicInfoComponent,EventManagementHeaderComponent,CommonModule,TicketSectionComponent,MapSectionComponent],
+  imports: [EventBasicInfoComponent,EventManagementHeaderComponent,CommonModule,TicketSectionComponent,MapSectionComponent,AgendaSectionComponent],
   templateUrl: './event-management.component.html',
   styleUrl: './event-management.component.css'
 })

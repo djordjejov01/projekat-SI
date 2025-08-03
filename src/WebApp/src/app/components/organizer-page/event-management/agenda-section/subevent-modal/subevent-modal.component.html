@@ -1,10 +1,29 @@
-<p-dialog [modal]="true" [(visible)]="visible" [style]="{ width: '50rem', height: '55rem'}">
-    <ng-template #header>
-        <div class="formTitle">
-            <h3>Create New Subevent</h3>
-            <p>Fill in the details below to set up your subevent.</p>
-        </div>
-    </ng-template>
+<p-dialog
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '50rem', height: '55rem' }"
+  (onHide)="onCancleClick()"
+  [closable]="false"
+  [dismissableMask]="false"
+  [closeOnEscape]="false"
+>
+  <ng-template pTemplate="header">
+    <div class="flex justify-between items-start w-full">
+      <div class="formTitle">
+        <h3>Create New Subevent</h3>
+        <p>Fill in the details below to set up your subevent.</p>
+      </div>
+      <button
+        type="button"
+        class="p-dialog-header-icon p-link p-button-rounded p-button-text exit-button"
+        (click)="onCancleClick()"
+        pTooltip="Close"
+        tooltipPosition="left"
+      >
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  </ng-template>
     
     <form action="" [formGroup]="subeventForm" class="activityForm">
 
@@ -36,7 +55,19 @@
 
                     <p>Location</p>
                     <p-floatlabel class="w-full md:w-56" variant="on">
-                        <input  type="text"  pInputText  placeholder=" "  formControlName="location"  inputId="location"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                            <p-autoComplete
+                                inputId="location"
+                                formControlName="location"
+                                [suggestions]="filteredLocations"
+                                (completeMethod)="searchLocations($event)"
+                                field="display_name"
+                                [minLength]="2"
+                                class="w-full md:w-56"
+                                (onSelect)="onLocationSelect($event)"
+                                [style]="{ width: '100%' }"
+                                inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                                >
+                            </p-autoComplete>
                     <label for="location">Enter Event Location (e.g. Zoom, Conference Hall A)</label>
                     </p-floatlabel>
 
@@ -116,7 +147,7 @@
                     [raised]="true"
                     severity="secondary"
                     type="button"
-                    (onClick)="hide()"
+                    (onClick)="onCancleClick()"
                 ></p-button>
             </div>
         </div>
