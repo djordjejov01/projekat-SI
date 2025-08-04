@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Event } from '../../../../Models/Event';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../Validators/custom.validators';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -16,20 +15,17 @@ import { CategoryService } from '../../../../Services/EventCategoryService';
 import { Subscription, take } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { UpdateEventDto } from '../../../../Models/UpdateEventDto';
-import { Activity, ApiService } from '../../../../Services/api.service';
-import { Subevent } from '../../../../Services/api.service';
-import { AccordionModule } from 'primeng/accordion';
+import {ApiService } from '../../../../Services/api.service';
 import { FileUpload } from 'primeng/fileupload';
-import { ActivityModalComponent } from './activity-modal/activity-modal.component';
 import { FormValidationService } from '../../../../Services/FormValidationService';
-import { SubeventModalComponent } from './subevent-modal/subevent-modal.component';
 import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
+import { AutoComplete } from 'primeng/autocomplete';
 
 @Component({
   selector: 'app-event-basic-info',
-  imports: [CommonModule,ReactiveFormsModule,FloatLabelModule,InputNumber,DatePickerModule,SelectModule,ButtonModule,InputTextModule,Checkbox,TextareaModule,AccordionModule,FileUpload,ActivityModalComponent,SubeventModalComponent,TooltipModule],
+  imports: [CommonModule,ReactiveFormsModule,FloatLabelModule,InputNumber,DatePickerModule,SelectModule,ButtonModule,InputTextModule,Checkbox,TextareaModule,FileUpload,TooltipModule,AutoComplete],
   templateUrl: './event-basic-info.component.html',
   styleUrl: './event-basic-info.component.css'
 })
@@ -44,10 +40,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
   eventForm : FormGroup;
   minDate : Date;
   categories:  { label: string, value: number }[] = [];
-  //agenda : Subevent[] = [];
-  @Input() subevents : Subevent[] = [];
-  @Input() activities : Activity[] = [];
-  @Output() agendaChanged = new EventEmitter<void>();
+  filteredLocations: any[] = [];
 
   private unlimitedCapacitySub?: Subscription;
 
@@ -56,7 +49,6 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
       private messageService : MessageService,
       private apiService : ApiService,
       private formValidationService : FormValidationService,
-      private router : Router,
       private route: ActivatedRoute) {}
 
     ngOnInit(): void {
@@ -122,6 +114,23 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
 
     }
 
+  searchLocations(event: any){
+      const query = event.query.trim();
+      if(!query) return;
+
+      this.apiService.searchLocations(query).subscribe((results) => {
+        this.filteredLocations = results
+      })
+
+    }
+
+    onLocationSelect(event: any) {
+      const location = event.value;
+      this.eventForm.patchValue({ location: location.display_name });
+      console.log(this.eventForm.get('location')?.value);
+    }
+
+
   submitForm(){
 
       if(this.eventForm.invalid){
@@ -130,6 +139,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
       }
 
       const formValues = this.eventForm.value;
+      console.log(formValues)
         const updateDto = new UpdateEventDto(
           this.eventBasicInfo.getEventID(),
           formValues.title,
@@ -234,19 +244,6 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
               life: 3000 });
       }
     });
-  }
-
-
-  goToSubeventManagement(subeventId : number){
-    this.router.navigate(['/organizer/event-management', subeventId])
-  }
-
-  onActivityCreated(){
-      this.agendaChanged.emit()
-  }
-
-  onSubeventCreated(){
-    this.agendaChanged.emit()
   }
 
 }

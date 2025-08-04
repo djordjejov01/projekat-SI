@@ -11,6 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { API_URL } from '../../config';
 import { useTranslation } from 'react-i18next';
+import { Ionicons } from '@expo/vector-icons';
 
 type PurchasedTicket = {
   ticketID: number;
@@ -20,7 +21,7 @@ type PurchasedTicket = {
   price: number;
   eventID: number; 
   userTicketID: number;
-    eventImage?: string;
+  eventImage?: string;
 };
 
 type GroupedTicket = {
@@ -49,7 +50,6 @@ export default function ProfileTickets() {
 
       try {
         const res = await fetch(`${API_URL}/ticket/tickets/my`, {
-          
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -60,27 +60,23 @@ export default function ProfileTickets() {
 
           const grouped: { [key: string]: GroupedTicket } = {};
 
-//      data.forEach((ticket) => {
-//   console.log('Ticket item:', ticket);
-// });
-
-data.forEach((ticket) => {
-  const key = `${ticket.eventName}_${ticket.ticketType}`;
-  if (!grouped[key]) {
-    grouped[key] = {
-      ticketType: ticket.ticketType,
-      eventName: ticket.eventName,
-      price: ticket.price,
-      quantity: 1,
-      eventID: ticket.eventID ?? ticket.eventID ?? 0, // pokušaj da vidiš da li postoji
-      purchasedAt: ticket.purchasedAt,
-      ticketIDs: [ticket.userTicketID],
-    };
-  } else {
-    grouped[key].quantity += 1;
-    grouped[key].ticketIDs.push(ticket.userTicketID);
-  }
-});
+          data.forEach((ticket) => {
+            const key = `${ticket.eventName}_${ticket.ticketType}`;
+            if (!grouped[key]) {
+              grouped[key] = {
+                ticketType: ticket.ticketType,
+                eventName: ticket.eventName,
+                price: ticket.price,
+                quantity: 1,
+                eventID: ticket.eventID ?? 0,
+                purchasedAt: ticket.purchasedAt,
+                ticketIDs: [ticket.userTicketID],
+              };
+            } else {
+              grouped[key].quantity += 1;
+              grouped[key].ticketIDs.push(ticket.userTicketID);
+            }
+          });
 
           setGroupedTickets(Object.values(grouped));
         } else {
@@ -97,44 +93,42 @@ data.forEach((ticket) => {
   }, []);
 
   const renderItem = ({ item }: { item: GroupedTicket }) => (
-   <TouchableOpacity
-    style={styles.ticketItem}
-    onPress={() => {
-      // console.log('Navigating with params:', {
-      //   ticketIDs: JSON.stringify(item.ticketIDs),
-      //   eventName: item.eventName,
-      //   ticketType: item.ticketType,
-      //   eventID: item.eventID,
-      //   purchasedAt: item.purchasedAt,
-      //   price: item.price.toString(),
-      // });
-
-      router.push({
-        pathname: '../event/ticketDetails',
-        params: {
-          ticketIDs: JSON.stringify(item.ticketIDs),
-          eventName: item.eventName,
-          ticketType: item.ticketType,
-          eventID: item.eventID,
-          purchasedAt: item.purchasedAt,
-          price: item.price.toString(),
-        },
-      });
-    }}
-  >
+    <TouchableOpacity
+      style={styles.ticketItem}
+      activeOpacity={0.7}
+      onPress={() => {
+        router.push({
+          pathname: '../event/ticketDetails',
+          params: {
+            ticketIDs: JSON.stringify(item.ticketIDs),
+            eventName: item.eventName,
+            ticketType: item.ticketType,
+            eventID: item.eventID,
+            purchasedAt: item.purchasedAt,
+            price: item.price.toString(),
+          },
+        });
+      }}
+    >
       <Text style={styles.title}>{item.eventName}</Text>
-      <Text style={styles.details}>
-        {t('profileTickets.ticketType')}: {item.ticketType}
-      </Text>
-      <Text style={styles.details}>
-        {t('profileTickets.quantity')}: {item.quantity}
-      </Text>
-      <Text style={styles.details}>
-        {t('profileTickets.price')}: {item.price} €
-      </Text>
-      <Text style={styles.details}>
-        {t('profileTickets.purchasedOn')}: {new Date(item.purchasedAt).toLocaleString()}
-      </Text>
+      <View style={styles.row}>
+        <Text style={styles.label}>{t('profileTickets.ticketType')}:</Text>
+        <Text style={styles.value}>{item.ticketType}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>{t('profileTickets.quantity')}:</Text>
+        <Text style={styles.value}>{item.quantity}</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>{t('profileTickets.price')}:</Text>
+        <Text style={styles.value}>{item.price} RSD</Text>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}>{t('profileTickets.purchasedOn')}:</Text>
+        <Text style={styles.value}>
+          {new Date(item.purchasedAt).toLocaleString()}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 
@@ -155,8 +149,19 @@ data.forEach((ticket) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      <Text style={styles.header}>{t('profileTickets.title')}</Text>
+    <View style={styles.container}>
+      {/* Header sa strelicom za povratak */}
+      <View style={styles.headerContainer}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={styles.backButton}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="arrow-back" size={28} color='black' />
+        </TouchableOpacity>
+        <Text style={styles.header}>{t('profileTickets.title')}</Text>
+      </View>
+
       <FlatList
         data={groupedTickets}
         keyExtractor={(item, index) =>
@@ -165,45 +170,84 @@ data.forEach((ticket) => {
             : `${item.eventName}-${item.ticketType}-${index}`
         }
         renderItem={renderItem}
-        contentContainerStyle={{ padding: 16 }}
+        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 16,
-    paddingTop: 20,
-    marginBottom: 10,
-    color: '#333',
+    paddingTop: 35,
+    paddingBottom: 12,
+  },
+  backButton: {
+    marginRight: 12,
+    padding: 6,
+    borderRadius: 8,
+    // Ako želiš možeš dodati pozadinsku boju na dugme:
+    // backgroundColor: '#eee',
+  },
+  header: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    flex: 1,
+    textAlign: 'center',
+    marginRight: 40, // da naslov ne bi lepio strelicu sa desne strane
   },
   ticketItem: {
-    backgroundColor: '#f3f4f6',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
+    backgroundColor: '#fefefe',
+    padding: 20,
+    borderRadius: 14,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: '#e1e4e8',
   },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '700',
-    marginBottom: 4,
+    marginBottom: 10,
+    color: '#34495e',
   },
-  details: {
-    fontSize: 14,
-    color: '#555',
+  row: {
+    flexDirection: 'row',
+    marginBottom: 6,
+    alignItems: 'center',
+  },
+  label: {
+    fontWeight: '600',
+    color: '#7f8c8d',
+    width: 110,
+  },
+  value: {
+    fontWeight: '400',
+    color: '#34495e',
+    flexShrink: 1,
   },
   center: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+    backgroundColor: '#fff',
   },
   emptyText: {
-    fontSize: 16,
-    color: '#888',
+    fontSize: 18,
+    color: '#95a5a6',
     textAlign: 'center',
   },
 });

@@ -12,10 +12,12 @@ import { TranslateService } from '@ngx-translate/core';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { ApiService } from '../../../../../Services/api.service';
 import { TicketDto } from '../../../../../Models/TicketDto';
 import { Ticket } from '../../../../../Models/Ticket';
+import { IDeactivate } from '../../../../../Interfaces/IDeactivate';
+import { ConfirmationDialogService } from '../../../../../Services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-ticket-modal',
@@ -23,7 +25,7 @@ import { Ticket } from '../../../../../Models/Ticket';
   templateUrl: './ticket-modal.component.html',
   styleUrl: './ticket-modal.component.css'
 })
-export class TicketModalComponent implements OnInit,OnChanges, OnDestroy{
+export class TicketModalComponent implements OnInit,OnChanges, OnDestroy, IDeactivate{
 
 
   @Input() eventBasicInfo : EventBasicInfo;
@@ -41,7 +43,8 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy{
     private messageService : MessageService,
     private formValidationService : FormValidationService,
     private translateService : TranslateService,
-    private apiService : ApiService) {}
+    private apiService : ApiService,
+    private confirmationDialogService : ConfirmationDialogService) {}
 
   ngOnInit(): void {
 
@@ -77,6 +80,13 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy{
     this.ticketForm.reset();
     this.ticketToEdit = undefined;
     this.isEditMode = false;
+  }
+
+    async onCancleClick(){
+    const canLeave = await this.canExit();
+    if(canLeave){
+      this.hide()
+    }
   }
 
   showForEdit(ticket : Ticket){
@@ -170,6 +180,16 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy{
 
     }
 
+  }
+
+  canExit () : boolean | Observable<boolean> | Promise<boolean>{
+    
+    return (this.ticketForm.dirty || this.ticketForm.touched) ? this.confirmationDialogService.confirm(
+        'You have unsaved changes. Are you sure you want to close the modal?',
+        'Unsaved Changes'
+      )
+    : true;
+    
   }
 
 }

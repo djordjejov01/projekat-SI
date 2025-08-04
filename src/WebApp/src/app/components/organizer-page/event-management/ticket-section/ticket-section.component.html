@@ -157,7 +157,19 @@
 
         <ng-template #emptymessage>
             <tr>
-                <td colspan="8">No tickets found.</td>
+                <td colspan="8">
+                <div class="gap-4 py-8 no-tickets">
+                    <i class="pi pi-ticket text-4xl text-gray-400"></i>
+                    <h2 class="text-xl font-semibold text-gray-700">No Tickets Added</h2>
+                    <p class="text-gray-500 max-w-md">
+                        Add tickets here to allow participants to register for your event.
+                    </p>
+                    <div class="flex gap-4">
+                        <button pButton type="button" icon="pi pi-plus" label="Add Ticket" (click)="ticketModal.show()"></button>
+                    </div>
+                </div>
+
+                </td>
             </tr>
         </ng-template>
 

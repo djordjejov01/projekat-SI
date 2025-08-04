@@ -9,3 +9,10 @@
     gap: 1rem;
     align-items: flex-start;
 }
+
+.agenda-section-and-tickets{
+    margin-top: 2rem;
+    max-width: 1500px;
+    display: flex;
+    flex-direction: column;
+}

@@ -215,28 +215,35 @@ const SearchScreen = () => {
         }}
       >
         <View style={{ position: 'relative' }}>
-          {imageLoading[item.id] && (
-            <ActivityIndicator
-              size="small"
-              color="#007AFF"
-              style={{
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                transform: [{ translateX: -12 }, { translateY: -12 }],
-                zIndex: 1,
-                width: 24,
-                height: 24,
-              }}
-            />
-          )}
-          <Image
-            source={{ uri: item.imageUrl }}
-            style={styles.eventImage}
-            onLoadStart={() => setImageLoading(prev => ({ ...prev, [item.id]: true }))}
-            onLoadEnd={() => setImageLoading(prev => ({ ...prev, [item.id]: false }))}
-          />
-        </View>
+  {imageLoading[item.id] && (
+    <ActivityIndicator
+      size="small"
+      color="#007AFF"
+      style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: [{ translateX: -12 }, { translateY: -12 }],
+        zIndex: 1,
+        width: 24,
+        height: 24,
+      }}
+    />
+  )}
+  <Image
+    source={{ uri: item.imageUrl }}
+    style={styles.eventImage}
+    onLoadStart={() =>
+      setImageLoading((prev) => ({ ...prev, [item.id]: true }))
+    }
+    onLoad={() =>
+      setImageLoading((prev) => ({ ...prev, [item.id]: false }))
+    }
+    onError={() =>
+      setImageLoading((prev) => ({ ...prev, [item.id]: false }))
+    }
+  />
+</View>
         <View style={styles.eventContent}>
           <Text style={styles.eventTitle}>{item.title || 'No title'}</Text>
           <Text style={styles.eventDate}>{formattedDate}</Text>
@@ -401,114 +408,179 @@ const SearchScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 20,
+    paddingHorizontal: 20,
+    paddingTop: 50,
+    backgroundColor: '#f0f4f8',
+  },
+
+  header: {
+    fontSize: 28,
+    fontWeight: '900',
+    marginBottom: 25,
+    color: '#1a202c',
+    letterSpacing: 1,
+    textAlign: 'center',
+  },
+
+  searchInput: {
+    height: 48,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    paddingHorizontal: 18,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#2d3748',
+    marginBottom: 12, // malo manje mesta dole nego pre
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 6 },
+    shadowRadius: 12,
+    elevation: 6,
+  },
+
+  dropdown: {
+    marginBottom: 12, // smanjen razmak dole
+    borderRadius: 15,
+    borderColor: '#cbd5e1',
+    backgroundColor: '#fff',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+    elevation: 4,
+  },
+
+  dropdownContainer: {
+    borderRadius: 15,
+    borderColor: '#cbd5e1',
     backgroundColor: '#fff',
   },
-  searchInput: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    height: 40,
-    marginBottom: 12,
-  },
-  dropdown: {
-    marginBottom: 12,
-  },
-  dropdownContainer: {
-    borderColor: '#ccc',
-  },
+
   dateRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: 12, // malo manji razmak
   },
-  header: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 15,
-    marginTop: 10,
-  },
+
   dateButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    height: 40,
-    flex: 1,
-    marginHorizontal: 5,
+    backgroundColor: '#fff',
+    borderRadius: 15,
+    paddingHorizontal: 18,
+    height: 48,
+    marginHorizontal: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
+    elevation: 3,
   },
+
   dateButtonText: {
-    marginLeft: 6,
+    marginLeft: 8,
+    fontSize: 15,
+    color: '#4a5568',
+    fontWeight: '600',
   },
-  filterRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  filterLabel: {
-    marginRight: 8,
-    fontSize: 16,
-  },
-  eventItem: {
-    flexDirection: 'row',
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    overflow: 'hidden',
-    padding: 8,
-    alignItems: 'center',
-  },
-  eventImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-  },
-  eventContent: {
-    flex: 1,
-    paddingLeft: 12,
-    justifyContent: 'center',
-  },
+
   filterRowBottom: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginTop: 6,  // manji razmak sa vrha
+    marginBottom: 14, // manji razmak dole
+    paddingHorizontal: 4,
   },
+
+  filterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+
+  filterLabel: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#2d3748',
+    marginRight: 12,
+  },
+
   clearButton: {
-    backgroundColor: '#e74c3c',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    backgroundColor: '#ef4444',
+    paddingVertical: 10,
+    paddingHorizontal: 22,
+    borderRadius: 20,
+    shadowColor: '#ef4444',
+    shadowOpacity: 0.4,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 12,
+    elevation: 6,
   },
+
   clearButtonText: {
-    color: 'white',
+    color: '#fff',
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 15,
   },
+
+  eventItem: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 14,
+    marginBottom: 50, // povećan razmak između eventova i od dna
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 10 },
+    shadowRadius: 20,
+    elevation: 8,
+    alignItems: 'center',
+  },
+
+  eventImage: {
+    width: 110,
+    height: 110,
+    borderRadius: 20,
+    backgroundColor: '#e2e8f0',
+  },
+
+  eventContent: {
+    flex: 1,
+    paddingLeft: 16,
+    justifyContent: 'center',
+  },
+
   eventTitle: {
-    fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 19,
+    fontWeight: '900',
+    color: '#1a202c',
   },
+
+  eventDate: {
+    marginTop: 6,
+    fontSize: 14,
+    color: '#718096',
+    fontWeight: '600',
+  },
+
+  eventLocation: {
+    marginTop: 6,
+    fontSize: 14,
+    fontStyle: 'italic',
+    color: '#4a5568',
+  },
+
+  eventPrice: {
+    marginTop: 8,
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#2c7a7b',
+  },
+
   favoriteIcon: {
     justifyContent: 'center',
-    paddingHorizontal: 8,
-  },
-  eventDate: {
-    color: 'gray',
-    marginTop: 4,
-  },
-  eventLocation: {
-    fontStyle: 'italic',
-    marginTop: 4,
-  },
-  eventPrice: {
-    marginTop: 6,
-    fontWeight: '600',
+    paddingLeft: 14,
   },
 });
 

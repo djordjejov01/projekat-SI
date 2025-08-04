@@ -214,7 +214,7 @@ export default function EventDetailScreen() {
       >
         <Ionicons name="arrow-back" size={24} color="#333" />
       </TouchableOpacity>}
-      <Text style={styles.title}>{t('aboutEvent')}</Text>
+      <Text style={styles.naslov}>{t('aboutEvent')}</Text>
 
       <View style={styles.imageWrapper}>
         {imageLoading && (
@@ -244,7 +244,7 @@ export default function EventDetailScreen() {
 
       <View style={styles.infoCard}>
         <Text style={styles.info}>
-          🕒{' '}
+          🕒{' Time: '}
           {new Date(event.startDate).toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit',
@@ -265,7 +265,7 @@ export default function EventDetailScreen() {
         {/* <Text style={styles.info}>👥 {t('attending')}: {event.attendingCount || 0}</Text> */}
         {!event.isFree && event.minPrice != null && event.maxPrice != null && (
           <Text style={styles.info}>
-            💸 {t('price')}:{' '}
+            💸 {t('Price')}:{' '}
             {event.minPrice === event.maxPrice
               ? `${event.minPrice} RSD`
               : `${event.minPrice} - ${event.maxPrice} RSD`}
@@ -369,8 +369,17 @@ export default function EventDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff', padding: 20,marginTop:20 },
-  header: { fontSize: 20, fontWeight: '700' },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  header: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 10,
+  },
   center: {
     flex: 1,
     justifyContent: 'center',
@@ -379,87 +388,106 @@ const styles = StyleSheet.create({
   imageWrapper: {
     width: '100%',
     height: 220,
-    borderRadius: 14,
+    borderRadius: 16,
     marginBottom: 20,
     marginTop: 40,
     overflow: 'hidden',
-    justifyContent: 'center',
-    alignItems: 'center',
+    elevation: 4,
+    backgroundColor: '#e5e7eb',
   },
-  buyBtnDisabled: {
-    backgroundColor: '#cccccc', // svetlo siva boja za disabled stanje
-  },
-
   image: {
     width: '100%',
     height: '100%',
+    resizeMode: 'cover',
   },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#1f2937',
+    marginBottom: 8,
+  },
+  naslov:{
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#1f2937',
+    marginBottom: 8,
+    textAlign:'center'
   },
   date: {
     fontSize: 16,
     color: '#6B7280',
-    marginBottom: 10,
+    marginBottom: 12,
   },
   infoCard: {
-    backgroundColor: '#F3F4F6',
-    padding: 14,
-    borderRadius: 12,
-    marginBottom: 16,
+    backgroundColor: '#edeff1ff',
+    padding: 16,
+    borderRadius: 14,
+    marginBottom: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
   },
   info: {
-    fontSize: 14,
+    fontSize: 15,
     marginBottom: 6,
     color: '#374151',
+    lineHeight: 22,
   },
   actions: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 14,
+    marginBottom: 20,
+    gap: 10,
   },
   favoriteBtn: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   favoriteText: {
-    fontWeight: '500',
+    fontWeight: '600',
     marginLeft: 8,
     fontSize: 16,
   },
   buyBtn: {
     backgroundColor: '#2563EB',
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+  },
+  buyBtnDisabled: {
+    backgroundColor: '#d1d5db',
   },
   buyText: {
     color: '#fff',
     fontWeight: 'bold',
+    fontSize: 15,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 10,
-    marginTop: 20,
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 12,
+    marginTop: 28,
+    color: '#111827',
   },
   description: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 15,
+    lineHeight: 22,
     color: '#4B5563',
   },
   scheduleItem: {
-    backgroundColor: '#F9FAFB',
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 10,
+    backgroundColor: '#F3F4F6',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 12,
   },
   scheduleTime: {
     fontWeight: 'bold',
     fontSize: 14,
-    marginBottom: 2,
+    marginBottom: 4,
+    color: '#1f2937',
   },
   scheduleTitle: {
     fontSize: 14,
@@ -468,21 +496,24 @@ const styles = StyleSheet.create({
   scheduleDesc: {
     fontSize: 13,
     color: '#6B7280',
-    marginTop: 2,
+    marginTop: 4,
   },
   map: {
     width: '100%',
-    height: 200,
-    borderRadius: 10,
-    marginTop: 10,
+    height: 220,
+    borderRadius: 12,
+    marginTop: 16,
     marginBottom: 40,
+    overflow: 'hidden',
   },
   backButton: {
-    padding: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+    marginBottom: -10,
+    paddingTop:30
   },
   backText: {
     fontSize: 16,
     color: '#111827',
   },
-
 });
