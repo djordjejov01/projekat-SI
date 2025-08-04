@@ -15,10 +15,12 @@ namespace Backend.Controllers
     public class MobileUserController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public MobileUserController(AppDbContext context)
+        public MobileUserController(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
 
@@ -147,6 +149,97 @@ namespace Backend.Controllers
             return Ok();
         }
 
+
+        [HttpGet("event/{eventId}")]
+        public async Task<IActionResult> GetPinsForPublishedEvent(int eventId)
+        {
+            try
+            {
+                
+                var eventExists = await _context.Events
+                    .AnyAsync(e => e.EventID == eventId && e.Status==EventStatus.Published);
+
+                if (!eventExists)
+                {
+                    return NotFound(new { message = "Događaj nije pronađen." });
+                }
+
+                var pins = await _context.EventPin
+                    .Where(p => p.EventId == eventId)
+                    .ToListAsync();
+
+                
+                var pinDtos = pins.Select(p => new EventPinDto
+                {
+                    Id = p.Id,
+                    EventId = p.EventId,
+                    Latitude = p.Latitude,
+                    Longitude = p.Longitude,
+                    Label = p.Label,
+                    Description = p.Description,
+                    PinnedAt = p.PinnedAt,
+                    PinCategory = p.PinCategory
+                }).ToList();
+
+                return Ok(pinDtos);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPut("profile-image")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadProfileImage([FromForm] UploadImageDto model)
+        {
+            try
+            {
+                var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+                if (user == null)
+                    return NotFound(new { message = "Korisnik nije pronađen." });
+
+                
+                if (model.Image == null || model.Image.Length == 0)
+                    return BadRequest(new { message = "Slika nije pronađena." });
+
+                
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+                var fileExtension = Path.GetExtension(model.Image.FileName).ToLowerInvariant();
+                if (!allowedExtensions.Contains(fileExtension))
+                    return BadRequest(new { message = "Neispravan format slike. Dozvoljeni formati: JPG, JPEG, PNG." });
+
+                
+                if (model.Image.Length > 2 * 1024 * 1024)
+                    return BadRequest(new { message = "Slika je prevelika. Maksimalna veličina je 2MB." });
+
+                
+                string imageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
+
+                
+                if (!string.IsNullOrEmpty(user.ProfilePicture))
+                {
+                    await CommonHelpers.RemovePhoto(user.ProfilePicture, _env);
+                }
+
+                
+                user.ProfilePicture = imageName;
+                _context.Users.Update(user);
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    message = "Profilna slika uspešno ažurirana.",
+                    imageUrl = imageName
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
 
     }
 }
