@@ -124,6 +124,14 @@
   "changeFailed": "Promena lozinke nije uspela."
 },
 "personalInfo": {
+  "permissionDenied": "Pristup galeriji nije dozvoljen.",
+  "confirmDelete": "Obriši profilnu sliku",
+  "confirmDeleteMessage": "Da li ste sigurni da želite da obrišete profilnu sliku?",
+  "delete": "Obriši",
+  "editImage": "Izmeni profilnu sliku",
+  "deleteImage": "Obriši profilnu sliku",
+  "goBack": "Nazad",
+  "uploadFailed": "Otpremanje slike nije uspelo.",
   "title": "Lični podaci",
   "firstName": "Ime",
   "firstNamePlaceholder": "Jovan",

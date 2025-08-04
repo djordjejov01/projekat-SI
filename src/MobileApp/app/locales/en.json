@@ -124,6 +124,14 @@
   "changeFailed": "Password change failed."
 },
 "personalInfo": {
+  "permissionDenied": "Permission to access media library was denied.",
+  "confirmDelete": "Delete Profile Picture",
+  "confirmDeleteMessage": "Are you sure you want to delete your profile picture?",
+  "delete": "Delete",
+  "editImage": "Edit profile picture",
+  "deleteImage": "Delete profile picture",
+  "goBack": "Go back",
+  "uploadFailed": "Failed to upload image.",
   "title": "Personal Information",
   "firstName": "First Name",
   "firstNamePlaceholder": "John",
