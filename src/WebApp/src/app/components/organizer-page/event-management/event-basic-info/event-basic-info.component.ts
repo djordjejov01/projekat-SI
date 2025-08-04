@@ -139,7 +139,6 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
       }
 
       const formValues = this.eventForm.value;
-      console.log(formValues)
         const updateDto = new UpdateEventDto(
           this.eventBasicInfo.getEventID(),
           formValues.title,
