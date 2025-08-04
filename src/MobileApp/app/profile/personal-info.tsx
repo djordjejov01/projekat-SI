@@ -9,6 +9,7 @@ import {
   Alert,
   ScrollView,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
@@ -25,6 +26,8 @@ export default function PersonalInfoScreen() {
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhone] = useState('');
   const defaultAvatar = require('../../assets/images/avatar-placeholder.png');
+  
+  const [isLoading, setIsLoading] = useState(false);
 
   // Profilna slika
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
@@ -41,6 +44,7 @@ export default function PersonalInfoScreen() {
 
   useEffect(() => {
     const fetchUserInfo = async () => {
+      setIsLoading(true);
       try {
         const token = await AsyncStorage.getItem('token');
         if (!token) return;
@@ -62,6 +66,8 @@ export default function PersonalInfoScreen() {
         }
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -110,37 +116,45 @@ export default function PersonalInfoScreen() {
 
   const uploadProfileImage = async (): Promise<string | null> => {
     if (!newProfileImage) return profilePicture; // nema nove slike
+    
+    setIsLoading(true);
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (!token) throw new Error(t('personalInfo.notLoggedIn'));
 
-    const token = await AsyncStorage.getItem('token');
-    if (!token) throw new Error(t('personalInfo.notLoggedIn'));
+      const formData = new FormData();
+      // @ts-ignore
+      formData.append('Image', {
+        uri: newProfileImage.uri,
+        name: 'profile.jpg',
+        type: 'image/jpeg',
+      });
 
-    const formData = new FormData();
-    // @ts-ignore
-    formData.append('Image', {
-      uri: newProfileImage.uri,
-      name: 'profile.jpg',
-      type: 'image/jpeg',
-    });
+      const res = await fetch(`${API_URL}/MobileUser/upload-profile-picture`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+        body: formData,
+      });
 
-    const res = await fetch(`${API_URL}/MobileUser/upload-profile-picture`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data',
-      },
-      body: formData,
-    });
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(err || t('personalInfo.uploadFailed'));
+      }
 
-    if (!res.ok) {
-      const err = await res.text();
-      throw new Error(err || t('personalInfo.uploadFailed'));
+      const data = await res.json();
+      return normalizeImageUrl(data.imageUrl);
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoading(false);
     }
-
-    const data = await res.json();
-    return normalizeImageUrl(data.imageUrl);
   };
 
   const handleSave = async () => {
+    setIsLoading(true);
     try {
       const token = await AsyncStorage.getItem('token');
       if (!token) {
@@ -186,8 +200,18 @@ export default function PersonalInfoScreen() {
       }
     } catch (error: any) {
       Alert.alert(t('personalInfo.error'), error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#2563EB" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -367,5 +391,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
     fontSize: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

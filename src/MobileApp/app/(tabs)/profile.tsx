@@ -14,11 +14,14 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFavorites } from '../context/FavoriteContext';
 import { useTranslation } from 'react-i18next';
+import { ActivityIndicator } from 'react-native';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { favorites, clearFavorites, setGuestMode } = useFavorites();
   const { t } = useTranslation();
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -43,7 +46,7 @@ export default function ProfileScreen() {
       if (!token) return;
 
       setIsLoggedIn(true);
-
+      setIsLoading(true);
       try {
         const res = await fetch(`${API_URL}/MobileUser/profile`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -78,7 +81,9 @@ export default function ProfileScreen() {
 
       } catch (error) {
         console.error('Failed to load user data or tickets:', error);
-      }
+      }finally {
+      setIsLoading(false); 
+    }
     };
 
     fetchUserDataAndTickets();
@@ -112,11 +117,14 @@ export default function ProfileScreen() {
 
  const renderProfileImage = () => (
   <TouchableOpacity onPress={() => setImageModalVisible(true)}>
-    <Image
-      source={profilePicture ? { uri: profilePicture } : defaultAvatar}
-      style={styles.avatarImage}
-    />
-
+    {isLoading ? (
+      <ActivityIndicator size="large" color="#fff" style={{ width: 68, height: 68 }} />
+    ) : (
+      <Image
+        source={profilePicture ? { uri: profilePicture } : defaultAvatar}
+        style={styles.avatarImage}
+      />
+    )}
   </TouchableOpacity>
 );
 
