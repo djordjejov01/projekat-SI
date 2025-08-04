@@ -89,5 +89,44 @@ namespace Backend.Controllers
             return Ok(new { message = "Profil uspešno izmenjen." });
         }
 
+        [HttpGet("event/{eventId}")]
+        public async Task<IActionResult> GetPinsForPublishedEvent(int eventId)
+        {
+            try
+            {
+                
+                var eventExists = await _context.Events
+                    .AnyAsync(e => e.EventID == eventId && e.Status==EventStatus.Published);
+
+                if (!eventExists)
+                {
+                    return NotFound(new { message = "Događaj nije pronađen." });
+                }
+
+                var pins = await _context.EventPin
+                    .Where(p => p.EventId == eventId)
+                    .ToListAsync();
+
+                
+                var pinDtos = pins.Select(p => new EventPinDto
+                {
+                    Id = p.Id,
+                    EventId = p.EventId,
+                    Latitude = p.Latitude,
+                    Longitude = p.Longitude,
+                    Label = p.Label,
+                    Description = p.Description,
+                    PinnedAt = p.PinnedAt,
+                    PinCategory = p.PinCategory
+                }).ToList();
+
+                return Ok(pinDtos);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
     }
 }
