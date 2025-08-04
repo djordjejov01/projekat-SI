@@ -6,6 +6,9 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
+  Image,
+  Modal,
+  Pressable,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -23,6 +26,16 @@ export default function ProfileScreen() {
   const [ticketsCount, setTicketsCount] = useState(0);
   const [credits, setCredits] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [imageModalVisible, setImageModalVisible] = useState(false);
+  const defaultAvatar = require('../../assets/images/avatar-placeholder.png');
+  const normalizeImageUrl = (url: string | null): string | null => {
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+    const baseUrl = API_URL.replace(/\/api\/?$/, '');
+    return `${baseUrl}${url}?t=${new Date().getTime()}`; // timestamp da osveži cache
+  };
 
   useEffect(() => {
     const fetchUserDataAndTickets = async () => {
@@ -37,11 +50,13 @@ export default function ProfileScreen() {
         });
 
         if (res.ok) {
-          const data = await res.json();
-          setFirstName(data.firstName || '');
-          setLastName(data.lastName || '');
-          setEmail(data.email || '');
-        }
+        const data = await res.json();
+        setFirstName(data.firstName || '');
+        setLastName(data.lastName || '');
+        setEmail(data.email || '');
+        setProfilePicture(normalizeImageUrl(data.profilePicture || null));
+      }
+
 
         const resTickets = await fetch(`${API_URL}/ticket/tickets/my`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -69,12 +84,6 @@ export default function ProfileScreen() {
     fetchUserDataAndTickets();
   }, []);
 
-  const getInitials = () => {
-    const firstInitial = firstName ? firstName[0].toUpperCase() : '';
-    const lastInitial = lastName ? lastName[0].toUpperCase() : '';
-    return `${firstInitial}${lastInitial}`;
-  };
-
   const handleLogout = () => {
     Alert.alert(
       t('profile.logoutTitle'),
@@ -101,6 +110,16 @@ export default function ProfileScreen() {
     );
   };
 
+ const renderProfileImage = () => (
+  <TouchableOpacity onPress={() => setImageModalVisible(true)}>
+    <Image
+      source={profilePicture ? { uri: profilePicture } : defaultAvatar}
+      style={styles.avatarImage}
+    />
+
+  </TouchableOpacity>
+);
+
   if (!isLoggedIn) {
     return (
       <View style={styles.centeredContainer}>
@@ -118,10 +137,8 @@ export default function ProfileScreen() {
       <Text style={styles.header}>{t('profile.title')}</Text>
 
       <View style={styles.profileCard}>
-        <View style={styles.avatarCircle}>
-          <Text style={styles.avatarText}>{getInitials()}</Text>
-        </View>
-        <View style={{ flex: 1 }}>
+        {renderProfileImage()}
+        <View style={{ flex: 1, marginLeft: 16 }}>
           <Text style={styles.name}>{`${firstName} ${lastName}`}</Text>
           <Text style={styles.email}>{email}</Text>
         </View>
@@ -149,7 +166,7 @@ export default function ProfileScreen() {
         <Text style={styles.optionArrow}>›</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.option} onPress={() => router.push('../profile/token')}> 
+      <TouchableOpacity style={styles.option} onPress={() => router.push('../profile/token')}>
         <Text>💳 {t('Token Store')}</Text>
         <Text style={styles.optionArrow}>›</Text>
       </TouchableOpacity>
@@ -170,6 +187,23 @@ export default function ProfileScreen() {
         <Text style={{ color: 'red' }}>🚪 {t('profile.logout')}</Text>
         <Text style={[styles.optionArrow, { color: 'red' }]}>›</Text>
       </TouchableOpacity>
+
+<Modal visible={imageModalVisible} transparent animationType="fade">
+  <Pressable style={styles.modalOverlay} onPress={() => setImageModalVisible(false)}>
+    <View style={styles.modalContent}>
+       <Image
+  source={profilePicture ? { uri: profilePicture } : defaultAvatar}
+  style={styles.modalImage}
+  resizeMode="contain"
+/>
+
+
+    </View>
+  </Pressable>
+</Modal>
+
+
+
     </View>
   );
 }
@@ -179,13 +213,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 24,
     paddingTop: 50,
-    paddingBottom: 40,      // više prostora dole za komfor
+    paddingBottom: 40,
     backgroundColor: '#fff',
   },
   header: {
-    fontSize: 24,           // veći naslov
+    fontSize: 24,
     fontWeight: '900',
-    marginBottom: 24,       // veći razmak ispod naslova
+    marginBottom: 24,
     textAlign: 'center',
     color: '#1a202c',
     letterSpacing: 0.8,
@@ -193,7 +227,7 @@ const styles = StyleSheet.create({
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#7c3aed',  // malo tamniji ljubičasti za više "wow" efekta
+    backgroundColor: '#7c3aed',
     borderRadius: 16,
     padding: 20,
     marginBottom: 28,
@@ -203,24 +237,11 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
     elevation: 10,
   },
-  avatarCircle: {
-    backgroundColor: '#10b981',
-    borderRadius: 40,
+  avatarImage: {
     width: 68,
     height: 68,
-    marginRight: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#10b981',
-    shadowOpacity: 0.5,
-    shadowOffset: { width: 0, height: 6 },
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  avatarText: {
-    color: 'white',
-    fontWeight: '900',
-    fontSize: 22,
+    borderRadius: 34,
+    backgroundColor: '#eee',
   },
   name: {
     color: 'white',
@@ -322,4 +343,36 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 24,
   },
+modalOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+
+modalBackground: {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  zIndex: 1,
+},
+
+modalContent: {
+  zIndex: 2,
+  backgroundColor: 'transparent',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: 10,
+},
+
+
+  modalImage: {
+    width: 300,
+    height: 300,
+    borderRadius: 12,
+  },
+
+
 });
