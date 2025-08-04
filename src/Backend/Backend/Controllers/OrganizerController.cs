@@ -180,6 +180,55 @@ namespace Backend.Controllers
             return Ok(eventEntity);
         }
 
+        [HttpDelete("events")]
+        public async Task<IActionResult> DeleteEvent([FromBody] int eventId)
+        {
+            try
+            {
+                var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+                await _organizerService.DeleteEvent(eventId, organizerId);
+
+                return Ok(new { message = "Event uspešno obrisan." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Došlo je do greške prilikom brisanja eventa." });
+            }
+        }
+        [HttpPost("events/cancel/{eventId}")]
+        public async Task<IActionResult> CancelEvent(int eventId)
+        {
+            try
+            {
+                var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+                await _organizerService.CancelEvent(eventId, organizerId);
+
+                return Ok(new { message = "Događaj uspešno otkazan." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Greška prilikom otkazivanja događaja." });
+            }
+        }
+
         [HttpGet("event-category-stats")]
         public async Task<IActionResult> GetEventCategoryStats()
         {
