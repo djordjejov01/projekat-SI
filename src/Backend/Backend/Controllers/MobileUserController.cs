@@ -132,7 +132,7 @@ namespace Backend.Controllers
 
         [HttpPut("profile-image")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UploadProfileImage([FromForm] IFormFile image)
+        public async Task<IActionResult> UploadProfileImage([FromForm] UploadImageDto model)
         {
             try
             {
@@ -143,21 +143,21 @@ namespace Backend.Controllers
                     return NotFound(new { message = "Korisnik nije pronađen." });
 
                 
-                if (image == null || image.Length == 0)
+                if (model.Image == null || model.Image.Length == 0)
                     return BadRequest(new { message = "Slika nije pronađena." });
 
                 
                 var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
-                var fileExtension = Path.GetExtension(image.FileName).ToLowerInvariant();
+                var fileExtension = Path.GetExtension(model.Image.FileName).ToLowerInvariant();
                 if (!allowedExtensions.Contains(fileExtension))
                     return BadRequest(new { message = "Neispravan format slike. Dozvoljeni formati: JPG, JPEG, PNG." });
 
                 
-                if (image.Length > 2 * 1024 * 1024)
+                if (model.Image.Length > 2 * 1024 * 1024)
                     return BadRequest(new { message = "Slika je prevelika. Maksimalna veličina je 2MB." });
 
                 
-                string imageName = await CommonHelpers.SaveImageAsync(image, _env);
+                string imageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
 
                 
                 if (!string.IsNullOrEmpty(user.ProfilePicture))
