@@ -27,6 +27,11 @@ type AgendaItem = {
   endTime: string;
 };
 
+type PinCategory = {
+  id: number;
+  name: string;
+};
+
 type Event = {
   id: number;
   title: string;
@@ -45,6 +50,30 @@ type Event = {
   isFree: boolean;
 };
 
+type EventPin = {
+  id: number;
+  eventId: number;
+  latitude: number;
+  longitude: number;
+  label: string;
+  description: string;
+  pinnedAt: string;
+  pinCategory: number;
+};
+
+const pinCategoryMap: { [key: number]: { label: string; color: string; emoji: string } } = {
+  0: { label: 'Neodređeno', color: '#FF5A5F', emoji: '📍' },
+  1: { label: 'Ulaz', color: '#2D9CDB', emoji: '🚪' },
+  2: { label: 'Bina', color: '#27AE60', emoji: '🎤' },
+  3: { label: 'Parking', color: '#F2994A', emoji: '🅿️' },
+  4: { label: 'WC', color: '#9B51E0', emoji: '🚻' },
+  5: { label: 'Hrana i piće', color: '#EB5757', emoji: '🍔🍻' },
+  6: { label: 'Prva pomoć', color: '#6FCF97', emoji: '🚑' },
+  7: { label: 'Chill zona', color: '#56CCF2', emoji: '🧘‍♂️' },
+  8: { label: 'Play zona', color: '#BB6BD9', emoji: '🎮' },
+};
+
+
 export default function EventDetailScreen() {
   const { id, from } = useLocalSearchParams();
   const router = useRouter();
@@ -54,13 +83,16 @@ export default function EventDetailScreen() {
 
   const [event, setEvent] = useState<Event | null>(null);
   const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [eventPins, setEventPins] = useState<EventPin[]>([]);
   const [loading, setLoading] = useState(true);
   const [imageLoading, setImageLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updatingFavorite, setUpdatingFavorite] = useState(false);
-
+  const [pinCategories, setPinCategories] = useState<PinCategory[]>([]);
   const { loadFavorites } = useFavorites();
 
+
+  
   useEffect(() => {
     const fetchEvent = async () => {
       try {
@@ -70,7 +102,7 @@ export default function EventDetailScreen() {
         const headers: any = {};
         if (token) headers.Authorization = `Bearer ${token}`;
 
-        const response = await fetch(`${API_URL}/Events/Details?id=${currentId}`, {
+        const response = await fetch(`${API_URL}/api/Events/Details?id=${currentId}`, {
           headers,
         });
 
@@ -78,7 +110,6 @@ export default function EventDetailScreen() {
 
         const data: Event = await response.json();
 
-        // Izračunaj da li je event free (ako su minPrice i maxPrice null ili 0)
         const isFreeCalculated =
           (data.minPrice === null || data.minPrice === 0) &&
           (data.maxPrice === null || data.maxPrice === 0);
@@ -86,6 +117,20 @@ export default function EventDetailScreen() {
         setEvent({ ...data, isFree: isFreeCalculated });
 
         geocodeLocation(data.location);
+        fetchEventPins(data.id);
+
+        const fetchCategories = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/EventPin/categories`);
+      if (!response.ok) throw new Error('Failed to load categories');
+      const data: PinCategory[] = await response.json();
+      setPinCategories(data);
+    } catch (err) {
+      console.error('Greška pri učitavanju kategorija:', err);
+    }
+  };
+  fetchCategories();
+
       } catch (err) {
         console.error(err);
         setError(t('failedToLoadEventDetails'));
@@ -96,6 +141,37 @@ export default function EventDetailScreen() {
 
     fetchEvent();
   }, [currentId]);
+
+  const fetchEventPins = async (eventId: number) => {
+  try {
+    const token = await AsyncStorage.getItem('token'); // <-- dodaj ovo
+
+    const headers: any = {
+      'Content-Type': 'application/json',
+    };
+
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_URL}/api/MobileUser/event/${eventId}`, {
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.warn('Ne mogu da učitam pinove:', errorText);
+      return;
+    }
+
+    const text = await response.text();
+    const data: EventPin[] = JSON.parse(text);
+    setEventPins(data);
+  } catch (err) {
+    console.warn('Greška pri učitavanju pinova:', err);
+  }
+};
+
 
   const geocodeLocation = async (location: string) => {
     try {
@@ -109,22 +185,14 @@ export default function EventDetailScreen() {
         }
       );
 
-      if (!response.ok) {
-        console.warn('Nominatim API returned error status:', response.status);
-        const text = await response.text();
-        console.warn('Response text:', text);
-        return;
-      }
+      if (!response.ok) return;
 
       const data = await response.json();
-
       if (data && data.length > 0) {
         setCoords({
           latitude: parseFloat(data[0].lat),
           longitude: parseFloat(data[0].lon),
         });
-      } else {
-        console.warn('No results for location:', location);
       }
     } catch (err) {
       console.warn('Error geocoding location:', err);
@@ -153,7 +221,7 @@ export default function EventDetailScreen() {
 
       const method = event.isFavorite ? 'DELETE' : 'POST';
 
-      const res = await fetch(`${API_URL}/Favorites`, {
+      const res = await fetch(`${API_URL}/api/Favorites`, {
         method,
         headers: {
           'Content-Type': 'application/json',
@@ -195,34 +263,23 @@ export default function EventDetailScreen() {
 
   return (
     <ScrollView style={styles.container}>
-      
-      { <TouchableOpacity
+      <TouchableOpacity
         onPress={() => {
-          if (from === 'search') {
-            router.replace('/search');
-          } else if (from === 'favorites') {
-            router.replace('/favorites');
-          }
-          else if (from === 'ticketDetails') {
-            router.back();
-          } 
-          else {
-            router.replace('/events');
-          }
+          if (from === 'search') router.replace('/search');
+          else if (from === 'favorites') router.replace('/favorites');
+          else if (from === 'ticketDetails') router.back();
+          else router.replace('/events');
         }}
         style={styles.backButton}
       >
         <Ionicons name="arrow-back" size={24} color="#333" />
-      </TouchableOpacity>}
+      </TouchableOpacity>
+
       <Text style={styles.naslov}>{t('aboutEvent')}</Text>
 
       <View style={styles.imageWrapper}>
         {imageLoading && (
-          <ActivityIndicator
-            size="large"
-            color="#2563EB"
-            style={StyleSheet.absoluteFill}
-          />
+          <ActivityIndicator size="large" color="#2563EB" style={StyleSheet.absoluteFill} />
         )}
         <Image
           source={{ uri: event.imageUrl }}
@@ -244,31 +301,14 @@ export default function EventDetailScreen() {
 
       <View style={styles.infoCard}>
         <Text style={styles.info}>
-          🕒{' Time: '}
-          {new Date(event.startDate).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
-          h -{' '}
-          {new Date(event.endDate).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          })}
-          h
+          🕒 {t('time')}: {new Date(event.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h -{' '}
+          {new Date(event.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h
         </Text>
-        <Text style={styles.info}>
-          📍 {t('location')}: {event.location}
-        </Text>
-        <Text style={styles.info}>
-          🏢 {t('organizer')}: {event.organizerName}
-        </Text>
-        {/* <Text style={styles.info}>👥 {t('attending')}: {event.attendingCount || 0}</Text> */}
+        <Text style={styles.info}>📍 {t('location')}: {event.location}</Text>
+        <Text style={styles.info}>🏢 {t('organizer')}: {event.organizerName}</Text>
         {!event.isFree && event.minPrice != null && event.maxPrice != null && (
           <Text style={styles.info}>
-            💸 {t('Price')}:{' '}
-            {event.minPrice === event.maxPrice
-              ? `${event.minPrice} RSD`
-              : `${event.minPrice} - ${event.maxPrice} RSD`}
+            💸 {t('Price')}: {event.minPrice === event.maxPrice ? `${event.minPrice} RSD` : `${event.minPrice} - ${event.maxPrice} RSD`}
           </Text>
         )}
       </View>
@@ -285,30 +325,19 @@ export default function EventDetailScreen() {
             size={24}
             color={event.isFavorite ? '#FF2D55' : '#2563EB'}
           />
-          <Text
-            style={[
-              styles.favoriteText,
-              { color: event.isFavorite ? '#FF2D55' : '#2563EB' },
-            ]}
-          >
+          <Text style={[styles.favoriteText, { color: event.isFavorite ? '#FF2D55' : '#2563EB' }]}>
             {event.isFavorite ? t('removeFromFavorites') : t('addToFavorites')}
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[
-            styles.buyBtn,
-            event.isFree && styles.buyBtnDisabled, // primeni stil za onemogućeno dugme ako je besplatno
-          ]}
-          activeOpacity={event.isFree ? 1 : 0.7} // onemogući "klik" efekt ako je besplatno
+          style={[styles.buyBtn, event.isFree && styles.buyBtnDisabled]}
+          activeOpacity={event.isFree ? 1 : 0.7}
           onPress={() =>
             !event.isFree &&
-            router.push({
-              pathname: './tickets',
-              params: { eventId: event.id.toString() },
-            })
+            router.push({ pathname: './tickets', params: { eventId: event.id.toString() } })
           }
-          disabled={event.isFree} // onemogući dugme ako je besplatno
+          disabled={event.isFree}
         >
           <Text style={styles.buyText}>
             {event.isFree ? t('freeEvent') : t('buyTicket')}
@@ -325,15 +354,8 @@ export default function EventDetailScreen() {
           {event.agenda.map((item, index) => (
             <View key={index} style={styles.scheduleItem}>
               <Text style={styles.scheduleTime}>
-                {new Date(item.startTime).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}{' '}
-                -{' '}
-                {new Date(item.endTime).toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+                {new Date(item.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -{' '}
+                {new Date(item.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </Text>
               <Text style={styles.scheduleTitle}>{item.title}</Text>
               <Text style={styles.scheduleDesc}>{item.description}</Text>
@@ -346,13 +368,13 @@ export default function EventDetailScreen() {
         <>
           <Text style={styles.sectionTitle}>{t('location')}</Text>
           <MapView
-             style={styles.map}
+            style={styles.map}
             initialRegion={{
-              latitude: coords?.latitude || 44.7866,
-              longitude: coords?.longitude || 20.4489,
+              latitude: coords.latitude,
+              longitude: coords.longitude,
               latitudeDelta: 0.06,
               longitudeDelta: 0.06,
-  }}
+            }}
           >
             <UrlTile
               urlTemplate="https://a.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
@@ -360,8 +382,59 @@ export default function EventDetailScreen() {
               flipY={false}
               shouldReplaceMapContent={true}
             />
-            <Marker coordinate={coords} title={event.title} description={event.location} />
+            <Marker
+              coordinate={coords}
+              title={event.title}
+              description={event.location}
+              pinColor="#e61e1eff"
+            />
+            {eventPins.map((pin) => {
+              const category = pinCategories.find((c) => c.id === pin.pinCategory);
+              return (
+                <Marker
+                  key={pin.id}
+                  coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
+                  title={`${pin.label} (${category?.name || 'Nepoznata kategorija'})`}
+                  description={pin.description}
+                >
+                  <Image
+                    source={{
+                      uri: `${API_URL}/pins/${pin.pinCategory}.png`,
+                    }}
+                    style={{ width: 30, height: 30 }}
+                    resizeMode="contain"
+                  />
+                </Marker>
+              );
+            })}
+
+
           </MapView>
+
+          {/* Legenda */}
+          <View style={{ marginTop: 12 }}>
+          <Text style={{ fontSize:18, fontWeight: 'bold', marginBottom: 6 }}>📍 {t('Legend') || 'Legenda'}</Text>
+          {Array.from(new Set(eventPins.map((pin) => pin.pinCategory))).map((catId) => {
+            const category = pinCategories.find((c) => c.id === catId);
+            return (
+              <View
+                key={catId}
+                style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}
+              >
+                <Image
+                  source={{
+                    uri: `${API_URL}/pins/${catId}.png`,
+                  }}
+                  style={{ width: 24, height: 24, marginRight: 8 }}
+                  resizeMode="contain"
+                />
+                <Text style={{ fontSize: 14 }}>{category?.name || 'Nepoznata kategorija'}</Text>
+              </View>
+            );
+          })}
+        </View>
+
+
         </>
       )}
     </ScrollView>
@@ -373,6 +446,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     padding: 20,
+    marginBottom:30
   },
   header: {
     fontSize: 22,
@@ -503,7 +577,7 @@ const styles = StyleSheet.create({
     height: 220,
     borderRadius: 12,
     marginTop: 16,
-    marginBottom: 40,
+    marginBottom: 20,
     overflow: 'hidden',
   },
   backButton: {
