@@ -126,6 +126,7 @@
 "personalInfo": {
   "permissionDenied": "Pristup galeriji nije dozvoljen.",
   "confirmDelete": "Obriši profilnu sliku",
+  "cancel": "Otkaži",
   "confirmDeleteMessage": "Da li ste sigurni da želite da obrišete profilnu sliku?",
   "delete": "Obriši",
   "editImage": "Izmeni profilnu sliku",
