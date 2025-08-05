@@ -64,6 +64,11 @@ export class MyProfileComponent implements OnInit {
           this.previewUrl = this.currSupplier.getImage();
           this.getSupplierCall();
           this.sharedService.notifyProfileImageChanged();
+          this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: "Uspešno promenjena slika",
+              life: 3000 });
         },
         error:(errorResponse) =>{
           this.messageService.add({
