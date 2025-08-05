@@ -123,19 +123,19 @@ namespace Backend.Controllers
             return Ok();
         }
 
-        [HttpGet("Resources/{supplierId}")]
-        public async Task<IActionResult> GetSupplierResources(int supplierId)
+        [HttpGet("Resources")]
+        public async Task<IActionResult> GetSupplierResources()
         {
 
             var supplierId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-            // Validacija da li dobavljač postoji
+            
             var supplier = await _context.Suppliers
                 .FirstOrDefaultAsync(s => s.Id == supplierId);
 
             if (supplier == null)
                 return NotFound("Dobavljač nije pronađen.");
 
-            // Dohvatanje svih resursa za dobavljača
+            
             var resources = await _context.Resources
                 .Where(r => r.SupplierID == supplierId)
                 .Select(r => new
