@@ -479,6 +479,11 @@ namespace Backend.Controllers
             };
             _context.Tickets.Add(newTicket);
 
+            if (ticketDto.Price > 0)
+            {
+                eventEntity.isFree = false;
+            }
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -531,6 +536,21 @@ namespace Backend.Controllers
             existingTicket.validFrom = ticketDto.ValidFrom;
             existingTicket.validUntil = ticketDto.ValidUntil;
 
+            
+            var eventId = ticketDto.EventId;
+            var allTicketsForEvent = await _context.Tickets
+                .Where(t => t.EventID == eventId)
+                .ToListAsync();
+
+            var eventEntity = await _context.Events
+                .FirstOrDefaultAsync(e => e.EventID == eventId);
+
+            if (eventEntity != null)
+            {
+                
+                eventEntity.isFree = !allTicketsForEvent.Any() || allTicketsForEvent.All(t => t.Price == 0);
+            }
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -570,11 +590,27 @@ namespace Backend.Controllers
             if (purchasedTickets > 0)
                 return BadRequest("Nije moguće obrisati kartu jer postoje kupljene karte.");
 
+            var eventId = existingTicket.EventID;
 
             try
             {
                 _context.Tickets.Remove(existingTicket);
                 await _context.SaveChangesAsync();
+
+                
+                var remainingTicketsForEvent = await _context.Tickets
+                    .Where(t => t.EventID == eventId)
+                    .ToListAsync();
+
+                var eventEntity = await _context.Events
+                    .FirstOrDefaultAsync(e => e.EventID == eventId);
+
+                if (eventEntity != null)
+                {
+                    
+                    eventEntity.isFree = !remainingTicketsForEvent.Any() || remainingTicketsForEvent.All(t => t.Price == 0);
+                    await _context.SaveChangesAsync();
+                }
             }
             catch (Exception)
             {
