@@ -84,55 +84,120 @@ export default function EventDetailScreen() {
 
   
   
-  useEffect(() => {
-    const fetchEvent = async () => {
-      try {
-        setLoading(true);
-        const token = await AsyncStorage.getItem('token');
+ useEffect(() => {
+  const fetchEvent = async () => {
+    try {
+      setLoading(true);
+      const token = await AsyncStorage.getItem('token');
 
-        const headers: any = {};
-        if (token) headers.Authorization = `Bearer ${token}`;
+      const headers: any = {};
+      if (token) headers.Authorization = `Bearer ${token}`;
 
-        const response = await fetch(`${API_URL}/api/Events/Details?id=${currentId}`, {
-          headers,
-        });
-        
-        if (!response.ok) throw new Error(t('failedToLoadEvent'));
+      const response = await fetch(`${API_URL}/api/Events/Details?id=${currentId}`, {
+        headers,
+      });
 
-        const data: Event = await response.json();
+      if (!response.ok) throw new Error(t('failedToLoadEvent'));
 
-        const isFreeCalculated =
+      const data: Event = await response.json();
+
+      const isFreeCalculated =
         (data.minPrice === null || data.minPrice === 0) &&
         (data.maxPrice === null || data.maxPrice === 0);
-        
-        setEvent({ ...data, isFree: isFreeCalculated });
-        
-        geocodeLocation(data.location);
-        fetchEventPins(data.id);
 
-        const fetchCategories = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/EventPin/categories`);
-      if (!response.ok) throw new Error('Failed to load categories');
-      const data: PinCategory[] = await response.json();
-      setPinCategories(data);
+      setEvent({ ...data, isFree: isFreeCalculated });
+
+      geocodeLocation(data.location);
+      fetchEventPins(data.id);
+
+      const fetchCategories = async () => {
+        try {
+          const response = await fetch(`${API_URL}/api/EventPin/categories`);
+          if (!response.ok) throw new Error('Failed to load categories');
+          const data: PinCategory[] = await response.json();
+          setPinCategories(data);
+        } catch (err) {
+          console.error('Greška pri učitavanju kategorija:', err);
+        }
+      };
+      fetchCategories();
+
     } catch (err) {
-      console.error('Greška pri učitavanju kategorija:', err);
+      console.error(err);
+      setError(t('failedToLoadEventDetails'));
+    } finally {
+      setLoading(false);
     }
   };
-  fetchCategories();
 
-      } catch (err) {
-        console.error(err);
-        setError(t('failedToLoadEventDetails'));
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchEvent();
-  }, [currentId]);
+  fetchEvent();
+}, [currentId]);
+
+
   
+const checkUserProfile = async () => {
+  try {
+    const token = await AsyncStorage.getItem('token');
+
+    if (!token) {
+      Alert.alert(
+        'Niste ulogovani',
+        'Da biste nastavili, potrebno je da se prijavite.',
+        [
+          {
+            text: 'Uloguj se',
+            onPress: () => router.push('/login'), // prilagodi rutu ako treba
+          },
+          { text: 'Otkaži', style: 'cancel' },
+        ]
+      );
+      return false;
+    }
+
+    const response = await fetch(`${API_URL}/api/MobileUser/profile`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Greška prilikom učitavanja profila');
+    }
+
+    const user = await response.json();
+    const { firstName, lastName, email, phoneNumber } = user;
+
+    if (!firstName || !lastName || !email || !phoneNumber) {
+      Alert.alert(
+        'Nalog nije potpun',
+        'Da biste nastavili, molimo vas da popunite osnovne podatke o sebi.',
+        [
+          {
+            text: 'Popuni profil',
+            onPress: () => router.push('../profile/personal-info'),
+          },
+        ]
+      );
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error(err);
+    Alert.alert('Greška', 'Došlo je do greške prilikom provere profila.');
+    return false;
+  }
+};
+
+
+const handleBuyTicket = async () => {
+  const isProfileComplete = await checkUserProfile();
+  if (!isProfileComplete) return;
+
+  router.push({ pathname: './tickets', params: { eventId: event?.id.toString() } })
+};
+
+
     const fetchEventPins = async (eventId: number) => {
   try {
     const token = await AsyncStorage.getItem('token'); // <-- dodaj ovo
@@ -321,19 +386,10 @@ export default function EventDetailScreen() {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.buyBtn, event.isFree && styles.buyBtnDisabled]}
-          activeOpacity={event.isFree ? 1 : 0.7}
-          onPress={() =>
-            !event.isFree &&
-            router.push({ pathname: './tickets', params: { eventId: event.id.toString() } })
-          }
-          disabled={event.isFree}
-        >
-          <Text style={styles.buyText}>
-            {event.isFree ? t('freeEvent') : t('buyTicket')}
-          </Text>
-        </TouchableOpacity>
+        <TouchableOpacity onPress={handleBuyTicket} style={styles.buyButton}>
+  <Text style={styles.buyButtonText}>Buy ticket</Text>
+    </TouchableOpacity>
+
       </View>
 
       <Text style={styles.sectionTitle}>{t('eventDescription')}</Text>
@@ -581,4 +637,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#111827',
   },
+  buyButton: {
+  backgroundColor: '#007AFF',
+  paddingVertical: 10,
+  paddingHorizontal: 20,
+  borderRadius: 8,
+  alignItems: 'center',
+},
+buyButtonText: {
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 16,
+},
+
 });
