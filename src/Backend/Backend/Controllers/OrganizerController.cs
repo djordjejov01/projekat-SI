@@ -460,6 +460,11 @@ namespace Backend.Controllers
                 return BadRequest("Podaci o karti nisu prosleđeni.");
             }
 
+            if (ticketDto.Price <= 0)
+            {
+                return BadRequest("Karta mora imati cenu veću od 0 RSD.");
+            }
+
             var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
             var eventEntity = await _context.Events
@@ -479,10 +484,7 @@ namespace Backend.Controllers
             };
             _context.Tickets.Add(newTicket);
 
-            if (ticketDto.Price > 0)
-            {
-                eventEntity.isFree = false;
-            }
+            eventEntity.isFree = false;
 
             try
             {
@@ -506,7 +508,11 @@ namespace Backend.Controllers
             if (ticketDto == null)
                 return BadRequest();
 
-            
+            if (ticketDto.Price <= 0)
+            {
+                return BadRequest("Karta mora imati cenu veću od 0 RSD.");
+            }
+
             int organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
             
