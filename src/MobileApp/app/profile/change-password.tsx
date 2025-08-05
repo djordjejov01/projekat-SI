@@ -63,7 +63,7 @@ export default function ChangePasswordScreen() {
         return;
       }
 
-      const res = await fetch(`${API_URL}/User/change-password`, {
+      const res = await fetch(`${API_URL}/api/User/change-password`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

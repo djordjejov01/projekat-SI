@@ -38,7 +38,7 @@ export default function FavoritesScreen() {
       setIsGuest(false);
 
       try {
-        const response = await fetch(`${API_URL}/favorites`, {
+        const response = await fetch(`${API_URL}/api/favorites`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

@@ -24,8 +24,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AntDesign } from '@expo/vector-icons';
 import { useFavorites } from '../context/FavoriteContext';
 
-const SEARCH_API_URL = `${BASE_URL}/Events/search`;
-const DETAILS_API_URL = `${BASE_URL}/Events/Details`;
+const SEARCH_API_URL = `${BASE_URL}/api/Events/search`;
+const DETAILS_API_URL = `${BASE_URL}/api/Events/Details`;
 
 interface EventType {
   id: number;

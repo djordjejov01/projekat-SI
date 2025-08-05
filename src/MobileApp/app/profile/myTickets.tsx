@@ -49,7 +49,7 @@ export default function ProfileTickets() {
       }
 
       try {
-        const res = await fetch(`${API_URL}/ticket/tickets/my`, {
+        const res = await fetch(`${API_URL}/api/ticket/tickets/my`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

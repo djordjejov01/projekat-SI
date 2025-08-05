@@ -46,7 +46,7 @@ export default function LoginScreen() {
     }
 
     try {
-      const response = await fetch(`${API_URL}/User/login`, {
+      const response = await fetch(`${API_URL}/api/User/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -65,7 +65,7 @@ export default function LoginScreen() {
       }
 
       // 🔐 Proveri rolu korisnika koristeći dobijeni token
-      const roleResponse = await fetch(`${API_URL}/User/role`, {
+      const roleResponse = await fetch(`${API_URL}/api/User/role`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${data.token}`,

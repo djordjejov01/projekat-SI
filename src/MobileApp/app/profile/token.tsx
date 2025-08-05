@@ -34,7 +34,7 @@ export default function TokenPurchaseScreen() {
 
       setLoading(true);
       const token = await AsyncStorage.getItem('token');
-      const response = await fetch(`${API_URL}/Credit/add`, {
+      const response = await fetch(`${API_URL}/api/Credit/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

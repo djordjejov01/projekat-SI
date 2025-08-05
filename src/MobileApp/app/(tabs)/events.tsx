@@ -28,7 +28,7 @@ export default function EventsScreen() {
     const fetchEvents = async () => {
       setLoading(true);
       try {
-        const response = await fetch(`${API_URL}/events`);
+        const response = await fetch(`${API_URL}/api/events`);
         if (response.ok) {
           const data = await response.json();
           setEvents(data);

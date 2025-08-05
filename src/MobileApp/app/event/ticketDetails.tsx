@@ -65,7 +65,7 @@ export default function TicketDetails() {
         const token = await AsyncStorage.getItem('token');
         if (!token) return;
 
-        const res = await fetch(`${API_URL}/MobileUser/profile`, {
+        const res = await fetch(`${API_URL}/api/MobileUser/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
