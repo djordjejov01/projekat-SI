@@ -37,7 +37,7 @@ export const FavoriteProvider = ({ children }: { children: React.ReactNode }) =>
       const token = await AsyncStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch(`${API_URL}/favorites`, {
+      const response = await fetch(`${API_URL}/api/favorites`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -59,7 +59,7 @@ export const FavoriteProvider = ({ children }: { children: React.ReactNode }) =>
       const isAlreadyFavorite = favorites.includes(eventId);
       const method = isAlreadyFavorite ? 'DELETE' : 'POST';
 
-      const res = await fetch(`${API_URL}/Favorites`, {
+      const res = await fetch(`${API_URL}/api/Favorites`, {
         method,
         headers: {
           'Content-Type': 'application/json',

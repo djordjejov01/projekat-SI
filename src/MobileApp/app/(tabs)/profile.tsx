@@ -32,7 +32,7 @@ export default function ProfileScreen() {
       setIsLoggedIn(true);
 
       try {
-        const res = await fetch(`${API_URL}/MobileUser/profile`, {
+        const res = await fetch(`${API_URL}/api/MobileUser/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -43,7 +43,7 @@ export default function ProfileScreen() {
           setEmail(data.email || '');
         }
 
-        const resTickets = await fetch(`${API_URL}/ticket/tickets/my`, {
+        const resTickets = await fetch(`${API_URL}/api/ticket/tickets/my`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -52,7 +52,7 @@ export default function ProfileScreen() {
           setTicketsCount(dataCount.length);
         }
 
-        const resCredits = await fetch(`${API_URL}/Credit`, {
+        const resCredits = await fetch(`${API_URL}/api/Credit`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

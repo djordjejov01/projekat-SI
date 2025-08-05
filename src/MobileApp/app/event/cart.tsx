@@ -60,10 +60,10 @@ export default function CartScreen() {
 
     const fetchTicketsAndResources = async () => {
       try {
-        const ticketRes = await fetch(`${API_URL}/Ticket/events/${eventId}/tickets`);
+        const ticketRes = await fetch(`${API_URL}/api/Ticket/events/${eventId}/tickets`);
         const ticketsJson = ticketRes.ok ? await ticketRes.json() : [];
 
-        const resourceRes = await fetch(`${API_URL}/Resource/${eventId}/resources`, {
+        const resourceRes = await fetch(`${API_URL}/api/Resource/${eventId}/resources`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         const resourcesJson = resourceRes.ok ? await resourceRes.json() : [];
@@ -127,7 +127,7 @@ export default function CartScreen() {
             }));
 
             // Pošalji zahtev za kupovinu ulaznica
-            const purchaseRes = await fetch(`${API_URL}/Ticket/purchase`, {
+            const purchaseRes = await fetch(`${API_URL}/api/Ticket/purchase`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -168,7 +168,7 @@ export default function CartScreen() {
               // Uzmi jedan UserTicketID i ukloni ga iz niza (da ne koristiš isti više puta)
               const userTicketID = userTicketIds.shift();
 
-              await fetch(`${API_URL}/Resource/reserve`, {
+              await fetch(`${API_URL}/api/Resource/reserve`, {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',

@@ -14,8 +14,6 @@ import { TooltipModule } from 'primeng/tooltip';
 
 import * as Leaflet from 'leaflet'
 
-
-
 // Fix Leaflet icon paths
 delete (Leaflet.Icon.Default.prototype as any)._getIconUrl;
 Leaflet.Icon.Default.mergeOptions({
@@ -46,34 +44,31 @@ export class MapSectionComponent implements AfterViewInit, OnChanges{
   @Output() pinSaved = new EventEmitter<void>();
 
 
-private pinIcons: Record<number, L.Icon> = {
-  0: this.createIcon('photo-booth.png'),
-  1: this.createIcon('stage.png'),
-  2: this.createIcon('door.png'),
-  3: this.createIcon('exit.png'),
-  4: this.createIcon('first-aid-kit.png'),
-  5: this.createIcon('fast-food.png'),
-  6: this.createIcon('soft-drink.png'),
-  7: this.createIcon('toilet.png'),
-  8: this.createIcon('information.png'),
-  9: this.createIcon('guard.png'),
-  10: this.createIcon('parking-car.png'),
-  11: this.createIcon('lost-and-found.png'),
+// private pinIcons: Record<number, L.Icon> = {
+//   0: this.createIcon('photo-booth.png'),
+//   1: this.createIcon('stage.png'),
+//   2: this.createIcon('door.png'),
+//   3: this.createIcon('exit.png'),
+//   4: this.createIcon('first-aid-kit.png'),
+//   5: this.createIcon('fast-food.png'),
+//   6: this.createIcon('soft-drink.png'),
+//   7: this.createIcon('toilet.png'),
+//   8: this.createIcon('information.png'),
+//   9: this.createIcon('guard.png'),
+//   10: this.createIcon('parking-car.png'),
+//   11: this.createIcon('lost-and-found.png'),
 
-  12: this.createIcon('unknown.png')        // Unknown
-};
+//   12: this.createIcon('unknown.png')        // Unknown
+// };
 
 private createIcon(filename: string): Leaflet.Icon {
   return Leaflet.icon({
-    iconUrl: `assets/${filename}`,
+    iconUrl: `https://localhost:7269/pins/${filename}`,
     iconSize: [32, 32],
     iconAnchor: [16, 32],
     popupAnchor: [0, -32],
   });
 }
-
-
-
 
   constructor(
     private apiService : ApiService,
@@ -176,7 +171,8 @@ private geocodeAddress(): Observable<void> {
 
     this.pins.forEach(pin => {
       const category = pin.getPinCategory();
-      const icon = this.pinIcons[category] ?? this.pinIcons[12];
+      const filename = this.pinCategoryService.isValidCategory(category) ? `${category}.png` : 'unknown.png';
+      const icon = this.createIcon(filename);
       console.log('Pin category type and value:', typeof category, category);
 
 
@@ -331,6 +327,5 @@ private geocodeAddress(): Observable<void> {
   onPinDialogClose(){
     this.selectedPin = null;
   }
-
 
 }

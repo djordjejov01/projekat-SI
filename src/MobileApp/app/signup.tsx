@@ -63,7 +63,7 @@ export default function SignUpScreen() {
     }
 
     try {
-      const response = await fetch(`${API_URL}/User/register`, {
+      const response = await fetch(`${API_URL}/api/User/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

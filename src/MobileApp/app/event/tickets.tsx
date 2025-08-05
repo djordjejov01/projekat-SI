@@ -46,8 +46,8 @@ export default function TicketPurchaseScreen() {
         const token = await AsyncStorage.getItem('token');
 
         const [ticketsRes, resourcesRes] = await Promise.all([
-          fetch(`${API_URL}/Ticket/events/${eventId}/tickets`),
-          fetch(`${API_URL}/Resource/${eventId}/resources`, {
+          fetch(`${API_URL}/api/Ticket/events/${eventId}/tickets`),
+          fetch(`${API_URL}/api/Resource/${eventId}/resources`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);
