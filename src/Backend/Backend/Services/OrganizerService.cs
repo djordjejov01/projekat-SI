@@ -49,12 +49,20 @@ namespace Backend.Services
             {
                 throw new ArgumentException("Invalid organizer ID.", nameof(organizerID));
             }
+            if (model.Tickets != null && model.Tickets.Any())
+            {
+                if (model.Tickets.Any(t => t.Price <= 0))
+                {
+                    throw new ArgumentException("Tickets must have a price greater than 0.");
+                }
+            }
+
             string imageName = null;
             if (model.ImageFile != null)
             {
                 imageName = await CommonHelpers.SaveImageAsync(model.ImageFile, _env);
             }
-            bool isFree = model.Tickets == null || !model.Tickets.Any() || model.Tickets.All(t => t.Price == 0);
+            bool isFree = model.Tickets == null || !model.Tickets.Any();
             var newEvent = new Event
             {
                 Title = model.Title,

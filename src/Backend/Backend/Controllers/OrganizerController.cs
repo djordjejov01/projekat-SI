@@ -553,8 +553,8 @@ namespace Backend.Controllers
 
             if (eventEntity != null)
             {
-                
-                eventEntity.isFree = !allTicketsForEvent.Any() || allTicketsForEvent.All(t => t.Price == 0);
+
+                eventEntity.isFree = !allTicketsForEvent.Any();
             }
 
             try
