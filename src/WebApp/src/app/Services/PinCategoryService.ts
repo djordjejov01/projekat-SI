@@ -44,4 +44,8 @@ export class PinCategoryService {
   getCategories(): Observable<PinCategory[]> {
     return this.categories$.asObservable();
   }
+
+  isValidCategory(id: number): boolean {
+    return this.categoryMap.has(id);
+  }
 }

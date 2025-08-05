@@ -30,7 +30,7 @@ export default function PersonalInfoScreen() {
         const token = await AsyncStorage.getItem('token');
         if (!token) return;
 
-        const res = await fetch(`${API_URL}/MobileUser/profile`, {
+        const res = await fetch(`${API_URL}/api/MobileUser/profile`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -59,7 +59,7 @@ export default function PersonalInfoScreen() {
         return;
       }
 
-      const res = await fetch(`${API_URL}/MobileUser/profileUpdate`, {
+      const res = await fetch(`${API_URL}/api/MobileUser/profileUpdate`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

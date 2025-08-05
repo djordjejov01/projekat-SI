@@ -38,7 +38,7 @@ export default function FavoritesScreen() {
       setIsGuest(false);
 
       try {
-        const response = await fetch(`${API_URL}/favorites`, {
+        const response = await fetch(`${API_URL}/api/favorites`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -73,7 +73,7 @@ export default function FavoritesScreen() {
           <ActivityIndicator size="large" color="#007AFF" style={StyleSheet.absoluteFill} />
         )}
         <Image
-          source={{ uri: item.imageUrl }}
+          source={{ uri: `${API_URL}/${item.imageUrl}` }}
           style={styles.image}
           onLoadStart={() =>
             setImageLoading((prev) => ({ ...prev, [item.id]: true }))
