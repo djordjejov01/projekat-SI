@@ -89,7 +89,7 @@ export default function EventsScreen() {
             />
           )}
           <Image
-            source={{ uri: item.imageUrl }}
+            source={{ uri: `${API_URL}/${item.imageUrl}` }}
             style={styles.image}
             onLoadStart={() =>
               setImageLoading((prev) => ({ ...prev, [item.id]: true }))
@@ -107,11 +107,14 @@ export default function EventsScreen() {
           {new Date(item.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h
         </Text>
         <View style={styles.row}>
-        <Text style={styles.info}>📍 {item.location}</Text>
-          <TouchableOpacity onPress={() => handleToggleFavorite(item.id)}>
-            <AntDesign name="heart" size={20} color={isFavorite ? '#FF2D55' : '#ccc'} />
-          </TouchableOpacity>
+        <View style={styles.locationWrapper}>
+          <Text style={styles.info} numberOfLines={2}>📍 {item.location}</Text>
         </View>
+        <TouchableOpacity onPress={() => handleToggleFavorite(item.id)}>
+          <AntDesign name="heart" size={20} color={isFavorite ? '#FF2D55' : '#ccc'} />
+        </TouchableOpacity>
+      </View>
+
       </TouchableOpacity>
     );
   };
@@ -219,4 +222,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     overflow: 'hidden',
   },
+  locationWrapper: {
+  flex: 1,
+  paddingRight: 8,
+},
+
 });

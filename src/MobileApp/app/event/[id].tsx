@@ -20,6 +20,8 @@ import { useTranslation } from 'react-i18next';
 
 const screen = Dimensions.get('window');
 
+
+
 type AgendaItem = {
   title: string;
   description: string;
@@ -61,18 +63,6 @@ type EventPin = {
   pinCategory: number;
 };
 
-const pinCategoryMap: { [key: number]: { label: string; color: string; emoji: string } } = {
-  0: { label: 'Neodređeno', color: '#FF5A5F', emoji: '📍' },
-  1: { label: 'Ulaz', color: '#2D9CDB', emoji: '🚪' },
-  2: { label: 'Bina', color: '#27AE60', emoji: '🎤' },
-  3: { label: 'Parking', color: '#F2994A', emoji: '🅿️' },
-  4: { label: 'WC', color: '#9B51E0', emoji: '🚻' },
-  5: { label: 'Hrana i piće', color: '#EB5757', emoji: '🍔🍻' },
-  6: { label: 'Prva pomoć', color: '#6FCF97', emoji: '🚑' },
-  7: { label: 'Chill zona', color: '#56CCF2', emoji: '🧘‍♂️' },
-  8: { label: 'Play zona', color: '#BB6BD9', emoji: '🎮' },
-};
-
 
 export default function EventDetailScreen() {
   const { id, from } = useLocalSearchParams();
@@ -93,6 +83,7 @@ export default function EventDetailScreen() {
 
 
   
+  
   useEffect(() => {
     const fetchEvent = async () => {
       try {
@@ -105,17 +96,17 @@ export default function EventDetailScreen() {
         const response = await fetch(`${API_URL}/api/Events/Details?id=${currentId}`, {
           headers,
         });
-
+        
         if (!response.ok) throw new Error(t('failedToLoadEvent'));
 
         const data: Event = await response.json();
 
         const isFreeCalculated =
-          (data.minPrice === null || data.minPrice === 0) &&
-          (data.maxPrice === null || data.maxPrice === 0);
-
+        (data.minPrice === null || data.minPrice === 0) &&
+        (data.maxPrice === null || data.maxPrice === 0);
+        
         setEvent({ ...data, isFree: isFreeCalculated });
-
+        
         geocodeLocation(data.location);
         fetchEventPins(data.id);
 
@@ -138,11 +129,11 @@ export default function EventDetailScreen() {
         setLoading(false);
       }
     };
-
+    
     fetchEvent();
   }, [currentId]);
-
-  const fetchEventPins = async (eventId: number) => {
+  
+    const fetchEventPins = async (eventId: number) => {
   try {
     const token = await AsyncStorage.getItem('token'); // <-- dodaj ovo
 
@@ -282,7 +273,7 @@ export default function EventDetailScreen() {
           <ActivityIndicator size="large" color="#2563EB" style={StyleSheet.absoluteFill} />
         )}
         <Image
-          source={{ uri: event.imageUrl }}
+          source={{ uri: `${API_URL}/${event.imageUrl}` }}
           style={styles.image}
           onLoadEnd={() => setImageLoading(false)}
         />

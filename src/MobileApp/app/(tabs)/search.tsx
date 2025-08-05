@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { API_URL } from '../../config';
 
 import {
   View,
@@ -231,7 +232,7 @@ const SearchScreen = () => {
     />
   )}
   <Image
-    source={{ uri: item.imageUrl }}
+    source={{ uri: `${API_URL}/${item.imageUrl}` }}
     style={styles.eventImage}
     onLoadStart={() =>
       setImageLoading((prev) => ({ ...prev, [item.id]: true }))

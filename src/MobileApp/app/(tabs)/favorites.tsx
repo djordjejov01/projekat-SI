@@ -73,7 +73,7 @@ export default function FavoritesScreen() {
           <ActivityIndicator size="large" color="#007AFF" style={StyleSheet.absoluteFill} />
         )}
         <Image
-          source={{ uri: item.imageUrl }}
+          source={{ uri: `${API_URL}/${item.imageUrl}` }}
           style={styles.image}
           onLoadStart={() =>
             setImageLoading((prev) => ({ ...prev, [item.id]: true }))
