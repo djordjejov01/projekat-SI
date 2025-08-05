@@ -54,18 +54,17 @@ namespace Backend.Controllers
             if (user == null)
                 return NotFound("Korisnik nije pronađen.");
 
-            return Ok(new
-            {
+           return Ok(new {
+                email = user.Email,
                 firstName = user.FirstName,
                 lastName = user.LastName,
-                email = user.Email,
                 phoneNumber = user.PhoneNumber,
-                profilePicture = user.ProfilePicture
+                profilePicture = user.ProfilePicture 
             });
 
         }
 
-                
+        
         [Authorize]
         [HttpPut("profileUpdate")]
         public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileDto dto)
@@ -88,67 +87,10 @@ namespace Backend.Controllers
             user.LastName = dto.LastName;
             user.Email = dto.Email;
             user.PhoneNumber = dto.PhoneNumber;
-            user.ProfilePicture = dto.ProfilePicture;
-
+            
             await _context.SaveChangesAsync();
             return Ok(new { message = "Profil uspešno izmenjen." });
         }
-
-
-        [HttpPost("upload-profile-picture")]
-        public async Task<IActionResult> UploadProfilePicture([FromForm] UploadImageDto dto)
-        {
-            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null)
-                return NotFound("Korisnik nije pronađen.");
-
-            if (dto.Image == null || dto.Image.Length == 0)
-                return BadRequest("Slika nije poslata.");
-
-            if (dto.Image.Length > 2 * 1024 * 1024)
-                return BadRequest("Slika ne sme biti veća od 2MB.");
-
-            var allowedTypes = new[] { "image/jpeg", "image/png" };
-            if (!allowedTypes.Contains(dto.Image.ContentType))
-                return BadRequest("Dozvoljeni su samo JPG i PNG fajlovi.");
-
-            var folderPath = Path.Combine("wwwroot", "profile-images");
-            Directory.CreateDirectory(folderPath);
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(dto.Image.FileName)}";
-            var filePath = Path.Combine(folderPath, fileName);
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await dto.Image.CopyToAsync(stream);
-            }
-
-            user.ProfilePicture = $"/profile-images/{fileName}";
-            await _context.SaveChangesAsync();
-
-            return Ok(new { imageUrl = user.ProfilePicture });
-        }
-        [HttpDelete("delete-profile-picture")]
-        public async Task<IActionResult> DeleteProfilePicture()
-        {
-            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null)
-                return NotFound("Korisnik nije pronađen.");
-
-            if (!string.IsNullOrEmpty(user.ProfilePicture))
-            {
-                var path = Path.Combine("wwwroot", user.ProfilePicture.TrimStart('/'));
-                if (System.IO.File.Exists(path))
-                    System.IO.File.Delete(path);
-            }
-
-            user.ProfilePicture = null;
-            await _context.SaveChangesAsync();
-
-            return Ok();
-        }
-
 
         [HttpGet("event/{eventId}")]
         public async Task<IActionResult> GetPinsForPublishedEvent(int eventId)
@@ -188,6 +130,39 @@ namespace Backend.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+        [HttpDelete("delete-profile-picture")]
+public async Task<IActionResult> DeleteProfilePicture()
+{
+    var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+    var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+
+    if (user == null)
+        return NotFound(new { message = "Korisnik nije pronađen." });
+
+    if (!string.IsNullOrEmpty(user.ProfilePicture))
+    {
+        // Assume user.ProfilePicture is stored like "/profile-images/filename.jpg"
+        var relativePath = user.ProfilePicture.TrimStart('/');
+        var absolutePath = Path.Combine(_env.WebRootPath, relativePath);
+
+        if (System.IO.File.Exists(absolutePath))
+        {
+            try
+            {
+                System.IO.File.Delete(absolutePath);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Greška pri brisanju slike: " + ex.Message });
+            }
+        }
+
+        user.ProfilePicture = null;
+        await _context.SaveChangesAsync();
+    }
+
+    return Ok(new { message = "Profilna slika obrisana." });
+}
 
         [HttpPut("profile-image")]
         [Consumes("multipart/form-data")]
