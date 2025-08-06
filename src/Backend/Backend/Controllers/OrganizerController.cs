@@ -629,5 +629,72 @@ namespace Backend.Controllers
                 ticketId = ticketId
             });
         }
+        [HttpGet("suppliers")]
+        public async Task<IActionResult> GetSuppliers()
+        {
+            var suppliers = await _context.Users
+                .Where(u => u.Role == UserRole.Supplier)
+                .ToListAsync();
+            return Ok(suppliers);
+        }
+        [HttpGet("supplier/{supplierId}/resources")]
+        public async Task<IActionResult> GetSupplierResources(int supplierId)
+        {
+            var resources = await _context.Resources
+                .Where(r => r.SupplierID == supplierId)
+                .ToListAsync();
+            return Ok(resources);
+        }
+        [HttpPost("eventresource/request")]
+        public async Task<IActionResult> RequestResource([FromBody] EventResourceDto dto)
+        {
+            var resource = await _context.Resources.FindAsync(dto.ResourceID);
+            if (resource == null)
+                return NotFound("Resource not found.");
+
+            if (resource.Quantity < dto.Quantity)
+                return BadRequest("Not enough quantity available.");
+
+            var eventResource = new EventResource
+            {
+                SupplierID = dto.SupplierID,
+                EventID = dto.EventID,
+                ResourceID = dto.ResourceID,
+                Quantity = dto.Quantity,
+                Measure = dto.Measure,
+                IsReservable = dto.IsReservable,
+                Status = EventResourceStatus.Pending
+            };
+
+            _context.EventResources.Add(eventResource);
+            await _context.SaveChangesAsync();
+
+            dto.ID = eventResource.ID;
+
+            return Ok(dto);
+        }
+
+        [HttpGet("event/{eventId}/eventresources")]
+        public async Task<IActionResult> GetEventResourcesForEvent(int eventId)
+        {
+            var eventResources = await _context.EventResources
+                .Where(er => er.EventID == eventId)
+                .Include(er => er.Resource)
+                .ToListAsync();
+
+            var dtos = eventResources.Select(er => new EventResourceDto
+            {
+                ID = er.ID,
+                SupplierID = er.SupplierID,
+                EventID = er.EventID,
+                ResourceID = er.ResourceID,
+                Quantity = er.Quantity,
+                Measure = er.Measure,
+                IsReservable = er.IsReservable,
+                Status = er.Status,
+            }).ToList();
+
+            return Ok(dtos);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Backend.Models;
+﻿using Backend.Helpers;
+using Backend.Models;
 using Backend.Models.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -96,7 +97,10 @@ namespace Backend.Controllers
                             {
                                 UserID = userId,
                                 TicketID = dto.TicketID,
-                                PurchasedAt = DateTime.UtcNow
+                                PurchasedAt = DateTime.UtcNow,
+                                IsUsed = false,
+                                UsedAt = null,
+                                ValidationToken = CommonHelpers.GenerateValidationToken()
                             };
                             _context.UserTickets.Add(userTicket);
                         }

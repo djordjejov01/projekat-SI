@@ -1,6 +1,6 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
-import { DUMMY_RESOURCES, ResourceAvailability, ResourceType } from '../../../MockData/MockResources';
+import { DUMMY_RESOURCES, ResourceAvailability, ResourceMeasure, ResourceType } from '../../../MockData/MockResources';
 import { Resource } from '../../../MockData/MockResources';
 import { ButtonModule } from 'primeng/button';
 import { IconField } from 'primeng/iconfield';
@@ -16,10 +16,11 @@ import { isPlatformBrowser } from '@angular/common';
 import { ChangeDetectorRef, inject, PLATFORM_ID } from '@angular/core';
 import { UIChart } from 'primeng/chart'
 import { PinCategoryService } from '../../../Services/PinCategoryService';
+import { ResourceModalComponent } from './resource-modal/resource-modal.component';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [TableModule,ButtonModule,IconField,InputIcon,FormsModule,MultiSelect,TooltipModule,InputTextModule,CommonModule,ChartModule],
+  imports: [TableModule,ButtonModule,IconField,InputIcon,FormsModule,MultiSelect,TooltipModule,InputTextModule,CommonModule,ChartModule,ResourceModalComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -50,19 +51,14 @@ export class DashboardComponent  implements OnInit{
     value: Number(key)
   }));
 
-  availabilityOptions = Object.values(ResourceAvailability).map(val => ({
-    name: val,
-    value: val
-  }));
-
-  typeOptions = Object.values(ResourceType).map(val => ({
-    name: val, // e.g. "Exhaustable"
-    value: val
-  }));
+availabilityOptions = this.mapEnumToOptions(ResourceAvailability);
+typeOptions = this.mapEnumToOptions(ResourceType);
+measureOptions = this.mapEnumToOptions(ResourceMeasure);
 
   selectedCategories: any[] = [];
   selectedAvailability: any[] = [];
   selectedTypes: any[] = [];
+  selectedMeasures: any[] = [];
 
 
   constructor(private cd: ChangeDetectorRef,private pinCategoryService : PinCategoryService){}
@@ -72,101 +68,29 @@ export class DashboardComponent  implements OnInit{
     this.initChart()
   }
 
-    // initPieChart() {
 
-    // const stats = this.getResourceCategoryChartData(this.resources);
+  mapEnumToOptions(enumObj: any): { name: string, value: number }[] {
+    return Object.keys(enumObj)
+      .filter(key => !isNaN(Number(key)))
+      .map(key => ({
+        name: enumObj[Number(key)],
+        value: Number(key)
+      }));
+  }
 
-    //     if (isPlatformBrowser(this.platformId)) 
-    //       {
-    //         const documentStyle = getComputedStyle(document.documentElement);
-    //         const textColor = documentStyle.getPropertyValue('--p-text-color');
-    //         const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
-    //         const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
+  getTypeName(value: number): string {
+    return ResourceType[value] ?? 'Unknown';
+  }
 
-    //         this.pieChartData = {
-    //             labels: stats.labels,
-    //             datasets: [
-    //                 {
-    //                     label: 'Number of Users',
-    //                     data: stats.counts,
-    //                     backgroundColor: [
-    //                           'rgba(100,106,232, 0.2)',
-    //                           'rgba(126, 230, 78, 0.2)',
-    //                           'rgba(180, 180, 180, 0.2)',
-    //                           'rgba(233, 99, 141, 0.2)',
-    //                           'rgba(255, 193, 7, 0.2)',
-    //                           'rgba(23, 162, 184, 0.2)',
-    //                           'rgba(153, 102, 255, 0.2)',
-    //                           'rgba(108, 117, 125, 0.2)'
-    //                         ],
-    //                     borderColor: [
-    //                           'rgba(100,106,232, 0.7)',
-    //                           'rgba(126, 230, 78, 0.7)',
-    //                           'rgba(180, 180, 180, 0.7)',
-    //                           'rgba(233, 99, 141, 0.7)',
-    //                           'rgba(255, 193, 7, 0.7)',
-    //                           'rgba(23, 162, 184, 0.7)',
-    //                           'rgba(153, 102, 255, 0.7)',
-    //                           'rgba(108, 117, 125, 0.7)'
-    //                         ],
-    //                     hoverBackgroundColor:[
-    //                           'rgba(100,106,232, 0.4)',
-    //                           'rgba(126, 230, 78, 0.4)',
-    //                           'rgba(180, 180, 180, 0.4)',
-    //                           'rgba(233, 99, 141, 0.4)',
-    //                           'rgba(255, 193, 7, 0.4)',
-    //                           'rgba(23, 162, 184, 0.4)',
-    //                           'rgba(153, 102, 255, 0.4)',
-    //                           'rgba(108, 117, 125, 0.4)'
-    //                         ],
-    //                     borderWidth: 1
-    //                 },
-    //             ],
-    //         };
+  getAvailabilityName(value: number): string {
+    return ResourceAvailability[value] ?? 'Unknown';
+  }
 
-    //         this.pieChartOptions = {
-    //             plugins: {
-    //                 legend: {
-    //                   display: true,
-    //                   position: 'top',  // force legend above chart
-    //                     labels: {
-    //                         color: textColor,
-    //                         font: {
-    //                           size: 14,
-    //                         }
-    //                     },
-    //                 },
-    //                 title: {
-    //                 display: true,
-    //                 text: 'User Activity Over Last 7 Days',
-    //                 color: textColor,
-    //                 font: { size: 16 }
-    //               }
-    //             },
 
-    //             scales: {
-    //                 x: {
-    //                     ticks: {
-    //                         color: textColorSecondary,
-    //                     },
-    //                     grid: {
-    //                         color: surfaceBorder,
-    //                     },
-    //                 },
-    //                 y: {
-    //                     beginAtZero: true,
-    //                     ticks: {
-    //                         color: textColorSecondary,
-    //                     },
-    //                     grid: {
-    //                         color: surfaceBorder,
-    //                     },
-    //                 },
-    //             },
-    //         };
-    //         this.cd.markForCheck()
-    //     }
-    //   }
+  getMeasureName(value: number): string {
+    return ResourceMeasure[value] ?? 'Unknown';
+  }
+
 
        initChart() {
 
@@ -261,6 +185,15 @@ export class DashboardComponent  implements OnInit{
 
     filterFn(filterValues.length ? filterValues : null);
   }
+
+  onMeasureFilterChange(selectedOptions: any[], filterFn: (val: any) => void): void {
+  this.selectedMeasures = selectedOptions || [];
+
+  const filterValues = this.selectedMeasures.map(m => m.value);
+
+  filterFn(filterValues.length ? filterValues : null);
+}
+
 
 
 

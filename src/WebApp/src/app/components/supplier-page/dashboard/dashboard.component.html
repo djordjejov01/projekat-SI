@@ -48,7 +48,7 @@
 
             <div class="table-header">
                 <h1>Resource Table</h1>
-                <button  icon="pi pi-plus"><i class="pi pi-plus"></i>Add Resource</button>
+                <button  icon="pi pi-plus" (click)="resourceModal.openModal()"><i class="pi pi-plus"></i>Add Resource</button>
             </div>
 
             <hr class="custom-hr">
@@ -217,7 +217,32 @@
                             <div class="flex justify-between items-center gap-2">
                                 Measure
                                 <p-sortIcon field="measure" />
-                                <p-columnFilter type="text" field="measure" display="menu" class="ml-auto" />
+                                <p-columnFilter 
+                                field="measure"
+                                matchMode="in"
+                                display="menu"
+                                [showMatchModes]="false"
+                                [showOperator]="false"
+                                [showAddButton]="false"
+                                class="ml-auto">
+
+                                <ng-template #filter let-value let-filter="filterCallback">
+                                    <p-multiselect 
+                                    [filter]="true"
+                                    [ngModel]="selectedMeasures"
+                                    (ngModelChange)="onMeasureFilterChange($event, filter)" 
+                                    [options]="measureOptions" 
+                                    placeholder="Any"
+                                    optionLabel="name"
+                                    class="w-full">
+
+                                    <ng-template let-option #item>
+                                        <span>{{ option.name }}</span>
+                                    </ng-template>
+
+                                    </p-multiselect>
+                                </ng-template>
+                                </p-columnFilter>
                             </div>
                         </th>
 
@@ -249,10 +274,10 @@
                         </td>
 
                         <td>
-                        <span 
+                            <span 
                                 class="text-sm font-medium px-3 py-1 rounded-full whitespace-nowrap"
                                 [ngClass]="getAvailabilityClass(resource.availability)">
-                                {{ resource.availability }}
+                                {{ getAvailabilityName(resource.availability) }}
                             </span>
                         </td>
 
@@ -264,7 +289,7 @@
                             <span 
                                 class="text-sm font-medium px-3 py-1 rounded-full whitespace-nowrap"
                                 [ngClass]="getTypeClass(resource.type)">
-                                {{ resource.type }}
+                                {{ getTypeName(resource.type) }}
                             </span>
                         </td>
 
@@ -272,9 +297,7 @@
                             {{ resource.quantity }}
                         </td>
 
-                        <td>
-                            {{ resource.measure }}
-                        </td>
+                        <td>{{ getMeasureName(resource.measure) }}</td>
 
                         <td>
                             {{ resource.description }}
@@ -336,5 +359,7 @@
         </div>
 
     </div>
+
+    <app-resource-modal #resourceModal></app-resource-modal>
 
 </main>

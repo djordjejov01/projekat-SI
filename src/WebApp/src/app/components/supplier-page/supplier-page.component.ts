@@ -58,6 +58,22 @@ export class SupplierPageComponent implements OnInit{
     
         })
       }
+      ngAfterContentInit(): void {
+    this.cd.detectChanges();
+    const shouldShowWelcome = sessionStorage.getItem('showWelcome') === 'true';
+    if (shouldShowWelcome) {
+      const name = this.authService.getUserName();
+      if (name) {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Welcome',
+          detail: `Welcome back, ${name}!`,
+          life: 3000
+        });
+      }
+      sessionStorage.removeItem('showWelcome');
+    }
+  }
     ngOnInit(): void {
         this.username = this.authService.getUserName();
         this.getSupplierCall();

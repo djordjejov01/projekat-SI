@@ -68,11 +68,29 @@
             </div>
         </div>
         <div id="rightside">
-            <h1>Service Details</h1>
-            <p-select [options]="services" [(ngModel)]="selectedService" optionLabel="name"
-                placeholder="Select a Service" class="w-full" />
-            <p-select [options]="cities" [(ngModel)]="selectedCity" optionLabel="name"
-                placeholder="Select a Service Area" class="w-full" />
+            <h1>Resource Overview</h1>
+
+            <div id="card">
+                <i class="pi pi-calendar-clock"></i>
+                <div id="addinfo">
+                    <p id="amount">1</p>
+                    <p id="type">Resources</p>
+                </div>
+            </div>
+            <div id="card">
+                <i class="pi pi-users"></i>
+                <div id="addinfo">
+                    <p id="amount">2</p>
+                    <p id="type">Reserved Resources</p>
+                </div>
+            </div>
+            <div id="card">
+                <i class="pi pi-calendar"></i>
+                <div id="addinfo">
+                    <p id="amount">3</p>
+                    <p id="type">Free Resources</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>
