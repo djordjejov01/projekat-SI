@@ -82,5 +82,10 @@ namespace Backend.Helpers
 
             return Task.CompletedTask;
         }
+
+        public static string GenerateValidationToken()
+        {
+            return Guid.NewGuid().ToString("N");
+        }
     }
 }
