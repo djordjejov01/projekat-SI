@@ -24,5 +24,12 @@ namespace Backend.Models
         [ForeignKey(nameof(Resource))]
         public int ResourceID { get; set; }
         public Resource Resource { get; set; }
+        public EventResourceStatus Status { get; set; }
+    }
+    public enum EventResourceStatus
+    {
+        Pending,
+        Approved,
+        Declined
     }
 }
