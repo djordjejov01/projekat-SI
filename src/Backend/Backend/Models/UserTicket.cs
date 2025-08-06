@@ -16,6 +16,10 @@ namespace Backend.Models
 
         public DateTime PurchasedAt { get; set; }
 
+        public bool IsUsed { get; set; } = false;
+        public DateTime? UsedAt { get; set; }
+        public string ValidationToken { get; set; }
+
         public User User { get; set; }
         public Ticket Ticket { get; set; }
     }
