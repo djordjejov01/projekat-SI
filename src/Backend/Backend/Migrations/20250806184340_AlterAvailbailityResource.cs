@@ -10,35 +10,35 @@ namespace Backend.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<int>(
+            // 1) drop the old bool
+            migrationBuilder.DropColumn(
                 name: "IsAvailable",
+                table: "Resources");
+
+            // 2) add the new enum (integer) column
+            migrationBuilder.AddColumn<int>(
+                name: "Availability",
                 table: "Resources",
                 type: "integer",
                 nullable: false,
-                oldClrType: typeof(bool),
-                oldType: "boolean");
+                defaultValue: 0);
 
-            migrationBuilder.AddColumn<int>(
-                name: "Measurment",
-                table: "Resources",
-                type: "integer",
-                nullable: true);
+            // … your Measure column addition, etc.
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Measurment",
-                table: "Resources");
+            // reverse: drop Availability, re-add IsAvailable
+            migrationBuilder.DropColumn(name: "Availability", table: "Resources");
 
-            migrationBuilder.AlterColumn<bool>(
+            migrationBuilder.AddColumn<bool>(
                 name: "IsAvailable",
                 table: "Resources",
                 type: "boolean",
                 nullable: false,
-                oldClrType: typeof(int),
-                oldType: "integer");
+                defaultValue: false);
+
+            // … reverse your Measure column changes, etc.
         }
     }
 }
