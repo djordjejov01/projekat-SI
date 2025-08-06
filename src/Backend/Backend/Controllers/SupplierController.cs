@@ -139,7 +139,8 @@ namespace Backend.Controllers
                 IsAvailable = r.IsAvailable,
                 Description = r.Description,
                 SupplierID = r.SupplierID,
-                Quantity = r.Quantity
+                Quantity = r.Quantity,
+                Measurment = r.Measurment,
             }).ToList();
 
             return Ok(dtos);
@@ -158,7 +159,8 @@ namespace Backend.Controllers
                 IsAvailable = dto.IsAvailable,
                 Description = dto.Description,
                 SupplierID = dto.SupplierID,
-                Quantity = dto.Quantity
+                Quantity = dto.Quantity,
+                Measurment = dto.Measurment,
             };
 
             _context.Resources.Add(resource);
@@ -182,6 +184,7 @@ namespace Backend.Controllers
             resource.Description = dto.Description;
             resource.SupplierID = dto.SupplierID;
             resource.Quantity = dto.Quantity;
+            resource.Measurment = dto.Measurment;
 
             await _context.SaveChangesAsync();
 
@@ -240,5 +243,41 @@ namespace Backend.Controllers
             return Ok("Status updated.");
         }
 
+        [HttpGet("resource-categories")]
+        public IActionResult GetResourceCategories()
+        {
+            var categories = Enum.GetValues(typeof(ResourceCategory))
+                .Cast<ResourceCategory>()
+                .Select(c => new {
+                    Id = (int)c,
+                    Name = c.ToString()
+                });
+            return Ok(categories);
+        }
+
+        [HttpGet("availabilities")]
+        public IActionResult GetAvailabilities()
+        {
+            var avs = Enum.GetValues(typeof(ResourceAvailability))
+                .Cast<ResourceAvailability>()
+                .Select(a => new {
+                    Id = (int)a,
+                    Name = a.ToString()
+                });
+            return Ok(avs);
+        }
+
+
+        [HttpGet("measure-units")]
+        public async Task<IActionResult> GetMeasureUnits()
+        {
+            var measures = Enum.GetValues(typeof(ResourceAvailability))
+                .Cast<ResourceMeasurment>()
+                .Select(a => new {
+                    Id = (int)a,
+                    Name = a.ToString()
+                });
+            return Ok(measures);
+        }
     }
 }

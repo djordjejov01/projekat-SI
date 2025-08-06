@@ -9,10 +9,11 @@ namespace Backend.Models.Dto
         public string Name { get; set; }
         public ResourceCategory Category { get; set; }
         public bool IsExhaustable { get; set; }
-        public bool IsAvailable { get; set; }
+        public ResourceAvailability IsAvailable { get; set; }
         public string Description { get; set; }
         public int SupplierID { get; set; }
         public int Quantity { get; set; }
+        public ResourceMeasurment? Measurment { get; set; }
         public User Supplier { get; set; }
     }
 }
