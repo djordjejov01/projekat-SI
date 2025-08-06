@@ -1,13 +1,14 @@
 export enum ResourceType {
-  Exhaustable = 'Exhaustable',
-  Inexhaustable = 'Inexhaustable'
+  Exhaustable = 0,
+  Inexhaustable = 1
 }
 
 export enum ResourceAvailability {
-  Available = 'Available',
-  Unavailable = 'Unavailable',
-  Booked = 'Booked'
+  Available = 0,
+  Unavailable = 1,
+  Booked = 2
 }
+
 
 export interface Resource {
   id: number,
@@ -17,7 +18,7 @@ export interface Resource {
   location: string;
   type: ResourceType;
   quantity: number;
-  measure: string;
+  measure: ResourceMeasure;
   description: string;
 }
 
@@ -31,6 +32,18 @@ export const RESOURCE_CATEGORIES = {
   7: 'Medical',
 };
 
+export enum ResourceMeasure {
+  Pieces = 1,
+  Sets,
+  Bottles,
+  Units,
+  People,
+  Person,
+  Team,
+  Kit
+}
+
+
 export const DUMMY_RESOURCES: Resource[] = [
   {
     id: 1,
@@ -40,7 +53,7 @@ export const DUMMY_RESOURCES: Resource[] = [
     location: 'Main Entrance',
     type: ResourceType.Inexhaustable,
     quantity: 1,
-    measure: 'team',
+    measure: ResourceMeasure.Team,
     description: 'Trained guards for entry point security.'
   },
   {
@@ -51,7 +64,7 @@ export const DUMMY_RESOURCES: Resource[] = [
     location: 'Warehouse 3',
     type: ResourceType.Exhaustable,
     quantity: 5,
-    measure: 'set',
+    measure: ResourceMeasure.Sets,
     description: 'LED lighting set for stage setups.'
   },
   {
@@ -62,7 +75,7 @@ export const DUMMY_RESOURCES: Resource[] = [
     location: 'Storage Unit 5',
     type: ResourceType.Exhaustable,
     quantity: 0,
-    measure: 'pcs',
+    measure: ResourceMeasure.Pieces,
     description: 'Standard event plastic chairs.'
   },
   {
@@ -73,7 +86,7 @@ export const DUMMY_RESOURCES: Resource[] = [
     location: 'Medical Tent',
     type: ResourceType.Inexhaustable,
     quantity: 1,
-    measure: 'person',
+    measure: ResourceMeasure.Person,
     description: 'Certified paramedic available for emergencies.'
   },
   {
@@ -84,7 +97,7 @@ export const DUMMY_RESOURCES: Resource[] = [
     location: 'Catering Depot',
     type: ResourceType.Exhaustable,
     quantity: 120,
-    measure: 'bottles',
+    measure: ResourceMeasure.Bottles,
     description: '500ml bottled water for event participants.'
   },
   {
@@ -95,7 +108,7 @@ export const DUMMY_RESOURCES: Resource[] = [
     location: 'Parking Lot Area',
     type: ResourceType.Exhaustable,
     quantity: 3,
-    measure: 'units',
+    measure: ResourceMeasure.Units,
     description: 'Portable toilets with handwashing station.'
   },
   {
@@ -106,7 +119,7 @@ export const DUMMY_RESOURCES: Resource[] = [
     location: 'Furniture Storage',
     type: ResourceType.Exhaustable,
     quantity: 10,
-    measure: 'sets',
+    measure: ResourceMeasure.Sets,
     description: '1 table with 4 chairs per set.'
   },
   {
@@ -117,7 +130,7 @@ export const DUMMY_RESOURCES: Resource[] = [
     location: 'Equipment Room',
     type: ResourceType.Exhaustable,
     quantity: 15,
-    measure: 'pieces',
+    measure: ResourceMeasure.Pieces,
     description: 'Two-way radios for event coordination.'
   },
   {
@@ -128,7 +141,7 @@ export const DUMMY_RESOURCES: Resource[] = [
     location: 'Various',
     type: ResourceType.Inexhaustable,
     quantity: 20,
-    measure: 'people',
+    measure: ResourceMeasure.People,
     description: 'General-purpose staff for on-site duties.'
   },
   {
@@ -139,8 +152,9 @@ export const DUMMY_RESOURCES: Resource[] = [
     location: 'Medical Tent',
     type: ResourceType.Exhaustable,
     quantity: 0,
-    measure: 'kit',
+    measure: ResourceMeasure.Kit,
     description: 'Basic first aid supplies.'
   }
 ];
+
 
