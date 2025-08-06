@@ -26,21 +26,17 @@ export default function PersonalInfoScreen() {
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhone] = useState('');
   const defaultAvatar = require('../../assets/images/avatar-placeholder.png');
-  
-  const [isLoading, setIsLoading] = useState(false);
 
-  // Profilna slika
-  const [profilePicture, setProfilePicture] = useState<string | null>(null);
-  // Nova izabrana slika (local URI pre slanja na backend)
+  const [isLoading, setIsLoading] = useState(false);
+  const [profilePicture, setProfilePicture] = useState<string | null>('');
   const [newProfileImage, setNewProfileImage] = useState<any>(null);
 
-  // Pomoćna funkcija da uvek dobijemo pun URL sa domenom i timestamp za refresh keša
-  const normalizeImageUrl = (url: string | null): string | null => {
-    if (!url) return null;
-    if (url.startsWith('http')) return url;
-    const baseUrl = API_URL.replace(/\/api\/?$/, '');
-    return `${baseUrl}${url}?t=${new Date().getTime()}`;
-  };
+  const normalizeImageUrl = (path: string | null) => {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  if (!path.startsWith('/')) path = `/${path}`; // dodaj / ako ga nema
+  return `${API_URL}${path}`;
+};
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -61,8 +57,8 @@ export default function PersonalInfoScreen() {
           setLastName(data.lastName || '');
           setEmail(data.email || '');
           setPhone(data.phoneNumber || '');
-          setProfilePicture(normalizeImageUrl(data.profilePicture || null));
-          setNewProfileImage(null);
+          const imageUrl = normalizeImageUrl(data.profilePicture || null);
+          setProfilePicture(imageUrl);
         }
       } catch (error) {
         console.error(error);
@@ -74,26 +70,26 @@ export default function PersonalInfoScreen() {
     fetchUserInfo();
   }, []);
 
-  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      Alert.alert(t('personalInfo.error'), t('personalInfo.permissionDenied'));
-      return;
-    }
+ const pickImage = async () => {
+  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  if (status !== 'granted') {
+    Alert.alert(t('personalInfo.error'), t('personalInfo.permissionDenied'));
+    return;
+  }
 
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.7,
-    });
+  let result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: [1, 1],
+    quality: 0.7,
+  });
 
     if (!result.canceled && result.assets.length > 0) {
-      const picked = result.assets[0];
-      setNewProfileImage(picked);
-      setProfilePicture(picked.uri);
-    }
-  };
+    const picked = result.assets[0];
+    setNewProfileImage(picked);
+
+  }
+};
 
   const handleDeleteImage = () => {
     Alert.alert(
@@ -106,18 +102,16 @@ export default function PersonalInfoScreen() {
           style: 'destructive',
           onPress: () => {
             setNewProfileImage(null);
-            setProfilePicture(null);
+            setProfilePicture('');
           },
         },
-      ],
-      { cancelable: true }
+      ]
     );
   };
 
   const uploadProfileImage = async (): Promise<string | null> => {
-    if (!newProfileImage) return profilePicture; // nema nove slike
-    
-    setIsLoading(true);
+    if (!newProfileImage) return profilePicture;
+
     try {
       const token = await AsyncStorage.getItem('token');
       if (!token) throw new Error(t('personalInfo.notLoggedIn'));
@@ -130,8 +124,8 @@ export default function PersonalInfoScreen() {
         type: 'image/jpeg',
       });
 
-      const res = await fetch(`${API_URL}/MobileUser/upload-profile-picture`, {
-        method: 'POST',
+      const res = await fetch(`${API_URL}/api/MobileUser/profile-image`, {
+        method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -139,17 +133,28 @@ export default function PersonalInfoScreen() {
         body: formData,
       });
 
-      if (!res.ok) {
-        const err = await res.text();
-        throw new Error(err || t('personalInfo.uploadFailed'));
-      }
+      if (!res.ok) throw new Error(await res.text());
 
       const data = await res.json();
-      return normalizeImageUrl(data.imageUrl);
+      return data.imageUrl || null;
     } catch (error) {
-      throw error;
-    } finally {
-      setIsLoading(false);
+      console.error('Upload error:', error);
+      return null;
+    }
+  };
+
+  const deleteProfileImageOnServer = async () => {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) throw new Error(t('personalInfo.notLoggedIn'));
+
+    const res = await fetch(`${API_URL}/api/MobileUser/delete-profile-picture`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(err || t('personalInfo.deleteFailed'));
     }
   };
 
@@ -159,23 +164,20 @@ export default function PersonalInfoScreen() {
       const token = await AsyncStorage.getItem('token');
       if (!token) {
         Alert.alert(t('personalInfo.error'), t('personalInfo.notLoggedIn'));
+        setIsLoading(false);
         return;
       }
 
-      let uploadedImageUrl = profilePicture;
+      let uploadedImageUrl: string | null = profilePicture;
 
       if (newProfileImage) {
         uploadedImageUrl = await uploadProfileImage();
-      } else if (profilePicture === null) {
-        // Ako je slika obrisana u UI, obriši i na backendu
-        await fetch(`${API_URL}/MobileUser/delete-profile-picture`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` },
-        });
+      } else if (profilePicture === '') {
+        await deleteProfileImageOnServer();
         uploadedImageUrl = null;
       }
 
-      const res = await fetch(`${API_URL}/MobileUser/profileUpdate`, {
+      const res = await fetch(`${API_URL}/api/MobileUser/profileUpdate`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -193,6 +195,7 @@ export default function PersonalInfoScreen() {
       if (res.ok) {
         Alert.alert(t('personalInfo.success'), t('personalInfo.updated'));
         setNewProfileImage(null);
+        setProfilePicture(uploadedImageUrl ?? '');
         router.push('../(tabs)/profile');
       } else {
         const err = await res.json();
@@ -215,12 +218,10 @@ export default function PersonalInfoScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => router.push('../(tabs)/profile')}
           style={styles.backButton}
-          accessibilityLabel={t('personalInfo.goBack')}
         >
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
@@ -229,32 +230,26 @@ export default function PersonalInfoScreen() {
         </View>
       </View>
 
-      {/* Profilna slika sa olovkom i korpom */}
       <View style={styles.imageContainer}>
-        <Image
-          source={profilePicture ? { uri: profilePicture } : defaultAvatar}
-          style={styles.profileImage}
-        />
-        {/* Olovka za update */}
-        <TouchableOpacity
-          onPress={pickImage}
-          style={styles.editButton}
-          accessibilityLabel={t('personalInfo.editImage')}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
+              <Image
+            source={
+              newProfileImage
+                ? { uri: newProfileImage.uri }   // lokalna izabrana slika
+                : profilePicture
+                ? { uri: normalizeImageUrl(profilePicture)! }  // slika sa servera
+                : defaultAvatar
+            }
+            style={styles.profileImage}
+          />
+
+        <TouchableOpacity onPress={pickImage} style={styles.editButton}>
           <Ionicons name="pencil" size={24} color="#2563EB" />
         </TouchableOpacity>
-        {/* Korpa za delete (prikazuje se samo ako postoji slika) */}
-        {profilePicture && (
-          <TouchableOpacity
-            onPress={handleDeleteImage}
-            style={styles.deleteButton}
-            accessibilityLabel={t('personalInfo.deleteImage')}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
+        {profilePicture ? (
+          <TouchableOpacity onPress={handleDeleteImage} style={styles.deleteButton}>
             <Ionicons name="trash" size={24} color="red" />
           </TouchableOpacity>
-        )}
+        ) : null}
       </View>
 
       <Text style={styles.label}>{t('personalInfo.firstName')}</Text>
@@ -300,101 +295,38 @@ export default function PersonalInfoScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-    padding: 20,
-    paddingTop: 60,
-    flexGrow: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  backButton: {
-    paddingRight: 10,
-  },
-  titleWrapper: {
-    flex: 1,
-    alignItems: 'center',
-    marginRight: 34, // balans za centriranje zbog strelice levo
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: '700',
-  },
+  container: { backgroundColor: '#fff', padding: 20, paddingTop: 60, flexGrow: 1 },
+  header: { flexDirection: 'row', alignItems: 'center', marginBottom: 30 },
+  backButton: { paddingRight: 10 },
+  titleWrapper: { flex: 1, alignItems: 'center', marginRight: 34 },
+  title: { fontSize: 22, fontWeight: '700' },
   imageContainer: {
-    alignItems: 'center',
-    marginBottom: 24,
-    position: 'relative',
-    width: 120,
-    height: 120,
-    justifyContent: 'center',
-    alignSelf: 'center', 
+    alignItems: 'center', marginBottom: 24, position: 'relative',
+    width: 120, height: 120, justifyContent: 'center', alignSelf: 'center',
   },
   profileImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    borderWidth: 2,
-    borderColor: '#2563EB',
-    alignSelf: 'center', 
+    width: 120, height: 120, borderRadius: 60,
+    borderWidth: 2, borderColor: '#2563EB', alignSelf: 'center',
   },
   editButton: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 4,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
+    position: 'absolute', bottom: 0, left: 0, backgroundColor: '#fff',
+    borderRadius: 16, padding: 4, elevation: 5, shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.3, shadowRadius: 2,
   },
   deleteButton: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 4,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 2,
+    position: 'absolute', top: 0, right: 0, backgroundColor: '#fff',
+    borderRadius: 16, padding: 4, elevation: 5, shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.3, shadowRadius: 2,
   },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 6,
-    marginTop: 16,
-  },
+  label: { fontSize: 14, fontWeight: '600', marginBottom: 6, marginTop: 16 },
   input: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    fontSize: 16,
+    height: 48, borderWidth: 1, borderColor: '#ccc', borderRadius: 8,
+    paddingHorizontal: 14, fontSize: 16,
   },
   saveButton: {
-    backgroundColor: '#2563EB',
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 32,
+    backgroundColor: '#2563EB', paddingVertical: 14, borderRadius: 8,
+    alignItems: 'center', marginTop: 32,
   },
-  saveText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  saveText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 });

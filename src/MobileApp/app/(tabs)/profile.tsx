@@ -33,12 +33,13 @@ export default function ProfileScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [imageModalVisible, setImageModalVisible] = useState(false);
   const defaultAvatar = require('../../assets/images/avatar-placeholder.png');
-  const normalizeImageUrl = (url: string | null): string | null => {
-    if (!url) return null;
-    if (url.startsWith('http')) return url;
-    const baseUrl = API_URL.replace(/\/api\/?$/, '');
-    return `${baseUrl}${url}?t=${new Date().getTime()}`; // timestamp da osveži cache
-  };
+  const normalizeImageUrl = (path: string | null) => {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  if (!path.startsWith('/')) path = `/${path}`; // dodaj / ako ga nema
+  return `${API_URL}${path}`;
+};
+
 
   useEffect(() => {
     const fetchUserDataAndTickets = async () => {
@@ -54,10 +55,13 @@ export default function ProfileScreen() {
 
         if (res.ok) {
         const data = await res.json();
+        console.log("PROFILE DATA:", data); //
         setFirstName(data.firstName || '');
         setLastName(data.lastName || '');
         setEmail(data.email || '');
-        setProfilePicture(normalizeImageUrl(data.profilePicture || null));
+        const imageUrl = normalizeImageUrl(data.profilePicture || null);
+        setProfilePicture(imageUrl);
+
       }
 
 
