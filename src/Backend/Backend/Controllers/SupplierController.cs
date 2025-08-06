@@ -279,5 +279,40 @@ namespace Backend.Controllers
                 });
             return Ok(measures);
         }
+
+
+        [HttpGet("ReusableResources")]
+        public async Task<IActionResult> GetSupplierReusableResources()
+        {
+
+            var supplierId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            
+            var supplier = await _context.Suppliers
+                .FirstOrDefaultAsync(s => s.Id == supplierId);
+
+            if (supplier == null)
+                return NotFound(new { message = "Dobavljač nije pronađen." });
+
+            
+            var reusableResources = await _context.Resources
+                .Where(r => r.SupplierID == supplierId && !r.IsExhaustable)
+                .Select(r => new ResourceDto
+                {
+                    ResourceID = r.ResourceID,
+                    Name = r.Name,
+                    Category = r.Category,
+                    IsExhaustable = r.IsExhaustable,
+                    IsAvailable = r.IsAvailable,
+                    Description = r.Description,
+                    SupplierID = r.SupplierID,
+                    Quantity = r.Quantity,
+                    Supplier = r.Supplier
+                })
+                .ToListAsync();
+
+            return Ok(reusableResources);
+        }
+
+
     }
 }
