@@ -131,38 +131,38 @@ namespace Backend.Controllers
             }
         }
         [HttpDelete("delete-profile-picture")]
-public async Task<IActionResult> DeleteProfilePicture()
-{
-    var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-    var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
-
-    if (user == null)
-        return NotFound(new { message = "Korisnik nije pronađen." });
-
-    if (!string.IsNullOrEmpty(user.ProfilePicture))
-    {
-        // Assume user.ProfilePicture is stored like "/profile-images/filename.jpg"
-        var relativePath = user.ProfilePicture.TrimStart('/');
-        var absolutePath = Path.Combine(_env.WebRootPath, relativePath);
-
-        if (System.IO.File.Exists(absolutePath))
+        public async Task<IActionResult> DeleteProfilePicture()
         {
-            try
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (user == null)
+                return NotFound(new { message = "Korisnik nije pronađen." });
+
+            if (!string.IsNullOrEmpty(user.ProfilePicture))
             {
-                System.IO.File.Delete(absolutePath);
+                // Assume user.ProfilePicture is stored like "/profile-images/filename.jpg"
+                var relativePath = user.ProfilePicture.TrimStart('/');
+                var absolutePath = Path.Combine(_env.WebRootPath, relativePath);
+
+                if (System.IO.File.Exists(absolutePath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(absolutePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        return StatusCode(500, new { message = "Greška pri brisanju slike: " + ex.Message });
+                    }
+                }
+
+                user.ProfilePicture = "";
+                await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Greška pri brisanju slike: " + ex.Message });
-            }
+
+            return Ok(new { message = "Profilna slika obrisana." });
         }
-
-        user.ProfilePicture = null;
-        await _context.SaveChangesAsync();
-    }
-
-    return Ok(new { message = "Profilna slika obrisana." });
-}
 
         [HttpPut("profile-image")]
         [Consumes("multipart/form-data")]
