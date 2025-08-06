@@ -122,5 +122,123 @@ namespace Backend.Controllers
 
             return Ok();
         }
+
+        [HttpGet("resources")]
+        public async Task<IActionResult> GetResources([FromQuery] int supplierId)
+        {
+            var resources = await _context.Resources
+                .Where(r => r.SupplierID == supplierId)
+                .ToListAsync();
+
+            var dtos = resources.Select(r => new ResourceDto
+            {
+                ResourceID = r.ResourceID,
+                Name = r.Name,
+                Category = r.Category,
+                IsExhaustable = r.IsExhaustable,
+                IsAvailable = r.IsAvailable,
+                Description = r.Description,
+                SupplierID = r.SupplierID,
+                Quantity = r.Quantity
+            }).ToList();
+
+            return Ok(dtos);
+        }
+
+        [HttpPost("resource")]
+        public async Task<IActionResult> CreateResource([FromBody] ResourceDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var resource = new Resource
+            {
+                Name = dto.Name,
+                Category = dto.Category,
+                IsExhaustable = dto.IsExhaustable,
+                IsAvailable = dto.IsAvailable,
+                Description = dto.Description,
+                SupplierID = dto.SupplierID,
+                Quantity = dto.Quantity
+            };
+
+            _context.Resources.Add(resource);
+            await _context.SaveChangesAsync();
+
+            dto.ResourceID = resource.ResourceID;
+
+            return Ok(dto);
+        }
+
+        [HttpPut("resource/{id}")]
+        public async Task<IActionResult> UpdateResource(int id, [FromBody] ResourceDto dto)
+        {
+            var resource = await _context.Resources.FindAsync(id);
+            if (resource == null) return NotFound();
+
+            resource.Name = dto.Name;
+            resource.Category = dto.Category;
+            resource.IsExhaustable = dto.IsExhaustable;
+            resource.IsAvailable = dto.IsAvailable;
+            resource.Description = dto.Description;
+            resource.SupplierID = dto.SupplierID;
+            resource.Quantity = dto.Quantity;
+
+            await _context.SaveChangesAsync();
+
+            return Ok("Resource updated!");
+        }
+
+        [HttpDelete("resource/{id}")]
+        public async Task<IActionResult> DeleteResource(int id)
+        {
+            var resource = await _context.Resources.FindAsync(id);
+            if (resource == null) return NotFound();
+
+            _context.Resources.Remove(resource);
+            await _context.SaveChangesAsync();
+
+            return Ok("Resource deleted!");
+        }
+
+        [HttpGet("supplier/{supplierId}/eventresources/pending")]
+        public async Task<IActionResult> GetPendingRequests(int supplierId)
+        {
+            var requests = await _context.EventResources
+                .Where(er => er.SupplierID == supplierId && er.Status == EventResourceStatus.Pending)
+                .Include(er => er.Resource)
+                .ToListAsync();
+
+            return Ok(requests);
+        }
+
+        [HttpPut("eventresource/{id}/status")]
+        public async Task<IActionResult> UpdateEventResourceStatus(int id, [FromBody] EventResourceStatus newStatus)
+        {
+            var eventResource = await _context.EventResources
+                .Include(er => er.Resource)
+                .FirstOrDefaultAsync(er => er.ID == id);
+
+            if (eventResource == null)
+                return NotFound();
+
+            if (eventResource.Status != EventResourceStatus.Pending)
+                return BadRequest("Can only update pending requests.");
+            var resource = await _context.Resources.FindAsync(eventResource.ResourceID);
+
+            if (newStatus == EventResourceStatus.Approved)
+            {
+                // Smanji količinu resursa
+                if (resource.Quantity < eventResource.Quantity)
+                    return BadRequest("Not enough quantity available.");
+
+                resource.Quantity -= eventResource.Quantity;
+                _context.Resources.Update(resource);
+            }
+            eventResource.Status = newStatus;
+            await _context.SaveChangesAsync();
+
+            return Ok("Status updated.");
+        }
+
     }
 }
