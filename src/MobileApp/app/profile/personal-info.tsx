@@ -174,7 +174,7 @@ export default function PersonalInfoScreen() {
         uploadedImageUrl = await uploadProfileImage();
       } else if (profilePicture === '') {
         await deleteProfileImageOnServer();
-        uploadedImageUrl = null;
+        uploadedImageUrl = "";
       }
 
       const res = await fetch(`${API_URL}/api/MobileUser/profileUpdate`, {
