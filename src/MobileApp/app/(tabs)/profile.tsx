@@ -55,7 +55,6 @@ export default function ProfileScreen() {
 
         if (res.ok) {
         const data = await res.json();
-        console.log("PROFILE DATA:", data); //
         setFirstName(data.firstName || '');
         setLastName(data.lastName || '');
         setEmail(data.email || '');
