@@ -15,7 +15,7 @@ import { UpdateSupplierDto } from '../../../Models/UpdateSupplierDto';
 
 @Component({
   selector: 'app-my-profile',
-  imports: [FormsModule, Select],
+  imports: [FormsModule],
   templateUrl: './my-profile.component.html',
   styleUrl: './my-profile.component.css'
 })
@@ -24,75 +24,6 @@ export class MyProfileComponent implements OnInit {
   defaultImage = 'assets/default-picture.png';
   previewUrl: string | ArrayBuffer | null = null;
   selectedFile?: File;
-  selectedService: any;
-  selectedCity: any;
-  services = [{ name: 'Audiovisual & Production' },
-  { name: 'Catering Services' },
-  { name: 'Lighting & Effects' },
-  { name: 'Stage & Set Design' },
-  { name: 'Transportation & Logistics' },
-  { name: 'Event Staffing' },
-  { name: 'Photography & Videography' },
-  { name: 'Decor & Styling' },
-  { name: 'Security Services' },
-  { name: 'Venue Rental' },
-  { name: 'Entertainment Booking' },
-  { name: 'Furniture & Equipment Rental' },
-  { name: 'Mobile Toilets & Sanitation' },
-  { name: 'Invitation & Ticketing Solutions' },
-  { name: 'Digital Marketing & Promotion' },
-  { name: 'Wi-Fi & Networking' },
-  { name: 'Insurance & Legal Support' },
-  { name: 'Event Consulting & Planning' },
-  { name: 'Fireworks & Special Effects' },
-  { name: 'Hostesses & Translators' }];
-
-  cities = [
-  { name: 'Aleksinac' },
-  { name: 'Apatin' },
-  { name: 'Aranđelovac' },
-  { name: 'Bačka Palanka' },
-  { name: 'Bajina Bašta' },
-  { name: 'Bečej' },
-  { name: 'Beograd' },
-  { name: 'Bor' },
-  { name: 'Čačak' },
-  { name: 'Gornji Milanovac' },
-  { name: 'Inđija' },
-  { name: 'Jagodina' },
-  { name: 'Kikinda' },
-  { name: 'Kragujevac' },
-  { name: 'Kraljevo' },
-  { name: 'Leskovac' },
-  { name: 'Loznica' },
-  { name: 'Lazarevac' },
-  { name: 'Mladenovac' },
-  { name: 'Negotin' },
-  { name: 'Novi Pazar' },
-  { name: 'Novi Sad' },
-  { name: 'Pančevo' },
-  { name: 'Paraćin' },
-  { name: 'Pirot' },
-  { name: 'Požarevac' },
-  { name: 'Prokuplje' },
-  { name: 'Raška' },
-  { name: 'Ruma' },
-  { name: 'Senta' },
-  { name: 'Smederevo' },
-  { name: 'Sombor' },
-  { name: 'Sremska Mitrovica' },
-  { name: 'Subotica' },
-  { name: 'Surdulica' },
-  { name: 'Šabac' },
-  { name: 'Temerin' },
-  { name: 'Valjevo' },
-  { name: 'Vranje' },
-  { name: 'Vrbas' },
-  { name: 'Vrnjačka Banja' },
-  { name: 'Vršac' },
-  { name: 'Zaječar' },
-  { name: 'Zrenjanin' }
-];
   constructor(private apiService: ApiService, private authService: AuthService, private messageService: MessageService, private sharedService: SharedService) { }
 
   onFileSelected(event: Event) {
@@ -133,6 +64,11 @@ export class MyProfileComponent implements OnInit {
           this.previewUrl = this.currSupplier.getImage();
           this.getSupplierCall();
           this.sharedService.notifyProfileImageChanged();
+          this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: "Uspešno promenjena slika",
+              life: 3000 });
         },
         error:(errorResponse) =>{
           this.messageService.add({
