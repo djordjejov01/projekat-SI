@@ -123,8 +123,9 @@ namespace Backend.Controllers
             return Ok();
         }
 
-        [HttpGet("Resources")]
-        public async Task<IActionResult> GetSupplierResources()
+
+        [HttpGet("ReusableResources")]
+        public async Task<IActionResult> GetSupplierReusableResources()
         {
 
             var supplierId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
@@ -133,22 +134,26 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(s => s.Id == supplierId);
 
             if (supplier == null)
-                return NotFound("Dobavljač nije pronađen.");
+                return NotFound(new { message = "Dobavljač nije pronađen." });
 
             
-            var resources = await _context.Resources
-                .Where(r => r.SupplierID == supplierId)
-                .Select(r => new
+            var reusableResources = await _context.Resources
+                .Where(r => r.SupplierID == supplierId && !r.IsExhaustable)
+                .Select(r => new ResourceDto
                 {
-                    resourceId = r.ResourceID,
-                    name = r.Name,
-                    description = r.Description,
-                    quantity = r.Quantity,
-                    supplierId = r.SupplierID
+                    ResourceID = r.ResourceID,
+                    Name = r.Name,
+                    Category = r.Category,
+                    IsExhaustable = r.IsExhaustable,
+                    IsAvailable = r.IsAvailable,
+                    Description = r.Description,
+                    SupplierID = r.SupplierID,
+                    Quantity = r.Quantity,
+                    Supplier = r.Supplier
                 })
                 .ToListAsync();
 
-            return Ok(resources);
+            return Ok(reusableResources);
         }
 
 
