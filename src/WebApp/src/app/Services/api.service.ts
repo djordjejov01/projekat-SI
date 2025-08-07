@@ -388,7 +388,7 @@ export class ApiService{
         );
     }
 
-    getResources(){
+    getReusableResources(){
         
     }
 
