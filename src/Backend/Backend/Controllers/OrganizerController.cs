@@ -47,66 +47,86 @@ namespace Backend.Controllers
         [HttpPost("change-organizer-picture")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadOrganizerPhoto([FromForm] UploadImageDto model)
-        { 
-            string ImageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
-            Organizer o = _context.Organizers.Where(o => o.Id == model.Id).First();
-            if (o is null)
+        {
+            string imageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
+
+            Organizer organizer = _context.Organizers.Where(o => o.Id == model.Id).First();
+            if (organizer is null)
                 return BadRequest("ERROR!");
-            await CommonHelpers.RemovePhoto(o.Image, _env);
-            o.Image = ImageName;
-            _context.Organizers.Update(o);
+
+            
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == model.Id);
+            if (user == null)
+                return BadRequest("User not found!");
+
+            
+            string oldOrganizerImage = organizer.Image;
+            string oldUserImage = user.ProfilePicture;
+
+            
+            await CommonHelpers.RemovePhoto(organizer.Image, _env);
+            organizer.Image = imageName;
+            user.ProfilePicture = imageName;
+
+            _context.Organizers.Update(organizer);
+            _context.Users.Update(user);
             _context.SaveChanges();
+
             return Ok();
         }
         [HttpPost("update-organizer")]
         public async Task<IActionResult> UpdateOrganizer([FromBody] OrganizerDto model)
         {
             var organizer = _context.Organizers.Where(o => o.Id == model.Id).FirstOrDefault();
-
             if (organizer is null)
-            {
                 return BadRequest(new { message = "Organizer with that ID does not exist." });
-            }
 
+            
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == model.Id);
+            if (user == null)
+                return BadRequest(new { message = "User not found." });
+
+            
             if (model.Name != organizer.Name && !string.IsNullOrEmpty(model.Name))
                 organizer.Name = model.Name;
 
+            
             if (model.Username != organizer.Username)
             {
                 if (_context.Organizers.Any(o => o.Username == model.Username))
-                {
                     return BadRequest(new { message = "Username already exists." });
-                }
-                organizer.Username = model.Username;
 
+                organizer.Username = model.Username;
+                user.Username = model.Username;
             }
 
+            
             if (model.Email != organizer.Email)
             {
                 if (!CommonHelpers.IsEmailInValidForm(model.Email))
-                {
                     return BadRequest(new { message = "Invalid email format." });
-                }
                 if (_context.Organizers.Any(o => o.Email == model.Email))
-                {
                     return BadRequest(new { message = "Email already exists." });
-                }
+
                 organizer.Email = model.Email;
+                user.Email = model.Email;
             }
 
+            
             if (model.PhoneNumber != organizer.PhoneNumber)
             {
                 if (!CommonHelpers.IsPhoneNumberValid(model.PhoneNumber))
-                {
                     return BadRequest(new { message = "Invalid phone number format." });
-                }
                 if (_context.Organizers.Any(o => o.PhoneNumber == model.PhoneNumber))
-                {
                     return BadRequest(new { message = "Phone number already exists." });
-                }
+
                 organizer.PhoneNumber = model.PhoneNumber;
+                user.PhoneNumber = model.PhoneNumber;
             }
 
+            
+            _context.Organizers.Update(organizer);
+            _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "User data successfully changed!" });
