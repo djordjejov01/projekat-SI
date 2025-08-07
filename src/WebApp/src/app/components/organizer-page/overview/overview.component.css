@@ -46,6 +46,7 @@ h2{
     flex-wrap: wrap;
     width: 100%;
     max-width: 1200px;
+    min-width: 800px;
     margin-left: auto;
     margin-right: auto;
     box-sizing: border-box;
@@ -119,4 +120,10 @@ h2{
     display: flex;
     gap:10px;
     flex-wrap: nowrap;
+}
+
+#selStatus{
+    border: 1px solid gray;
+    padding: 3px;
+    border-radius: 3px;
 }
