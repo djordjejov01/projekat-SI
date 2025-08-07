@@ -8,12 +8,14 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { IDeactivate } from '../../../../Interfaces/IDeactivate';
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ConfirmationDialogService } from '../../../../Services/confirmation-dialog.service';
 import { RESOURCE_CATEGORIES, ResourceAvailability, ResourceMeasure, ResourceType } from '../../../../MockData/MockResources';
 import { InputText } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
+import { ResourceAvailabilityService } from '../../../../Services/ResourceAvailabilityService';
+import { ResourceCategoryService } from '../../../../Services/ResourceCategoryService';
 
 @Component({
   selector: 'app-resource-modal',
@@ -25,38 +27,42 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
 
   resourceForm : FormGroup;
   visible : boolean = false;
-  categoryOptions: { label: string, value: number }[] = [];
-  measureOptions: { label: string; value: ResourceMeasure }[] = [];
+  resourceCategoryOptions: { label: string, value: number }[] = [];
+  resourceAvailabilityOptions : { label: string; value: number }[] = []
 
   resourceTypeOptions = [
   { label: 'Exhaustible', value: ResourceType.Exhaustable },
   { label: 'Inexhaustible', value: ResourceType.Inexhaustable }
 ];
 
-resourceAvailabilityOptions = [
-  { label: 'Available', value: ResourceAvailability.Available },
-  { label: 'Unavailable', value: ResourceAvailability.Unavailable },
-  { label: 'Booked', value: ResourceAvailability.Booked }
-];
 
 
-
-  constructor(private formValidationService : FormValidationService, private confirmationDialogService : ConfirmationDialogService) {}
+  constructor(private formValidationService : FormValidationService,
+    private confirmationDialogService : ConfirmationDialogService,
+    private resourceAvailabilityService : ResourceAvailabilityService,
+    private resourceCategoryService : ResourceCategoryService,
+    ) {}
 
   ngOnInit(): void {
 
-    this.categoryOptions = Object.entries(RESOURCE_CATEGORIES).map(([key, label]) => ({
-      label,
-      value: Number(key)
-    }));
+    this.resourceAvailabilityService.loadAvailabilitiesIfEmpty()
+    .pipe(take(1))
+    .subscribe(availabilities => {
+      this.resourceAvailabilityOptions = availabilities.map(availability => ({
+        label: availability.name,
+        value: availability.id
+      }));
+    });
 
-      // Create measure options from the enum
-  this.measureOptions = Object.entries(ResourceMeasure)
-    .filter(([key, value]) => !isNaN(Number(value))) // only numeric entries
-    .map(([key, value]) => ({
-      label: key,           // label shown in dropdown
-      value: Number(value)  // numeric value stored
-    }));
+    this.resourceCategoryService.loadCategoriesIfEmpty()
+    .pipe(take(1))
+    .subscribe(categories => {
+      this.resourceCategoryOptions = categories.map(category => ({
+        label: category.name,
+        value: category.id
+      }));
+    });
+    
     
     this.resourceForm = new FormGroup({
       name: new FormControl('',[Validators.required, CustomValidators.noWhitespaceValidator]),

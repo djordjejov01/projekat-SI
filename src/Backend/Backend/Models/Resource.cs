@@ -16,7 +16,6 @@ namespace Backend.Models
         public ResourceCategory Category { get; set; }
         public bool IsExhaustable { get; set; }
         public ResourceAvailability IsAvailable { get; set; }
-        public ResourceMeasurment? Measurment { get; set; }
 
         public string Description { get; set; }
 
@@ -29,8 +28,19 @@ namespace Backend.Models
     }
     public enum ResourceCategory
     {
-        Undefined
+        Undefined = 0,
+        Equipment = 1,        // e.g. Speakers, Lights, Projectors
+        Furniture = 2,        // e.g. Chairs, Tables, Stages
+        Electrical = 3,       // e.g. Extension cords, Generators
+        Sanitation = 4,       // e.g. Toilets, Trash bins, Hand sanitizers
+        FoodAndBeverage = 5,  // e.g. Food trucks, Water bottles
+        Medical = 6,          // e.g. First aid kits, Ambulances
+        Security = 7,         // e.g. Barricades, Uniforms, Radios
+        Merchandise = 8,      // e.g. Stands, Posters, Souvenirs
+        Transportation = 9,   // e.g. Vans, Golf carts
+        Technology = 10       // e.g. Laptops, Wi-Fi routers, Tablets
     }
+
     public enum ResourceAvailability
     {
         Available = 0,
