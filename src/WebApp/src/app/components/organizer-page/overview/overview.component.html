@@ -15,14 +15,16 @@
             <div id="leftside">
                 <div id="track">
                     <h2>{{'UPEV' | translate }}</h2>
+                    <select name="Status" id="selStatus" (change)="changeStatus($event)">
+                        <option value="-1">All</option>
+                        <option value="0">Draft</option>
+                        <option value="1">Published</option>
+                        <option value="2">Canceled</option>
+                    </select>
                     <button id="ae" (click) = "createEvent()"><i class="pi pi-plus"></i>{{'ADDEV' | translate }}</button>
                 </div>
                 <div id="events">
-                    <!-- <app-event-preview *ngFor="let event of allEvents; index as i" [image]="event.getImage()" status="Upcoming"
-                        [time]="event.getStartDateTime().toLocaleDateString()" [title]="event.getTitle()"
-                        [host]="currUser" [location]="event.getLocation()">
-                    </app-event-preview> -->
-                    <app-event-preview *ngFor="let event of allEvents; index as i" [event]="event">
+                    <app-event-preview *ngFor="let event of filteredEvents; index as i" [event]="event">
                     </app-event-preview>
 
                 </div>

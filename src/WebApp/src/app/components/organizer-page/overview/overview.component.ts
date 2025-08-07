@@ -21,6 +21,7 @@ export class OverviewComponent implements OnInit {
     private router : Router
   ){}
   allEvents : Event[];
+  filteredEvents : Event[];
   currUser : string;
   ngOnInit(): void {
       this.currUser = this.authService.getUserName();
@@ -28,6 +29,7 @@ export class OverviewComponent implements OnInit {
       
               next:(response : Event[]) => {
                 this.allEvents = response;
+                this.filteredEvents = response;
                 console.log(response);
               },
               error:(errorResponse) =>{
@@ -48,4 +50,28 @@ export class OverviewComponent implements OnInit {
       });
 
   }
+
+  changeStatus(event: globalThis.Event): void {
+  const selectedValue = (event.target as HTMLSelectElement).value;
+  const status = Number(selectedValue);
+
+  switch (status) {
+    case -1:
+      this.filteredEvents = this.allEvents;
+      break;
+    case 0:
+      this.filteredEvents = this.allEvents.filter(event => event.getStatus() === status);
+      break;
+    case 1:
+      this.filteredEvents = this.allEvents.filter(event => event.getStatus() === status);
+      break;
+    case 2:
+      this.filteredEvents = this.allEvents.filter(event => event.getStatus() === status);
+      break;
+    default:
+      this.filteredEvents = this.allEvents;
+      break;
+  }
+
+}
 }
