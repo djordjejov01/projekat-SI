@@ -9,7 +9,6 @@ export class ResourceDto {
     private description: string,
     private supplierID: number,
     private quantity: number,
-    private measurement: number | undefined,
     private supplier: any
   ) {}
 
@@ -45,9 +44,6 @@ export class ResourceDto {
     return this.quantity;
   }
 
-  getMeasurement(): number | undefined {
-    return this.measurement;
-  }
 
   getSupplier(): any {
     return this.supplier;

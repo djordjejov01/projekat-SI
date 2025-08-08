@@ -1,10 +1,10 @@
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
-import { DUMMY_RESOURCES, ResourceAvailability, ResourceMeasure, ResourceType } from '../../../MockData/MockResources';
+import { DUMMY_RESOURCES, ResourceAvailability, ResourceType } from '../../../MockData/MockResources';
 import { Resource } from '../../../MockData/MockResources';
 import { ButtonModule } from 'primeng/button';
-import { IconField } from 'primeng/iconfield';
-import { InputIcon } from 'primeng/inputicon';
+import { IconField, IconFieldModule } from 'primeng/iconfield';
+import { InputIcon, InputIconModule } from 'primeng/inputicon';
 import { FormsModule } from '@angular/forms';
 import { RESOURCE_CATEGORIES } from '../../../MockData/MockResources';
 import { MultiSelect } from 'primeng/multiselect';
@@ -17,10 +17,13 @@ import { ChangeDetectorRef, inject, PLATFORM_ID } from '@angular/core';
 import { UIChart } from 'primeng/chart'
 import { PinCategoryService } from '../../../Services/PinCategoryService';
 import { ResourceModalComponent } from './resource-modal/resource-modal.component';
+import { ResourceAvailabilityService } from '../../../Services/ResourceAvailabilityService';
+import { ResourceCategoryService } from '../../../Services/ResourceCategoryService';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [TableModule,ButtonModule,IconField,InputIcon,FormsModule,MultiSelect,TooltipModule,InputTextModule,CommonModule,ChartModule,ResourceModalComponent],
+  imports: [TableModule,ButtonModule,IconField,InputIcon,FormsModule,MultiSelect,TooltipModule,InputTextModule,CommonModule,ChartModule,ResourceModalComponent,IconFieldModule,InputIconModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -46,14 +49,25 @@ export class DashboardComponent  implements OnInit{
     }
   }
 
-  resourceCategories = Object.entries(RESOURCE_CATEGORIES).map(([key, label]) => ({
-    name: label,
-    value: Number(key)
-  }));
+resourceCategoryOptions: { name: string, value: number }[] = [];
+resourceAvailabilityOptions : { name: string, value: number }[] = [];
+resourceTypeOptions = [
+  { name: 'Exhaustible', value: ResourceType.Exhaustable },
+  { name: 'Inexhaustible', value: ResourceType.Inexhaustable }
+];
 
-availabilityOptions = this.mapEnumToOptions(ResourceAvailability);
-typeOptions = this.mapEnumToOptions(ResourceType);
-measureOptions = this.mapEnumToOptions(ResourceMeasure);
+private availabilityLabels: Record<number, string> = {
+  [ResourceAvailability.Available]: 'Available',
+  [ResourceAvailability.Unavailable]: 'Unavailable',
+  [ResourceAvailability.Booked]: 'Booked'
+};
+
+private typeLabels: Record<number, string> = {
+  [ResourceType.Exhaustable]: 'Exhaustible',
+  [ResourceType.Inexhaustable]: 'Inexhaustible'
+};
+
+
 
   selectedCategories: any[] = [];
   selectedAvailability: any[] = [];
@@ -61,36 +75,36 @@ measureOptions = this.mapEnumToOptions(ResourceMeasure);
   selectedMeasures: any[] = [];
 
 
-  constructor(private cd: ChangeDetectorRef,private pinCategoryService : PinCategoryService){}
+  constructor(private cd: ChangeDetectorRef,
+    private pinCategoryService : PinCategoryService,
+     private resourceAvailabilityService : ResourceAvailabilityService,
+    private resourceCategoryService : ResourceCategoryService,
+    ){}
 
   ngOnInit(): void {
-    console.log(this.getResourceCategoryChartData(this.resources))
+    
+
+    this.resourceAvailabilityService.loadAvailabilitiesIfEmpty()
+    .pipe(take(1))
+    .subscribe(availabilities => {
+      this.resourceAvailabilityOptions = availabilities.map(availability => ({
+        name: availability.name,
+        value: availability.id
+      }));
+    });
+
+  this.resourceCategoryService.loadCategoriesIfEmpty()
+    .pipe(take(1))
+    .subscribe(categories => {
+      this.resourceCategoryOptions = categories.map(category => ({
+        name: category.name,
+        value: category.id
+      }));
+    });
+
+
     this.initChart()
   }
-
-
-  mapEnumToOptions(enumObj: any): { name: string, value: number }[] {
-    return Object.keys(enumObj)
-      .filter(key => !isNaN(Number(key)))
-      .map(key => ({
-        name: enumObj[Number(key)],
-        value: Number(key)
-      }));
-  }
-
-  getTypeName(value: number): string {
-    return ResourceType[value] ?? 'Unknown';
-  }
-
-  getAvailabilityName(value: number): string {
-    return ResourceAvailability[value] ?? 'Unknown';
-  }
-
-
-  getMeasureName(value: number): string {
-    return ResourceMeasure[value] ?? 'Unknown';
-  }
-
 
        initChart() {
 
@@ -186,7 +200,7 @@ measureOptions = this.mapEnumToOptions(ResourceMeasure);
     filterFn(filterValues.length ? filterValues : null);
   }
 
-  onMeasureFilterChange(selectedOptions: any[], filterFn: (val: any) => void): void {
+  onMeasureFilterChange(selectedOptions: any[], filterFn: (val: any) => void) {
   this.selectedMeasures = selectedOptions || [];
 
   const filterValues = this.selectedMeasures.map(m => m.value);
@@ -195,11 +209,19 @@ measureOptions = this.mapEnumToOptions(ResourceMeasure);
 }
 
 
+getAvailabilityName(value: number): string {
+  return this.availabilityLabels[value] ?? 'Unknown';
+}
 
+getTypeName(value: number): string {
+  return this.typeLabels[value] ?? 'Unknown';
+}
 
-  getCategoryName(categoryId: number): string {
-    return RESOURCE_CATEGORIES[categoryId] || 'Unknown';
-  }
+// 4. For Category (lookup from resourceCategoryOptions)
+getCategoryName(value: number): string {
+  const category = this.resourceCategoryOptions.find(c => c.value === value);
+  return category ? category.name : 'Unknown';
+}
 
 getAvailabilityClass(status: ResourceAvailability): string {
   switch (status) {

@@ -35,6 +35,8 @@ import { EventPinApiResponse } from "../Interfaces/EventPinApiResponse";
 import { SupplierDto } from "../Models/SupplierDto";
 import { SupplierDtoResponse } from "../Interfaces/SupplierDtoResponse";
 import { UpdateSupplierDto } from "../Models/UpdateSupplierDto";
+import { ResourceCategory } from "./ResourceCategoryService";
+import { ResourceAvailability } from "./ResourceAvailabilityService";
 
 
 // Match Backend.Models.Dto.EventDto
@@ -142,6 +144,20 @@ export class ApiService{
     private apiUrl = 'https://localhost:7269/api';
 
     constructor(private http: HttpClient) {}
+
+    getResourceAvailabilities(): Observable<ResourceAvailability[]> {
+        return this.http.get<ResourceAvailability[]>(`${this.apiUrl}/Supplier/availabilities`).pipe(
+            catchError(this.handleError)
+        );
+    }
+
+    getResourceCategories() : Observable<ResourceCategory[]>{
+
+        return this.http.get<ResourceCategory[]>(`${this.apiUrl}/Supplier/resource-categories`).pipe(
+            catchError(this.handleError)
+        )
+
+    }
 
     searchLocations(query) : Observable<any[]>{
        return this.http.get<any[]>('https://nominatim.openstreetmap.org/search', {
