@@ -143,6 +143,59 @@ namespace Backend.Controllers
 
             return Ok(dto);
         }
+        [AllowAnonymous]
+        [HttpGet("subevents-activities/{eventId}")]
+        public async Task<ActionResult<EventsSubeventsActivitiesDto>> GetSubeventsAndActivities(int eventId)
+        {
+            
+            var mainEvent = await _context.Events.AsNoTracking().FirstOrDefaultAsync(e => e.EventID == eventId);
+            if (mainEvent == null || mainEvent.Status != EventStatus.Published)
+                return NotFound();
+
+            
+            var subevents = await _context.Events
+                .AsNoTracking()
+                .Where(e => e.ParentEventId == eventId && e.Status == EventStatus.Published)
+                .Select(e => new EventDto
+                {
+                    EventId = e.EventID,
+                    Title = e.Title,
+                    Location = e.Location,
+                    StartDate = e.StartDate,
+                    EndDate = e.EndDate,
+                    ImageUrl = e.ImageUrl,
+                    ParentEventId = e.ParentEventId,
+                    Description = e.Description
+                })
+                .ToListAsync();
+
+            
+            var eventIds = subevents.Select(s => s.EventId).Append(eventId).ToList();
+
+            var activities = await _context.EventActivities
+                .AsNoTracking()
+                .Where(a => eventIds.Contains(a.EventID))
+                .OrderBy(a => a.StartTime)
+                .Select(a => new ActivityDto
+                {
+                    ActivityId = a.ActivityID,
+                    EventId = a.EventID,
+                    Title = a.Title,
+                    StartDate = a.StartTime,
+                    EndDate = a.EndTime,
+                    Description = a.Description,
+                    Category = a.Category
+                })
+                .ToListAsync();
+
+            return Ok(new EventsSubeventsActivitiesDto
+            {
+                EventsAndSubevents = subevents,
+                Activities = activities
+            });
+        }
+
+
         [HttpPost("change-event-picture")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadEventPhoto([FromForm] UploadImageDto model)
