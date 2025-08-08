@@ -386,9 +386,22 @@ const handleBuyTicket = async () => {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleBuyTicket} style={styles.buyButton}>
-  <Text style={styles.buyButtonText}>Buy ticket</Text>
-    </TouchableOpacity>
+        <TouchableOpacity
+        onPress={event.isFree ? undefined : handleBuyTicket}
+        style={[
+          styles.buyButton,
+          event.isFree && styles.buyBtnDisabled
+        ]}
+        disabled={event.isFree}
+      >
+        <Text style={[
+          styles.buyButtonText,
+          event.isFree && { color: '#9CA3AF' } 
+        ]}>
+          {event.isFree ? t('freeEvent') : t('buyTicket')}
+        </Text>
+      </TouchableOpacity>
+
 
       </View>
 
@@ -419,8 +432,8 @@ const handleBuyTicket = async () => {
             initialRegion={{
               latitude: coords.latitude,
               longitude: coords.longitude,
-              latitudeDelta: 0.06,
-              longitudeDelta: 0.06,
+              latitudeDelta: 0.004,
+              longitudeDelta: 0.004,
             }}
           >
             <UrlTile

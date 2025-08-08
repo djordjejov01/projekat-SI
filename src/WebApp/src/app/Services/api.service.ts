@@ -404,6 +404,10 @@ export class ApiService{
         );
     }
 
+    getReusableResources(){
+        
+    }
+
     getUpcomingOrganizerEvents(organizerId : number) : Observable<Event[]> {
         return this.http.get<EventApiResponse[]>(`${this.apiUrl}/Organizer/upcoming-events?id=${organizerId}`).pipe(
             map(data => 

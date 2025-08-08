@@ -98,7 +98,7 @@ export class CalendarComponent implements OnInit{
     const endDateFormatted = this.datePipe.transform(end,'MMM d, y, HH:mm:ss');
 
     const confirmed = await this.confirmationDialogService.confirm(
-      `Create and event from ${startDateFormatted} to ${endDateFormatted}?`,
+      `Create a event from ${startDateFormatted} to ${endDateFormatted}?`,
       'Create Event'
     );
 

@@ -48,7 +48,7 @@ namespace Backend.Controllers
             return Ok(dto);
         }
 
-        
+
         [HttpPut("profile")]
         public async Task<IActionResult> UpdateSupplier([FromBody] UpdateSupplierDto model)
         {
@@ -59,33 +59,47 @@ namespace Backend.Controllers
                 return NotFound(new { message = "Dobavljač nije pronađen." });
 
             
-            if (!string.IsNullOrEmpty(model.CompanyName) && model.CompanyName != supplier.CompanyName)
-                supplier.CompanyName = model.CompanyName;
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (user == null)
+                return NotFound(new { message = "Korisnik nije pronađen." });
 
+            
             if (!string.IsNullOrEmpty(model.Username) && model.Username != supplier.Username)
             {
                 if (await _context.Suppliers.AnyAsync(s => s.Username == model.Username && s.Id != userId))
                     return BadRequest(new { message = "Korisničko ime već postoji." });
+
                 supplier.Username = model.Username;
+                user.Username = model.Username;
             }
 
+            
             if (!string.IsNullOrEmpty(model.Email) && model.Email != supplier.Email)
             {
                 if (!CommonHelpers.IsEmailInValidForm(model.Email))
                     return BadRequest(new { message = "Neispravan format email adrese." });
                 if (await _context.Suppliers.AnyAsync(s => s.Email == model.Email && s.Id != userId))
                     return BadRequest(new { message = "Email već postoji." });
+
                 supplier.Email = model.Email;
+                user.Email = model.Email;
             }
 
+            
             if (!string.IsNullOrEmpty(model.PhoneNumber) && model.PhoneNumber != supplier.PhoneNumber)
             {
                 if (!CommonHelpers.IsPhoneNumberValid(model.PhoneNumber))
                     return BadRequest(new { message = "Neispravan format broja telefona." });
                 if (await _context.Suppliers.AnyAsync(s => s.PhoneNumber == model.PhoneNumber && s.Id != userId))
                     return BadRequest(new { message = "Broj telefona već postoji." });
+
                 supplier.PhoneNumber = model.PhoneNumber;
+                user.PhoneNumber = model.PhoneNumber; // Sinhronizacija sa users tabelom
             }
+
+            
+            if (!string.IsNullOrEmpty(model.CompanyName) && model.CompanyName != supplier.CompanyName)
+                supplier.CompanyName = model.CompanyName;
 
             if (!string.IsNullOrEmpty(model.Website) && model.Website != supplier.Website)
                 supplier.Website = model.Website;
@@ -93,6 +107,9 @@ namespace Backend.Controllers
             if (!string.IsNullOrEmpty(model.CompanyBio) && model.CompanyBio != supplier.CompanyBio)
                 supplier.CompanyBio = model.CompanyBio;
 
+            
+            _context.Suppliers.Update(supplier);
+            _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Podaci dobavljača su uspešno ažurirani!" });
@@ -102,23 +119,40 @@ namespace Backend.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadSupplierPhoto([FromForm] UploadImageDto model)
         {
-           
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
             var supplier = await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == userId);
             if (supplier == null)
                 return BadRequest("Supplier not found!");
 
-           
-            string imageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
+            
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            if (user == null)
+                return BadRequest("User not found!");
 
             
-            await CommonHelpers.RemovePhoto(supplier.Image, _env);
+            string oldSupplierImage = supplier.Image;
+            string oldUserImage = user.ProfilePicture;
+
+            
+            string imageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
 
             
             supplier.Image = imageName;
             _context.Suppliers.Update(supplier);
+
+            
+            user.ProfilePicture = imageName;
+            _context.Users.Update(user);
+
             await _context.SaveChangesAsync();
+
+            
+            if (!string.IsNullOrEmpty(oldSupplierImage))
+                await CommonHelpers.RemovePhoto(oldSupplierImage, _env);
+
+            if (!string.IsNullOrEmpty(oldUserImage) && oldUserImage != oldSupplierImage)
+                await CommonHelpers.RemovePhoto(oldUserImage, _env);
 
             return Ok();
         }
