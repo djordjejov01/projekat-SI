@@ -165,9 +165,9 @@ const checkUserProfile = async () => {
     }
 
     const user = await response.json();
-    const { firstName, lastName, email, phoneNumber } = user;
+    const { firstName, lastName, email } = user;
 
-    if (!firstName || !lastName || !email || !phoneNumber) {
+    if (!firstName || !lastName || !email) {
       Alert.alert(
         'Nalog nije potpun',
         'Da biste nastavili, molimo vas da popunite osnovne podatke o sebi.',
