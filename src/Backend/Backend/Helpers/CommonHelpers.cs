@@ -16,11 +16,13 @@ namespace Backend.Helpers
             return Regex.IsMatch(email, pattern);
         }
 
-        public static bool IsPhoneNumberValid(string phoneNumber)
+                public static bool IsPhoneNumberValid(string phoneNumber)
         {
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 return false;
-            var pattern = @"^(?:\+3816\d{8}|06\d{8})$";
+                
+            var pattern = @"^(?:\+?[1-9]\d{5,14}|0\d{8,12})$";
+
             return Regex.IsMatch(phoneNumber, pattern);
         }
 
