@@ -19,7 +19,8 @@ import { useTranslation } from 'react-i18next';
 export default function SignUpScreen() {
   const { t } = useTranslation();
 
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -42,7 +43,7 @@ export default function SignUpScreen() {
   };
 
   const handleSubmit = async () => {
-    if (!fullName || !email || !password || !confirmPassword) {
+    if (!firstName || !lastName || !email || !password || !confirmPassword) {
       Alert.alert(t('error'), t('allFieldsRequired'));
       return;
     }
@@ -67,7 +68,8 @@ export default function SignUpScreen() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          username: fullName,
+          firstName,
+          lastName,
           email,
           password,
           confirmPassword,
@@ -124,10 +126,18 @@ export default function SignUpScreen() {
 
       <TextInput
         style={styles.input}
-        placeholder={t('fullNamePlaceholder')}
+        placeholder={t('firstNamePlaceholder')}
         placeholderTextColor="#888"
-        value={fullName}
-        onChangeText={setFullName}
+        value={firstName}
+        onChangeText={setFirstName}
+      />
+
+      <TextInput
+        style={styles.input}
+        placeholder={t('lastNamePlaceholder')}
+        placeholderTextColor="#888"
+        value={lastName}
+        onChangeText={setLastName}
       />
 
       <TextInput
