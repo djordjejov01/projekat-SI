@@ -126,7 +126,7 @@ export default function SignUpScreen() {
 
       <TextInput
         style={styles.input}
-        placeholder={t('firstNamePlaceholder')}
+        placeholder={t('personalInfo.firstNamePlaceholder')}
         placeholderTextColor="#888"
         value={firstName}
         onChangeText={setFirstName}
@@ -134,7 +134,7 @@ export default function SignUpScreen() {
 
       <TextInput
         style={styles.input}
-        placeholder={t('lastNamePlaceholder')}
+        placeholder={t('personalInfo.lastNamePlaceholder')}
         placeholderTextColor="#888"
         value={lastName}
         onChangeText={setLastName}

@@ -281,7 +281,6 @@ export default function PersonalInfoScreen() {
       <Text style={styles.label}>{t('personalInfo.phone')}</Text>
       <TextInput
         style={styles.input}
-        placeholder={t('personalInfo.phonePlaceholder')}
         value={phoneNumber}
         onChangeText={setPhone}
         keyboardType="phone-pad"
