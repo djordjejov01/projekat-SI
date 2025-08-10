@@ -106,10 +106,16 @@ private availabilityLabels: Record<number, string> = {
       }));
     });
 
+    this.fetchResources();
+  }
+
+  fetchResources()
+  {
     this.apiService.getResources(this.authService.getUserId()).subscribe({
       next: (response : ResourceDto[]) => 
         {
           this.resources = response;
+          console.log(this.resources)
           this.initChart()
         },
 
@@ -121,9 +127,6 @@ private availabilityLabels: Record<number, string> = {
             life: 3000 });
         }
     })
-
-
-    
   }
 
        initChart() {
@@ -288,10 +291,16 @@ getAvailabilityClass(status: ResourceAvailability): string {
     return { labels, counts };
   }
 
-  noteAddedResource(addedResource : ResourceDto)
+  noteSavedResource(savedResource : ResourceDto)
   {
-    this.resources.push(addedResource);
-    this.initChart();
+    if(savedResource){
+      this.resources.push(savedResource);
+      this.initChart();
+    }
+    else{
+      this.fetchResources()
+    }
+    
   }
 
 }

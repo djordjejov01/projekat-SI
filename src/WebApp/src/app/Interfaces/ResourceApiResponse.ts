@@ -1,11 +1,11 @@
 export interface ResourceApiResponse 
 {
-    resourceId : number,
+    resourceID : number,
     name : string,
     category : number,
     isExhaustable : boolean,
     isAvailable : number,
     description : string,
-    supplierId : number,
+    supplierID : number,
     quantity : number
 }

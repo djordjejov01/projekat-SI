@@ -147,18 +147,29 @@ export class ApiService{
 
     constructor(private http: HttpClient) {}
 
+    editResource(editedResource: ResourceDto): Observable<string> {
+    return this.http.put(
+        `${this.apiUrl}/Supplier/resource/${editedResource.getResourceID()}`,
+        editedResource,
+        { responseType: 'text' }
+    ).pipe(
+        catchError(this.handleError)
+    );
+}
+
+
     addResource(resourceToAdd : ResourceDto) : Observable<ResourceDto>
     {
         return this.http.post<ResourceApiResponse>(`${this.apiUrl}/Supplier/resource`, resourceToAdd.toCreateRequestBody()).pipe(
 
             map((response : ResourceApiResponse) =>  new ResourceDto(
-            response.resourceId,
+            response.resourceID,
             response.name,
             response.category,
             response.isExhaustable,
             response.isAvailable,
             response.description, // fixed spelling
-            response.supplierId,
+            response.supplierID,
             response.quantity
             )),
 
@@ -173,13 +184,13 @@ export class ApiService{
         map((response: ResourceApiResponse[]) =>
         response.map(resource =>
             new ResourceDto(
-            resource.resourceId,
+            resource.resourceID,
             resource.name,
             resource.category,
             resource.isExhaustable,
             resource.isAvailable,
             resource.description, // fixed spelling
-            resource.supplierId,
+            resource.supplierID,
             resource.quantity
             )
         )

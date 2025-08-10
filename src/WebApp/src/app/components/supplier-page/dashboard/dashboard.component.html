@@ -256,7 +256,7 @@
                                 type="button"
                                 icon="pi pi-pencil"
                                 class="p-button-rounded p-button-text p-button-sm"
-                                
+                                (click)="resourceModal.openModal(resource)"
                                 pTooltip="Edit Resource"
                                 tooltipPosition="top">
                             </button>
@@ -305,6 +305,6 @@
 
     </div>
 
-    <app-resource-modal (resourceAdded)="noteAddedResource($event)" #resourceModal></app-resource-modal>
+    <app-resource-modal (resourceSaved)="noteSavedResource($event)" #resourceModal></app-resource-modal>
 
 </main>

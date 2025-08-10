@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, Resource } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../Validators/custom.validators';
 import { FormValidationService } from '../../../../Services/FormValidationService';
@@ -33,7 +33,8 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
   visible : boolean = false;
   resourceCategoryOptions: { label: string, value: number }[] = [];
   resourceAvailabilityOptions : { label: string; value: number }[] = []
-  @Output() resourceAdded = new EventEmitter<ResourceDto>();
+  @Output() resourceSaved = new EventEmitter<ResourceDto>();
+  resourceToEdit : ResourceDto | null = null;
 
   resourceTypeOptions = [
   { label: 'Exhaustible', value: true },
@@ -85,8 +86,24 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
   }
 
 
-  openModal(){
+  openModal(resourceToEdit? : ResourceDto){
     this.visible = true;
+
+    if(resourceToEdit){
+      console.log(resourceToEdit)
+      this.resourceForm.patchValue({
+      name: resourceToEdit.getName(),
+      category: resourceToEdit.getCategory(),
+      type: resourceToEdit.getIsExhaustable(),
+      description: resourceToEdit.getDescription(),
+      quantity: resourceToEdit.getQuantity(),
+    });
+
+    this.resourceToEdit = resourceToEdit
+    }
+    else{
+      this.resourceToEdit = null;
+    }
   }
 
   closeModal()
@@ -113,8 +130,8 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
     const formValue = this.resourceForm.value;
     const availability = formValue.type ? (formValue.quantity > 0 ? ResourceAvailability.Available : ResourceAvailability.Unavailable) : ResourceAvailability.Available
 
-    const resourceToAdd = new ResourceDto(
-      0,
+    const resource = new ResourceDto(
+      this.resourceToEdit ? this.resourceToEdit.getResourceID() : 0,
       formValue.name,
       formValue.category,
       formValue.type,
@@ -125,21 +142,44 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
       )
 
 
-    this.apiService.addResource(resourceToAdd).subscribe({
-      next: (addedResource : ResourceDto) => 
-      {
-        this.messageService.add({ severity: 'success', summary: 'Added', detail: 'Resource Added Successfully!' });
-        this.resourceAdded.emit(addedResource)
-        this.closeModal()
-      },
-      error: (errorResponse) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorResponse.message,
-            life: 3000 });
-        }
-    });
+    if(this.resourceToEdit)
+    {
+
+      this.apiService.editResource(resource).subscribe({
+        next: (msg) => 
+        {
+          this.messageService.add({ severity: 'success', summary: 'Edited', detail: msg});
+          this.resourceSaved.emit(null);
+          this.closeModal()
+        },
+         error: (errorResponse) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000 });
+          }
+      });
+
+    }else{
+      this.apiService.addResource(resource).subscribe({
+        next: (addedResource : ResourceDto) => 
+        {
+          this.messageService.add({ severity: 'success', summary: 'Added', detail: 'Resource Added Successfully!' });
+          this.resourceSaved.emit(addedResource)
+          this.closeModal()
+        },
+        error: (errorResponse) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000 });
+          }
+      });
+    }
+
+
   }
 
       canExit () : boolean | Observable<boolean> | Promise<boolean>{
