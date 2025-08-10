@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { HttpClient, HttpErrorResponse, HttpResponse } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse, HttpParams, HttpResponse } from "@angular/common/http";
 import { Observable, throwError, catchError, map } from "rxjs";
 import { RegisterDto } from "../Models/RegisterDto";
 import { LoginDto } from "../Models/LoginDto";
@@ -37,6 +37,8 @@ import { SupplierDtoResponse } from "../Interfaces/SupplierDtoResponse";
 import { UpdateSupplierDto } from "../Models/UpdateSupplierDto";
 import { ResourceCategory } from "./ResourceCategoryService";
 import { ResourceAvailability } from "./ResourceAvailabilityService";
+import { ResourceApiResponse } from "../Interfaces/ResourceApiResponse";
+import { ResourceDto } from "../Models/ResourceDto";
 
 
 // Match Backend.Models.Dto.EventDto
@@ -144,6 +146,29 @@ export class ApiService{
     private apiUrl = 'https://localhost:7269/api';
 
     constructor(private http: HttpClient) {}
+
+    getResources(supplierId: number): Observable<ResourceDto[]> {
+    const params = new HttpParams().set('supplierId', supplierId.toString());
+
+    return this.http.get<ResourceApiResponse[]>(`${this.apiUrl}/Supplier/resources`, { params }).pipe(
+        map((response: ResourceApiResponse[]) =>
+        response.map(resource =>
+            new ResourceDto(
+            resource.resourceId,
+            resource.name,
+            resource.category,
+            resource.isExhaustable,
+            resource.isAvailable,
+            resource.description, // fixed spelling
+            resource.supplierId,
+            resource.quantity
+            )
+        )
+        ),
+        catchError(error => this.handleError(error))
+    );
+    }
+
 
     getResourceAvailabilities(): Observable<ResourceAvailability[]> {
         return this.http.get<ResourceAvailability[]>(`${this.apiUrl}/Supplier/availabilities`).pipe(

@@ -324,7 +324,7 @@ namespace Backend.Controllers
                     Description = r.Description,
                     SupplierID = r.SupplierID,
                     Quantity = r.Quantity,
-                    Supplier = r.Supplier
+                    //Supplier = r.Supplier
                 })
                 .ToListAsync();
 

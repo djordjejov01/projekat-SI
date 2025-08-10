@@ -9,7 +9,6 @@ export class ResourceDto {
     private description: string,
     private supplierID: number,
     private quantity: number,
-    private supplier: any
   ) {}
 
   getResourceID(): number {
@@ -42,11 +41,6 @@ export class ResourceDto {
 
   getQuantity(): number {
     return this.quantity;
-  }
-
-
-  getSupplier(): any {
-    return this.supplier;
   }
 
 }

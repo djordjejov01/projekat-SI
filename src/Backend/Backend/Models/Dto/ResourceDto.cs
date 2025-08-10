@@ -13,6 +13,6 @@ namespace Backend.Models.Dto
         public string Description { get; set; }
         public int SupplierID { get; set; }
         public int Quantity { get; set; }
-        public User Supplier { get; set; }
+        //public User Supplier { get; set; }
     }
 }

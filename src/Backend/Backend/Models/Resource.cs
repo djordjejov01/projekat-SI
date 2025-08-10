@@ -24,7 +24,7 @@ namespace Backend.Models
 
         public int Quantity { get; set; }
 
-        public User Supplier { get; set; }
+        //public User Supplier { get; set; }
     }
     public enum ResourceCategory
     {

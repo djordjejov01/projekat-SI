@@ -20,6 +20,11 @@ import { ResourceModalComponent } from './resource-modal/resource-modal.componen
 import { ResourceAvailabilityService } from '../../../Services/ResourceAvailabilityService';
 import { ResourceCategoryService } from '../../../Services/ResourceCategoryService';
 import { take } from 'rxjs';
+import { ApiService } from '../../../Services/api.service';
+import { ResourceDto } from '../../../Models/ResourceDto';
+import { AuthService } from '../../../Services/auth.service';
+import { MessageService } from 'primeng/api';
+import { CategoryService } from '../../../Services/EventCategoryService';
 
 @Component({
   selector: 'app-dashboard',
@@ -29,7 +34,8 @@ import { take } from 'rxjs';
 })
 export class DashboardComponent  implements OnInit{
 
-  resources = DUMMY_RESOURCES
+  //resources = DUMMY_RESOURCES
+  resources : ResourceDto[] = [];
   selectedResources : Resource[] = []
   loading = false;
   searchValue : string;
@@ -62,10 +68,6 @@ private availabilityLabels: Record<number, string> = {
   [ResourceAvailability.Booked]: 'Booked'
 };
 
-private typeLabels: Record<number, string> = {
-  [ResourceType.Exhaustable]: 'Exhaustible',
-  [ResourceType.Inexhaustable]: 'Inexhaustible'
-};
 
 
 
@@ -76,9 +78,11 @@ private typeLabels: Record<number, string> = {
 
 
   constructor(private cd: ChangeDetectorRef,
-    private pinCategoryService : PinCategoryService,
-     private resourceAvailabilityService : ResourceAvailabilityService,
+    private resourceAvailabilityService : ResourceAvailabilityService,
     private resourceCategoryService : ResourceCategoryService,
+    private apiService : ApiService,
+    private authService : AuthService,
+    private messageService : MessageService
     ){}
 
   ngOnInit(): void {
@@ -102,8 +106,24 @@ private typeLabels: Record<number, string> = {
       }));
     });
 
+    this.apiService.getResources(this.authService.getUserId()).subscribe({
+      next: (response : ResourceDto[]) => 
+        {
+          this.resources = response;
+          this.initChart()
+        },
 
-    this.initChart()
+       error: (errorResponse) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: errorResponse.message,
+            life: 3000 });
+        }
+    })
+
+
+    
   }
 
        initChart() {
@@ -209,13 +229,14 @@ private typeLabels: Record<number, string> = {
 }
 
 
-getAvailabilityName(value: number): string {
+getAvailabilityName(value: ResourceAvailability): string {
   return this.availabilityLabels[value] ?? 'Unknown';
 }
 
-getTypeName(value: number): string {
-  return this.typeLabels[value] ?? 'Unknown';
+getTypeName(value: boolean): string {
+  return value ? 'Exhaustible' : 'Inexhaustible';
 }
+
 
 // 4. For Category (lookup from resourceCategoryOptions)
 getCategoryName(value: number): string {
@@ -236,11 +257,11 @@ getAvailabilityClass(status: ResourceAvailability): string {
   }
 }
 
-  getTypeClass(type: ResourceType): string {
+  getTypeClass(type: boolean): string {
     switch (type) {
-      case ResourceType.Exhaustable:
+      case true:
         return 'bg-[#fce7f3] text-[#a21d57]';
-      case ResourceType.Inexhaustable:
+      case false:
         return 'bg-[#e0f2fe] text-[#0369a1]';
       default:
         return '';
@@ -253,11 +274,11 @@ getAvailabilityClass(status: ResourceAvailability): string {
     this.searchValue = '';
   }
 
-  getResourceCategoryChartData(resources: Resource[]): { labels: string[], counts: number[] } {
+  getResourceCategoryChartData(resources: ResourceDto[]): { labels: string[], counts: number[] } {
     const countsMap: Record<string, number> = {};
 
     for (const resource of resources) {
-      const categoryName = RESOURCE_CATEGORIES[resource.category] ?? 'Unknown';
+      const categoryName = this.resourceCategoryService.getCategoryName(resource.getCategory()) ?? 'Unknown';
       countsMap[categoryName] = (countsMap[categoryName] || 0) + 1;
     }
 
