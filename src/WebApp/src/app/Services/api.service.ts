@@ -1,5 +1,5 @@
-import { Injectable } from "@angular/core";
-import { HttpClient, HttpErrorResponse, HttpResponse } from "@angular/common/http";
+import { Injectable, resource } from "@angular/core";
+import { HttpClient, HttpErrorResponse, HttpParams, HttpResponse } from "@angular/common/http";
 import { Observable, throwError, catchError, map } from "rxjs";
 import { RegisterDto } from "../Models/RegisterDto";
 import { LoginDto } from "../Models/LoginDto";
@@ -35,6 +35,10 @@ import { EventPinApiResponse } from "../Interfaces/EventPinApiResponse";
 import { SupplierDto } from "../Models/SupplierDto";
 import { SupplierDtoResponse } from "../Interfaces/SupplierDtoResponse";
 import { UpdateSupplierDto } from "../Models/UpdateSupplierDto";
+import { ResourceCategory } from "./ResourceCategoryService";
+import { ResourceAvailability } from "./ResourceAvailabilityService";
+import { ResourceApiResponse } from "../Interfaces/ResourceApiResponse";
+import { ResourceDto } from "../Models/ResourceDto";
 
 
 // Match Backend.Models.Dto.EventDto
@@ -142,6 +146,80 @@ export class ApiService{
     private apiUrl = 'https://localhost:7269/api';
 
     constructor(private http: HttpClient) {}
+
+    deleteResource(resourceId : number) : Observable<string>
+    {
+        return this.http.delete(`${this.apiUrl}/Supplier/resource/${resourceId}`, { responseType: 'text' }).pipe(
+            catchError(error => this.handleError(error))
+        )
+    }
+
+    editResource(editedResource: ResourceDto): Observable<string> {
+    return this.http.put(
+        `${this.apiUrl}/Supplier/resource/${editedResource.getResourceID()}`,
+        editedResource,
+        { responseType: 'text' }
+    ).pipe(
+        catchError(this.handleError)
+    );
+}
+
+
+    addResource(resourceToAdd : ResourceDto) : Observable<ResourceDto>
+    {
+        return this.http.post<ResourceApiResponse>(`${this.apiUrl}/Supplier/resource`, resourceToAdd.toCreateRequestBody()).pipe(
+
+            map((response : ResourceApiResponse) =>  new ResourceDto(
+            response.resourceID,
+            response.name,
+            response.category,
+            response.isExhaustable,
+            response.isAvailable,
+            response.description, // fixed spelling
+            response.supplierID,
+            response.quantity
+            )),
+
+            catchError(error => this.handleError(error))
+        )
+    }
+
+    getResources(supplierId: number): Observable<ResourceDto[]> {
+    const params = new HttpParams().set('supplierId', supplierId.toString());
+
+    return this.http.get<ResourceApiResponse[]>(`${this.apiUrl}/Supplier/resources`, { params }).pipe(
+        map((response: ResourceApiResponse[]) =>
+        response.map(resource =>
+            new ResourceDto(
+            resource.resourceID,
+            resource.name,
+            resource.category,
+            resource.isExhaustable,
+            resource.isAvailable,
+            resource.description, // fixed spelling
+            resource.supplierID,
+            resource.quantity
+            )
+        )
+        ),
+        catchError(error => this.handleError(error))
+    );
+    }
+
+
+    getResourceAvailabilities(): Observable<ResourceAvailability[]> {
+        return this.http.get<ResourceAvailability[]>(`${this.apiUrl}/Supplier/availabilities`).pipe(
+            catchError(this.handleError)
+        );
+    }
+
+    getResourceCategories() : Observable<ResourceCategory[]>{
+
+        return this.http.get<ResourceCategory[]>(`${this.apiUrl}/Supplier/resource-categories`).pipe(
+            catchError(this.handleError)
+        )
+
+    }
 
     searchLocations(query) : Observable<any[]>{
        return this.http.get<any[]>('https://nominatim.openstreetmap.org/search', {

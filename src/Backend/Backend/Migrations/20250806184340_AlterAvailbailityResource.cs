@@ -17,7 +17,7 @@ namespace Backend.Migrations
 
             // 2) add the new enum (integer) column
             migrationBuilder.AddColumn<int>(
-                name: "Availability",
+                name: "IsAvailable",
                 table: "Resources",
                 type: "integer",
                 nullable: false,
