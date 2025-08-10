@@ -25,6 +25,7 @@ import { ResourceDto } from '../../../Models/ResourceDto';
 import { AuthService } from '../../../Services/auth.service';
 import { MessageService } from 'primeng/api';
 import { CategoryService } from '../../../Services/EventCategoryService';
+import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -82,7 +83,8 @@ private availabilityLabels: Record<number, string> = {
     private resourceCategoryService : ResourceCategoryService,
     private apiService : ApiService,
     private authService : AuthService,
-    private messageService : MessageService
+    private messageService : MessageService,
+    private confirmationDialogService : ConfirmationDialogService
     ){}
 
   ngOnInit(): void {
@@ -301,6 +303,33 @@ getAvailabilityClass(status: ResourceAvailability): string {
       this.fetchResources()
     }
     
+  }
+
+  deleteResource(resource : ResourceDto)
+  {
+    
+      this.confirmationDialogService
+      .confirm(`Are you sure you want to delete the resource "${resource.getName()}"?`)
+      .then(confirmed => {
+        
+        if(!confirmed) return;
+
+        this.apiService.deleteResource(resource.getResourceID()).subscribe({
+          next: (msg) => 
+            {
+              this.fetchResources();
+              this.messageService.add({ severity: 'success', summary: 'Deleted', detail: msg});
+            },
+            error: (errorResponse) => {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Error',
+                  detail: errorResponse.message,
+                  life: 3000 });
+              }
+        });
+      })
+
   }
 
 }

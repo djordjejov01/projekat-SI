@@ -147,6 +147,13 @@ export class ApiService{
 
     constructor(private http: HttpClient) {}
 
+    deleteResource(resourceId : number) : Observable<string>
+    {
+        return this.http.delete(`${this.apiUrl}/Supplier/resource/${resourceId}`, { responseType: 'text' }).pipe(
+            catchError(error => this.handleError(error))
+        )
+    }
+
     editResource(editedResource: ResourceDto): Observable<string> {
     return this.http.put(
         `${this.apiUrl}/Supplier/resource/${editedResource.getResourceID()}`,
