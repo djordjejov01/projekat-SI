@@ -21,6 +21,31 @@ import { useTranslation } from 'react-i18next';
 const screen = Dimensions.get('window');
 
 
+type EventDto = {
+  eventId: number;
+  title: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  imageUrl: string;
+  parentEventId: number;
+  description: string;
+};
+
+type ActivityDto = {
+  activityId: number;
+  eventId: number;
+  title: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+  category: string; // ili kako backend šalje
+};
+
+type EventsSubeventsActivitiesDto = {
+  eventsAndSubevents: EventDto[];
+  activities: ActivityDto[];
+};
 
 type AgendaItem = {
   title: string;
@@ -80,9 +105,25 @@ export default function EventDetailScreen() {
   const [updatingFavorite, setUpdatingFavorite] = useState(false);
   const [pinCategories, setPinCategories] = useState<PinCategory[]>([]);
   const { loadFavorites } = useFavorites();
+  const [openSubeventId, setOpenSubeventId] = useState<string | null>(null);
+  const handleToggleSubevent = (id: string) => {
+    if (openSubeventId === id) {
+      setOpenSubeventId(null);
+    } else {
+      setOpenSubeventId(id);
+    }
+  };
+  const handleOpenSubeventDetail = (id: string) => {
+  router.push(`/event/${id}`);
+};
+
+
+  const [agendaLoading, setAgendaLoading] = useState(false);
+  const [agendaError, setAgendaError] = useState<string | null>(null);
 
 
   
+const [agendaData, setAgendaData] = useState<EventsSubeventsActivitiesDto | null>(null);
   
  useEffect(() => {
   const fetchEvent = async () => {
@@ -132,9 +173,63 @@ export default function EventDetailScreen() {
 
   fetchEvent();
 }, [currentId]);
+useEffect(() => {
+  if (!currentId) return;
+
+  const fetchAgenda = async () => {
+    setAgendaLoading(true);
+    setAgendaError(null);
+
+    try {
+      const token = await AsyncStorage.getItem('token');
+
+      const headers: any = {};
+      if (token) headers.Authorization = `Bearer ${token}`;
+
+      const response = await fetch(`${API_URL}/api/events/subevents-activities/${currentId}`, { headers });
+      if (!response.ok) throw new Error(t('failedToLoadAgenda'));
 
 
-  
+      const data: EventsSubeventsActivitiesDto = await response.json();
+      setAgendaData(data);
+    } catch (err) {
+      console.error(err);
+      setAgendaError(t('failedToLoadAgenda'));
+    } finally {
+      setAgendaLoading(false);
+    }
+  };
+
+  fetchAgenda();
+}, [currentId]);
+
+  const combinedSortedAgendaItems = () => {
+  if (!agendaData) return [];
+
+  const events = agendaData.eventsAndSubevents.map((e) => ({
+    id: `event-${e.eventId}`,
+    type: 'event' as const,
+    title: e.title,
+    description: e.description,
+    startDate: e.startDate,
+    endDate: e.endDate,
+  }));
+
+  const activities = agendaData.activities.map((a) => ({
+    id: `activity-${a.activityId}`,
+    type: 'activity' as const,
+    title: a.title,
+    description: a.description,
+    startDate: a.startDate,
+    endDate: a.endDate,
+  }));
+
+  const combined = [...events, ...activities];
+  combined.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+
+  return combined;
+};
+
 const checkUserProfile = async () => {
   try {
     const token = await AsyncStorage.getItem('token');
@@ -408,21 +503,91 @@ const handleBuyTicket = async () => {
       <Text style={styles.sectionTitle}>{t('eventDescription')}</Text>
       <Text style={styles.description}>{event.description}</Text>
 
-      {event.agenda?.length > 0 && (
-        <>
-          <Text style={styles.sectionTitle}>{t('agenda')}</Text>
-          {event.agenda.map((item, index) => (
-            <View key={index} style={styles.scheduleItem}>
-              <Text style={styles.scheduleTime}>
-                {new Date(item.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -{' '}
-                {new Date(item.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </Text>
-              <Text style={styles.scheduleTitle}>{item.title}</Text>
-              <Text style={styles.scheduleDesc}>{item.description}</Text>
+    {!agendaLoading && !agendaError && agendaData && (
+  <>
+    <Text style={styles.sectionTitle}>{t('agenda')}</Text>
+    {combinedSortedAgendaItems().map((item) => {
+      if (item.type === 'event') {
+        // Ovo je glavni događaj ili poddogađaj
+        const isSubevent = agendaData.eventsAndSubevents.some(e => e.eventId === parseInt(item.id.replace('event-', '')) && e.parentEventId !== 0);
+        // Prikazujemo bold samo ako je poddogađaj (parentEventId !== 0)
+        return (
+          <View key={item.id} style={styles.scheduleItem}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <TouchableOpacity onPress={() => handleToggleSubevent(item.id)} style={{ flex: 1 }}>
+                <Text style={[
+                  styles.scheduleTime,
+                  { fontWeight: isSubevent ? '800' : '700', fontSize: isSubevent ? 16 : 14 }
+                ]}>
+                  {new Date(item.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -{' '}
+                  {new Date(item.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </Text>
+                <Text style={[
+                  styles.scheduleTitle,
+                  { fontWeight: isSubevent ? '800' : '700', fontSize: isSubevent ? 18 : 16 }
+                ]}>
+                  {item.title}
+                </Text>
+              </TouchableOpacity>
+              {/* Ikonica lupice za otvaranje detalja poddogađaja */}
+              {isSubevent && (
+                <TouchableOpacity onPress={() => handleOpenSubeventDetail(item.id.replace('event-', ''))} style={{ paddingHorizontal: 8 }}>
+                  <Ionicons name="search-outline" size={24} color="#2563EB" />
+                </TouchableOpacity>
+              )}
             </View>
-          ))}
-        </>
-      )}
+
+            {/* Padajući meni aktivnosti ako je otvoren */}
+            {isSubevent && openSubeventId === item.id && (
+              <View style={{ marginTop: 8, paddingLeft: 16 }}>
+                {agendaData.activities
+                  .filter((a) => a.eventId === parseInt(item.id.replace('event-', '')))
+                  .map((activity) => (
+                    <View key={`activity-${activity.activityId}`} style={styles.scheduleItem}>
+                      <Text style={styles.scheduleTime}>
+                        {new Date(activity.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -{' '}
+                        {new Date(activity.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </Text>
+                      <Text style={[styles.scheduleTitle, { fontWeight: '500' }]}>
+                        {activity.title} ({t('activity')})
+                      </Text>
+                      <Text style={styles.scheduleDesc}>{activity.description}</Text>
+                    </View>
+                  ))}
+              </View>
+            )}
+          </View>
+        );
+      } else {
+        // Aktivnosti (ako nisu u dropdown-u) ih ne prikazujemo ovde, jer su u dropdownu ispod poddogađaja
+        return null;
+      }
+    })}
+    {/* Prikaz aktivnosti koje nisu vezane za poddogađaje */}
+{agendaData.activities
+  .filter((activity) => {
+    // Aktivnosti koje nisu vezane ni za jedan poddogađaj
+    // tj. eventId nije id nijednog poddogađaja
+    const isForSubevent = agendaData.eventsAndSubevents.some(
+      (e) => e.eventId === activity.eventId && e.parentEventId !== 0
+    );
+    return !isForSubevent;
+  })
+  .map((activity) => (
+    <View key={`activity-${activity.activityId}`} style={styles.scheduleItem}>
+      <Text style={styles.scheduleTime}>
+        {new Date(activity.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -{' '}
+        {new Date(activity.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+      </Text>
+      <Text style={[styles.scheduleTitle, { fontWeight: '500' }]}>
+        {activity.title} 
+      </Text>
+      <Text style={styles.scheduleDesc}>{activity.description}</Text>
+    </View>
+  ))}
+
+  </>
+)}
 
       {coords && (
         <>
