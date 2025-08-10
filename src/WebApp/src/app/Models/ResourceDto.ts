@@ -9,9 +9,21 @@ export class ResourceDto {
     private description: string,
     private supplierID: number,
     private quantity: number,
-    private measurement: number | undefined,
-    private supplier: any
   ) {}
+
+  toCreateRequestBody() {
+  return {
+    // Don't include resourceID here
+    name: this.name,
+    category: this.category,
+    isExhaustable: this.isExhaustable,
+    isAvailable: this.isAvailable,
+    description: this.description,
+    supplierID: this.supplierID,
+    quantity: this.quantity
+  };
+}
+
 
   getResourceID(): number {
     return this.resourceID;
@@ -43,14 +55,6 @@ export class ResourceDto {
 
   getQuantity(): number {
     return this.quantity;
-  }
-
-  getMeasurement(): number | undefined {
-    return this.measurement;
-  }
-
-  getSupplier(): any {
-    return this.supplier;
   }
 
 }

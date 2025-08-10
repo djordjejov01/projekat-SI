@@ -174,7 +174,6 @@ namespace Backend.Controllers
                 Description = r.Description,
                 SupplierID = r.SupplierID,
                 Quantity = r.Quantity,
-                Measurment = r.Measurment,
             }).ToList();
 
             return Ok(dtos);
@@ -194,7 +193,6 @@ namespace Backend.Controllers
                 Description = dto.Description,
                 SupplierID = dto.SupplierID,
                 Quantity = dto.Quantity,
-                Measurment = dto.Measurment,
             };
 
             _context.Resources.Add(resource);
@@ -218,7 +216,6 @@ namespace Backend.Controllers
             resource.Description = dto.Description;
             resource.SupplierID = dto.SupplierID;
             resource.Quantity = dto.Quantity;
-            resource.Measurment = dto.Measurment;
 
             await _context.SaveChangesAsync();
 
@@ -302,19 +299,6 @@ namespace Backend.Controllers
         }
 
 
-        [HttpGet("measure-units")]
-        public async Task<IActionResult> GetMeasureUnits()
-        {
-            var measures = Enum.GetValues(typeof(ResourceAvailability))
-                .Cast<ResourceMeasurment>()
-                .Select(a => new {
-                    Id = (int)a,
-                    Name = a.ToString()
-                });
-            return Ok(measures);
-        }
-
-
         [HttpGet("ReusableResources")]
         public async Task<IActionResult> GetSupplierReusableResources()
         {
@@ -340,7 +324,7 @@ namespace Backend.Controllers
                     Description = r.Description,
                     SupplierID = r.SupplierID,
                     Quantity = r.Quantity,
-                    Supplier = r.Supplier
+                    //Supplier = r.Supplier
                 })
                 .ToListAsync();
 
