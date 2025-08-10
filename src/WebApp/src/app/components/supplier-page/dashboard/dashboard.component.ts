@@ -288,4 +288,10 @@ getAvailabilityClass(status: ResourceAvailability): string {
     return { labels, counts };
   }
 
+  noteAddedResource(addedResource : ResourceDto)
+  {
+    this.resources.push(addedResource);
+    this.initChart();
+  }
+
 }

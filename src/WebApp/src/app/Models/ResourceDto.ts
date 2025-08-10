@@ -11,6 +11,20 @@ export class ResourceDto {
     private quantity: number,
   ) {}
 
+  toCreateRequestBody() {
+  return {
+    // Don't include resourceID here
+    name: this.name,
+    category: this.category,
+    isExhaustable: this.isExhaustable,
+    isAvailable: this.isAvailable,
+    description: this.description,
+    supplierID: this.supplierID,
+    quantity: this.quantity
+  };
+}
+
+
   getResourceID(): number {
     return this.resourceID;
   }

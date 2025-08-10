@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, resource } from "@angular/core";
 import { HttpClient, HttpErrorResponse, HttpParams, HttpResponse } from "@angular/common/http";
 import { Observable, throwError, catchError, map } from "rxjs";
 import { RegisterDto } from "../Models/RegisterDto";
@@ -146,6 +146,25 @@ export class ApiService{
     private apiUrl = 'https://localhost:7269/api';
 
     constructor(private http: HttpClient) {}
+
+    addResource(resourceToAdd : ResourceDto) : Observable<ResourceDto>
+    {
+        return this.http.post<ResourceApiResponse>(`${this.apiUrl}/Supplier/resource`, resourceToAdd.toCreateRequestBody()).pipe(
+
+            map((response : ResourceApiResponse) =>  new ResourceDto(
+            response.resourceId,
+            response.name,
+            response.category,
+            response.isExhaustable,
+            response.isAvailable,
+            response.description, // fixed spelling
+            response.supplierId,
+            response.quantity
+            )),
+
+            catchError(error => this.handleError(error))
+        )
+    }
 
     getResources(supplierId: number): Observable<ResourceDto[]> {
     const params = new HttpParams().set('supplierId', supplierId.toString());

@@ -305,6 +305,6 @@
 
     </div>
 
-    <app-resource-modal #resourceModal></app-resource-modal>
+    <app-resource-modal (resourceAdded)="noteAddedResource($event)" #resourceModal></app-resource-modal>
 
 </main>
