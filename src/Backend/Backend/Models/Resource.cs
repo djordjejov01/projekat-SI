@@ -23,8 +23,6 @@ namespace Backend.Models
         public int SupplierID { get; set; }
 
         public int Quantity { get; set; }
-
-        //public User Supplier { get; set; }
     }
     public enum ResourceCategory
     {

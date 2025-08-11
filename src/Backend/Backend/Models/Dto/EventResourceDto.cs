@@ -7,9 +7,10 @@
         public int EventID { get; set; }
         public int ResourceID { get; set; }
         public int Quantity { get; set; }
-        public string Measure { get; set; }
         public bool IsReservable { get; set; }
         public EventResourceStatus Status { get; set; }
+        public DateTime? StartDateTimeBooked { get; set; }
+        public DateTime? EndDateTimeBooked { get; set; }
     }
 
 }

@@ -658,13 +658,41 @@ namespace Backend.Controllers
             return Ok(suppliers);
         }
         [HttpGet("supplier/{supplierId}/resources")]
-        public async Task<IActionResult> GetSupplierResources(int supplierId)
+        public async Task<IActionResult> GetSupplierResources(int supplierId, int eventId)
         {
             var resources = await _context.Resources
                 .Where(r => r.SupplierID == supplierId)
                 .ToListAsync();
+
+            var ourEvent = await _context.Events
+                .FirstOrDefaultAsync(x => x.EventID == eventId);
+
+            if (ourEvent == null) return NotFound($"Event {eventId} not found.");
+
+            var eventResources = await _context.EventResources.ToListAsync();
+
+            var eventStart = ourEvent.StartDate;  
+            var eventEnd = ourEvent.EndDate;
+
+            for (int i = resources.Count - 1; i >= 0; i--)
+            {
+                var res = resources[i];
+                if (!res.IsExhaustable)
+                {
+                    bool overlaps = eventResources
+                        .Where(er => er.ResourceID == res.ResourceID)
+                        .Any(er =>
+                            er.StartDateTimeBooked < eventEnd &&  
+                            er.EndDateTimeBooked > eventStart); 
+
+                    if (overlaps)
+                        resources.RemoveAt(i);
+                }
+            }
+
             return Ok(resources);
         }
+
         [HttpPost("eventresource/request")]
         public async Task<IActionResult> RequestResource([FromBody] EventResourceDto dto)
         {
@@ -681,7 +709,6 @@ namespace Backend.Controllers
                 EventID = dto.EventID,
                 ResourceID = dto.ResourceID,
                 Quantity = dto.Quantity,
-                Measure = dto.Measure,
                 IsReservable = dto.IsReservable,
                 Status = EventResourceStatus.Pending
             };
@@ -709,7 +736,6 @@ namespace Backend.Controllers
                 EventID = er.EventID,
                 ResourceID = er.ResourceID,
                 Quantity = er.Quantity,
-                Measure = er.Measure,
                 IsReservable = er.IsReservable,
                 Status = er.Status,
             }).ToList();

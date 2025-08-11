@@ -227,7 +227,21 @@ namespace Backend.Controllers
         {
             var resource = await _context.Resources.FindAsync(id);
             if (resource == null) return NotFound();
-
+            if (!resource.IsExhaustable && resource.IsAvailable == ResourceAvailability.Booked)
+                return BadRequest("Cannot delete booked inexhaustable resource.");
+            ResourceLog resourceLog = new ResourceLog
+            {
+                ResourceID = resource.ResourceID,
+                Quantity = resource.Quantity,
+                LogDate = DateTime.UtcNow,
+                Name = resource.Name,
+                Category = resource.Category,
+                IsExhaustable = resource.IsExhaustable,
+                IsAvailable = resource.IsAvailable,
+                Description = resource.Description,
+                SupplierID = resource.SupplierID,
+            };
+            _context.ResourceLog.Add(resourceLog);
             _context.Resources.Remove(resource);
             await _context.SaveChangesAsync();
 
@@ -274,31 +288,6 @@ namespace Backend.Controllers
             return Ok("Status updated.");
         }
 
-        [HttpGet("resource-categories")]
-        public IActionResult GetResourceCategories()
-        {
-            var categories = Enum.GetValues(typeof(ResourceCategory))
-                .Cast<ResourceCategory>()
-                .Select(c => new {
-                    Id = (int)c,
-                    Name = c.ToString()
-                });
-            return Ok(categories);
-        }
-
-        [HttpGet("availabilities")]
-        public IActionResult GetAvailabilities()
-        {
-            var avs = Enum.GetValues(typeof(ResourceAvailability))
-                .Cast<ResourceAvailability>()
-                .Select(a => new {
-                    Id = (int)a,
-                    Name = a.ToString()
-                });
-            return Ok(avs);
-        }
-
-
         [HttpGet("ReusableResources")]
         public async Task<IActionResult> GetSupplierReusableResources()
         {
@@ -324,7 +313,6 @@ namespace Backend.Controllers
                     Description = r.Description,
                     SupplierID = r.SupplierID,
                     Quantity = r.Quantity,
-                    //Supplier = r.Supplier
                 })
                 .ToListAsync();
 

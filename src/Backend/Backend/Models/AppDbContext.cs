@@ -21,10 +21,10 @@ namespace Backend.Models
         public DbSet<Organizer> Organizers { get; set; }
         public DbSet<EventCategories> EventCategories { get; set; }
         public DbSet<EventPin> EventPin { get; set; }
-
         public DbSet<PinType> PinTypes { get; set; }
-
         public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<ResourceLog> ResourceLog { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
