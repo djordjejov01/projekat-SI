@@ -1,0 +1,80 @@
+<div class="content">
+
+     <div class="resource-header">
+        <h1>Resource Allocation</h1>
+    </div>
+
+    <hr class="custom-hr">
+
+    <div class="pick-list">
+        <p-pickList 
+        [source]="availableResources" 
+        [target]="allocatedResources" 
+        sourceHeader="Available Resources" 
+        targetHeader="Allocated to Event"
+        [showSourceControls]="false" 
+        [showTargetControls]="false"
+        [dragdrop]="true"
+        [responsive]="true"
+        [style]="{height:'400px'}"
+        filterBy="name"
+        sourceFilterPlaceholder="Search by name"
+        targetFilterPlaceholder="Search by name"
+        breakpoint="1400px"
+        scrollHeight="480px"
+        [sourceTrackBy]="trackById" 
+        [targetTrackBy]="trackById"
+        (onMoveToTarget)="handleMoveToTarget($event)"
+        (onMoveToSource)="handleMoveToSource($event)">
+
+        <ng-template let-resource pTemplate="item">
+            <div class="flex justify-between items-center w-full">
+            
+            <!-- Left: Resource Name -->
+            <span class="font-medium">{{ resource.getName() }}</span>
+
+            <!-- Right: Chips -->
+            <div class="flex gap-2 items-center">
+
+                <!-- Availability Chip -->
+                <span 
+                class="px-3 py-1 rounded-full text-sm font-medium" 
+                [ngClass]="getAvailabilityClass(resource.getIsAvailable())">
+                {{ getAvailabilityText(resource.getIsAvailable()) }}
+                </span>
+
+                <!-- Quantity Left Chip -->
+                <p-chip 
+                *ngIf="resource.getIsExhaustable() === true"
+                label="Qty left: {{ resource.getQuantity() }}"
+                styleClass="px-3 py-1 text-sm h-6 bg-quantity"
+                />
+                
+                <!-- Supplier Chip -->
+                <p-chip 
+                *ngIf="findSupplier(resource.getSupplierID()) as supplier"
+                [label]="supplier.getUsername()" 
+                [image]="supplier.getImage()">
+                </p-chip>
+
+            </div>
+            </div>
+        </ng-template>
+        </p-pickList>
+    </div>
+
+
+    <app-resource-modal
+  (save)="onModalSave($event)"
+  (cancel)="onModalCancel($event)"
+  (onHide)="onModalClosed()" 
+  #resourceModal
+>
+</app-resource-modal>
+
+   
+</div>
+
+
+
+

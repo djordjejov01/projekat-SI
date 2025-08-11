@@ -652,9 +652,10 @@ namespace Backend.Controllers
         [HttpGet("suppliers")]
         public async Task<IActionResult> GetSuppliers()
         {
-            var suppliers = await _context.Users
-                .Where(u => u.Role == UserRole.Supplier)
-                .ToListAsync();
+            var suppliers = await _context.Suppliers.ToListAsync();
+            //var suppliers = await _context.Users
+            //    .Where(u => u.Role == UserRole.Supplier)
+            //    .ToListAsync();
             return Ok(suppliers);
         }
         [HttpGet("supplier/{supplierId}/resources")]
