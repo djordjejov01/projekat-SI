@@ -177,7 +177,7 @@ namespace Backend.Services
             if (eventEntity.StartDate > DateTime.Today.AddYears(1))
                 throw new InvalidOperationException("Event cannot be published more than 1 year in advance.");
 
-            // Provera i validacija pod-event-ova
+            
             var subevents = await _context.Events
                 .Where(e => e.ParentEventId == eventId)
                 .ToListAsync();

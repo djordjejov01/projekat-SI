@@ -201,8 +201,8 @@ namespace Backend.Controllers
         }
 
         
-        [HttpPost("events/publish/{eventId}")]
-        public async Task<IActionResult> PublishEvent(int eventId)
+        [HttpPost("events/publish")]
+        public async Task<IActionResult> PublishEvent([FromBody] int eventId)
         {
             try
             {
@@ -250,8 +250,8 @@ namespace Backend.Controllers
                 return BadRequest(new { message = "Došlo je do greške prilikom brisanja eventa." });
             }
         }
-        [HttpPost("events/cancel/{eventId}")]
-        public async Task<IActionResult> CancelEvent(int eventId)
+        [HttpPost("events/cancel")]
+        public async Task<IActionResult> CancelEvent([FromBody] int eventId)
         {
             try
             {
