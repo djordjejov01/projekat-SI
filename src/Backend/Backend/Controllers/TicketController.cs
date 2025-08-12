@@ -66,6 +66,14 @@ namespace Backend.Controllers
                 if (eventEntity.isFree)
                     return BadRequest($"Nije moguće kupiti kartu za besplatan događaj ({eventEntity.Title}).");
 
+                var userTicketsForEvent = await _context.UserTickets
+                    .Include(ut => ut.Ticket)
+                    .Where(ut => ut.UserID == userId && ut.Ticket.EventID == ticket.EventID)
+                    .CountAsync();
+
+                if (userTicketsForEvent + dto.Quantity > 5)
+                    return BadRequest($"Ne možete kupiti više od 5 karata za događaj {eventEntity.Title}. Već imate {userTicketsForEvent} karata.");
+
                 int sold =await _context.UserTickets.CountAsync(ut => ut.TicketID == dto.TicketID);
                 if (sold + dto.Quantity > ticket.Quota)
                     return BadRequest($"Nema dovoljno dostupnih ulaznica za tip {ticket.TypeName}.");
