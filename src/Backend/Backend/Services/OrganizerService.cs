@@ -116,6 +116,109 @@ namespace Backend.Services
                 throw;
             }
         }
+        public async Task PublishEvent(int eventId, int organizerId)
+        {
+            if (eventId <= 0)
+                throw new ArgumentException("Invalid event ID.", nameof(eventId));
+
+            if (organizerId <= 0)
+                throw new ArgumentException("Invalid organizer ID.", nameof(organizerId));
+
+            var eventEntity = await _context.Events
+                .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
+
+            if (eventEntity == null)
+                throw new ArgumentException("Event not found or you don't have permission to publish it.");
+
+            if (eventEntity.Status == EventStatus.Published)
+                throw new InvalidOperationException("Event is already published.");
+
+            if (eventEntity.Status == EventStatus.Canceled)
+                throw new InvalidOperationException("Cannot publish a canceled event.");
+
+            
+            if (string.IsNullOrWhiteSpace(eventEntity.Title))
+                throw new InvalidOperationException("Event title is required.");
+
+            if (string.IsNullOrWhiteSpace(eventEntity.Location))
+                throw new InvalidOperationException("Event location is required.");
+            
+            if (eventEntity.StartDate == default(DateTime))
+                throw new InvalidOperationException("Event start date is required.");
+
+            if (eventEntity.EndDate == default(DateTime))
+                throw new InvalidOperationException("Event end date is required.");
+
+            if (eventEntity.StartDate >= eventEntity.EndDate)
+                throw new InvalidOperationException("Event start date must be before end date.");
+
+            if (eventEntity.StartDate <= DateTime.UtcNow)
+                throw new InvalidOperationException("Event start date must be in the future.");
+
+            if (!eventEntity.isFree)
+            {
+                var hasTickets = await _context.Tickets
+                    .AnyAsync(t => t.EventID == eventId);
+
+                if (!hasTickets)
+                    throw new InvalidOperationException("Paid events must have tickets before publishing.");
+            }
+
+
+            if (eventEntity.EndDate < DateTime.Today)
+                throw new InvalidOperationException("Event end date cannot be in the past.");
+
+
+            
+            if (eventEntity.StartDate <= DateTime.Today.AddDays(30))
+                throw new InvalidOperationException("Event must be published at least 30 day before start date.");
+
+            
+            if (eventEntity.StartDate > DateTime.Today.AddYears(1))
+                throw new InvalidOperationException("Event cannot be published more than 1 year in advance.");
+
+            // Provera i validacija pod-event-ova
+            var subevents = await _context.Events
+                .Where(e => e.ParentEventId == eventId)
+                .ToListAsync();
+
+            foreach (var subevent in subevents)
+            {
+                
+                if (string.IsNullOrWhiteSpace(subevent.Title))
+                    throw new InvalidOperationException($"Sub-event '{subevent.Title}' must have a title.");
+
+                if (string.IsNullOrWhiteSpace(subevent.Location))
+                    throw new InvalidOperationException($"Sub-event '{subevent.Location}' must have a location.");
+
+                if (subevent.StartDate >= subevent.EndDate)
+                    throw new InvalidOperationException($"Sub-event '{subevent.Title}' start date must be before end date.");
+
+                if (subevent.StartDate < DateTime.Today)
+                    throw new InvalidOperationException($"Sub-event '{subevent.Title}' start date cannot be in the past.");
+            }
+
+            eventEntity.Status = EventStatus.Published;
+            eventEntity.PublishedAt = DateTime.UtcNow;
+
+            foreach (var subevent in subevents)
+            {
+                if (subevent.Status != EventStatus.Published)
+                {
+                    subevent.Status = EventStatus.Published;
+                    subevent.PublishedAt = DateTime.UtcNow;
+                }
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         public async Task DeleteEvent(int eventId,int organizerId)
         {
