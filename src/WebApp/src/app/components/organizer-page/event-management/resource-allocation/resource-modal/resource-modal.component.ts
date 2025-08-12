@@ -13,10 +13,13 @@ import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { CommonModule } from '@angular/common';
 import { DatePickerModule } from 'primeng/datepicker';
+import { Checkbox } from 'primeng/checkbox';
+import { FormValidationService } from '../../../../../Services/FormValidationService';
+import { CustomValidators } from '../../../../../Validators/custom.validators';
 
 @Component({
   selector: 'app-resource-modal',
-  imports: [FormsModule,CheckboxModule,ReactiveFormsModule,DialogModule,ButtonModule,FloatLabelModule,InputTextModule,CommonModule,DatePickerModule],
+  imports: [FormsModule,CheckboxModule,ReactiveFormsModule,DialogModule,ButtonModule,FloatLabelModule,InputTextModule,CommonModule,DatePickerModule,Checkbox],
   templateUrl: './resource-modal.component.html',
   styleUrl: './resource-modal.component.css'
 })
@@ -32,7 +35,7 @@ export class ResourceModalComponent implements IDeactivate{
   resourceForm : FormGroup;
   visible : boolean = false;
 
-  constructor(private fb: FormBuilder, private confirmationDialogService : ConfirmationDialogService) {}
+  constructor(private fb: FormBuilder, private confirmationDialogService : ConfirmationDialogService, private formValidationService : FormValidationService) {}
 
   // ngOnChanges(changes: SimpleChanges) {
   //   if (changes['resource'] && this.resource) {
@@ -54,7 +57,7 @@ buildForm() {
     quantity: new FormControl(null),
     dateFrom: new FormControl(null),
     dateTo: new FormControl(null),
-  });
+  },CustomValidators.startBeforeEndDates('dateFrom','dateTo'));
 
   if (this.resource.getIsExhaustable()) {
     this.resourceForm.get('quantity')?.setValidators([
@@ -77,12 +80,15 @@ buildForm() {
 
 onSaveClick() {
   if (this.resourceForm.valid) {
+    console.log(this.resourceForm.value)
     this.save.emit(this.resource);
     this.resource = null;
     this.supplier = null;
     this.resourceForm.reset();
-    this.visible = false;
+    this.visible = false;  
   }
+
+  else this.formValidationService.showValidationErrors(this.resourceForm,'Resource Form');
 }
 
 

@@ -1,7 +1,7 @@
 <p-dialog
   [modal]="true"
   [(visible)]="visible"
-  [style]="{ width: '30rem', height: '40rem' }"
+  [style]="{ width: '30rem', height: resource?.getIsExhaustable() ? '30rem' : '40rem' }"
   (onHide)="onDialogHide()" 
   [closable]="false"
   [dismissableMask]="false"
@@ -46,7 +46,7 @@
                             <div  class="input-wrapper">
                                 <p>Needed From</p>
                                 <p-floatlabel class="w-full md:w-56"  variant="on">
-                                    <p-datepicker inputId="dateFrom" placeholder=" " formControlName="dateFrom" [showTime]="true" hourFormat="24"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                                    <p-datepicker inputId="dateFrom" placeholder=" " formControlName="dateFrom" [showTime]="true" hourFormat="24"  [style]="{ width: '100%' }" inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
                                     <label for="dateFrom">Needed From Date and Time</label>
                                 </p-floatlabel>
                             </div>
@@ -62,9 +62,12 @@
                         </div>
             </ng-template>
 
-
-
-
+            <div  class="input-wrapper">
+                <div class="flex items-center gap-2">
+                    <p-checkbox formControlName="reservable" inputId="reservable" name="reservable" binary="true" size="large" />
+                    <label for="reservable" >Reservable</label>
+                </div>
+            </div>
         </div>
 
             <div class="form-buttons">
