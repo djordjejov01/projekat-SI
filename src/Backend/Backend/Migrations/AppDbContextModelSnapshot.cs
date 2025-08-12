@@ -368,9 +368,6 @@ namespace Backend.Migrations
                     b.Property<bool>("IsExhaustable")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("Measurment")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -382,8 +379,6 @@ namespace Backend.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("ResourceID");
-
-                    b.HasIndex("SupplierID");
 
                     b.ToTable("Resources");
                 });
@@ -685,17 +680,6 @@ namespace Backend.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Backend.Models.Resource", b =>
-                {
-                    b.HasOne("Backend.Models.User", "Supplier")
-                        .WithMany()
-                        .HasForeignKey("SupplierID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Supplier");
                 });
 
             modelBuilder.Entity("Backend.Models.Ticket", b =>
