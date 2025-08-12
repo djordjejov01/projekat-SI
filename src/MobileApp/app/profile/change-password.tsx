@@ -88,7 +88,7 @@ export default function ChangePasswordScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => router.push('../(tabs)/profile')} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#333" />
@@ -140,7 +140,7 @@ export default function ChangePasswordScreen() {
       <TouchableOpacity style={styles.saveButton} onPress={handleChangePassword}>
         <Text style={styles.saveText}>{t('changePassword.saveChanges')}</Text>
       </TouchableOpacity>
-    </ScrollView>
+    </View>
   );
 }
 
