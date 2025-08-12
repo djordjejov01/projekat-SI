@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class AddResourceLogTable : Migration
+    public partial class ResourceLogTicketValidationResourceFix : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -21,12 +21,49 @@ namespace Backend.Migrations
                 table: "Resources");
 
             migrationBuilder.DropColumn(
-                name: "Measurment",
-                table: "Resources");
-
-            migrationBuilder.DropColumn(
                 name: "Measure",
                 table: "EventResources");
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsUsed",
+                table: "UserTickets",
+                type: "boolean",
+                nullable: false,
+                defaultValue: false);
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "UsedAt",
+                table: "UserTickets",
+                type: "timestamp with time zone",
+                nullable: true);
+
+            migrationBuilder.AddColumn<string>(
+                name: "ValidationToken",
+                table: "UserTickets",
+                type: "text",
+                nullable: false,
+                defaultValue: "");
+
+            migrationBuilder.AddColumn<int>(
+                name: "Category",
+                table: "Resources",
+                type: "integer",
+                nullable: false,
+                defaultValue: 0);
+
+            migrationBuilder.AddColumn<int>(
+                name: "IsAvailable",
+                table: "Resources",
+                type: "integer",
+                nullable: false,
+                defaultValue: 0);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsExhaustable",
+                table: "Resources",
+                type: "boolean",
+                nullable: false,
+                defaultValue: false);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "EndDateTimeBooked",
@@ -39,6 +76,13 @@ namespace Backend.Migrations
                 table: "EventResources",
                 type: "timestamp with time zone",
                 nullable: true);
+
+            migrationBuilder.AddColumn<int>(
+                name: "Status",
+                table: "EventResources",
+                type: "integer",
+                nullable: false,
+                defaultValue: 0);
 
             migrationBuilder.CreateTable(
                 name: "ResourceLog",
@@ -69,6 +113,30 @@ namespace Backend.Migrations
                 name: "ResourceLog");
 
             migrationBuilder.DropColumn(
+                name: "IsUsed",
+                table: "UserTickets");
+
+            migrationBuilder.DropColumn(
+                name: "UsedAt",
+                table: "UserTickets");
+
+            migrationBuilder.DropColumn(
+                name: "ValidationToken",
+                table: "UserTickets");
+
+            migrationBuilder.DropColumn(
+                name: "Category",
+                table: "Resources");
+
+            migrationBuilder.DropColumn(
+                name: "IsAvailable",
+                table: "Resources");
+
+            migrationBuilder.DropColumn(
+                name: "IsExhaustable",
+                table: "Resources");
+
+            migrationBuilder.DropColumn(
                 name: "EndDateTimeBooked",
                 table: "EventResources");
 
@@ -76,11 +144,9 @@ namespace Backend.Migrations
                 name: "StartDateTimeBooked",
                 table: "EventResources");
 
-            migrationBuilder.AddColumn<int>(
-                name: "Measurment",
-                table: "Resources",
-                type: "integer",
-                nullable: true);
+            migrationBuilder.DropColumn(
+                name: "Status",
+                table: "EventResources");
 
             migrationBuilder.AddColumn<string>(
                 name: "Measure",
