@@ -252,7 +252,14 @@ namespace Backend.Services
                 _context.EventActivities.RemoveRange(subeventActivities);
             }
 
-            //TODO (oslobadjanje resursa)
+            
+            await DeallocateEventResources(eventId);
+
+            
+            foreach (var subevent in subevents)
+            {
+                await DeallocateEventResources(subevent.EventID);
+            }
 
             
             _context.Events.RemoveRange(subevents);
@@ -274,6 +281,47 @@ namespace Backend.Services
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        
+        private async Task DeallocateEventResources(int eventId)
+        {
+            try
+            {
+                
+                var eventResources = await _context.EventResources
+                    .Include(er => er.Resource)
+                    .Where(er => er.EventID == eventId)
+                    .ToListAsync();
+
+                if (!eventResources.Any())
+                    return; 
+
+                
+                foreach (var eventResource in eventResources)
+                {
+                    if (eventResource.Status == EventResourceStatus.Approved)
+                    {
+                        var resource = eventResource.Resource;
+                        resource.Quantity += eventResource.Quantity;
+                        
+                        
+                        if (resource.IsAvailable == ResourceAvailability.Booked)
+                        {
+                            resource.IsAvailable = ResourceAvailability.Available;
+                        }
+                        
+                        _context.Resources.Update(resource);
+                    }
+                }
+
+                
+                _context.EventResources.RemoveRange(eventResources);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Greška prilikom oslobađanja resursa za event {eventId}: {ex.Message}", ex);
             }
         }
 
