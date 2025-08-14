@@ -16,7 +16,6 @@ namespace Backend.Models
         public ResourceCategory Category { get; set; }
         public bool IsExhaustable { get; set; }
         public ResourceAvailability IsAvailable { get; set; }
-
         public string Description { get; set; }
 
         [ForeignKey(nameof(Supplier))]
@@ -44,15 +43,5 @@ namespace Backend.Models
         Available = 0,
         Unavailable = 1,
         Booked = 2
-    }
-    public enum ResourceMeasurment
-    {
-        Undefined,
-        Piece,
-        Kilogram,
-        Liter,
-        Meter,
-        Hour,
-        Bottle
     }
 }

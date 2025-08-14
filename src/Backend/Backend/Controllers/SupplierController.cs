@@ -223,7 +223,7 @@ namespace Backend.Controllers
         }
 
         [HttpDelete("resource/{id}")]
-        public async Task<IActionResult> DeleteResource(int id)
+        public async Task<IActionResult> DeleteResource(int id) //Dodaj u tabelu za logovanje, potrosni idu u log tabelu, ako pokusa da izbrise alociran
         {
             var resource = await _context.Resources.FindAsync(id);
             if (resource == null) return NotFound();
@@ -294,8 +294,8 @@ namespace Backend.Controllers
 
             var supplierId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             
-            var supplier = await _context.Suppliers
-                .FirstOrDefaultAsync(s => s.Id == supplierId);
+            var supplier = await _context.Users
+                .FirstOrDefaultAsync(s => s.UserId == supplierId);
 
             if (supplier == null)
                 return NotFound(new { message = "Dobavljač nije pronađen." });

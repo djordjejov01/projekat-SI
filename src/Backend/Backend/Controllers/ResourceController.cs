@@ -116,7 +116,6 @@ namespace Backend.Controllers
                 });
             return Ok(categories);
         }
-
         [HttpGet("availabilities")]
         public IActionResult GetAvailabilities()
         {
@@ -128,7 +127,6 @@ namespace Backend.Controllers
                 });
             return Ok(avs);
         }
-
     }
 
 }
