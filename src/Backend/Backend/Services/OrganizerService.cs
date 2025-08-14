@@ -377,11 +377,24 @@ namespace Backend.Services
                     await RefundPurchasedTickets(eventId);
                 }
 
+
                 
+                await DeallocateEventResourcesForPublishedEvent(eventId);
 
-                // TODO(oslobadjanje resursa)
+                
+                var subevents = await _context.Events
+                    .Where(e => e.ParentEventId == eventId)
+                    .ToListAsync();
 
-            
+                foreach (var subevent in subevents)
+                {
+                    await DeallocateEventResourcesForPublishedEvent(subevent.EventID);
+
+                    
+                    subevent.Status = EventStatus.Canceled;
+                }
+
+
                 eventEntity.Status = EventStatus.Canceled;
 
             
@@ -394,6 +407,64 @@ namespace Backend.Services
                 throw;
             }
         }
+
+        private async Task DeallocateEventResourcesForPublishedEvent(int eventId)
+        {
+            try
+            {
+                
+                var eventResources = await _context.EventResources
+                    .Include(er => er.Resource)
+                    .Where(er => er.EventID == eventId)
+                    .ToListAsync();
+
+                if (!eventResources.Any())
+                    return; 
+
+                
+                foreach (var eventResource in eventResources)
+                {
+                    if (eventResource.Status == EventResourceStatus.Approved)
+                    {
+                        var resource = eventResource.Resource;
+
+                        
+                        if (!resource.IsExhaustable)
+                        {
+                            resource.Quantity += eventResource.Quantity;
+
+                            
+                            if (resource.IsAvailable == ResourceAvailability.Booked)
+                            {
+                                resource.IsAvailable = ResourceAvailability.Available;
+                            }
+                        }
+                    }
+                }
+
+                
+                var eventResourceIds = eventResources.Select(er => er.ID).ToList();
+
+                if (eventResourceIds.Any())
+                {
+                    var userReservations = await _context.UserResourceReservations
+                        .Where(urr => eventResourceIds.Contains(urr.EventResourceID))
+                        .ToListAsync();
+
+                    if (userReservations.Any())
+                    {
+                        _context.UserResourceReservations.RemoveRange(userReservations);
+                    }
+                }
+                _context.EventResources.RemoveRange(eventResources);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Greška pri oslobađanju resursa za event {eventId}: {ex.Message}", ex);
+            }
+        }
+
+
         private async Task RefundPurchasedTickets(int eventId)
         {
             
