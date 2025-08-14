@@ -55,3 +55,9 @@
     height: 32px;
     width: 32px;
 }
+
+:host ::ng-deep .p-dropdown img {
+  width: 20px !important;
+  height: 20px !important;
+  object-fit: contain;
+}
