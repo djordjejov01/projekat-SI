@@ -395,6 +395,21 @@ namespace Backend.Services
                 }
 
 
+                
+                var eventPins = await _context.EventPin
+                    .Where(p => p.EventId == eventId)
+                    .ToListAsync();
+                _context.EventPin.RemoveRange(eventPins);
+
+                
+                foreach (var subevent in subevents)
+                {
+                    var subeventPins = await _context.EventPin
+                        .Where(p => p.EventId == subevent.EventID)
+                        .ToListAsync();
+                    _context.EventPin.RemoveRange(subeventPins);
+                }
+
                 eventEntity.Status = EventStatus.Canceled;
 
             
