@@ -410,6 +410,21 @@ namespace Backend.Services
                     _context.EventPin.RemoveRange(subeventPins);
                 }
 
+                
+                var favoriteEvents = await _context.FavoriteEvents
+                    .Where(f => f.EventId == eventId)
+                    .ToListAsync();
+                _context.FavoriteEvents.RemoveRange(favoriteEvents);
+
+                
+                foreach (var subevent in subevents)
+                {
+                    var subeventFavorites = await _context.FavoriteEvents
+                        .Where(f => f.EventId == subevent.EventID)
+                        .ToListAsync();
+                    _context.FavoriteEvents.RemoveRange(subeventFavorites);
+                }
+
                 eventEntity.Status = EventStatus.Canceled;
 
             
