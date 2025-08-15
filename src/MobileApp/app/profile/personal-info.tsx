@@ -217,7 +217,7 @@ export default function PersonalInfoScreen() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => router.push('../(tabs)/profile')}
@@ -289,7 +289,7 @@ export default function PersonalInfoScreen() {
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.saveText}>{t('personalInfo.saveChanges')}</Text>
       </TouchableOpacity>
-    </ScrollView>
+    </View>
   );
 }
 

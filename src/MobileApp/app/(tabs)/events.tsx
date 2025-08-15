@@ -31,7 +31,12 @@ export default function EventsScreen() {
         const response = await fetch(`${API_URL}/api/events`);
         if (response.ok) {
           const data = await response.json();
-          setEvents(data);
+
+          // Filter only upcoming events
+          const now = new Date();
+          const upcomingEvents = data.filter((event: any) => new Date(event.startDate) >= now);
+
+          setEvents(upcomingEvents);
         } else {
           console.error('Failed to fetch events:', response.status);
         }
@@ -78,7 +83,7 @@ export default function EventsScreen() {
     return (
       <TouchableOpacity
         style={styles.card}
-        onPress={() => router.push({ pathname: '../event/[id]', params: { id: item.id,from: 'events' } })}
+        onPress={() => router.push({ pathname: '../event/[id]', params: { id: item.id, from: 'events' } })}
       >
         <View style={styles.imageWrapper}>
           {imageLoading[item.id] && (
@@ -101,19 +106,19 @@ export default function EventsScreen() {
         </View>
 
         <Text style={styles.title}>{item.title}</Text>
-        
+
         <Text style={styles.info}>
           🕒 {new Date(item.startDate).toLocaleDateString('sr-RS')} |{' '}
           {new Date(item.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h
         </Text>
         <View style={styles.row}>
-        <View style={styles.locationWrapper}>
-          <Text style={styles.info} numberOfLines={2}>📍 {item.location}</Text>
+          <View style={styles.locationWrapper}>
+            <Text style={styles.info} numberOfLines={2}>📍 {item.location}</Text>
+          </View>
+          <TouchableOpacity onPress={() => handleToggleFavorite(item.id)}>
+            <AntDesign name="heart" size={20} color={isFavorite ? '#FF2D55' : '#ccc'} />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={() => handleToggleFavorite(item.id)}>
-          <AntDesign name="heart" size={20} color={isFavorite ? '#FF2D55' : '#ccc'} />
-        </TouchableOpacity>
-      </View>
 
       </TouchableOpacity>
     );
@@ -223,8 +228,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   locationWrapper: {
-  flex: 1,
-  paddingRight: 8,
-},
-
+    flex: 1,
+    paddingRight: 8,
+  },
 });

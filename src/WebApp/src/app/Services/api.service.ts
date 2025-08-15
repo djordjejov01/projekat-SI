@@ -467,7 +467,9 @@ export class ApiService{
     }
 
     getReusableResources(){
-        
+        return this.http.get<ResourceDto>(`${this.apiUrl}/Supplier/ReusableResources`).pipe(
+            catchError(this.handleError)
+        );
     }
 
     getUpcomingOrganizerEvents(organizerId : number) : Observable<Event[]> {

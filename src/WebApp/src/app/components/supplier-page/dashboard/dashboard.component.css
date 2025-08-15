@@ -120,3 +120,8 @@ header,.page-title{
     margin-top: 2rem;
     gap: 2rem;
 }
+
+#btn1:hover{
+    cursor: pointer;
+    background-color: #5156bc;
+}
