@@ -116,6 +116,109 @@ namespace Backend.Services
                 throw;
             }
         }
+        public async Task PublishEvent(int eventId, int organizerId)
+        {
+            if (eventId <= 0)
+                throw new ArgumentException("Invalid event ID.", nameof(eventId));
+
+            if (organizerId <= 0)
+                throw new ArgumentException("Invalid organizer ID.", nameof(organizerId));
+
+            var eventEntity = await _context.Events
+                .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
+
+            if (eventEntity == null)
+                throw new ArgumentException("Event not found or you don't have permission to publish it.");
+
+            if (eventEntity.Status == EventStatus.Published)
+                throw new InvalidOperationException("Event is already published.");
+
+            if (eventEntity.Status == EventStatus.Canceled)
+                throw new InvalidOperationException("Cannot publish a canceled event.");
+
+            
+            if (string.IsNullOrWhiteSpace(eventEntity.Title))
+                throw new InvalidOperationException("Event title is required.");
+
+            if (string.IsNullOrWhiteSpace(eventEntity.Location))
+                throw new InvalidOperationException("Event location is required.");
+            
+            if (eventEntity.StartDate == default(DateTime))
+                throw new InvalidOperationException("Event start date is required.");
+
+            if (eventEntity.EndDate == default(DateTime))
+                throw new InvalidOperationException("Event end date is required.");
+
+            if (eventEntity.StartDate >= eventEntity.EndDate)
+                throw new InvalidOperationException("Event start date must be before end date.");
+
+            if (eventEntity.StartDate <= DateTime.UtcNow)
+                throw new InvalidOperationException("Event start date must be in the future.");
+
+            if (!eventEntity.isFree)
+            {
+                var hasTickets = await _context.Tickets
+                    .AnyAsync(t => t.EventID == eventId);
+
+                if (!hasTickets)
+                    throw new InvalidOperationException("Paid events must have tickets before publishing.");
+            }
+
+
+            if (eventEntity.EndDate < DateTime.Today)
+                throw new InvalidOperationException("Event end date cannot be in the past.");
+
+
+            
+            if (eventEntity.StartDate <= DateTime.Today.AddDays(30))
+                throw new InvalidOperationException("Event must be published at least 30 day before start date.");
+
+            
+            if (eventEntity.StartDate > DateTime.Today.AddYears(1))
+                throw new InvalidOperationException("Event cannot be published more than 1 year in advance.");
+
+            
+            var subevents = await _context.Events
+                .Where(e => e.ParentEventId == eventId)
+                .ToListAsync();
+
+            foreach (var subevent in subevents)
+            {
+                
+                if (string.IsNullOrWhiteSpace(subevent.Title))
+                    throw new InvalidOperationException($"Sub-event '{subevent.Title}' must have a title.");
+
+                if (string.IsNullOrWhiteSpace(subevent.Location))
+                    throw new InvalidOperationException($"Sub-event '{subevent.Location}' must have a location.");
+
+                if (subevent.StartDate >= subevent.EndDate)
+                    throw new InvalidOperationException($"Sub-event '{subevent.Title}' start date must be before end date.");
+
+                if (subevent.StartDate < DateTime.Today)
+                    throw new InvalidOperationException($"Sub-event '{subevent.Title}' start date cannot be in the past.");
+            }
+
+            eventEntity.Status = EventStatus.Published;
+            eventEntity.PublishedAt = DateTime.UtcNow;
+
+            foreach (var subevent in subevents)
+            {
+                if (subevent.Status != EventStatus.Published)
+                {
+                    subevent.Status = EventStatus.Published;
+                    subevent.PublishedAt = DateTime.UtcNow;
+                }
+            }
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 
         public async Task DeleteEvent(int eventId,int organizerId)
         {
@@ -149,7 +252,29 @@ namespace Backend.Services
                 _context.EventActivities.RemoveRange(subeventActivities);
             }
 
-            //TODO (oslobadjanje resursa)
+            
+            var eventPins = await _context.EventPin
+                .Where(p => p.EventId == eventId)
+                .ToListAsync();
+            _context.EventPin.RemoveRange(eventPins);
+
+            
+            foreach (var subevent in subevents)
+            {
+                var subeventPins = await _context.EventPin
+                    .Where(p => p.EventId == subevent.EventID)
+                    .ToListAsync();
+                _context.EventPin.RemoveRange(subeventPins);
+            }
+
+
+            await DeallocateEventResources(eventId);
+
+            
+            foreach (var subevent in subevents)
+            {
+                await DeallocateEventResources(subevent.EventID);
+            }
 
             
             _context.Events.RemoveRange(subevents);
@@ -171,6 +296,47 @@ namespace Backend.Services
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        
+        private async Task DeallocateEventResources(int eventId)
+        {
+            try
+            {
+                
+                var eventResources = await _context.EventResources
+                    .Include(er => er.Resource)
+                    .Where(er => er.EventID == eventId)
+                    .ToListAsync();
+
+                if (!eventResources.Any())
+                    return; 
+
+                
+                foreach (var eventResource in eventResources)
+                {
+                    if (eventResource.Status == EventResourceStatus.Approved)
+                    {
+                        var resource = eventResource.Resource;
+                        resource.Quantity += eventResource.Quantity;
+                        
+                        
+                        if (resource.IsAvailable == ResourceAvailability.Booked)
+                        {
+                            resource.IsAvailable = ResourceAvailability.Available;
+                        }
+                        
+                        _context.Resources.Update(resource);
+                    }
+                }
+
+                
+                _context.EventResources.RemoveRange(eventResources);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Greška prilikom oslobađanja resursa za event {eventId}: {ex.Message}", ex);
             }
         }
 
@@ -211,11 +377,54 @@ namespace Backend.Services
                     await RefundPurchasedTickets(eventId);
                 }
 
+
                 
+                await DeallocateEventResourcesForPublishedEvent(eventId);
 
-                // TODO(oslobadjanje resursa)
+                
+                var subevents = await _context.Events
+                    .Where(e => e.ParentEventId == eventId)
+                    .ToListAsync();
 
-            
+                foreach (var subevent in subevents)
+                {
+                    await DeallocateEventResourcesForPublishedEvent(subevent.EventID);
+
+                    
+                    subevent.Status = EventStatus.Canceled;
+                }
+
+
+                
+                var eventPins = await _context.EventPin
+                    .Where(p => p.EventId == eventId)
+                    .ToListAsync();
+                _context.EventPin.RemoveRange(eventPins);
+
+                
+                foreach (var subevent in subevents)
+                {
+                    var subeventPins = await _context.EventPin
+                        .Where(p => p.EventId == subevent.EventID)
+                        .ToListAsync();
+                    _context.EventPin.RemoveRange(subeventPins);
+                }
+
+                
+                var favoriteEvents = await _context.FavoriteEvents
+                    .Where(f => f.EventId == eventId)
+                    .ToListAsync();
+                _context.FavoriteEvents.RemoveRange(favoriteEvents);
+
+                
+                foreach (var subevent in subevents)
+                {
+                    var subeventFavorites = await _context.FavoriteEvents
+                        .Where(f => f.EventId == subevent.EventID)
+                        .ToListAsync();
+                    _context.FavoriteEvents.RemoveRange(subeventFavorites);
+                }
+
                 eventEntity.Status = EventStatus.Canceled;
 
             
@@ -228,6 +437,64 @@ namespace Backend.Services
                 throw;
             }
         }
+
+        private async Task DeallocateEventResourcesForPublishedEvent(int eventId)
+        {
+            try
+            {
+                
+                var eventResources = await _context.EventResources
+                    .Include(er => er.Resource)
+                    .Where(er => er.EventID == eventId)
+                    .ToListAsync();
+
+                if (!eventResources.Any())
+                    return; 
+
+                
+                foreach (var eventResource in eventResources)
+                {
+                    if (eventResource.Status == EventResourceStatus.Approved)
+                    {
+                        var resource = eventResource.Resource;
+
+                        
+                        if (!resource.IsExhaustable)
+                        {
+                            resource.Quantity += eventResource.Quantity;
+
+                            
+                            if (resource.IsAvailable == ResourceAvailability.Booked)
+                            {
+                                resource.IsAvailable = ResourceAvailability.Available;
+                            }
+                        }
+                    }
+                }
+
+                
+                var eventResourceIds = eventResources.Select(er => er.ID).ToList();
+
+                if (eventResourceIds.Any())
+                {
+                    var userReservations = await _context.UserResourceReservations
+                        .Where(urr => eventResourceIds.Contains(urr.EventResourceID))
+                        .ToListAsync();
+
+                    if (userReservations.Any())
+                    {
+                        _context.UserResourceReservations.RemoveRange(userReservations);
+                    }
+                }
+                _context.EventResources.RemoveRange(eventResources);
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidOperationException($"Greška pri oslobađanju resursa za event {eventId}: {ex.Message}", ex);
+            }
+        }
+
+
         private async Task RefundPurchasedTickets(int eventId)
         {
             
