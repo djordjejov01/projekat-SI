@@ -1,4 +1,4 @@
-import { Injectable, resource } from "@angular/core";
+import { Injectable, Resource, resource } from "@angular/core";
 import { HttpClient, HttpErrorResponse, HttpParams, HttpResponse } from "@angular/common/http";
 import { Observable, throwError, catchError, map } from "rxjs";
 import { RegisterDto } from "../Models/RegisterDto";
@@ -146,6 +146,50 @@ export class ApiService{
     private apiUrl = 'https://localhost:7269/api';
 
     constructor(private http: HttpClient) {}
+
+    getResourcesBySupplierId(supplierId : number) : Observable<ResourceDto[]>
+    {
+        return this.http.get<ResourceApiResponse[]>(`${this.apiUrl}/Organizer/supplier/${supplierId}/resources`).pipe(
+            map((response: ResourceApiResponse[]) =>
+            response.map(response =>
+                new ResourceDto(
+                response.resourceID,
+                response.name,
+                response.category,
+                response.isExhaustable,
+                response.isAvailable,
+                response.description,
+                response.supplierID,
+                response.quantity
+                )
+            )),
+        );
+
+        catchError(error => this.handleError(error))
+    }
+
+    getSuppliersForOrganizer() : Observable<SupplierDto[]>
+    {
+        return this.http.get<SupplierDtoResponse[]>(`${this.apiUrl}/Organizer/suppliers`).pipe(
+            
+
+            map((response: SupplierDtoResponse[]) =>
+            response.map(response =>
+                new SupplierDto(
+                response.id,
+                response.username,
+                response.companyName,
+                response.email,
+                response.phoneNumber,
+                response.website,
+                response.companyBio,
+                response.image
+                )
+            )),
+
+        catchError(error => this.handleError(error))
+        );
+    }
 
     deleteResource(resourceId : number) : Observable<string>
     {

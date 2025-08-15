@@ -39,15 +39,44 @@
 
             </div>
 
-             <div  class="input-wrapper">
+          <div class="input-wrapper">
+            <p>Type</p>
+            <p-floatlabel class="w-full" variant="on">
+              <p-dropdown
+                [options]="pinTypeOptions"
+                formControlName="type"
+                optionLabel="label"
+                optionValue="value"
+                placeholder=" "
+                inputId="type"
+                class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"
+              >
+                <!-- Dropdown items -->
+                <ng-template let-option pTemplate="item">
+                  <div class="flex items-center gap-2">
+                    <img [src]="option.icon" alt="{{ option.label }}" class="w-5 h-5 object-contain" />
+                    <span>{{ option.label }}</span>
+                  </div>
+                </ng-template>
 
-                <p>Type</p>
-                <p-floatlabel class="w-full" variant="on">
-                    <p-select  [options]="pinTypeOptions"  name="type"  formControlName="type"  placeholder=" "  inputId="type"  class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"/>
-                    <label for="type">Select Pin Type</label>
-                </p-floatlabel>
+                <!-- Selected item -->
+              <ng-template let-selected pTemplate="selectedItem">
+                <div class="flex items-center gap-2" *ngIf="selected">
+                  <img [src]="selected.icon" alt="Selected" class="w-5 h-5 object-contain" />
+                  <span>{{ selected.label }}</span>
+                </div>
+                <span *ngIf="!selected">Select Pin Type</span>
+              </ng-template>
 
-            </div>
+
+              </p-dropdown>
+
+              <label for="type">Select Pin Type</label>
+            </p-floatlabel>
+          </div>
+
+
+
 
 
             <div  class="input-wrapper">

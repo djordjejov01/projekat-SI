@@ -17,10 +17,11 @@ import { ApiService } from '../../../../../Services/api.service';
 import { MessageService } from 'primeng/api';
 import { IDeactivate } from '../../../../../Interfaces/IDeactivate';
 import { ConfirmationDialogService } from '../../../../../Services/confirmation-dialog.service';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   selector: 'app-pin-modal',
-  imports: [ReactiveFormsModule,DialogModule,FloatLabelModule,ButtonModule,SelectModule,CommonModule,InputTextModule,TextareaModule],
+  imports: [ReactiveFormsModule,DialogModule,FloatLabelModule,ButtonModule,SelectModule,CommonModule,InputTextModule,TextareaModule,DropdownModule],
   templateUrl: './pin-modal.component.html',
   styleUrl: './pin-modal.component.css'
 })
@@ -60,13 +61,14 @@ export class PinModalComponent implements OnInit,IDeactivate{
     this.visible = true;
 
     this.pinCategoryService.loadCategoriesIfEmpty()
-    .pipe(take(1))
-    .subscribe(categories => {
-      this.pinTypeOptions = categories.map(cat => ({
-        label: cat.name,
-        value: cat.id
-      }));
-    });
+      .pipe(take(1))
+      .subscribe(categories => {
+        this.pinTypeOptions = categories.map(cat => ({
+          label: cat.name,
+          value: cat.id,
+          icon: `https://localhost:7269/pins/${cat.id}.png` // or .svg depending on your icons
+        }));
+      });
 
     // then patch values if editing
     if(pinToEdit){
@@ -159,6 +161,11 @@ export class PinModalComponent implements OnInit,IDeactivate{
       this.cancel()
     }
   }
+
+  getPinLabelById(id: number): string {
+    return this.pinTypeOptions.find(o => o.value === id)?.label || '';
+  }
+
 
   canExit () : boolean | Observable<boolean> | Promise<boolean>{
     

@@ -1,17 +1,24 @@
-.pinForm{
+.resource-form{
     padding: 2rem;
     padding-top: 0;
     padding-bottom: 0;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
 }
 
 .form-inputs{
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
-    height: 100%;
+    gap: 2rem;
+}
+
+.dates{
     display: flex;
     flex-direction: column;
+    gap: 2rem;
 }
 
 .formTitle{
@@ -48,7 +55,7 @@
     justify-content: center;
     align-items: center;
     gap: 1rem;
-    padding-top: 1rem;
+    /* padding-top: 5rem; */
 }
 
 .exit-button{
@@ -56,8 +63,6 @@
     width: 32px;
 }
 
-:host ::ng-deep .p-dropdown img {
-  width: 20px !important;
-  height: 20px !important;
-  object-fit: contain;
+::ng-deep .p-dialog-content {
+    overflow: visible !important;
 }
