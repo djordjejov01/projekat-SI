@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Resource } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../Services/api.service';
 import { AuthService } from '../../../Services/auth.service';
@@ -11,6 +11,7 @@ import { SharedService } from '../../../Services/shared.service';
 import { Select } from 'primeng/select';
 import { SupplierDto } from '../../../Models/SupplierDto';
 import { UpdateSupplierDto } from '../../../Models/UpdateSupplierDto';
+import { ResourceDto } from '../../../Models/ResourceDto';
 
 
 @Component({
@@ -80,11 +81,31 @@ export class MyProfileComponent implements OnInit {
 
       })
   }
+  resources : ResourceDto[];
+  freeResources : ResourceDto[];
+  bookedResources : ResourceDto[];
   username : string;
   ngOnInit(): void {
     console.log(this.authService.getUserId())
     this.username = this.authService.getUserName();
     this.getSupplierCall();
+
+    this.apiService.getResources(this.authService.getUserId()).subscribe({
+
+        next:(response : ResourceDto[]) => {
+          this.resources = response;
+          this.bookedResources = this.resources.filter(resource => resource.getIsAvailable() == 1);
+          this.freeResources = this.resources.filter(resource => resource.getIsAvailable() == 0);
+        },
+        error:(errorResponse) =>{
+          this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000 });
+        }
+
+      })
   }
   currSupplier : SupplierDto;
   changePass: ChangePasswordDto;
