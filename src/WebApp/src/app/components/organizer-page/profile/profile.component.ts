@@ -162,7 +162,7 @@ defaultImage = 'assets/default-picture.png';
     const phone = (document.getElementById('phone') as HTMLInputElement).value;
 
     const toUpdate = new OrganizerDto(this.authService.getUserId(),name,username,email,phone,"");
-
+    console.log(toUpdate)
     this.apiService.updateOrg(toUpdate).subscribe({
       next:(response : string) =>{
         this.messageService.add({

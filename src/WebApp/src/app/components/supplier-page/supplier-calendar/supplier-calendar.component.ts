@@ -12,6 +12,8 @@ import { ApiService } from '../../../Services/api.service';
 import { AuthService } from '../../../Services/auth.service';
 import { Event } from '../../../Models/Event';
 import { CategoryService } from '../../../Services/EventCategoryService';
+import { ResourceDto } from '../../../Models/ResourceDto';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-supplier-calendar',
@@ -27,7 +29,8 @@ export class SupplierCalendarComponent implements OnInit {
     private datePipe : DatePipe,
     private apiService : ApiService,
     private authService : AuthService,
-    private categoryService : CategoryService) {}
+    private categoryService : CategoryService,
+  private messageService : MessageService) {}
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin,timeGridPlugin,interactionPlugin,listPlugin],
@@ -56,9 +59,25 @@ export class SupplierCalendarComponent implements OnInit {
     },
     events: []
   }
-
+  reusableResources : ResourceDto[];
   ngOnInit(): void {
 
+      this.apiService.getReusableResources().subscribe({
+          
+                next: (response: any) => {
+                  this.reusableResources = response;
+                },
+                error: (errorResponse) => {
+                  this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: errorResponse.message,
+                    life: 3000
+                  });
+                }
+          
+              })
+      console.log(this.reusableResources);
       this.calendarOptions.events = [
     {
         "title": "Mikrofon",
