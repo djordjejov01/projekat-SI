@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250806184340_AlterAvailbailityResource")]
-    partial class AlterAvailbailityResource
+    [Migration("20250813102015_ResourceLogTicketValidationResourceFix")]
+    partial class ResourceLogTicketValidationResourceFix
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -371,9 +371,6 @@ namespace Backend.Migrations
                     b.Property<bool>("IsExhaustable")
                         .HasColumnType("boolean");
 
-                    b.Property<int?>("Measurment")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -385,8 +382,6 @@ namespace Backend.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("ResourceID");
-
-                    b.HasIndex("SupplierID");
 
                     b.ToTable("Resources");
                 });
@@ -594,14 +589,24 @@ namespace Backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserTicketID"));
 
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime>("PurchasedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("TicketID")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime?>("UsedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("UserID")
                         .HasColumnType("integer");
+
+                    b.Property<string>("ValidationToken")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("UserTicketID");
 
@@ -678,17 +683,6 @@ namespace Backend.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Backend.Models.Resource", b =>
-                {
-                    b.HasOne("Backend.Models.User", "Supplier")
-                        .WithMany()
-                        .HasForeignKey("SupplierID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Supplier");
                 });
 
             modelBuilder.Entity("Backend.Models.Ticket", b =>
