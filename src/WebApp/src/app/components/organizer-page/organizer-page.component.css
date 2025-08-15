@@ -113,3 +113,7 @@ select:hover, option:hover{
 #username:hover{
     cursor: pointer;
 }
+
+@media screen and (width <= 1531px) {
+
+}
