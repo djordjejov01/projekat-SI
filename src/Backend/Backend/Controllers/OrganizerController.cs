@@ -200,6 +200,32 @@ namespace Backend.Controllers
             return Ok(eventEntity);
         }
 
+        
+        [HttpPost("events/publish")]
+        public async Task<IActionResult> PublishEvent([FromBody] int eventId)
+        {
+            try
+            {
+                var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+                await _organizerService.PublishEvent(eventId, organizerId);
+
+                return Ok(new { message = "Event uspešno objavljen." });
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Došlo je do greške prilikom objavljivanja eventa." });
+            }
+        }
+
         [HttpDelete("events")]
         public async Task<IActionResult> DeleteEvent([FromBody] int eventId)
         {
@@ -224,8 +250,8 @@ namespace Backend.Controllers
                 return BadRequest(new { message = "Došlo je do greške prilikom brisanja eventa." });
             }
         }
-        [HttpPost("events/cancel/{eventId}")]
-        public async Task<IActionResult> CancelEvent(int eventId)
+        [HttpPost("events/cancel")]
+        public async Task<IActionResult> CancelEvent([FromBody] int eventId)
         {
             try
             {
