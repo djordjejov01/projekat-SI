@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250813102024_ResourceLogTicketValidationResourceFix")]
+    [Migration("20250813102015_ResourceLogTicketValidationResourceFix")]
     partial class ResourceLogTicketValidationResourceFix
     {
         /// <inheritdoc />
