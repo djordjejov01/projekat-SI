@@ -12,13 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-<<<<<<<< HEAD:src/Backend/Backend/Migrations/20250812180632_ResourceLogsTicketValidationResourceFixes.Designer.cs
-    [Migration("20250812180632_ResourceLogsTicketValidationResourceFixes")]
-    partial class ResourceLogsTicketValidationResourceFixes
-========
     [Migration("20250813102015_ResourceLogTicketValidationResourceFix")]
     partial class ResourceLogTicketValidationResourceFix
->>>>>>>> 6155fc8245dbf2b556b7a8401a7e7ab6b90e2a85:src/Backend/Backend/Migrations/20250813102015_ResourceLogTicketValidationResourceFix.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
