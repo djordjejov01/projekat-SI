@@ -40,7 +40,6 @@ import { ResourceAvailability } from "./ResourceAvailabilityService";
 import { ResourceApiResponse } from "../Interfaces/ResourceApiResponse";
 import { ResourceDto } from "../Models/ResourceDto";
 
-
 // Match Backend.Models.Dto.EventDto
 export interface EventDto {
   eventId: number;
@@ -295,6 +294,15 @@ export class ApiService{
             catchError(this.handleError)
         )
     }
+
+
+    publishEvent(eventID)
+    {
+        return this.http.post<{ message: string }>(`${this.apiUrl}/Organizer/events/publish`, eventID ).pipe(
+            catchError(this.handleError)
+        )
+    }
+
 
     getEventPins(eventId : number) : Observable<EventPinDto[]>{
         return this.http.get<EventPinApiResponse[]>(`${this.apiUrl}/EventPin/event?eventId=${eventId}`).pipe(

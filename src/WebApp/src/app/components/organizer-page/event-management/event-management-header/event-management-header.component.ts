@@ -3,10 +3,11 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { Breadcrumb } from 'primeng/breadcrumb';
 import { ButtonModule } from 'primeng/button';
 import { ApiService } from '../../../../Services/api.service';
-
+import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-event-management-header',
-  imports: [Breadcrumb,ButtonModule],
+  imports: [Breadcrumb,ButtonModule, CommonModule],
   templateUrl: './event-management-header.component.html',
   styleUrl: './event-management-header.component.css'
 })
@@ -19,6 +20,9 @@ export class EventManagementHeaderComponent implements OnInit, OnChanges{
   @Input() editMode!: boolean;
   @Input() parentEventId : number = 0;
   @Output() editModeChange = new EventEmitter<boolean>();
+  @Input() eventID : number;
+  @Input() eventInfo : EventBasicInfo;
+  currStatus : string;
 
   private lastParentEventId: number | null = null;
   private parentEventTitle: string | null = null;
@@ -26,6 +30,7 @@ export class EventManagementHeaderComponent implements OnInit, OnChanges{
    constructor(private apiService: ApiService, private messageService: MessageService) {}
 
   ngOnInit(): void {
+    this.currStatus = this.eventInfo.getStatusLabel();
     this.updateBreadcrumb();
     this.home = undefined;
   }
@@ -83,5 +88,25 @@ export class EventManagementHeaderComponent implements OnInit, OnChanges{
     this.editModeChange.emit(true);
   }
 
+
+  publishEvent(){
+    this.apiService.publishEvent(this.eventID).subscribe({
+      next:(response : any) =>{
+        this.currStatus = "Published";
+        this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: response.message,
+              life: 3000 });
+        },
+        error:(errorResponse) =>{
+          this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000 });
+      }
+    });
+  }
 }
 

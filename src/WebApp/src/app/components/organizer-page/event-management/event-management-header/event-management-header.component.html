@@ -4,8 +4,12 @@
     <div class="title-buttons">
         <h1 class="font-archivo">{{ eventTitle }}</h1>
         <div class="buttons">
+            <button *ngIf="currStatus == 'Draft'" class="delete-btn font-inter"><i class="pi pi-trash"></i>Delete Event</button>
+            <button *ngIf="currStatus == 'Published'" class="cancel-btn font-inter" (click) = "cancelEvent()"><i class="pi pi-times"></i>Cancel Event</button>
             <button class="edit-btn font-inter" (click)="onEditClick()"><i class="pi pi-pen-to-square"></i>Edit Event</button>
-            <button class="delete-btn font-inter"><i class="pi pi-trash"></i>Delete Event</button>
+            <button *ngIf="currStatus == 'Draft'" class="publish-btn font-inter" (click) = "publishEvent()"><i class="pi pi-check"></i>Publish Event</button>
+            
+            
         </div>
     </div> 
 
