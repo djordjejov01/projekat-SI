@@ -252,14 +252,14 @@ export class ApiService{
 
 
     getResourceAvailabilities(): Observable<ResourceAvailability[]> {
-        return this.http.get<ResourceAvailability[]>(`${this.apiUrl}/Supplier/availabilities`).pipe(
+        return this.http.get<ResourceAvailability[]>(`${this.apiUrl}/Resource/availabilities`).pipe(
             catchError(this.handleError)
         );
     }
 
     getResourceCategories() : Observable<ResourceCategory[]>{
 
-        return this.http.get<ResourceCategory[]>(`${this.apiUrl}/Supplier/resource-categories`).pipe(
+        return this.http.get<ResourceCategory[]>(`${this.apiUrl}/Resource/resource-categories`).pipe(
             catchError(this.handleError)
         )
 
