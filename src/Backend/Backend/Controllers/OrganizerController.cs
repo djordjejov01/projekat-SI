@@ -710,7 +710,9 @@ namespace Backend.Controllers
                 ResourceID = dto.ResourceID,
                 Quantity = dto.Quantity,
                 IsReservable = dto.IsReservable,
-                Status = EventResourceStatus.Pending
+                Status = EventResourceStatus.Pending,
+                StartDateTimeBooked = dto.StartDateTimeBooked,
+                EndDateTimeBooked = dto.EndDateTimeBooked
             };
 
             resource.Quantity -= dto.Quantity;
