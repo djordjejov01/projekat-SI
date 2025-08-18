@@ -92,7 +92,8 @@
   "logoutConfirm": "Are you sure you want to log out?",
   "cancel": "Cancel",
   "error": "Error",
-  "logoutError": "Failed to log out."
+  "logoutError": "Failed to log out.",
+  "payment": "Payment"
 },
 "aboutScreen": {
   "heading": "About us",
@@ -148,6 +149,15 @@
   "success": "Success",
   "updated": "Your information has been updated.",
   "updateFailed": "Failed to update profile."
+},
+
+"payment": 
+{
+"header": "Payment💸",
+"msg":"Enter the number of dinars for payment",
+"example": "etc. 1000",
+"button":"Pay",
+"process":"Payment processing..."
 },
 
 "tabs": {

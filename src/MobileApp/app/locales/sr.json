@@ -91,7 +91,8 @@
   "logoutConfirm": "Da li ste sigurni da želite da se odjavite?",
   "cancel": "Otkaži",
   "error": "Greška",
-  "logoutError": "Neuspešna odjava."
+  "logoutError": "Neuspešna odjava.",
+  "payment": "Uplata novca"
 },
   "aboutEvent": "O događaju",
 "aboutScreen": {
@@ -240,7 +241,16 @@
     "price": "Cena",
     "purchasedOn": "Kupljeno",
     "noTickets": "Trenutno nemate nijednu kupljenu kartu."
-  }
+  },
+
+  "payment": 
+{
+"header": "Uplata novca💸",
+"msg":"Unesite broj dinara za uplatu",
+"example": "npr. 1000",
+"button":"Uplati",
+"process":"Obrada uplate..."
+}
 
 
 
