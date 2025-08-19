@@ -40,7 +40,7 @@ namespace Backend.Controllers
                 return BadRequest(new { message = "Lozinka i potvrda lozinke se ne poklapaju." });
 
             
-            if (registerDto.Role != UserRole.Organizer && registerDto.Role != UserRole.Supplier)
+            if (registerDto.Role != UserRole.Organizer && registerDto.Role != UserRole.Supplier && registerDto.Role != UserRole.MobileUser)
                 return BadRequest(new { message = "Nedozvoljena rola za javnu registraciju." });
 
             try
@@ -49,6 +49,29 @@ namespace Backend.Controllers
                 return Ok(user);
             }
             catch (System.Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("register-web")]
+        public async Task<IActionResult> RegisterWeb([FromBody] RegisterWebDto registerDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (registerDto.Password != registerDto.ConfirmPassword)
+                return BadRequest(new { message = "Lozinka i potvrda lozinke se ne poklapaju." });
+
+            if (registerDto.Role != UserRole.Organizer && registerDto.Role != UserRole.Supplier)
+                return BadRequest(new { message = "Nedozvoljena rola za javnu registraciju." });
+
+            try
+            {
+                var user = await _userService.RegisterWebAsync(registerDto);
+                return Ok(user);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }

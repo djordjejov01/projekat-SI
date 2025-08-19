@@ -1,12 +1,13 @@
+using Backend.Helpers;
+using Backend.Models;
 using Backend.Models.Dto;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Linq;
-using Backend.Models;
-using Backend.Helpers;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Backend.Services
 {
@@ -28,6 +29,13 @@ namespace Backend.Services
             {
                 throw new Exception("Korisnik sa datim emailom već postoji.");
             }
+
+
+            if (registerDto.Role != UserRole.Organizer && registerDto.Role != UserRole.Supplier && registerDto.Role!=UserRole.MobileUser)
+            {
+                throw new Exception("Nedozvoljena rola za javnu registraciju.");
+            }
+
 
             string hashedPassword = CommonHelpers.HashPassword(registerDto.Password);
 
@@ -96,6 +104,88 @@ namespace Backend.Services
                 IsActive = user.IsActive
             };
             return userDto;
+        }
+
+        public async Task<UserDto> RegisterWebAsync(RegisterWebDto registerWebDto)
+        {
+            if (!CommonHelpers.IsPasswordStrong(registerWebDto.Password))
+                throw new Exception("Lozinka mora imati najmanje 8 karaktera, jedno veliko slovo, jedno malo slovo i jedan broj.");
+
+            if (await _context.Users.AnyAsync(u => u.Email == registerWebDto.Email))
+                throw new Exception("Korisnik sa datim emailom već postoji.");
+
+            if (registerWebDto.Role != UserRole.Organizer && registerWebDto.Role != UserRole.Supplier)
+                throw new Exception("Nedozvoljena rola za javnu registraciju.");
+
+            
+
+            if (await _context.Users.AnyAsync(u => u.Username == registerWebDto.Username))
+                throw new Exception("Korisničko ime je zauzeto.");
+
+            string hashedPassword = CommonHelpers.HashPassword(registerWebDto.Password);
+
+            var role = registerWebDto.Role;
+            bool isActive = role == UserRole.Supplier ? false : true;
+
+            var user = new User
+            {
+                Username = registerWebDto.Username,
+                Email = registerWebDto.Email,
+                Password = hashedPassword,
+                FirstName = "",
+                LastName = "",
+                Role = role,
+                IsActive = isActive,
+                ProfilePicture = "",
+                Language = "",
+                PhoneNumber = ""
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            if (user.Role == UserRole.Organizer)
+            {
+                var o = new Organizer
+                {
+                    Id = user.UserId,
+                    Username = user.Username,
+                    Email = user.Email,
+                    Name = user.FirstName + " " + user.LastName,
+                    PhoneNumber = "",
+                    Image = ""
+                };
+                _context.Organizers.Add(o);
+                await _context.SaveChangesAsync();
+            }
+
+            if (user.Role == UserRole.Supplier)
+            {
+                var s = new Supplier
+                {
+                    Id = user.UserId,
+                    Username = user.Username,
+                    CompanyName = "",
+                    Email = user.Email,
+                    PhoneNumber = "",
+                    Website = "",
+                    CompanyBio = "",
+                    Image = ""
+                };
+                _context.Suppliers.Add(s);
+                await _context.SaveChangesAsync();
+            }
+
+            return new UserDto
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Role = user.Role,
+                IsActive = user.IsActive
+            };
         }
 
         public async Task<UserDto> LoginAsync(LoginDto loginDto)
