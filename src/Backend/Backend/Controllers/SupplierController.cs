@@ -335,6 +335,44 @@ namespace Backend.Controllers
             return Ok(reusableResources);
         }
 
+        [HttpGet("booked-resources")]
+        public async Task<IActionResult> GetSupplierBookedResources()
+        {
+            var supplierId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var bookedResources = await _context.EventResources
+                .Where(er => er.SupplierID == supplierId && er.Status == EventResourceStatus.Approved)
+                .Include(er => er.Resource)
+                .Include(er => er.Event)
+                .Where(er => !er.Resource.IsExhaustable)
+                .Select(er => new
+                {
+                    
+                    EventResource = new EventResourceDto
+                    {
+                        ID = er.ID,
+                        SupplierID = er.SupplierID,
+                        EventID = er.EventID,
+                        ResourceID = er.ResourceID,
+                        Quantity = er.Quantity,
+                        IsReservable = er.IsReservable,
+                        Status = er.Status,
+                        StartDateTimeBooked = er.StartDateTimeBooked,
+                        EndDateTimeBooked = er.EndDateTimeBooked
+                    },
+                    
+                    ResourceName = er.Resource.Name,
+                    ResourceCategory = er.Resource.Category,
+                    EventTitle = er.Event.Title,
+                    ResourceDescription = er.Resource.Description,
+                    EventStartDate = er.Event.StartDate,
+                    EventEndDate = er.Event.EndDate
+                })
+                .ToListAsync();
+
+            return Ok(bookedResources);
+        }
+
 
     }
 }

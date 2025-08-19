@@ -317,27 +317,47 @@ namespace Backend.Services
                     .ToListAsync();
 
                 if (!eventResources.Any())
-                    return; 
+                    return;
 
-                
+
                 foreach (var eventResource in eventResources)
                 {
                     if (eventResource.Status == EventResourceStatus.Approved)
                     {
                         var resource = eventResource.Resource;
-                        resource.Quantity += eventResource.Quantity;
-                        
+
+                        if (resource.IsExhaustable)
+                        {
+                            resource.Quantity += eventResource.Quantity;
+                        }
+
                         
                         if (resource.IsAvailable == ResourceAvailability.Booked)
                         {
-                            resource.IsAvailable = ResourceAvailability.Available;
+                            
+                            if (resource.IsExhaustable && resource.Quantity > 0)
+                            {
+                                resource.IsAvailable = ResourceAvailability.Available;
+                            }
+                            
+                            else if (!resource.IsExhaustable)
+                            {
+                                var otherApprovedReservations = await _context.EventResources
+                                    .Where(er => er.ResourceID == resource.ResourceID
+                                             && er.ID != eventResource.ID
+                                             && er.Status == EventResourceStatus.Approved)
+                                    .AnyAsync();
+
+                                if (!otherApprovedReservations)
+                                {
+                                    resource.IsAvailable = ResourceAvailability.Available;
+                                }
+                            }
                         }
-                        
+
                         _context.Resources.Update(resource);
                     }
                 }
-
-                
                 _context.EventResources.RemoveRange(eventResources);
             }
             catch (Exception ex)
@@ -448,16 +468,14 @@ namespace Backend.Services
         {
             try
             {
-                
                 var eventResources = await _context.EventResources
                     .Include(er => er.Resource)
                     .Where(er => er.EventID == eventId)
                     .ToListAsync();
 
                 if (!eventResources.Any())
-                    return; 
+                    return;
 
-                
                 foreach (var eventResource in eventResources)
                 {
                     if (eventResource.Status == EventResourceStatus.Approved)
@@ -467,18 +485,24 @@ namespace Backend.Services
                         
                         if (!resource.IsExhaustable)
                         {
-                            resource.Quantity += eventResource.Quantity;
+                            
+                            var otherApprovedReservations = await _context.EventResources
+                                .Where(er => er.ResourceID == resource.ResourceID
+                                         && er.ID != eventResource.ID
+                                         && er.Status == EventResourceStatus.Approved)
+                                .AnyAsync();
 
                             
-                            if (resource.IsAvailable == ResourceAvailability.Booked)
+                            if (!otherApprovedReservations)
                             {
                                 resource.IsAvailable = ResourceAvailability.Available;
                             }
                         }
+
+                        _context.Resources.Update(resource);
                     }
                 }
 
-                
                 var eventResourceIds = eventResources.Select(er => er.ID).ToList();
 
                 if (eventResourceIds.Any())
