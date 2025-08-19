@@ -30,6 +30,7 @@ namespace Backend.Controllers
                     t.Description,
                     t.Price,
                     t.Quota,
+                    t.validUntil,
                     Available = t.Quota - _context.UserTickets.Count(ut => ut.TicketID == t.TicketID)
                 })
                 .ToListAsync();
