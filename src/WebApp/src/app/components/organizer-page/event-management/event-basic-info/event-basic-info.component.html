@@ -1,29 +1,38 @@
 <main>
 
     <div class="card-desc-container" *ngIf="!editMode">
-        
+
         <div class="event-info-card">
 
             <div class="banner-img">
-                <img [src]="eventBasicInfo.getImageUrl()" alt="banner-img" />
+                <img id="imgBanner" [src]="eventBasicInfo.getImageUrl()" alt="banner-img" />
             </div>
 
             <div class="event-info">
 
                 <div class="title-tag">
                     <h1 class="font-archivo">{{eventBasicInfo.getTitle()}}</h1>
-                    <span class="font-inter custom-status-tag"> {{ eventBasicInfo.getStatusLabel() }}</span>
+                    <span class="font-inter custom-status-tag" [ngStyle]="{
+     'color': eventBasicInfo.getStatusLabel() == 'Draft' ? '#2748B2' :
+              eventBasicInfo.getStatusLabel() == 'Published' ? '#166534' :
+              eventBasicInfo.getStatusLabel() == 'Canceled' ? '#9C2020' : 'black',
+              'background-color': eventBasicInfo.getStatusLabel() === 'Draft' ? '#DBEAFE' :
+                         eventBasicInfo.getStatusLabel() === 'Published' ? '#DCFCE7' :
+                         eventBasicInfo.getStatusLabel() === 'Canceled' ? '#FEE2E2' : 'gray'
+   }"> {{ eventBasicInfo.getStatusLabel() }}</span>
                 </div>
 
                 <div class="date-time">
                     <div class="date">
                         <i class="pi pi-calendar" style="color: #636AE8"></i>
-                        <span class="font-inter">{{ eventBasicInfo.getStartDate() | date: 'MMMM, dd yyyy'}} - {{ eventBasicInfo.getEndDate() | date: 'MMMM, dd yyyy'}}</span>
+                        <span class="font-inter">{{ eventBasicInfo.getStartDate() | date: 'MMMM, dd yyyy'}} - {{
+                            eventBasicInfo.getEndDate() | date: 'MMMM, dd yyyy'}}</span>
                     </div>
 
                     <div class="time">
                         <i class="pi pi-clock" style="color: #636AE8"></i>
-                        <span class="font-inter">{{ eventBasicInfo.getStartDate() | date: 'HH:mm'}} - {{ eventBasicInfo.getEndDate() | date: 'HH:mm'}}</span>
+                        <span class="font-inter">{{ eventBasicInfo.getStartDate() | date: 'HH:mm'}} - {{
+                            eventBasicInfo.getEndDate() | date: 'HH:mm'}}</span>
                     </div>
                 </div>
 
@@ -34,33 +43,21 @@
 
                 <div class="capacity">
                     <i class="pi pi-users" style="color: #636AE8"></i>
-                    <span class="font-inter">{{ eventBasicInfo.getCapacity() === -1 ? 'Unlimited' :  eventBasicInfo.getCapacity()}} Attendess</span>
+                    <span class="font-inter">{{ eventBasicInfo.getCapacity() === -1 ? 'Unlimited' :
+                        eventBasicInfo.getCapacity()}} Attendess</span>
                 </div>
 
             </div>
 
-             <p-fileUpload
-                #fileUploader
-                mode="basic"
-                maxFileSize="5000000"
-                [customUpload]="true"
-                [auto]="true"
-                accept="image/*"
-                [showUploadButton]="false"
-                [showCancelButton]="false"
-                styleClass="hidden"
-                (uploadHandler)="onImageUpload($event)"
-            ></p-fileUpload>
+            <p-fileUpload *ngIf="eventBasicInfo?.getStatusLabel() != 'Canceled'" #fileUploader mode="basic"
+                maxFileSize="5000000" [customUpload]="true" [auto]="true" accept="image/*" [showUploadButton]="false"
+                [showCancelButton]="false" styleClass="hidden" (uploadHandler)="onImageUpload($event)"></p-fileUpload>
 
-            <button
-                (click)="triggerFileInput()"
-                class="upload-btn"
-                pTooltip="Change event picture"
-                tooltipPosition="top"
-            >
+            <button *ngIf="eventBasicInfo?.getStatusLabel() != 'Canceled'" (click)="triggerFileInput()"
+                class="upload-btn" pTooltip="Change event picture" tooltipPosition="top">
                 <i class="pi pi-camera text-white text-lg"></i>
             </button>
-            
+
         </div>
 
         <div class="event-description">
@@ -82,127 +79,113 @@
 
             <div class="form-inputs">
 
-                <div  class="input-wrapper">
+                <div class="input-wrapper">
 
                     <p>Event Title</p>
                     <p-floatlabel class="w-full md:w-56" variant="on">
-                        <input  type="text"  pInputText  placeholder=" "  formControlName="title"  inputId="title"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-                    <label for="title">Enter Event Title</label>
+                        <input type="text" pInputText placeholder=" " formControlName="title" inputId="title"
+                            class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                        <label for="title">Enter Event Title</label>
                     </p-floatlabel>
 
                 </div>
 
-                    <div  class="input-wrapper">
+                <div class="input-wrapper">
 
-                        <p>Description</p>
-                        <p-floatlabel class="w-full md:w-56" variant="on">
-                            <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
+                    <p>Description</p>
+                    <p-floatlabel class="w-full md:w-56" variant="on">
+                        <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5"
+                            cols="30" style="resize: none"
+                            class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
                         <label for="description">Describe Your Event</label>
-                        </p-floatlabel>
+                    </p-floatlabel>
 
-                    </div>
+                </div>
 
-                    <div class="location-capacity">
+                <div class="location-capacity">
 
-                        <div  class="input-wrapper">
+                    <div class="input-wrapper">
 
-                            <p>Location</p>
-                            <p-floatlabel class="w-full md:w-56" variant="on">
-                                <p-autoComplete
-                                inputId="location"
-                                formControlName="location"
-                                [suggestions]="filteredLocations"
-                                (completeMethod)="searchLocations($event)"
-                                field="display_name"
-                                [minLength]="2"
-                                class="w-full md:w-56"
-                                (onSelect)="onLocationSelect($event)"
-                                [style]="{ width: '100%' }"
-                                inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                                >
+                        <p>Location</p>
+                        <p-floatlabel class="w-full md:w-56" variant="on">
+                            <p-autoComplete inputId="location" formControlName="location"
+                                [suggestions]="filteredLocations" (completeMethod)="searchLocations($event)"
+                                field="display_name" [minLength]="2" class="w-full md:w-56"
+                                (onSelect)="onLocationSelect($event)" [style]="{ width: '100%' }"
+                                inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500">
                             </p-autoComplete>
                             <label for="location">Enter Event Location (e.g. Zoom, Conference Hall A)</label>
-                            </p-floatlabel>
-
-                        </div>
-
-                        <div  class="input-wrapper">
-
-                            <p>Capacity</p>
-                            
-
-                            <p-floatlabel class="w-full md:w-56" variant="on">
-                            <p-inputnumber
-                                    formControlName="capacity"
-                                    inputId="capacity"
-                                    [min]="1"
-                                    [useGrouping]="false"
-                                    [showButtons]="false"
-                                    [style]="{ width: '100%' }"
-                                    inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                                ></p-inputnumber>
-                            <label for="capacity">Enter Event Capacity</label>
-                            </p-floatlabel>
-
-                            <div class="flex items-center gap-2">
-                                <p-checkbox formControlName="isUnlimitedCapacity" inputId="isUnlimitedCapacity" name="isUnlimitedCapacity" binary="true" size="large" />
-                                <label for="isUnlimitedCapacity" >Unlimited Capacity</label>
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="dates">
-
-                        <div  class="input-wrapper">
-                            <p>Start Date</p>
-                            <p-floatlabel class="w-full md:w-56"  variant="on">
-                                <p-datepicker inputId="startDateTime" placeholder=" " formControlName="startDateTime" [showTime]="true" hourFormat="24" [minDate]="minDate"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
-                                <label for="startDateTime">Start Date and Time</label>
-                            </p-floatlabel>
-                        </div>
-
-                        <div  class="input-wrapper">
-                            <p>End Date</p>
-                            <p-floatlabel class="w-full md:w-56"  variant="on">
-                                <p-datepicker inputId="endDateTime" placeholder=" " formControlName="endDateTime" [showTime]="true" hourFormat="24" [minDate]="minDate"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
-                                <label for="endDateTime">End Date and Time</label>
-                            </p-floatlabel>
-                        </div>
-
-                    </div>
-
-                    <div  class="input-wrapper">
-
-                        <p>Category</p>
-                        <p-floatlabel class="w-full" variant="on">
-                            <p-select  [options]="categories"  name="category"  formControlName="category"  placeholder=" "  inputId="category"  class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"/>
-                            <label for="category">Select Event Category</label>
                         </p-floatlabel>
 
                     </div>
 
+                    <div class="input-wrapper">
 
-                    <div class="form-buttons">
-                        <p-button 
-                        label="Save Changes"
-                        icon="pi pi-pen-to-square"
-                        [raised]="true"
-                        (onClick)="submitForm()"
-                        severity="primary"
-                        ></p-button>
+                        <p>Capacity</p>
 
-                         <p-button 
-                            label="Cancel"
-                            icon="pi pi-times"
-                            [raised]="true"
-                            severity="secondary"
-                            type="button"
-                            (onClick)="onCancel()"
-                        ></p-button>
+
+                        <p-floatlabel class="w-full md:w-56" variant="on">
+                            <p-inputnumber formControlName="capacity" inputId="capacity" [min]="1" [useGrouping]="false"
+                                [showButtons]="false" [style]="{ width: '100%' }"
+                                inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></p-inputnumber>
+                            <label for="capacity">Enter Event Capacity</label>
+                        </p-floatlabel>
+
+                        <div class="flex items-center gap-2">
+                            <p-checkbox formControlName="isUnlimitedCapacity" inputId="isUnlimitedCapacity"
+                                name="isUnlimitedCapacity" binary="true" size="large" />
+                            <label for="isUnlimitedCapacity">Unlimited Capacity</label>
+                        </div>
+
                     </div>
-                    
+
+                </div>
+
+                <div class="dates">
+
+                    <div class="input-wrapper">
+                        <p>Start Date</p>
+                        <p-floatlabel class="w-full md:w-56" variant="on">
+                            <p-datepicker inputId="startDateTime" placeholder=" " formControlName="startDateTime"
+                                [showTime]="true" hourFormat="24" [minDate]="minDate" [style]="{ width: '100%' }"
+                                inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                            <label for="startDateTime">Start Date and Time</label>
+                        </p-floatlabel>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <p>End Date</p>
+                        <p-floatlabel class="w-full md:w-56" variant="on">
+                            <p-datepicker inputId="endDateTime" placeholder=" " formControlName="endDateTime"
+                                [showTime]="true" hourFormat="24" [minDate]="minDate" [style]="{ width: '100%' }"
+                                inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                            <label for="endDateTime">End Date and Time</label>
+                        </p-floatlabel>
+                    </div>
+
+                </div>
+
+                <div class="input-wrapper">
+
+                    <p>Category</p>
+                    <p-floatlabel class="w-full" variant="on">
+                        <p-select [options]="categories" name="category" formControlName="category" placeholder=" "
+                            inputId="category"
+                            class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]" />
+                        <label for="category">Select Event Category</label>
+                    </p-floatlabel>
+
+                </div>
+
+
+                <div class="form-buttons">
+                    <p-button label="Save Changes" icon="pi pi-pen-to-square" [raised]="true" (onClick)="submitForm()"
+                        severity="primary"></p-button>
+
+                    <p-button label="Cancel" icon="pi pi-times" [raised]="true" severity="secondary" type="button"
+                        (onClick)="onCancel()"></p-button>
+                </div>
+
 
             </div>
 

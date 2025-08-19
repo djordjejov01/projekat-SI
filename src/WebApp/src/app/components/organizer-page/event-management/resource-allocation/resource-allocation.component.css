@@ -53,3 +53,29 @@
 .pick-list{
     padding: 2rem;
 }
+
+/* In your resource-allocation.component.css */
+
+.pending-chip {
+  background-color: #fef9c3;
+  color: #946325;
+}
+
+.approved-chip {
+  background-color: #dcfce7;
+  color: #2f784a;
+}
+
+.declined-chip {
+  background-color: #fee2e2;
+  color: #a83838;
+}
+
+/* Also, add these if they're not already defined, as they're from your HTML */
+.bg-quantity {
+  background-color: #dbeafe; /* Example blue */
+}
+
+.bg-allocated-quantity {
+  background-color: #f3e8ff; /* Example purple */
+}

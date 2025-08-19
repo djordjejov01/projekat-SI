@@ -17,7 +17,7 @@ import { ApiService } from '../../Services/api.service';
 import { AuthService } from '../../Services/auth.service';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-
+import { HostListener } from '@angular/core';
 @Component({
   selector: 'app-login-form',
   imports: [ReactiveFormsModule,FloatLabelModule,InputTextModule,CommonModule,PasswordModule,DividerModule,ToastModule,ConfirmDialog,RouterLink, TranslateModule],
@@ -162,5 +162,9 @@ export class LoginForm implements OnInit,IDeactivate{
     : true;
 
   }
-
+ @HostListener('document:keydown.enter', ['$event'])
+handleEnter(event: KeyboardEvent) {
+  event.preventDefault();
+  this.submitForm(); // ili šta već
+}
 }

@@ -262,30 +262,46 @@ namespace Backend.Controllers
         [HttpPut("eventresource/{id}/status")]
         public async Task<IActionResult> UpdateEventResourceStatus(int id, [FromBody] EventResourceStatus newStatus)
         {
-            var eventResource = await _context.EventResources
-                .Include(er => er.Resource)
-                .FirstOrDefaultAsync(er => er.ID == id);
-
+            var eventResource = await _context.EventResources.Include(er => er.Resource).FirstOrDefaultAsync(er => er.ID == id);
             if (eventResource == null)
                 return NotFound();
 
             if (eventResource.Status != EventResourceStatus.Pending)
                 return BadRequest("Can only update pending requests.");
-            var resource = await _context.Resources.FindAsync(eventResource.ResourceID);
 
+            // Logic for Approved status
             if (newStatus == EventResourceStatus.Approved)
             {
-                // Smanji količinu resursa
-                if (resource.Quantity < eventResource.Quantity)
-                    return BadRequest("Not enough quantity available.");
+                // Only subtract quantity if the original resource is exhaustable.
+                if (eventResource.Resource.IsExhaustable)
+                {
+                    // Check for available quantity before subtracting. This is a crucial final check.
+                    if (eventResource.Resource.Quantity < eventResource.Quantity)
+                    {
+                        // This scenario could happen if another event approved the same resource first.
+                        return BadRequest("Not enough quantity available. Another event may have booked it.");
+                    }
 
-                resource.Quantity -= eventResource.Quantity;
-                _context.Resources.Update(resource);
+                    // Subtract the quantity from the supplier's resource.
+                    eventResource.Resource.Quantity -= eventResource.Quantity;
+
+                    // Update IsAvailable status if quantity drops to 0.
+                    if (eventResource.Resource.Quantity <= 0)
+                    {
+                        eventResource.Resource.IsAvailable = ResourceAvailability.Unavailable;
+                    }
+                }
+
+                // Update the supplier's resource in the database.
+                _context.Resources.Update(eventResource.Resource);
             }
+
+            // Update the EventResource status and save changes.
             eventResource.Status = newStatus;
+            _context.EventResources.Update(eventResource);
             await _context.SaveChangesAsync();
 
-            return Ok("Status updated.");
+            return Ok("Status updated successfully.");
         }
 
         [HttpGet("ReusableResources")]

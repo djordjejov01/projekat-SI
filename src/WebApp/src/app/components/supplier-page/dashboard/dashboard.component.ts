@@ -26,10 +26,10 @@ import { AuthService } from '../../../Services/auth.service';
 import { MessageService } from 'primeng/api';
 import { CategoryService } from '../../../Services/EventCategoryService';
 import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
-
+import { RequestsComponent } from './requests/requests.component';
 @Component({
   selector: 'app-dashboard',
-  imports: [TableModule,ButtonModule,IconField,InputIcon,FormsModule,MultiSelect,TooltipModule,InputTextModule,CommonModule,ChartModule,ResourceModalComponent,IconFieldModule,InputIconModule],
+  imports: [RequestsComponent,TableModule,ButtonModule,IconField,InputIcon,FormsModule,MultiSelect,TooltipModule,InputTextModule,CommonModule,ChartModule,ResourceModalComponent,IconFieldModule,InputIconModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -37,6 +37,7 @@ export class DashboardComponent  implements OnInit{
 
   //resources = DUMMY_RESOURCES
   resources : ResourceDto[] = [];
+  availableResources : ResourceDto[] = [];
   selectedResources : Resource[] = []
   loading = false;
   searchValue : string;
@@ -117,6 +118,7 @@ private availabilityLabels: Record<number, string> = {
       next: (response : ResourceDto[]) => 
         {
           this.resources = response;
+          this.availableResources = this.resources.filter(x => x.getIsAvailable() == 0);
           console.log(this.resources)
           this.initChart()
         },
@@ -140,44 +142,54 @@ private availabilityLabels: Record<number, string> = {
             const textColor = documentStyle.getPropertyValue('--text-color');
 
             this.pieChartData = {
-                labels: stats.labels,
-                datasets: [
-                    {
-                        data: stats.counts,
-                         backgroundColor: [
-                              'rgba(100,106,232, 0.2)',
-                              'rgba(126, 230, 78, 0.2)',
-                              'rgba(180, 180, 180, 0.2)',
-                              'rgba(233, 99, 141, 0.2)',
-                              'rgba(255, 193, 7, 0.2)',
-                              'rgba(23, 162, 184, 0.2)',
-                              'rgba(153, 102, 255, 0.2)',
-                              'rgba(108, 117, 125, 0.2)'
-                            ],
-                        borderColor: [
-                              'rgba(100,106,232, 0.7)',
-                              'rgba(126, 230, 78, 0.7)',
-                              'rgba(180, 180, 180, 0.7)',
-                              'rgba(233, 99, 141, 0.7)',
-                              'rgba(255, 193, 7, 0.7)',
-                              'rgba(23, 162, 184, 0.7)',
-                              'rgba(153, 102, 255, 0.7)',
-                              'rgba(108, 117, 125, 0.7)'
-                            ],
-                        hoverBackgroundColor:[
-                              'rgba(100,106,232, 0.4)',
-                              'rgba(126, 230, 78, 0.4)',
-                              'rgba(180, 180, 180, 0.4)',
-                              'rgba(233, 99, 141, 0.4)',
-                              'rgba(255, 193, 7, 0.4)',
-                              'rgba(23, 162, 184, 0.4)',
-                              'rgba(153, 102, 255, 0.4)',
-                              'rgba(108, 117, 125, 0.4)'
-                            ],
-                          borderWidth: 1
-                    }
-                ]
-            };
+            labels: stats.labels,
+            datasets: [
+              {
+                data: stats.counts,
+                backgroundColor: [
+                  'rgba(100,106,232,0.2)',  // Equipment
+                  'rgba(126,230,78,0.2)',   // Furniture
+                  'rgba(255,193,7,0.2)',    // Electrical
+                  'rgba(233,99,141,0.2)',   // Sanitation
+                  'rgba(23,162,184,0.2)',   // Food & Beverage
+                  'rgba(220,53,69,0.2)',    // Medical
+                  'rgba(153,102,255,0.2)',  // Security
+                  'rgba(255,159,64,0.2)',   // Merchandise
+                  'rgba(108,117,125,0.2)',  // Transportation
+                  'rgba(54,162,235,0.2)',   // Technology
+                  'rgba(180,180,180,0.2)'   // Undefined
+                ],
+                borderColor: [
+                  'rgba(100,106,232,0.7)',
+                  'rgba(126,230,78,0.7)',
+                  'rgba(255,193,7,0.7)',
+                  'rgba(233,99,141,0.7)',
+                  'rgba(23,162,184,0.7)',
+                  'rgba(220,53,69,0.7)',
+                  'rgba(153,102,255,0.7)',
+                  'rgba(255,159,64,0.7)',
+                  'rgba(108,117,125,0.7)',
+                  'rgba(54,162,235,0.7)',
+                  'rgba(180,180,180,0.7)'
+                ],
+                hoverBackgroundColor: [
+                  'rgba(100,106,232,0.4)',
+                  'rgba(126,230,78,0.4)',
+                  'rgba(255,193,7,0.4)',
+                  'rgba(233,99,141,0.4)',
+                  'rgba(23,162,184,0.4)',
+                  'rgba(220,53,69,0.4)',
+                  'rgba(153,102,255,0.4)',
+                  'rgba(255,159,64,0.4)',
+                  'rgba(108,117,125,0.4)',
+                  'rgba(54,162,235,0.4)',
+                  'rgba(180,180,180,0.4)'
+                ],
+                borderWidth: 1
+              }
+            ]
+          };
+
 
             this.pieChartOptions = {
                 plugins: {
