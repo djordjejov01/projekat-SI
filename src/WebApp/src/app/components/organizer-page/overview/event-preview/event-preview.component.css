@@ -8,10 +8,8 @@
 }
 
 #status{
-    background-color: rgb(225, 227, 255);
     padding-left: 15px;
     padding-right: 15px;
-    color:rgb(62, 159, 238);
     font-weight: bold;
     border-radius: 20px;
     text-align: center;

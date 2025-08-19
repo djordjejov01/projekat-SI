@@ -303,7 +303,19 @@ export class ApiService{
         )
     }
 
+    cancelEvent(eventID)
+    {
+        return this.http.post<{ message: string }>(`${this.apiUrl}/Organizer/events/cancel`, eventID ).pipe(
+            catchError(this.handleError)
+        )
+    }
 
+    deleteEvent(eventID)
+    {
+        return this.http.delete<{ message: string }>(`${this.apiUrl}/Organizer/events`,{ body:  eventID } ).pipe(
+            catchError(this.handleError)
+        )
+    }
     getEventPins(eventId : number) : Observable<EventPinDto[]>{
         return this.http.get<EventPinApiResponse[]>(`${this.apiUrl}/EventPin/event?eventId=${eventId}`).pipe(
 

@@ -130,3 +130,13 @@ header{
 button:hover{
     cursor: pointer;
 }
+
+#cancelText{
+  color: #9C2020;
+  background-color: #FEE2E2;
+  padding: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 10px;
+  font-weight: bold;
+}

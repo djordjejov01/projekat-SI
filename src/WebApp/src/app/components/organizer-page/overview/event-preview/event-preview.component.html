@@ -1,7 +1,14 @@
 <div id="data">
     <div id="fr">
         <div id="sit">
-            <p id="status">{{event.getStatusLabel()}}</p>
+            <p id="status" [ngStyle]="{
+     'color': event.getStatusLabel() == 'Draft' ? '#2748B2' :
+              event.getStatusLabel() == 'Published' ? '#166534' :
+              event.getStatusLabel() == 'Canceled' ? '#9C2020' : 'black',
+              'background-color': event.getStatusLabel() === 'Draft' ? '#DBEAFE' :
+                         event.getStatusLabel() === 'Published' ? '#DCFCE7' :
+                         event.getStatusLabel() === 'Canceled' ? '#FEE2E2' : 'gray'
+   }">{{event.getStatusLabel()}}</p>
             <p id="time">{{event.getStartDateTime() | date: 'MM/dd/yyyy' }}</p>
         </div>
         <img [src]="event.getImage()" alt="">
