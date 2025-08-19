@@ -233,8 +233,8 @@ namespace Backend.Services
                     throw new ArgumentException("Event not found or you don't have permission to delete it.");
 
             
-                if (eventEntity.Status != EventStatus.Draft)
-                    throw new InvalidOperationException("Event can only be deleted if it's in draft status.");
+                if (eventEntity.Status != EventStatus.Draft && eventEntity.Status != EventStatus.Canceled)
+                    throw new InvalidOperationException("Event can be deleted only if it's Draft or Canceled.");
 
             
                 var activities = await _context.EventActivities
