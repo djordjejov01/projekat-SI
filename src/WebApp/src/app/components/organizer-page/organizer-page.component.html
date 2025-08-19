@@ -9,7 +9,6 @@
                 <option value="en">English</option>
             </select>
             <button (click)="onLogoutClick()" id="lgbtn">{{ 'LOGOUT' | translate }}</button>
-            <img src="./assets/bell.svg" alt="">
             <p (click) = "myProfile()" id="username">{{username}}</p>
             <img [src]="previewUrl || defaultImage" alt="profile picture" id="pfp" (click) = "myProfile()">
         </div>

@@ -40,7 +40,6 @@ import { ResourceAvailability } from "./ResourceAvailabilityService";
 import { ResourceApiResponse } from "../Interfaces/ResourceApiResponse";
 import { ResourceDto } from "../Models/ResourceDto";
 
-
 // Match Backend.Models.Dto.EventDto
 export interface EventDto {
   eventId: number;
@@ -296,6 +295,27 @@ export class ApiService{
         )
     }
 
+
+    publishEvent(eventID)
+    {
+        return this.http.post<{ message: string }>(`${this.apiUrl}/Organizer/events/publish`, eventID ).pipe(
+            catchError(this.handleError)
+        )
+    }
+
+    cancelEvent(eventID)
+    {
+        return this.http.post<{ message: string }>(`${this.apiUrl}/Organizer/events/cancel`, eventID ).pipe(
+            catchError(this.handleError)
+        )
+    }
+
+    deleteEvent(eventID)
+    {
+        return this.http.delete<{ message: string }>(`${this.apiUrl}/Organizer/events`,{ body:  eventID } ).pipe(
+            catchError(this.handleError)
+        )
+    }
     getEventPins(eventId : number) : Observable<EventPinDto[]>{
         return this.http.get<EventPinApiResponse[]>(`${this.apiUrl}/EventPin/event?eventId=${eventId}`).pipe(
 
@@ -717,27 +737,3 @@ export class ApiService{
         return throwError(()=> new Error(errorMsg))
     }
 }
-
-
-
-
-    // getUsersPaginated(start: number, count: number): Observable<User[]>{
-    //     return this.http.get<UserApiResponse[]>(`${this.apiUrl}/Admin/users/page?k=${start}&n=${count}`).pipe(
-
-    //         map( data =>
-    //             data.map(userResponse => new User(
-    //                 userResponse.userId,
-    //                 userResponse.username,
-    //                 userResponse.email,
-    //                 UserRoleMap[userResponse.role] || 'Unknown',
-    //                 new Date(userResponse.creationTime),
-    //                 userResponse.isActive,
-    //                 userResponse.lastLoginTime ? new Date(userResponse.lastLoginTime) : null,
-    //                 userResponse.password,
-    //                 userResponse.firstName,
-    //                 userResponse.lastName
-    //             ))
-    //         )
-
-    //     )
-    // }

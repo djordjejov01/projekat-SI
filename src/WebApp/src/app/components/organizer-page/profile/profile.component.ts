@@ -157,11 +157,11 @@ defaultImage = 'assets/default-picture.png';
 
   update() {
     const name = (document.getElementById('name') as HTMLInputElement).value;
-    const username = (document.getElementById('username') as HTMLInputElement).value;
+    const username5 = (document.getElementById('username5') as HTMLInputElement).value;
     const email = (document.getElementById('email') as HTMLInputElement).value;
     const phone = (document.getElementById('phone') as HTMLInputElement).value;
 
-    const toUpdate = new OrganizerDto(this.authService.getUserId(),name,username,email,phone,"");
+    const toUpdate = new OrganizerDto(this.authService.getUserId(),name,username5,email,phone,"");
     console.log(toUpdate)
     this.apiService.updateOrg(toUpdate).subscribe({
       next:(response : string) =>{

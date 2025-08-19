@@ -4,9 +4,10 @@ import { TranslateModule } from '@ngx-translate/core';
 import { Event } from '../../../../Models/Event';
 import { DatePipe } from '@angular/common';
 import { AuthService } from '../../../../Services/auth.service';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-event-preview',
-  imports: [TranslateModule,DatePipe],
+  imports: [TranslateModule,DatePipe, CommonModule],
   templateUrl: './event-preview.component.html',
   styleUrl: './event-preview.component.css'
 })

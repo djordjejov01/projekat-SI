@@ -53,6 +53,7 @@ header{
 
 #login:hover, #register:hover, #dashboard:hover{
     cursor: pointer;
+    text-decoration: underline;
 }
 
 select,option{

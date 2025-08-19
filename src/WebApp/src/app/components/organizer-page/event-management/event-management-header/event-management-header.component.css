@@ -72,9 +72,16 @@ header{
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
     color: #242524;
+    display: flex;
+  align-items: center;
+}
+.edit-btn:hover{
+  background-color: rgb(237, 237, 237);
 }
 
 .delete-btn{
+  display: flex;
+  align-items: center;
     background-color: #DE3B40;
     border-radius: 6px;
     padding: 0.5rem 1rem;
@@ -82,7 +89,35 @@ header{
     color: white;
 }
 
-.edit-btn i, .delete-btn i{
+.delete-btn:hover, .cancel-btn:hover{
+  background-color: #b02f33;
+}
+.cancel-btn{
+  
+    background-color: #DE3B40;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+.publish-btn{
+  display: flex;
+  align-items: center;
+    background-color: #23a617;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: white;
+}
+
+.publish-btn:hover{
+  background-color: #1e9114;
+}
+
+
+.edit-btn i, .delete-btn i, .publish-btn i, .cancel-btn i{
     padding-right: 0.5rem;
 }
 
@@ -94,4 +129,16 @@ header{
 
 button:hover{
     cursor: pointer;
+}
+
+#cancelText{
+  color: #9C2020;
+  background-color: #FEE2E2;
+  padding: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 10px;
+  font-weight: bold;
+  align-self: center;
+  text-align: center;
 }

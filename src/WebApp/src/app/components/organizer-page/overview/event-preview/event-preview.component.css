@@ -1,4 +1,4 @@
-#data{
+#data {
     display: flex;
     flex-direction: column;
     border: 2px solid rgb(232, 232, 232);
@@ -7,59 +7,68 @@
     max-width: 800px;
 }
 
-#status{
-    background-color: rgb(225, 227, 255);
+#status {
     padding-left: 15px;
     padding-right: 15px;
-    color:rgb(62, 159, 238);
     font-weight: bold;
     border-radius: 20px;
     text-align: center;
 }
-#time{
+
+#time {
     font-weight: bold;
-    color:#8C8D8BFF;
+    color: #8C8D8BFF;
 }
-#mngev:hover{
+
+#mngev:hover {
     background-color: #585dcd;
 }
-#sit{
+
+#sit {
     display: flex;
     flex-direction: column;
-    gap:5px;
+    gap: 5px;
 }
 
-#fr{
+#fr {
     display: flex;
     justify-content: space-between;
-    gap:550px;
+    gap: 550px;
+
 }
 
-@media screen and (width <= 890px) {
-    #fr{
-    gap:150px;
-}
-}
-@media screen and (width <= 500px) {
-    #fr{
-    gap:0px;
-}
+@media screen and (width <=890px) {
+    #fr {
+        gap: 150px;
+    }
 }
 
-img{
+@media screen and (width <=500px) {
+    #fr {
+        gap: 0px;
+    }
+}
+
+#evPic {
     max-width: 120px;
+    max-height: 100px;
+    object-fit: cover;
+    object-position: center;
+    margin-left: -60px;
     border-radius: 10px;
 }
-#tt{
+
+#tt {
     font-size: 20px;
     font-weight: bold;
 }
-#info{
+
+#info {
     display: flex;
     flex-direction: column;
 }
 
-button{
+button {
     display: flex;
     background-color: #636AE8;
     color: white;
@@ -71,15 +80,16 @@ button{
     text-align: center;
     justify-content: center;
     align-items: center;
-    gap:10px;
+    gap: 10px;
 }
 
-button:hover{
+button:hover {
     cursor: pointer;
 }
-.in1{
+
+.in1 {
     display: flex;
     align-items: center;
-    gap:5px;
-    color:#8C8D8BFF;
+    gap: 5px;
+    color: #8C8D8BFF;
 }
