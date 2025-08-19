@@ -28,5 +28,5 @@ export class LandingPage implements AfterViewInit{
     sessionStorage.removeItem('accessDenied');
   }
   }
-
+  
 }
