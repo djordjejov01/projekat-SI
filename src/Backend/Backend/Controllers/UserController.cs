@@ -39,6 +39,10 @@ namespace Backend.Controllers
             if (registerDto.Password != registerDto.ConfirmPassword)
                 return BadRequest(new { message = "Lozinka i potvrda lozinke se ne poklapaju." });
 
+            
+            if (registerDto.Role != UserRole.Organizer && registerDto.Role != UserRole.Supplier)
+                return BadRequest(new { message = "Nedozvoljena rola za javnu registraciju." });
+
             try
             {
                 var user = await _userService.RegisterAsync(registerDto);

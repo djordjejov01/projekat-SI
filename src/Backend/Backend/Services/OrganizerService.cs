@@ -170,8 +170,8 @@ namespace Backend.Services
 
 
             
-            if (eventEntity.StartDate <= DateTime.Today.AddDays(30))
-                throw new InvalidOperationException("Event must be published at least 30 day before start date.");
+            if (eventEntity.StartDate <= DateTime.Today.AddDays(15))
+                throw new InvalidOperationException("Event must be published at least 15 day before start date.");
 
             
             if (eventEntity.StartDate > DateTime.Today.AddYears(1))
