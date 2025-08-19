@@ -21,44 +21,59 @@
         sourceFilterPlaceholder="Search by name"
         targetFilterPlaceholder="Search by name"
         breakpoint="1400px"
-        scrollHeight="480px"
-        [sourceTrackBy]="trackById" 
-        [targetTrackBy]="trackById"
+        [sourceTrackBy]="'resourceID'" 
+        [targetTrackBy]="'resourceID'"
         (onMoveToTarget)="handleMoveToTarget($event)"
-        (onMoveToSource)="handleMoveToSource($event)">
+        (onMoveToSource)="handleMoveToSource($event)"
+        >
 
         <ng-template let-resource pTemplate="item">
-            <div class="flex justify-between items-center w-full">
-            
-            <!-- Left: Resource Name -->
-            <span class="font-medium">{{ resource.getName() }}</span>
+        <div class="flex justify-between items-center w-full">
+            <span class="font-medium">{{ resource.name }}</span>
 
-            <!-- Right: Chips -->
             <div class="flex gap-2 items-center">
 
-                <!-- Availability Chip -->
-                <span 
-                class="px-3 py-1 rounded-full text-sm font-medium" 
-                [ngClass]="getAvailabilityClass(resource.getIsAvailable())">
-                {{ getAvailabilityText(resource.getIsAvailable()) }}
-                </span>
-
-                <!-- Quantity Left Chip -->
-                <p-chip 
-                *ngIf="resource.getIsExhaustable() === true"
-                label="Qty left: {{ resource.getQuantity() }}"
+            <p-chip 
+                label="{{ getCategoryName(resource) }}" 
+                [ngStyle]="getCategoryStyle(resource)"
+                class="px-3 py-1 text-sm h-6 rounded-full font-medium">
+            </p-chip>
+            
+            <!-- Display Quantity for resources in the source (available) list -->
+            <p-chip 
+                *ngIf="resource.status === undefined"
+                label="Qty left: {{ resource.quantity }}"
                 styleClass="px-3 py-1 text-sm h-6 bg-quantity"
-                />
-                
-                <!-- Supplier Chip -->
-                <p-chip 
-                *ngIf="findSupplier(resource.getSupplierID()) as supplier"
+            />
+
+            <!-- Display Allocated Quantity for resources in the target (allocated) list -->
+            <p-chip 
+                *ngIf="resource.status !== undefined"
+                label="Qty alloc: {{ resource.allocatedQuantity }}"
+                styleClass="px-3 py-1 text-sm h-6 bg-quantity"
+            />
+
+            <p-chip 
+                *ngIf="resource.status !== undefined"
+                [label]="getStatusText(resource.status)"
+                [ngClass]="getStatusClass(resource.status)" 
+                class="px-3 py-1 text-sm h-6 rounded-full font-medium">
+            </p-chip>
+
+            <p-chip
+                *ngIf="resource.status !== undefined && !resource.isExhaustable"
+                [label]="getShortDateRange(resource.startDateTimeBooked, resource.endDateTimeBooked)"
+                styleClass="px-3 py-1 text-sm h-6 bg-gray-200"
+            ></p-chip>
+
+            <p-chip 
+                *ngIf="resource.status === undefined && findSupplier(resource.supplierID) as supplier"
                 [label]="supplier.getUsername()" 
                 [image]="supplier.getImage()">
-                </p-chip>
+            </p-chip>
 
             </div>
-            </div>
+        </div>
         </ng-template>
         </p-pickList>
     </div>
@@ -68,13 +83,10 @@
   (save)="onModalSave($event)"
   (cancel)="onModalCancel($event)"
   (onHide)="onModalClosed()" 
+  [eventBasicInfo]="eventBasicInfo"
   #resourceModal
 >
 </app-resource-modal>
 
    
 </div>
-
-
-
-

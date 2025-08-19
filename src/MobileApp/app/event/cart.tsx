@@ -107,26 +107,28 @@ export default function CartScreen() {
   };
 
   const handlePurchase = async () => {
-    Alert.alert(t('cart.confirmTitle'), t('cart.confirmMessage'), [
-      { text: t('cart.cancel'), style: 'cancel' },
-      {
-        text: t('cart.purchase'),
-        onPress: async () => {
-          setLoading(true);
-          try {
-            if (!token) {
-              Alert.alert(t('cart.errorTitle'), t('cart.loginRequired'));
-              setLoading(false);
-              return;
-            }
+  Alert.alert(t('cart.confirmTitle'), t('cart.confirmMessage'), [
+    { text: t('cart.cancel'), style: 'cancel' },
+    {
+      text: t('cart.purchase'),
+      onPress: async () => {
+        setLoading(true);
+        try {
+          if (!token) {
+            Alert.alert(t('cart.errorTitle'), t('cart.loginRequired'));
+            setLoading(false);
+            return;
+          }
 
-            // Pripremi payload za kupovinu ulaznica
+          // 1️⃣ Kupovina karata (ako ih ima)
+          let ticketIdToUserTicketIds: { [ticketId: number]: number[] } = {};
+
+          if (selectedTickets.length > 0) {
             const ticketRequestBody = selectedTickets.map(ticket => ({
               TicketID: ticket.id,
               Quantity: ticket.quantity,
             }));
 
-            // Pošalji zahtev za kupovinu ulaznica
             const purchaseRes = await fetch(`${API_URL}/api/Ticket/purchase`, {
               method: 'POST',
               headers: {
@@ -142,83 +144,81 @@ export default function CartScreen() {
               throw new Error(`Kupovina ulaznica nije uspela. ${errorText}`);
             }
 
-            // Dobij UserTicketID-ove iz odgovora
             const createdTickets: { UserTicketID?: number; TicketID?: number; userTicketID?: number; ticketID?: number }[] = await purchaseRes.json();
 
-            // Mapiraj TicketID na listu UserTicketID-ova (ako ima više istih tipova)
-            const ticketIdToUserTicketIds: { [ticketId: number]: number[] } = {};
             for (const t of createdTickets) {
               const ticketID = t.TicketID ?? t.ticketID;
               const userTicketID = t.UserTicketID ?? t.userTicketID;
-              if (typeof ticketID === 'undefined' || typeof userTicketID === 'undefined') {
-                console.warn('Nedostaje ticketID ili userTicketID u objektu:', t);
-                continue;
-              }
+              if (typeof ticketID === 'undefined' || typeof userTicketID === 'undefined') continue;
               if (!ticketIdToUserTicketIds[ticketID]) ticketIdToUserTicketIds[ticketID] = [];
               ticketIdToUserTicketIds[ticketID].push(userTicketID);
             }
+          }
 
-            // Rezerviši svaki izabrani resurs za odgovarajuću kartu (prvi tip ulaznice)
-            for (const resId of selectedResources) {
-              // Pronađi prvi tip ulaznice (ili možeš proširiti logiku po potrebi)
+          // 2️⃣ Rezervacija resursa
+          for (const resId of selectedResources) {
+            let userTicketID: number | null = null;
+
+            if (selectedTickets.length > 0) {
               const firstSelectedTicket = selectedTickets[0];
               const userTicketIds = ticketIdToUserTicketIds[firstSelectedTicket.id] || [];
-              if (userTicketIds.length === 0) continue;
-
-              // Uzmi jedan UserTicketID i ukloni ga iz niza (da ne koristiš isti više puta)
-              const userTicketID = userTicketIds.shift();
-
-              await fetch(`${API_URL}/api/Resource/reserve`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  EventResourceID: resId,
-                  Quantity: 1,
-                  UserTicketID: userTicketID,
-                }),
-              });
+              if (userTicketIds.length > 0) {
+                userTicketID = userTicketIds.shift()!;
+              }
             }
 
-            // Pripremi ticketTypes za prosleđivanje
-            const ticketTypes = selectedTickets.map(t => {
-              const info = getTicketInfo(t.id);
-              return {
-                id: t.id,
-                name: info?.name || '',
-                quantity: t.quantity,
-              };
-            });
-
-            setLoading(false);
-            Alert.alert(t('cart.successTitle'), t('cart.successMessage'), [
-              {
-                text: t('cart.ok'),
-                onPress: () =>
-                  router.replace({
-                    pathname: '../event/ticketDetails',
-                    params: {
-                      ticketIDs: JSON.stringify(Object.values(ticketIdToUserTicketIds).flat()),
-                      eventName: eventName ?? '',
-                      ticketTypes: JSON.stringify(ticketTypes),
-                      purchasedAt: new Date().toISOString(),
-                      eventID: eventId?.toString() ?? '',
-                      price: calculateTotal().toString(),
-                      location: eventLocation ?? '',
-                    },
-                  }),
+            await fetch(`${API_URL}/api/Resource/reserve`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
               },
-            ]);
-          } catch (error: any) {
-            setLoading(false);
-            Alert.alert(t('cart.errorTitle'), error.message || t('cart.genericError'));
+              body: JSON.stringify({
+                EventResourceID: resId,
+                Quantity: 1,
+                UserTicketID: userTicketID, // može biti null ako nema karata
+              }),
+            });
           }
-        },
+
+          // 3️⃣ Priprema podataka za ekran potvrde
+          const ticketTypes = selectedTickets.map(t => {
+            const info = getTicketInfo(t.id);
+            return {
+              id: t.id,
+              name: info?.name || '',
+              quantity: t.quantity,
+            };
+          });
+
+          setLoading(false);
+          Alert.alert(t('cart.successTitle'), t('cart.successMessage'), [
+            {
+              text: t('cart.ok'),
+              onPress: () =>
+                router.replace({
+                  pathname: '../event/ticketDetails',
+                  params: {
+                    ticketIDs: JSON.stringify(Object.values(ticketIdToUserTicketIds).flat()),
+                    eventName: eventName ?? '',
+                    ticketTypes: JSON.stringify(ticketTypes),
+                    purchasedAt: new Date().toISOString(),
+                    eventID: eventId?.toString() ?? '',
+                    price: calculateTotal().toString(),
+                    location: eventLocation ?? '',
+                  },
+                }),
+            },
+          ]);
+        } catch (error: any) {
+          setLoading(false);
+          Alert.alert(t('cart.errorTitle'), error.message || t('cart.genericError'));
+        }
       },
-    ]);
-  };
+    },
+  ]);
+};
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -264,7 +264,8 @@ export default function CartScreen() {
       <TouchableOpacity
         style={styles.purchaseButton}
         onPress={handlePurchase}
-        disabled={loading || selectedTickets.length === 0}
+        disabled={loading || (selectedTickets.length === 0 && selectedResources.length === 0)}
+
       >
         <Text style={styles.purchaseText}>{loading ? t('cart.purchasing') : t('cart.purchase')}</Text>
       </TouchableOpacity>

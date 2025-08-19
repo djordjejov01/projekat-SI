@@ -15,6 +15,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 .content h1{
@@ -24,4 +25,11 @@
 
 .content span {
     color: #636AE8;
+}
+
+#home{
+    position: absolute;
+    bottom: 10px;
+    text-decoration: underline;
+    cursor: pointer;
 }

@@ -34,20 +34,21 @@ import { CategoryService } from '../../../Services/EventCategoryService';
 import { MonthlyMetrics } from '../../../Interfaces/MonthlyMetricsResponse';
 import { take } from 'rxjs';
 import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-events',
   imports: [CommonModule, ChartModule, TableModule, ButtonModule,
-    CommonModule, MultiSelectModule, InputTextModule, DropdownModule, FormsModule, IconField, InputIcon, TableModule, ConfirmDialogModule,TooltipModule],
+    CommonModule, MultiSelectModule, InputTextModule, DropdownModule, FormsModule, IconField, InputIcon, TableModule, ConfirmDialogModule, TooltipModule],
   templateUrl: './events.component.html',
   styleUrl: './events.component.css'
 })
 export class EventsComponent implements OnInit {
 
   selectedCategories: any[] = [];
-  categories : any[] = [];
+  categories: any[] = [];
   selectedStatus: any[] = [];
-        
+
   statuses = [
     { name: "Draft", value: 0 },
     { name: "Published", value: 1 },
@@ -72,7 +73,8 @@ export class EventsComponent implements OnInit {
   searchValue: string;
   currUser: string;
   constructor(private apiService: ApiService, private authService: AuthService, private messageService: MessageService,
-    private router: Router, private catSer: CategoryService, private categoryService : CategoryService) { }
+    private router: Router, private catSer: CategoryService, private categoryService: CategoryService,
+    private confirmationDialogService: ConfirmationDialogService) { }
   clear(table: Table) {
     table.clear();
     this.selectedEvents = [];
@@ -206,13 +208,54 @@ export class EventsComponent implements OnInit {
   };
 
   manageEvent(eID: number) {
-    this.router.navigate(['organizer/event-management',eID]);
+    this.router.navigate(['organizer/event-management', eID]);
   }
   editEvent(eID: number) {
     alert(eID);
   }
-  deleteEvent(eID: number) {
-    alert(eID);
+  async deleteEvent(eventID) {
+
+    const confirmed = await this.confirmationDialogService.confirm(
+      `Are you sure you want to delete the event?`,
+      `Delete event`
+    )
+    if (!confirmed) return;
+
+    this.apiService.deleteEvent(eventID).subscribe({
+      next: (response: any) => {
+        //this.router.navigate(['/organizer']);
+        this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe({
+
+          next: (response: Event[]) => {
+            this.allEvents = response;
+            this.loading = false;
+          },
+          error: (errorResponse) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000
+            });
+          }
+
+        })
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: response.message,
+          life: 3000
+        });
+      },
+      error: (errorResponse) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: errorResponse.message,
+          life: 3000
+        });
+      }
+    });
   }
 
   getCatName(catID: number) {
@@ -222,13 +265,13 @@ export class EventsComponent implements OnInit {
   ngOnInit() {
 
     this.categoryService.loadCategoriesIfEmpty()
-        .pipe(take(1))
-        .subscribe(categories => {
-          this.categories = categories.map(cat => ({
-            name: cat.name,
-            value: cat.id
-          }));
-        });
+      .pipe(take(1))
+      .subscribe(categories => {
+        this.categories = categories.map(cat => ({
+          name: cat.name,
+          value: cat.id
+        }));
+      });
     console.log("KER");
     console.log(this.categories);
     this.currUser = this.authService.getUserName();
@@ -272,20 +315,17 @@ export class EventsComponent implements OnInit {
         console.log(response);
         for (const [key, value] of Object.entries(response)) {
           for (const [key1, value1] of Object.entries(value)) {
-            if(key1 == "month")
-            {
+            if (key1 == "month") {
               this.data1Labels.push(value1);
               this.data4Labels.push(value1);
             }
-            if(key1 == "visitors")
-            {
+            if (key1 == "visitors") {
               this.data1Data.push(value1);
             }
-            if(key1 == "revenue")
-            {
+            if (key1 == "revenue") {
               this.data4Data.push(value1);
             }
-        }
+          }
         }
 
         this.data1 = {
@@ -366,7 +406,7 @@ export class EventsComponent implements OnInit {
           datasets: [
             {
               data: this.data2Data,
-             backgroundColor: [
+              backgroundColor: [
                 'rgba(100,106,232, 0.2)',  // Music
                 'rgba(126, 230, 78, 0.2)', // Sports
                 'rgba(180, 180, 180, 0.2)',// Entertainment

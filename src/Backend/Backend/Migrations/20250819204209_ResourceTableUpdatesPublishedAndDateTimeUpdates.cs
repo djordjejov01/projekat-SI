@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     /// <inheritdoc />
-    public partial class ResourceLogTicketValidationResourceFix : Migration
+    public partial class ResourceTableUpdatesPublishedAndDateTimeUpdates : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -64,6 +64,12 @@ namespace Backend.Migrations
                 type: "boolean",
                 nullable: false,
                 defaultValue: false);
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "PublishedAt",
+                table: "Events",
+                type: "timestamp with time zone",
+                nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "EndDateTimeBooked",
@@ -135,6 +141,10 @@ namespace Backend.Migrations
             migrationBuilder.DropColumn(
                 name: "IsExhaustable",
                 table: "Resources");
+
+            migrationBuilder.DropColumn(
+                name: "PublishedAt",
+                table: "Events");
 
             migrationBuilder.DropColumn(
                 name: "EndDateTimeBooked",

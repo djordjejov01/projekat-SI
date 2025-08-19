@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250812200632_AddPublishedAtInTableEvent")]
-    partial class AddPublishedAtInTableEvent
+    [Migration("20250819204209_ResourceTableUpdatesPublishedAndDateTimeUpdates")]
+    partial class ResourceTableUpdatesPublishedAndDateTimeUpdates
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -180,21 +180,23 @@ namespace Backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
 
+                    b.Property<DateTime?>("EndDateTimeBooked")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<int>("EventID")
                         .HasColumnType("integer");
 
                     b.Property<bool>("IsReservable")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("Measure")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
                     b.Property<int>("ResourceID")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime?>("StartDateTimeBooked")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -387,6 +389,48 @@ namespace Backend.Migrations
                     b.HasKey("ResourceID");
 
                     b.ToTable("Resources");
+                });
+
+            modelBuilder.Entity("Backend.Models.ResourceLog", b =>
+                {
+                    b.Property<int>("LogID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("LogID"));
+
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("IsAvailable")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsExhaustable")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("LogDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ResourceID")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SupplierID")
+                        .HasColumnType("integer");
+
+                    b.HasKey("LogID");
+
+                    b.ToTable("ResourceLog");
                 });
 
             modelBuilder.Entity("Backend.Models.Supplier", b =>

@@ -125,3 +125,20 @@ header,.page-title{
     cursor: pointer;
     background-color: #5156bc;
 }
+
+.pr{
+    position: relative;
+    cursor: pointer;
+}
+.pr:hover{
+    background-color: rgb(242, 239, 245);
+}
+#view{
+    position: absolute;
+    bottom: 5px;
+    right:10px;
+    font-size: 18px;
+    margin:0;
+    color: rgb(183, 130, 251);
+    cursor: pointer;
+}

@@ -22,12 +22,12 @@ import { AuthService } from '../../../../Services/auth.service';
 import { MessageService } from 'primeng/api';
 
 @Component({
-  selector: 'app-resource-modal',
-  imports: [ReactiveFormsModule,DialogModule,FloatLabelModule,InputNumberModule,SelectModule,ButtonModule,InputText,TextareaModule],
-  templateUrl: './resource-modal.component.html',
-  styleUrl: './resource-modal.component.css'
+  selector: 'app-requests',
+  imports: [ReactiveFormsModule,DialogModule,FloatLabelModule,InputNumberModule,SelectModule,ButtonModule,TextareaModule],
+  templateUrl: './requests.component.html',
+  styleUrl: './requests.component.css'
 })
-export class ResourceModalComponent implements OnInit, IDeactivate{
+export class RequestsComponent implements OnInit, IDeactivate {
 
   resourceForm : FormGroup;
   visible : boolean = false;
@@ -86,12 +86,12 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
   }
 
 
-openModal(resourceToEdit?: ResourceDto) {
-  this.visible = true;
+  openModal(resourceToEdit? : ResourceDto){
+    this.visible = true;
 
-  if (resourceToEdit) {
-    // Editing mode
-    this.resourceForm.patchValue({
+    if(resourceToEdit){
+      console.log(resourceToEdit)
+      this.resourceForm.patchValue({
       name: resourceToEdit.getName(),
       category: resourceToEdit.getCategory(),
       type: resourceToEdit.getIsExhaustable(),
@@ -99,17 +99,12 @@ openModal(resourceToEdit?: ResourceDto) {
       quantity: resourceToEdit.getQuantity(),
     });
 
-    // Disable exhaustible field
-    this.resourceForm.get('type')?.disable();
-
-    this.resourceToEdit = resourceToEdit;
-  } else {
-    // Adding mode
-    this.resourceForm.reset();
-    this.resourceForm.get('type')?.enable(); // make sure it’s enabled
-    this.resourceToEdit = null;
+    this.resourceToEdit = resourceToEdit
+    }
+    else{
+      this.resourceToEdit = null;
+    }
   }
-}
 
   closeModal()
   {
@@ -117,7 +112,7 @@ openModal(resourceToEdit?: ResourceDto) {
     this.resourceForm.reset();
   }
 
-  async onCancleClick(){
+  async onCancelClick(){
     const canLeave = await this.canExit();
     if(canLeave){
       this.closeModal()
@@ -132,7 +127,7 @@ openModal(resourceToEdit?: ResourceDto) {
       return;
     }
 
-    const formValue = this.resourceForm.getRawValue(); 
+    const formValue = this.resourceForm.value;
     const availability = formValue.type ? (formValue.quantity > 0 ? ResourceAvailability.Available : ResourceAvailability.Unavailable) : ResourceAvailability.Available
 
     const resource = new ResourceDto(

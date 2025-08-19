@@ -684,6 +684,7 @@ namespace Backend.Controllers
             //    .ToListAsync();
             return Ok(suppliers);
         }
+
         [HttpGet("supplier/{supplierId}/resources")]
         public async Task<IActionResult> GetSupplierResources(int supplierId, int eventId)
         {
@@ -696,93 +697,134 @@ namespace Backend.Controllers
 
             if (ourEvent == null) return NotFound($"Event {eventId} not found.");
 
-            var eventResources = await _context.EventResources.ToListAsync();
+            // Retrieve all approved event resources, but exclude the ones from the current event.
+            var otherEventResources = await _context.EventResources
+                .Where(er => er.EventID != eventId && er.Status == EventResourceStatus.Approved)
+                .ToListAsync();
 
-            var eventStart = ourEvent.StartDate;  
+            var eventStart = ourEvent.StartDate;
             var eventEnd = ourEvent.EndDate;
 
-            for (int i = resources.Count - 1; i >= 0; i--)
+            // Use a list to store the resources to remove.
+            var resourcesToRemove = new List<Resource>();
+
+            foreach (var res in resources)
             {
-                var res = resources[i];
+                // Your logic: Only check time-based availability for inexhaustible resources.
                 if (!res.IsExhaustable)
                 {
-                    bool overlaps = eventResources
+                    // Check for overlaps with APPROVED bookings from *other events*.
+                    bool overlaps = otherEventResources
                         .Where(er => er.ResourceID == res.ResourceID)
                         .Any(er =>
-                            er.StartDateTimeBooked < eventEnd &&  
-                            er.EndDateTimeBooked > eventStart); 
+                            er.StartDateTimeBooked < eventEnd &&
+                            er.EndDateTimeBooked > eventStart);
 
                     if (overlaps)
-                        resources.RemoveAt(i);
+                    {
+                        resourcesToRemove.Add(res);
+                    }
                 }
             }
+
+            // Remove resources after the loop to avoid modifying the collection while iterating.
+            resources.RemoveAll(r => resourcesToRemove.Contains(r));
 
             return Ok(resources);
         }
 
         [HttpPost("eventresource/request")]
-        public async Task<IActionResult> RequestResource([FromBody] EventResourceDto dto) // smanji kolicinu ~
+        public async Task<IActionResult> RequestResource([FromBody] EventResourceDto dto)
         {
-            var resource = await _context.Resources.FindAsync(dto.ResourceID);
-            if (resource == null)
+            var supplierResource = await _context.Resources.FindAsync(dto.ResourceID);
+            if (supplierResource == null)
                 return NotFound("Resource not found.");
 
-            if (resource.Quantity < dto.Quantity)
-                return BadRequest("Not enough quantity available.");
+            // Find the existing EventResource entry for this event and resource.
+            var existingEventResource = await _context.EventResources
+                .FirstOrDefaultAsync(er => er.EventID == dto.EventID && er.ResourceID == dto.ResourceID);
 
-            var eventResource = new EventResource
+            if (existingEventResource != null)
             {
-                SupplierID = dto.SupplierID,
-                EventID = dto.EventID,
-                ResourceID = dto.ResourceID,
-                Quantity = dto.Quantity,
-                IsReservable = dto.IsReservable,
-                Status = EventResourceStatus.Pending,
-                StartDateTimeBooked = dto.StartDateTimeBooked,
-                EndDateTimeBooked = dto.EndDateTimeBooked
-            };
+                // Calculate the new total quantity for the existing request.
+                int newTotalQuantity = existingEventResource.Quantity + dto.Quantity;
 
-            resource.Quantity -= dto.Quantity;
+                // CRITICAL FIX: Check for enough quantity if the resource is exhaustible.
+                if (supplierResource.IsExhaustable && supplierResource.Quantity < newTotalQuantity)
+                {
+                    return BadRequest("Not enough quantity available to add to existing request.");
+                }
 
-            _context.Update(resource);
-            _context.EventResources.Add(eventResource);
-            await _context.SaveChangesAsync();
-
-            dto.ID = eventResource.ID;
-
-            return Ok(dto);
-        }
-
-        [HttpDelete("eventresource/deallocate/")]
-        public async Task<IActionResult> DeallocateResorce([FromBody] EventResource dto)
-        {
-            var eventResource = await _context.EventResources.FindAsync(dto.ResourceID);
-            if (eventResource == null)
-                return NotFound("Resource not found.");
-            int Quantity = dto.Quantity;
-            if (Quantity <= 0)
-                return BadRequest("Quantity must be greater than zero.");
-            var resource = await _context.Resources
-                .FirstOrDefaultAsync(er => er.ResourceID == dto.ResourceID);
-            if(resource == null)
-            {
-                var resourceLog = await _context.ResourceLog
-                    .FirstOrDefaultAsync(r => r.ResourceID == dto.ResourceID);
-                if(resourceLog == null)
-                    return NotFound("Resource log not found.");
-                else
-                    _context.ResourceLog.Update(resourceLog);
+                // If an entry already exists, update its quantity and dates.
+                existingEventResource.Quantity = newTotalQuantity;
+                existingEventResource.StartDateTimeBooked = dto.StartDateTimeBooked;
+                existingEventResource.EndDateTimeBooked = dto.EndDateTimeBooked;
+                _context.EventResources.Update(existingEventResource);
             }
             else
             {
-                resource.Quantity += Quantity;
-                _context.Resources.Update(resource);
-                return Ok(new { message = "Resource given back to supplier." });
+                // If no entry exists, check initial quantity and create a new one.
+                if (supplierResource.IsExhaustable && supplierResource.Quantity < dto.Quantity)
+                {
+                    return BadRequest("Not enough quantity available for a new request.");
+                }
 
+                var newEventResource = new EventResource
+                {
+                    SupplierID = dto.SupplierID,
+                    EventID = dto.EventID,
+                    ResourceID = dto.ResourceID,
+                    Quantity = dto.Quantity,
+                    IsReservable = dto.IsReservable,
+                    Status = EventResourceStatus.Pending, // Always Pending on initial request
+                    StartDateTimeBooked = dto.StartDateTimeBooked,
+                    EndDateTimeBooked = dto.EndDateTimeBooked
+                };
+                _context.EventResources.Add(newEventResource);
             }
-            _context.EventResources.Remove(eventResource);
-            return Ok(new { message = "Resource deallocated successfully." });
 
+            // Do NOT change the supplier's resource quantity here.
+            // The quantity and availability status change will happen only upon approval.
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Resource request submitted or updated successfully." });
+        }
+
+        [HttpDelete("eventresource/deallocate/{resourceId}/{eventId}")]
+        public async Task<IActionResult> DeallocateResource(int resourceId, int eventId)
+        {
+            // Find the specific EventResource record to deallocate using both IDs.
+            var eventResource = await _context.EventResources
+                .Include(er => er.Resource) // Eagerly load the related Resource
+                .FirstOrDefaultAsync(er => er.ResourceID == resourceId && er.EventID == eventId);
+
+            if (eventResource == null)
+            {
+                return NotFound("Event resource allocation not found.");
+            }
+
+            // Condition 1: Only return quantity if the request was Approved and the resource is exhaustible.
+            if (eventResource.Status == EventResourceStatus.Approved && eventResource.Resource.IsExhaustable)
+            {
+                // Restore the quantity to the supplier's resource.
+                eventResource.Resource.Quantity += eventResource.Quantity;
+
+                // If the resource was unavailable due to zero quantity, make it available again.
+                if (eventResource.Resource.IsAvailable == ResourceAvailability.Unavailable && eventResource.Resource.Quantity > 0)
+                {
+                    eventResource.Resource.IsAvailable = ResourceAvailability.Available;
+                }
+
+                _context.Resources.Update(eventResource.Resource);
+            }
+
+            // Condition 2: Always remove the event's resource allocation record.
+            _context.EventResources.Remove(eventResource);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Resource deallocated successfully." });
         }
 
         [HttpGet("event/{eventId}/eventresources")]
@@ -802,6 +844,9 @@ namespace Backend.Controllers
                 Quantity = er.Quantity,
                 IsReservable = er.IsReservable,
                 Status = er.Status,
+                // The Fix: Add the missing date fields from the entity.
+                StartDateTimeBooked = er.StartDateTimeBooked,
+                EndDateTimeBooked = er.EndDateTimeBooked
             }).ToList();
 
             return Ok(dtos);

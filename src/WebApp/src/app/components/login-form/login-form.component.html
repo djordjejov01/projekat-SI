@@ -6,7 +6,7 @@
     <h1>{{"Log" | translate}}<span class="text-[#636AE8]">{{"In" | translate}}</span></h1>
 
 
-    <form action="" class="login-form" [formGroup]="loginForm">
+    <form action="" class="login-form" [formGroup]="loginForm"  (ngSubmit)="submitForm()">
 
       <div class="form-inputs">
 
@@ -38,7 +38,7 @@
 
       <p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }" />
       <p-confirmdialog />
-      <button type="button" class="bg-[#636AE8] text-white rounded-md px-4 py-2 hover:bg-[#575FCE] "
+      <button type="submit" class="bg-[#636AE8] text-white rounded-md px-4 py-2 hover:bg-[#575FCE] "
         (click)="submitForm()">
         {{"LOGIN" | translate}}
       </button>

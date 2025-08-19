@@ -39,7 +39,8 @@ import { ResourceCategory } from "./ResourceCategoryService";
 import { ResourceAvailability } from "./ResourceAvailabilityService";
 import { ResourceApiResponse } from "../Interfaces/ResourceApiResponse";
 import { ResourceDto } from "../Models/ResourceDto";
-
+import { EventResourceDto } from "../Models/EventResourceDto";
+import { EventResourceApiResponse } from "../Interfaces/EventResourceApiResponse";
 
 // Match Backend.Models.Dto.EventDto
 export interface EventDto {
@@ -147,9 +148,44 @@ export class ApiService{
 
     constructor(private http: HttpClient) {}
 
-    getResourcesBySupplierId(supplierId : number) : Observable<ResourceDto[]>
+    deallocateResource(resourceId: number, eventId: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/Organizer/eventresource/deallocate/${resourceId}/${eventId}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+    getEventResourcesForEvent(eventId: number): Observable<EventResourceDto[]> {
+    return this.http.get<EventResourceApiResponse[]>(`${this.apiUrl}/Organizer/event/${eventId}/eventresources`)
+        .pipe(
+        map(dtos => dtos.map(dto => new EventResourceDto(
+            dto.id ?? 0,
+            dto.supplierID,
+            dto.eventID,
+            dto.resourceID,
+            dto.quantity,
+            dto.isReservable,
+            dto.status,
+            dto.startDateTimeBooked ? new Date(dto.startDateTimeBooked) : null,
+            dto.endDateTimeBooked ? new Date(dto.endDateTimeBooked) : null
+        ))),
+        catchError(this.handleError)
+        );
+    }
+
+requestResource(resourceDto: EventResourceDto): Observable<any> {
+    return this.http.post<any>(
+        `${this.apiUrl}/Organizer/eventresource/request`,
+        resourceDto
+    ).pipe(
+        // Remove the map pipe, as the backend no longer returns a full DTO.
+        catchError(this.handleError)
+    );
+}
+
+    getResourcesBySupplierId(supplierId : number, eventId : number) : Observable<ResourceDto[]>
     {
-        return this.http.get<ResourceApiResponse[]>(`${this.apiUrl}/Organizer/supplier/${supplierId}/resources`).pipe(
+        return this.http.get<ResourceApiResponse[]>(`${this.apiUrl}/Organizer/supplier/${supplierId}/resources?eventId=${eventId}`).pipe(
             map((response: ResourceApiResponse[]) =>
             response.map(response =>
                 new ResourceDto(
@@ -163,9 +199,11 @@ export class ApiService{
                 response.quantity
                 )
             )),
+
+            catchError(error => this.handleError(error))
         );
 
-        catchError(error => this.handleError(error))
+        
     }
 
     getSuppliersForOrganizer() : Observable<SupplierDto[]>
@@ -252,14 +290,14 @@ export class ApiService{
 
 
     getResourceAvailabilities(): Observable<ResourceAvailability[]> {
-        return this.http.get<ResourceAvailability[]>(`${this.apiUrl}/Supplier/availabilities`).pipe(
+        return this.http.get<ResourceAvailability[]>(`${this.apiUrl}/Resource/availabilities`).pipe(
             catchError(this.handleError)
         );
     }
 
     getResourceCategories() : Observable<ResourceCategory[]>{
 
-        return this.http.get<ResourceCategory[]>(`${this.apiUrl}/Supplier/resource-categories`).pipe(
+        return this.http.get<ResourceCategory[]>(`${this.apiUrl}/Resource/resource-categories`).pipe(
             catchError(this.handleError)
         )
 
@@ -296,6 +334,27 @@ export class ApiService{
         )
     }
 
+
+    publishEvent(eventID)
+    {
+        return this.http.post<{ message: string }>(`${this.apiUrl}/Organizer/events/publish`, eventID ).pipe(
+            catchError(this.handleError)
+        )
+    }
+
+    cancelEvent(eventID)
+    {
+        return this.http.post<{ message: string }>(`${this.apiUrl}/Organizer/events/cancel`, eventID ).pipe(
+            catchError(this.handleError)
+        )
+    }
+
+    deleteEvent(eventID)
+    {
+        return this.http.delete<{ message: string }>(`${this.apiUrl}/Organizer/events`,{ body:  eventID } ).pipe(
+            catchError(this.handleError)
+        )
+    }
     getEventPins(eventId : number) : Observable<EventPinDto[]>{
         return this.http.get<EventPinApiResponse[]>(`${this.apiUrl}/EventPin/event?eventId=${eventId}`).pipe(
 
@@ -717,27 +776,3 @@ export class ApiService{
         return throwError(()=> new Error(errorMsg))
     }
 }
-
-
-
-
-    // getUsersPaginated(start: number, count: number): Observable<User[]>{
-    //     return this.http.get<UserApiResponse[]>(`${this.apiUrl}/Admin/users/page?k=${start}&n=${count}`).pipe(
-
-    //         map( data =>
-    //             data.map(userResponse => new User(
-    //                 userResponse.userId,
-    //                 userResponse.username,
-    //                 userResponse.email,
-    //                 UserRoleMap[userResponse.role] || 'Unknown',
-    //                 new Date(userResponse.creationTime),
-    //                 userResponse.isActive,
-    //                 userResponse.lastLoginTime ? new Date(userResponse.lastLoginTime) : null,
-    //                 userResponse.password,
-    //                 userResponse.firstName,
-    //                 userResponse.lastName
-    //             ))
-    //         )
-
-    //     )
-    // }

@@ -482,20 +482,15 @@ const handleBuyTicket = async () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-        onPress={event.isFree ? undefined : handleBuyTicket}
-        style={[
-          styles.buyButton,
-          event.isFree && styles.buyBtnDisabled
-        ]}
-        disabled={event.isFree}
-      >
-        <Text style={[
-          styles.buyButtonText,
-          event.isFree && { color: '#9CA3AF' } 
-        ]}>
-          {event.isFree ? t('freeEvent') : t('buyTicket')}
-        </Text>
-      </TouchableOpacity>
+          onPress={handleBuyTicket}
+          style={styles.buyButton}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.buyButtonText}>
+            {event.isFree ? t('freeEvent') : t('buyTicket')}
+          </Text>
+        </TouchableOpacity>
+
 
 
       </View>
