@@ -135,51 +135,66 @@ export default function TicketPurchaseScreen() {
       </TouchableOpacity>
 
        <Text style={styles.sectionTitle}>🎫 {t('tickets.title')}</Text>
-      {tickets.map(ticket => {
-        const selectedCount = cart[ticket.id] || 0;
-        const remaining = ticket.available - selectedCount;
+{tickets.length === 0 ? (
+  <Text style={styles.emptyText}>{t('tickets.noTickets')}</Text>
+) : (
+  tickets.map(ticket => {
+    const selectedCount = cart[ticket.id] || 0;
+    const remaining = ticket.available - selectedCount;
 
-        return (
-          <View key={`ticket-${ticket.id}`} style={styles.card}>
-            <Text style={styles.cardTitle}>{ticket.name}</Text>
-            <Text style={styles.cardText}>
+    return (
+      <View key={`ticket-${ticket.id}`} style={styles.card}>
+        <Text style={styles.cardTitle}>{ticket.name}</Text>
+        <Text style={styles.cardText}>
           {ticket.price} RSD - {remaining} {t('tickets.available')}
         </Text>
-            <View style={styles.counterRow}>
-              <TouchableOpacity onPress={() => handleRemoveFromCart(ticket.id)} style={styles.counterButton}>
-                <Text style={styles.counterText}>-</Text>
-              </TouchableOpacity>
-              <Text style={styles.counterValue}>{selectedCount}</Text>
-              <TouchableOpacity onPress={() => handleAddToCart(ticket.id)} style={styles.counterButton}>
-                <Text style={styles.counterText}>+</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        );
-      })}
+        <View style={styles.counterRow}>
+          <TouchableOpacity
+            onPress={() => handleRemoveFromCart(ticket.id)}
+            style={styles.counterButton}
+          >
+            <Text style={styles.counterText}>-</Text>
+          </TouchableOpacity>
+          <Text style={styles.counterValue}>{selectedCount}</Text>
+          <TouchableOpacity
+            onPress={() => handleAddToCart(ticket.id)}
+            style={styles.counterButton}
+          >
+            <Text style={styles.counterText}>+</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  })
+)}
 
-      <Text style={styles.sectionTitle}>📦 {t('resources.title')}</Text>
-      {resources.map(res => (
-        <TouchableOpacity
-          key={`res-${res.id}`}
-          style={[styles.card, { flexDirection: 'row', alignItems: 'center' }]}
-          onPress={() => toggleResource(res.id)}
-        >
-          <Ionicons
-            name={selectedResources.has(res.id) ? 'checkbox' : 'square-outline'}
-            size={24}
-            color="#0047FF"
-            style={{ marginRight: 10 }}
-          />
-          <View style={{ flexShrink: 1 }}>
-            <Text style={styles.cardTitle}>{res.name}</Text>
-            <Text style={styles.cardText}>
+<Text style={styles.sectionTitle}>📦 {t('resources.title')}</Text>
+{resources.length === 0 ? (
+  <Text style={styles.emptyText}>{t('resources.noResources')}</Text>
+) : (
+  resources.map(res => (
+    <TouchableOpacity
+      key={`res-${res.id}`}
+      style={[styles.card, { flexDirection: 'row', alignItems: 'center' }]}
+      onPress={() => toggleResource(res.id)}
+    >
+      <Ionicons
+        name={selectedResources.has(res.id) ? 'checkbox' : 'square-outline'}
+        size={24}
+        color="#0047FF"
+        style={{ marginRight: 10 }}
+      />
+      <View style={{ flexShrink: 1 }}>
+        <Text style={styles.cardTitle}>{res.name}</Text>
+        <Text style={styles.cardText}>
           {res.price ? `${res.price} RSD - ` : ''}
           {res.quantity} {res.measure}
         </Text>
-          </View>
-        </TouchableOpacity>
-      ))}
+      </View>
+    </TouchableOpacity>
+  ))
+)}
+
 
       <TouchableOpacity
         style={styles.proceedButton}
@@ -248,5 +263,14 @@ const styles = StyleSheet.create({
   backButton:
   {
     padding:20
-  }
+  },
+
+  emptyText: {
+  fontSize: 14,
+  color: '#999',
+  fontStyle: 'italic',
+  marginVertical: 8,
+  textAlign: 'center',
+},
+
 });
