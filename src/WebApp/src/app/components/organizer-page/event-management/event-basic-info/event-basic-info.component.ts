@@ -22,7 +22,6 @@ import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
 import { ActivatedRoute } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
 import { AutoComplete } from 'primeng/autocomplete';
-
 @Component({
   selector: 'app-event-basic-info',
   imports: [CommonModule,ReactiveFormsModule,FloatLabelModule,InputNumber,DatePickerModule,SelectModule,ButtonModule,InputTextModule,Checkbox,TextareaModule,FileUpload,TooltipModule,AutoComplete],

@@ -6,7 +6,9 @@
         [eventTitle]="eventBasicInfo.getTitle()" 
         [editMode]="editMode" 
         (editModeChange)="onToggleEditMode($event)"
-        [parentEventId]="eventBasicInfo.getParentEventId()">
+        [parentEventId]="eventBasicInfo.getParentEventId()"
+        [eventID] = "eventBasicInfo.getEventID()"
+        [eventInfo] = "eventBasicInfo">
       </app-event-management-header>
     </header>
 

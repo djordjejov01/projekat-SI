@@ -35,11 +35,21 @@ main{
     padding: 1rem;
 }
 
-.banner-img img{
+.banner-img{
+    display: flex;
+  justify-content: center;
+  align-items: center;
     min-width: 737px;
-    /* max-height: 192px; */
+    max-width: 737px;
+    max-height: 250px;
+    overflow: hidden;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
+    object-position: center;
+}
+
+#imgBanner{
+    object-fit: cover;
 }
 
 .title-tag,.date-time{
@@ -95,8 +105,8 @@ main{
 }
 
 .custom-status-tag {
-  background-color: rgba(59, 130, 246, 0.2) !important;
-  color: #4362BF !important;
+  /*background-color: rgba(59, 130, 246, 0.2) !important;
+  color: #4362BF !important;*/
   font-weight: 600;
   display: flex;
   justify-content: center;
@@ -184,7 +194,8 @@ main{
     justify-content: center;
     align-items: center;
     border-radius: 9999px;
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(109, 109, 109, 0.635);
+    border: 2px solid rgb(255, 255, 255);
 }
 
 button:hover{
