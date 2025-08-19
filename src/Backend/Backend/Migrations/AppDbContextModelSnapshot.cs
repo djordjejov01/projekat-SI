@@ -78,7 +78,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("OrganizerID");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.EventActivity", b =>
@@ -114,7 +114,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("EventID");
 
-                    b.ToTable("EventActivities");
+                    b.ToTable("EventActivities", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.EventCategories", b =>
@@ -131,7 +131,7 @@ namespace Backend.Migrations
 
                     b.HasKey("CategoryID");
 
-                    b.ToTable("EventCategories");
+                    b.ToTable("EventCategories", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.EventPin", b =>
@@ -166,7 +166,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventPin");
+                    b.ToTable("EventPin", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.EventResource", b =>
@@ -207,7 +207,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("SupplierID");
 
-                    b.ToTable("EventResources");
+                    b.ToTable("EventResources", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.FavoriteEvent", b =>
@@ -230,7 +230,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("FavoriteEvents");
+                    b.ToTable("FavoriteEvents", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.Organizer", b =>
@@ -268,7 +268,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Organizers");
+                    b.ToTable("Organizers", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.PinType", b =>
@@ -285,7 +285,7 @@ namespace Backend.Migrations
 
                     b.HasKey("PinTypeId");
 
-                    b.ToTable("PinTypes");
+                    b.ToTable("PinTypes", (string)null);
 
                     b.HasData(
                         new
@@ -383,7 +383,7 @@ namespace Backend.Migrations
 
                     b.HasKey("ResourceID");
 
-                    b.ToTable("Resources");
+                    b.ToTable("Resources", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.Supplier", b =>
@@ -424,7 +424,7 @@ namespace Backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Suppliers");
+                    b.ToTable("Suppliers", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.Ticket", b =>
@@ -464,7 +464,7 @@ namespace Backend.Migrations
                     b.HasIndex("EventID", "TypeName")
                         .IsUnique();
 
-                    b.ToTable("Tickets");
+                    b.ToTable("Tickets", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>
@@ -528,7 +528,7 @@ namespace Backend.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.UserResourceReservation", b =>
@@ -562,7 +562,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("UserTicketID");
 
-                    b.ToTable("UserResourceReservations");
+                    b.ToTable("UserResourceReservations", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.UserRoles", b =>
@@ -578,7 +578,7 @@ namespace Backend.Migrations
 
                     b.HasKey("RoleId");
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.UserTicket", b =>
@@ -614,7 +614,7 @@ namespace Backend.Migrations
 
                     b.HasIndex("UserID");
 
-                    b.ToTable("UserTickets");
+                    b.ToTable("UserTickets", (string)null);
                 });
 
             modelBuilder.Entity("Backend.Models.Event", b =>
