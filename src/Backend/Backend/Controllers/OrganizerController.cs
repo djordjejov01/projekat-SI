@@ -184,7 +184,7 @@ namespace Backend.Controllers
 
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             if (eventEntity.OrganizerID != userId)
-                return NotFound("Nemate pravo da izmenite ovaj event.");
+                return NotFound("You do not have permission to edit this event.");
 
 
             eventEntity.Title = dto.Title;
@@ -210,7 +210,7 @@ namespace Backend.Controllers
 
                 await _organizerService.PublishEvent(eventId, organizerId);
 
-                return Ok(new { message = "Event uspešno objavljen." });
+                return Ok(new { message = "Event published successfully." });
             }
             catch (ArgumentException ex)
             {
@@ -222,7 +222,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "Došlo je do greške prilikom objavljivanja eventa." });
+                return BadRequest(new { message = "An error occurred while publishing the event." });
             }
         }
 
@@ -235,7 +235,7 @@ namespace Backend.Controllers
 
                 await _organizerService.DeleteEvent(eventId, organizerId);
 
-                return Ok(new { message = "Event uspešno obrisan." });
+                return Ok(new { message = "Event deleted successfully." });
             }
             catch (ArgumentException ex)
             {
@@ -247,7 +247,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "Došlo je do greške prilikom brisanja eventa." });
+                return BadRequest(new { message = "An error occurred while deleting the event." });
             }
         }
         [HttpPost("events/cancel")]
@@ -259,7 +259,7 @@ namespace Backend.Controllers
 
                 await _organizerService.CancelEvent(eventId, organizerId);
 
-                return Ok(new { message = "Događaj uspešno otkazan." });
+                return Ok(new { message = "Event canceled successfully." });
             }
             catch (ArgumentException ex)
             {
@@ -271,7 +271,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "Greška prilikom otkazivanja događaja." });
+                return BadRequest(new { message = "An error occurred while canceling the event." });
             }
         }
 
@@ -383,17 +383,17 @@ namespace Backend.Controllers
                     .FirstOrDefaultAsync(a => a.ActivityID == activityId);
 
                 if (activity == null)
-                    return NotFound(new { message = "Aktivnost nije pronađena." });
+                    return NotFound(new { message = "Activity not found." });
 
                 
                 if (activity.Event.OrganizerID != organizerId)
-                    return StatusCode(403, new { message = "Možete da brišete samo aktivnosti iz svojih događaja." });
+                    return StatusCode(403, new { message = "You can only delete activities from your own events." });
 
 
                 _context.EventActivities.Remove(activity);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = "Aktivnost uspešno obrisana." });
+                return Ok(new { message = "Activity deleted successfully." });
             }
             catch (Exception ex)
             {
@@ -478,7 +478,7 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
 
             if (eventEntity == null)
-                return NotFound("Nemate pristup ovom događaju.");
+                return NotFound("You do not have access to this event.");
 
             var tickets = await _context.Tickets
                 .Where(t => t.EventID == eventId)
@@ -503,12 +503,12 @@ namespace Backend.Controllers
         {
             if (ticketDto==null)
             {
-                return BadRequest("Podaci o karti nisu prosleđeni.");
+                return BadRequest("Ticket information was not provided.");
             }
 
             if (ticketDto.Price <= 0)
             {
-                return BadRequest("Karta mora imati cenu veću od 0 RSD.");
+                return BadRequest("The ticket must have a price greater than 0 EUR.");
             }
 
             var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
@@ -516,7 +516,7 @@ namespace Backend.Controllers
             var eventEntity = await _context.Events
                 .FirstOrDefaultAsync(e => e.EventID == ticketDto.EventId && e.OrganizerID == organizerId);
             if (eventEntity == null)
-                return NotFound("Event nije pronađen ili nemate pravo da dodate kartu za ovaj event.");
+                return NotFound("Event not found or you do not have permission to add a ticket for this event.");
 
             var newTicket = new Ticket
             {
@@ -543,7 +543,7 @@ namespace Backend.Controllers
 
             return Ok(new
             {
-                message = "Karta uspešno kreirana.",
+                message = "Ticket created successfully.",
                 ticketId = newTicket.TicketID
             });
         }
@@ -556,7 +556,7 @@ namespace Backend.Controllers
 
             if (ticketDto.Price <= 0)
             {
-                return BadRequest("Karta mora imati cenu veću od 0 RSD.");
+                return BadRequest("The ticket must have a price greater than 0 EUR.");
             }
 
             int organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
@@ -567,7 +567,7 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(t => t.TicketID == ticketDto.TicketId && t.Event.OrganizerID == organizerId);
 
             if (existingTicket == null)
-                return NotFound("Karta nije pronađena ili nemate pravo da je izmenite.");
+                return NotFound("Ticket not found or you do not have permission to edit it.");
 
             
             if (ticketDto.EventId != existingTicket.EventID)
@@ -576,7 +576,7 @@ namespace Backend.Controllers
                     .FirstOrDefaultAsync(e => e.EventID == ticketDto.EventId && e.OrganizerID == organizerId);
 
                 if (newEventEntity == null)
-                    return NotFound("Event nije pronađen ili nemate pravo da koristite ovaj event.");
+                    return NotFound("Event not found or you do not have permission to use this event.");
             }
 
             
@@ -614,7 +614,7 @@ namespace Backend.Controllers
 
             return Ok(new
             {
-                message = "Karta uspešno izmenjena.",
+                message = "Ticket updated successfully.",
                 ticketId = existingTicket.TicketID
             });
         }
@@ -623,7 +623,7 @@ namespace Backend.Controllers
         public async Task<IActionResult> DeleteTicket([FromBody] int ticketId)
         {
             if (ticketId <= 0)
-                return BadRequest("Neispravan ID karte.");
+                return BadRequest("Invalid ticket ID.");
 
             int organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
@@ -633,14 +633,14 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(t => t.TicketID == ticketId && t.Event.OrganizerID == organizerId);
 
             if (existingTicket == null)
-                return NotFound("Karta nije pronađena ili nemate pravo da je obrišete.");
+                return NotFound("Ticket not found or you do not have permission to delete it.");
 
             
             var purchasedTickets = await _context.UserTickets
                 .CountAsync(ut => ut.TicketID == ticketId);
 
             if (purchasedTickets > 0)
-                return BadRequest("Nije moguće obrisati kartu jer postoje kupljene karte.");
+                return BadRequest("Cannot delete the ticket because there are purchased tickets.");
 
             var eventId = existingTicket.EventID;
 
@@ -671,7 +671,7 @@ namespace Backend.Controllers
 
             return Ok(new
             {
-                message = "Karta uspešno obrisana.",
+                message = "Ticket deleted successfully.",
                 ticketId = ticketId
             });
         }

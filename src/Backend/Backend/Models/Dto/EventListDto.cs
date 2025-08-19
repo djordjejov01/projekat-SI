@@ -13,5 +13,6 @@ namespace Backend.Models.Dto
         public DateTime StartDate { get; set; }
         public string ImageUrl { get; set; }
         public int AttendingCount { get; set; }
+        public int ParentEventId { get; set; }
     }
 }

@@ -52,7 +52,7 @@ namespace Backend.Controllers
 
             var user =await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound("Korisnik nije pronađen.");
+                return NotFound("User not found.");
 
            return Ok(new {
                 email = user.Email,
@@ -72,16 +72,16 @@ namespace Backend.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound(new { message = "Korisnik nije pronađen." });
+                return NotFound(new { message = "User not found." });
 
             if (_context.Users.Any(u => u.Email == dto.Email && u.UserId != userId))
-                return BadRequest(new { message = "Korisnik sa ovom email adresom već postoji." });
+                return BadRequest(new { message = "A user with this email address already exists." });
 
             if (string.IsNullOrWhiteSpace(dto.Email) || !CommonHelpers.IsEmailInValidForm(dto.Email))
-                return BadRequest(new { message = "Neispravan format email adrese." });
+                return BadRequest(new { message = "Invalid email address format." });
 
             if (!string.IsNullOrWhiteSpace(dto.PhoneNumber) && !CommonHelpers.IsPhoneNumberValid(dto.PhoneNumber))
-                return BadRequest(new { message = "Neispravan format broja telefona." });
+                return BadRequest(new { message = "Invalid phone number format." });
 
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
@@ -89,7 +89,7 @@ namespace Backend.Controllers
             user.PhoneNumber = dto.PhoneNumber;
             
             await _context.SaveChangesAsync();
-            return Ok(new { message = "Profil uspešno izmenjen." });
+            return Ok(new { message = "Profile updated successfully." });
         }
 
         [HttpGet("event/{eventId}")]
@@ -103,7 +103,7 @@ namespace Backend.Controllers
 
                 if (!eventExists)
                 {
-                    return NotFound(new { message = "Događaj nije pronađen." });
+                    return NotFound(new { message = "Event not found." });
                 }
 
                 var pins = await _context.EventPin
@@ -137,7 +137,7 @@ namespace Backend.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
 
             if (user == null)
-                return NotFound(new { message = "Korisnik nije pronađen." });
+                return NotFound(new { message = "User not found." });
 
             if (!string.IsNullOrEmpty(user.ProfilePicture))
             {
@@ -153,7 +153,7 @@ namespace Backend.Controllers
                     }
                     catch (Exception ex)
                     {
-                        return StatusCode(500, new { message = "Greška pri brisanju slike: " + ex.Message });
+                        return StatusCode(500, new { message = "Error deleting image:" + ex.Message });
                     }
                 }
 
@@ -161,7 +161,7 @@ namespace Backend.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return Ok(new { message = "Profilna slika obrisana." });
+            return Ok(new { message = "Profile picture deleted." });
         }
 
         [HttpPut("profile-image")]
@@ -174,21 +174,21 @@ namespace Backend.Controllers
 
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
                 if (user == null)
-                    return NotFound(new { message = "Korisnik nije pronađen." });
+                    return NotFound(new { message = "User not found." });
 
                 
                 if (model.Image == null || model.Image.Length == 0)
-                    return BadRequest(new { message = "Slika nije pronađena." });
+                    return BadRequest(new { message = "Image not found." });
 
                 
                 var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
                 var fileExtension = Path.GetExtension(model.Image.FileName).ToLowerInvariant();
                 if (!allowedExtensions.Contains(fileExtension))
-                    return BadRequest(new { message = "Neispravan format slike. Dozvoljeni formati: JPG, JPEG, PNG." });
+                    return BadRequest(new { message = "Invalid image format. Allowed formats: JPG, JPEG, PNG." });
 
                 
                 if (model.Image.Length > 2 * 1024 * 1024)
-                    return BadRequest(new { message = "Slika je prevelika. Maksimalna veličina je 2MB." });
+                    return BadRequest(new { message = "The image is too large. The maximum size is 2MB." });
 
                 
                 string imageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
@@ -206,7 +206,7 @@ namespace Backend.Controllers
 
                 return Ok(new
                 {
-                    message = "Profilna slika uspešno ažurirana.",
+                    message = "Profile picture updated successfully.",
                     imageUrl = imageName
                 });
             }

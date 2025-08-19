@@ -31,7 +31,7 @@ namespace Backend.Controllers
                 return NotFound(new TicketValidationDto
                 {
                     Status = "invalid",
-                    Message = "Karta nije pronađena."
+                    Message = "Ticket not found."
                 });
             }
 
@@ -41,7 +41,7 @@ namespace Backend.Controllers
                 return BadRequest(new TicketValidationDto
                 {
                     Status = "invalid",
-                    Message = "Neispravan validacioni token."
+                    Message = "Invalid validation token."
                 });
             }
 
@@ -51,7 +51,7 @@ namespace Backend.Controllers
                 return Ok(new TicketValidationDto
                 {
                     Status = "invalid",
-                    Message = $"Karta je već iskorišćena u {userTicket.UsedAt:HH:mm:ss}.",
+                    Message = $"The ticket has already been used at {userTicket.UsedAt:HH:mm:ss}.",
                     UsedAt = userTicket.UsedAt
                 });
             }
@@ -65,7 +65,7 @@ namespace Backend.Controllers
             return Ok(new TicketValidationDto
             {
                 Status = "valid",
-                Message = "Karta je validna. Dobrodošli na događaj!"
+                Message = "The ticket is valid. Welcome to the event!"
             });
         }
     }
