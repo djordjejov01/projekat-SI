@@ -1,0 +1,31 @@
+<p-dialog
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '50rem', height: '55rem' }"
+  (onHide)="onCancelClick()"
+  [closable]="false"
+  [dismissableMask]="false"
+  [closeOnEscape]="false"
+>
+  <ng-template pTemplate="header">
+    <div class="flex justify-between items-start w-full">
+      <div class="formTitle">
+        <h3>Resource requests</h3>
+        <p>Approve or decline resource requests.</p>
+      </div>
+      <button
+        type="button"
+        class="p-dialog-header-icon p-link p-button-rounded p-button-text exit-button"
+        (click)="onCancelClick()"
+        pTooltip="Close"
+        tooltipPosition="left"
+      >
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  </ng-template>
+    
+    <div>
+
+    </div>
+</p-dialog>

@@ -139,4 +139,6 @@ button:hover{
   padding-right: 15px;
   border-radius: 10px;
   font-weight: bold;
+  align-self: center;
+  text-align: center;
 }

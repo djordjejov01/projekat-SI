@@ -26,10 +26,10 @@ import { AuthService } from '../../../Services/auth.service';
 import { MessageService } from 'primeng/api';
 import { CategoryService } from '../../../Services/EventCategoryService';
 import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
-
+import { RequestsComponent } from './requests/requests.component';
 @Component({
   selector: 'app-dashboard',
-  imports: [TableModule,ButtonModule,IconField,InputIcon,FormsModule,MultiSelect,TooltipModule,InputTextModule,CommonModule,ChartModule,ResourceModalComponent,IconFieldModule,InputIconModule],
+  imports: [RequestsComponent,TableModule,ButtonModule,IconField,InputIcon,FormsModule,MultiSelect,TooltipModule,InputTextModule,CommonModule,ChartModule,ResourceModalComponent,IconFieldModule,InputIconModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })

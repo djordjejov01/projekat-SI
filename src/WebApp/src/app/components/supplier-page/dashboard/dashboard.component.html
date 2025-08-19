@@ -29,12 +29,13 @@
                 </div>
                 <p class="font-archivo">3</p>
             </div>
-            <div class="card light-purple">
+            <div class="card light-purple pr" (click)="requestsModal.openModal()">
                 <div class="card-header">
                     <p>Pending Requests</p>
                     <i class="pi pi-clock"></i>
                 </div>
                 <p class="font-archivo">3</p>
+                <p id="view" (click)="requestsModal.openModal()">View</p>
             </div>
 
         </div>
@@ -306,5 +307,5 @@
     </div>
 
     <app-resource-modal (resourceSaved)="noteSavedResource($event)" #resourceModal></app-resource-modal>
-
+    <app-requests (resourceSaved)="noteSavedResource($event)" #requestsModal></app-requests>
 </main>
