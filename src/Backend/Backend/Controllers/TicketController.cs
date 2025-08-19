@@ -71,8 +71,8 @@ namespace Backend.Controllers
                     .Where(ut => ut.UserID == userId && ut.Ticket.EventID == ticket.EventID)
                     .CountAsync();
 
-                if (userTicketsForEvent + dto.Quantity > 5)
-                    return BadRequest($"Ne možete kupiti više od 5 karata za događaj {eventEntity.Title}. Već imate {userTicketsForEvent} karata.");
+                if (userTicketsForEvent + dto.Quantity > 10)
+                    return BadRequest($"Ne možete kupiti više od 10 karata za događaj {eventEntity.Title}. Već imate {userTicketsForEvent} karata.");
 
                 int sold =await _context.UserTickets.CountAsync(ut => ut.TicketID == dto.TicketID);
                 if (sold + dto.Quantity > ticket.Quota)
@@ -152,14 +152,16 @@ namespace Backend.Controllers
 
             var myTickets =await _context.UserTickets
                 .Where(ut => ut.UserID == userId)
-                .Select(ut => new {
+                .Select(ut => new
+                {
                     ut.UserTicketID,
                     ut.TicketID,
                     ut.PurchasedAt,
                     TicketType = ut.Ticket.TypeName,
                     EventName = ut.Ticket.Event.Title,
                     EventID = ut.Ticket.Event.EventID,
-                    ut.Ticket.Price
+                    ut.Ticket.Price,
+                    ut.ValidationToken
                 })
                 .ToListAsync();
 
