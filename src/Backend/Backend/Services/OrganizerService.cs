@@ -342,7 +342,7 @@ namespace Backend.Services
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Greška prilikom oslobađanja resursa za event {eventId}: {ex.Message}", ex);
+                throw new InvalidOperationException($"Error releasing resources for event {eventId}: {ex.Message}", ex);
             }
         }
 
@@ -496,7 +496,7 @@ namespace Backend.Services
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Greška pri oslobađanju resursa za event {eventId}: {ex.Message}", ex);
+                throw new InvalidOperationException($"Error releasing resources for event {eventId}: {ex.Message}", ex);
             }
         }
 

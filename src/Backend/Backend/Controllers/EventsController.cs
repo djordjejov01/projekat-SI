@@ -228,7 +228,7 @@ namespace Backend.Controllers
                 }
                 else
                 {
-                    return BadRequest("Nepoznata kategorija.");
+                    return BadRequest("Unknown category.");
                 }
             }
             var events = await _eventService.SearchEventsAsync(name, categoryEnum,location,isFree,startDate,endDate,hasTickets,sortOrder,sortBy);
@@ -260,7 +260,7 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == userId);
 
             if (eventEntity == null)
-                return NotFound("Nemate pristup ovom događaju.");
+                return NotFound("You do not have access to this event.");
 
             var attendingCount = await _context.UserTickets
                 .Include(ut => ut.Ticket)
