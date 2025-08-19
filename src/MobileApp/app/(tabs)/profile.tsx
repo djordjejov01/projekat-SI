@@ -153,8 +153,8 @@ export default function ProfileScreen() {
           <Text style={styles.name}>{`${firstName} ${lastName}`}</Text>
           <Text style={styles.email}>{email}</Text>
         </View>
-        <TouchableOpacity onPress={() => router.push('../profile/personal-info')}>
-          <Text style={styles.edit}>💰 {credits}</Text>
+        <TouchableOpacity onPress={() => router.push('../profile/token')}>
+          <Text style={styles.edit}>{credits} RSD</Text>
         </TouchableOpacity>
       </View>
 
@@ -178,7 +178,7 @@ export default function ProfileScreen() {
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.option} onPress={() => router.push('../profile/token')}>
-        <Text>💳 {t('Token Store')}</Text>
+        <Text>💳 {t('profile.payment')}</Text>
         <Text style={styles.optionArrow}>›</Text>
       </TouchableOpacity>
 

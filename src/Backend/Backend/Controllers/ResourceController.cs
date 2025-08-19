@@ -29,7 +29,6 @@ namespace Backend.Controllers
                     supplierID = er.SupplierID,
                     eventID = er.EventID,
                     quantity = er.Quantity,
-                    measure = er.Measure,
                     name = er.Resource.Name
                 })
                 .ToListAsync();
@@ -106,7 +105,28 @@ namespace Backend.Controllers
 
             return Ok("Rezervacija uspešna.");
         }
-
-
+        [HttpGet("resource-categories")]
+        public IActionResult GetResourceCategories()
+        {
+            var categories = Enum.GetValues(typeof(ResourceCategory))
+                .Cast<ResourceCategory>()
+                .Select(c => new {
+                    Id = (int)c,
+                    Name = c.ToString()
+                });
+            return Ok(categories);
+        }
+        [HttpGet("availabilities")]
+        public IActionResult GetAvailabilities()
+        {
+            var avs = Enum.GetValues(typeof(ResourceAvailability))
+                .Cast<ResourceAvailability>()
+                .Select(a => new {
+                    Id = (int)a,
+                    Name = a.ToString()
+                });
+            return Ok(avs);
+        }
     }
+
 }

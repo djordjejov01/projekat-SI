@@ -13,18 +13,20 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Animatable from 'react-native-animatable';
 import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../config';
+
 
 export default function TokenPurchaseScreen() {
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const router = useRouter();
-
+  const { t } = useTranslation();
   const handlePurchase = async () => {
     const parsedAmount = parseInt(amount, 10);
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      Alert.alert('Greška', 'Unesite validan broj tokena.');
+      Alert.alert('Greška', 'Unesite validan broj novca.');
       return;
     }
 
@@ -44,7 +46,7 @@ export default function TokenPurchaseScreen() {
       });
 
       if (response.ok) {
-        Alert.alert('Uspešno', `Dodato je ${parsedAmount} tokena na tvoj račun.`);
+        Alert.alert('Uspešno', `Dodato je ${parsedAmount} dinara na tvoj račun.`);
         setAmount('');
       } else {
         Alert.alert('Greška', 'Došlo je do greške prilikom uplate.');
@@ -63,15 +65,15 @@ export default function TokenPurchaseScreen() {
         <Ionicons name="arrow-back" size={28} color="#333" />
       </TouchableOpacity>
 
-      <Text style={styles.title}>Uplata tokena</Text>
+      <Text style={styles.title}>{t('payment.header')}</Text>
 
-      <Text style={styles.label}>Unesite broj tokena:</Text>
+      <Text style={styles.label}>{t('payment.msg')}</Text>
       <TextInput
         style={styles.input}
         keyboardType="numeric"
         value={amount}
         onChangeText={setAmount}
-        placeholder="npr. 10"
+        placeholder={t('payment.example')}
       />
 
       {processing && (
@@ -82,7 +84,7 @@ export default function TokenPurchaseScreen() {
           style={styles.cardAnimation}
         >
           <Ionicons name="card-outline" size={60} color="#0066cc" />
-          <Text style={styles.processingText}>Obrada uplate...</Text>
+          <Text style={styles.processingText}>{t('payment.process')}</Text>
         </Animatable.View>
       )}
 
@@ -90,7 +92,7 @@ export default function TokenPurchaseScreen() {
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.btnText}>Uplati</Text>
+          <Text style={styles.btnText}>{t('payment.button')}</Text>
         )}
       </TouchableOpacity>
     </View>

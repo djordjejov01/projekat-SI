@@ -685,15 +685,43 @@ namespace Backend.Controllers
             return Ok(suppliers);
         }
         [HttpGet("supplier/{supplierId}/resources")]
-        public async Task<IActionResult> GetSupplierResources(int supplierId)
+        public async Task<IActionResult> GetSupplierResources(int supplierId, int eventId)
         {
             var resources = await _context.Resources
                 .Where(r => r.SupplierID == supplierId)
                 .ToListAsync();
+
+            var ourEvent = await _context.Events
+                .FirstOrDefaultAsync(x => x.EventID == eventId);
+
+            if (ourEvent == null) return NotFound($"Event {eventId} not found.");
+
+            var eventResources = await _context.EventResources.ToListAsync();
+
+            var eventStart = ourEvent.StartDate;  
+            var eventEnd = ourEvent.EndDate;
+
+            for (int i = resources.Count - 1; i >= 0; i--)
+            {
+                var res = resources[i];
+                if (!res.IsExhaustable)
+                {
+                    bool overlaps = eventResources
+                        .Where(er => er.ResourceID == res.ResourceID)
+                        .Any(er =>
+                            er.StartDateTimeBooked < eventEnd &&  
+                            er.EndDateTimeBooked > eventStart); 
+
+                    if (overlaps)
+                        resources.RemoveAt(i);
+                }
+            }
+
             return Ok(resources);
         }
+
         [HttpPost("eventresource/request")]
-        public async Task<IActionResult> RequestResource([FromBody] EventResourceDto dto)
+        public async Task<IActionResult> RequestResource([FromBody] EventResourceDto dto) // smanji kolicinu ~
         {
             var resource = await _context.Resources.FindAsync(dto.ResourceID);
             if (resource == null)
@@ -708,17 +736,53 @@ namespace Backend.Controllers
                 EventID = dto.EventID,
                 ResourceID = dto.ResourceID,
                 Quantity = dto.Quantity,
-                Measure = dto.Measure,
                 IsReservable = dto.IsReservable,
-                Status = EventResourceStatus.Pending
+                Status = EventResourceStatus.Pending,
+                StartDateTimeBooked = dto.StartDateTimeBooked,
+                EndDateTimeBooked = dto.EndDateTimeBooked
             };
 
+            resource.Quantity -= dto.Quantity;
+
+            _context.Update(resource);
             _context.EventResources.Add(eventResource);
             await _context.SaveChangesAsync();
 
             dto.ID = eventResource.ID;
 
             return Ok(dto);
+        }
+
+        [HttpDelete("eventresource/deallocate/")]
+        public async Task<IActionResult> DeallocateResorce([FromBody] EventResource dto)
+        {
+            var eventResource = await _context.EventResources.FindAsync(dto.ResourceID);
+            if (eventResource == null)
+                return NotFound("Resource not found.");
+            int Quantity = dto.Quantity;
+            if (Quantity <= 0)
+                return BadRequest("Quantity must be greater than zero.");
+            var resource = await _context.Resources
+                .FirstOrDefaultAsync(er => er.ResourceID == dto.ResourceID);
+            if(resource == null)
+            {
+                var resourceLog = await _context.ResourceLog
+                    .FirstOrDefaultAsync(r => r.ResourceID == dto.ResourceID);
+                if(resourceLog == null)
+                    return NotFound("Resource log not found.");
+                else
+                    _context.ResourceLog.Update(resourceLog);
+            }
+            else
+            {
+                resource.Quantity += Quantity;
+                _context.Resources.Update(resource);
+                return Ok(new { message = "Resource given back to supplier." });
+
+            }
+            _context.EventResources.Remove(eventResource);
+            return Ok(new { message = "Resource deallocated successfully." });
+
         }
 
         [HttpGet("event/{eventId}/eventresources")]
@@ -736,7 +800,6 @@ namespace Backend.Controllers
                 EventID = er.EventID,
                 ResourceID = er.ResourceID,
                 Quantity = er.Quantity,
-                Measure = er.Measure,
                 IsReservable = er.IsReservable,
                 Status = er.Status,
             }).ToList();

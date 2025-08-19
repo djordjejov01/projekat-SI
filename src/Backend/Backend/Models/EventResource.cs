@@ -13,10 +13,7 @@ namespace Backend.Models
 
         [ForeignKey(nameof(Event))]
         public int EventID { get; set; }
-
         public int Quantity { get; set; }
-
-        public string Measure { get; set; }
         public bool IsReservable { get; set; }
         public User Supplier { get; set; }
         public Event Event { get; set; }
@@ -25,6 +22,8 @@ namespace Backend.Models
         public int ResourceID { get; set; }
         public Resource Resource { get; set; }
         public EventResourceStatus Status { get; set; }
+        public DateTime? StartDateTimeBooked { get; set; }
+        public DateTime? EndDateTimeBooked { get; set; }
     }
     public enum EventResourceStatus
     {
