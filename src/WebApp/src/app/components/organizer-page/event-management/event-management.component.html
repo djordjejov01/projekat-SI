@@ -37,7 +37,10 @@
         <app-ticket-section [eventBasicInfo]="eventBasicInfo"></app-ticket-section>
     </div>
 
-    <app-resource-allocation></app-resource-allocation>
+    <app-resource-allocation
+      [eventBasicInfo]="eventBasicInfo"
+    >
+    </app-resource-allocation>
   </div>
 </ng-container>
 
