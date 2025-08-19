@@ -1,101 +1,152 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
-import { ResourceDto } from '../../../../../Models/ResourceDto';
-import { SupplierDto } from '../../../../../Models/SupplierDto';
-import { FormBuilder, FormControl, FormGroup, FormsModule, Validators } from '@angular/forms';
-import { CheckboxModule } from 'primeng/checkbox';
-import { ReactiveFormsModule } from '@angular/forms';
+// resource-modal.component.ts
+
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
-import { IDeactivate } from '../../../../../Interfaces/IDeactivate';
-import { Observable } from 'rxjs';
-import { ConfirmationDialogService } from '../../../../../Services/confirmation-dialog.service';
 import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
+import { CommonModule } from '@angular/common';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { PicklistItem } from '../../resource-allocation/resource-allocation.component';
+import { ApiService } from '../../../../../Services/api.service'; 
+import { EventBasicInfo } from '../../../../../Models/EventBasicInfo'; 
+import { MessageService } from 'primeng/api';
+import { EventResourceDto } from '../../../../../Models/EventResourceDto'; 
+import { SupplierDto } from '../../../../../Models/SupplierDto'; 
+import { CustomValidators } from '../../../../../Validators/custom.validators'; 
+import { CheckboxModule } from 'primeng/checkbox';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
-import { CommonModule } from '@angular/common';
 import { DatePickerModule } from 'primeng/datepicker';
-import { Checkbox } from 'primeng/checkbox';
+import { Observable } from 'rxjs';
+import { ConfirmationDialogService } from '../../../../../Services/confirmation-dialog.service';
+import { IDeactivate } from '../../../../../Interfaces/IDeactivate';
 import { FormValidationService } from '../../../../../Services/FormValidationService';
-import { CustomValidators } from '../../../../../Validators/custom.validators';
 
 @Component({
   selector: 'app-resource-modal',
-  imports: [FormsModule,CheckboxModule,ReactiveFormsModule,DialogModule,ButtonModule,FloatLabelModule,InputTextModule,CommonModule,DatePickerModule,Checkbox],
+  imports: [FormsModule,CheckboxModule,ReactiveFormsModule,DialogModule,ButtonModule,FloatLabelModule,InputTextModule,CommonModule,DatePickerModule,CalendarModule,InputNumberModule],
   templateUrl: './resource-modal.component.html',
   styleUrl: './resource-modal.component.css'
 })
-export class ResourceModalComponent implements IDeactivate{
+export class ResourceModalComponent implements OnInit, IDeactivate {
 
-  resource: ResourceDto | null = null;
-  supplier: SupplierDto | null = null;
- 
-  @Output() save = new EventEmitter<any>();
-  @Output() cancel = new EventEmitter<ResourceDto>();
-  @Output() onHide = new EventEmitter<void>(); // Add this new output event
+  @Output() save = new EventEmitter<PicklistItem>();
+  @Output() cancel = new EventEmitter<PicklistItem>();
+  @Output() onHide = new EventEmitter<void>();
 
-  resourceForm : FormGroup;
-  visible : boolean = false;
+  visible: boolean = false;
+  resourceForm: FormGroup;
+  selectedResource: PicklistItem;
+  selectedSupplier: SupplierDto;
+  
+  @Input() eventBasicInfo!: EventBasicInfo;
 
-  constructor(private fb: FormBuilder, private confirmationDialogService : ConfirmationDialogService, private formValidationService : FormValidationService) {}
+  constructor(
+    private fb: FormBuilder,
+    private apiService: ApiService,
+    private messageService: MessageService,
+    private confirmationDialogService : ConfirmationDialogService,
+    private formValidationService : FormValidationService
+  ) {}
 
-  // ngOnChanges(changes: SimpleChanges) {
-  //   if (changes['resource'] && this.resource) {
-  //     this.buildForm();
-  //   }
-  // }
+  ngOnInit() {
+    this.initForm();
+  }
 
-  openModal(resource : ResourceDto, supplier : SupplierDto)
-  {
-    this.resource = resource;
-    this.supplier = supplier;
+  initForm() {
+    this.resourceForm = this.fb.group({
+      allocatedQuantity: [null],
+      startDateTimeBooked: [null],
+      endDateTimeBooked: [null],
+      isReservable: [false]
+    }, { validators: [CustomValidators.startBeforeEndDates('startDateTimeBooked', 'endDateTimeBooked')] });
+  }
+
+  openModal(resource: PicklistItem, supplier: SupplierDto) {
+    this.selectedResource = resource;
+    this.selectedSupplier = supplier;
     this.visible = true;
-    this.buildForm();
+    this.resourceForm.reset();
+    this.applyConditionalValidators();
   }
 
-buildForm() {
-  this.resourceForm = new FormGroup({
-    reservable: new FormControl(false),
-    quantity: new FormControl(null),
-    dateFrom: new FormControl(null),
-    dateTo: new FormControl(null),
-  },CustomValidators.startBeforeEndDates('dateFrom','dateTo'));
-
-  if (this.resource.getIsExhaustable()) {
-    this.resourceForm.get('quantity')?.setValidators([
-      Validators.required,
-      Validators.min(1),
-      Validators.max(this.resource.getQuantity()),
-    ]);
-    this.resourceForm.get('dateFrom')?.clearValidators();
-    this.resourceForm.get('dateTo')?.clearValidators();
+private applyConditionalValidators() {
+  // Set required and min validators for quantity for both cases
+  this.resourceForm.get('allocatedQuantity')?.setValidators([
+    Validators.required,
+    Validators.min(1),
+    // Apply the max validator to ALL resources.
+    // The `selectedResource.quantity` should reflect the true maximum available,
+    // which for "single-use" inexhaustible resources will be 1 (from backend filtering).
+    Validators.max(this.selectedResource.quantity)
+  ]);
+  
+  if (this.selectedResource.isExhaustable) {
+    // For exhaustible resources, date fields are not required.
+    this.resourceForm.get('startDateTimeBooked')?.clearValidators();
+    this.resourceForm.get('endDateTimeBooked')?.clearValidators();
   } else {
-    this.resourceForm.get('dateFrom')?.setValidators(Validators.required);
-    this.resourceForm.get('dateTo')?.setValidators(Validators.required);
-    this.resourceForm.get('quantity')?.clearValidators();
+    // For inexhaustible resources, date fields are required for booking.
+    this.resourceForm.get('startDateTimeBooked')?.setValidators(Validators.required);
+    this.resourceForm.get('endDateTimeBooked')?.setValidators(Validators.required);
   }
 
-  this.resourceForm.get('quantity')?.updateValueAndValidity();
-  this.resourceForm.get('dateFrom')?.updateValueAndValidity();
-  this.resourceForm.get('dateTo')?.updateValueAndValidity();
+  // Update validation status for all form controls
+  this.resourceForm.get('allocatedQuantity')?.updateValueAndValidity();
+  this.resourceForm.get('startDateTimeBooked')?.updateValueAndValidity();
+  this.resourceForm.get('endDateTimeBooked')?.updateValueAndValidity();
 }
 
-onSaveClick() {
-  if (this.resourceForm.valid) {
-    console.log(this.resourceForm.value)
-    this.save.emit(this.resource);
-    this.resource = null;
-    this.supplier = null;
-    this.resourceForm.reset();
-    this.visible = false;  
-  }
 
-  else this.formValidationService.showValidationErrors(this.resourceForm,'Resource Form');
+onSaveClick() {
+    if (this.resourceForm.invalid) {
+        this.formValidationService.showValidationErrors(this.resourceForm, 'Resource Form');
+        return;
+    }
+
+    const formValue = this.resourceForm.value;
+
+    // CRITICAL FIX: The quantity check should now apply to ALL resources,
+    // as `selectedResource.quantity` correctly reflects the max.
+    if (formValue.allocatedQuantity > this.selectedResource.quantity) {
+        this.messageService.add({ severity: 'error', summary: 'Quantity Error', detail: `The quantity cannot exceed the available amount (${this.selectedResource.quantity}).`, life: 3000 });
+        return;
+    }
+    
+    // Create the DTO instance to send to the backend.
+    const newEventResource = new EventResourceDto(
+        0, 
+        this.selectedResource.supplierID,
+        this.eventBasicInfo.getEventID(),
+        this.selectedResource.resourceID,
+        formValue.allocatedQuantity, 
+        !!formValue.isReservable, 
+        0, // Status is always Pending for new requests
+        formValue.startDateTimeBooked,
+        formValue.endDateTimeBooked
+    );
+
+    // Call the API service to request the resource.
+    this.apiService.requestResource(newEventResource).subscribe({
+        next: (response) => {
+            // The API call was successful.
+            // We no longer expect a DTO in the response.
+            // We emit the original resource to the parent component, which will trigger a reload.
+            this.save.emit(this.selectedResource);
+            this.visible = false;
+        },
+        error: (error) => {
+            this.messageService.add({ severity: 'error', summary: 'Allocation Failed', detail: error.message || 'An unexpected error occurred.', life: 3000 });
+        }
+    });
 }
 
 
   close() {
-    this.cancel.emit(this.resource);
-    this.resource = null;
-    this.supplier = null;
+    this.cancel.emit(this.selectedResource);
+    this.selectedResource = null;
+    this.selectedSupplier = null;
     this.resourceForm.reset();
     this.visible = false;
   }
@@ -103,8 +154,8 @@ onSaveClick() {
   onDialogHide() {
   this.onHide.emit(); // Emit the onHide event when the dialog closes
 }
-  
-      async onCancleClick(){
+
+      async onCancelClick(){
       const canLeave = await this.canExit();
       if(canLeave){
         this.close()
@@ -120,5 +171,4 @@ onSaveClick() {
       : true;
       
     }
-
 }

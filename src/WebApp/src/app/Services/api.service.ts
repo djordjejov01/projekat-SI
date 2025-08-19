@@ -39,6 +39,8 @@ import { ResourceCategory } from "./ResourceCategoryService";
 import { ResourceAvailability } from "./ResourceAvailabilityService";
 import { ResourceApiResponse } from "../Interfaces/ResourceApiResponse";
 import { ResourceDto } from "../Models/ResourceDto";
+import { EventResourceDto } from "../Models/EventResourceDto";
+import { EventResourceApiResponse } from "../Interfaces/EventResourceApiResponse";
 
 
 // Match Backend.Models.Dto.EventDto
@@ -147,9 +149,44 @@ export class ApiService{
 
     constructor(private http: HttpClient) {}
 
-    getResourcesBySupplierId(supplierId : number) : Observable<ResourceDto[]>
+    deallocateResource(resourceId: number, eventId: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/Organizer/eventresource/deallocate/${resourceId}/${eventId}`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+    getEventResourcesForEvent(eventId: number): Observable<EventResourceDto[]> {
+    return this.http.get<EventResourceApiResponse[]>(`${this.apiUrl}/Organizer/event/${eventId}/eventresources`)
+        .pipe(
+        map(dtos => dtos.map(dto => new EventResourceDto(
+            dto.id ?? 0,
+            dto.supplierID,
+            dto.eventID,
+            dto.resourceID,
+            dto.quantity,
+            dto.isReservable,
+            dto.status,
+            dto.startDateTimeBooked ? new Date(dto.startDateTimeBooked) : null,
+            dto.endDateTimeBooked ? new Date(dto.endDateTimeBooked) : null
+        ))),
+        catchError(this.handleError)
+        );
+    }
+
+requestResource(resourceDto: EventResourceDto): Observable<any> {
+    return this.http.post<any>(
+        `${this.apiUrl}/Organizer/eventresource/request`,
+        resourceDto
+    ).pipe(
+        // Remove the map pipe, as the backend no longer returns a full DTO.
+        catchError(this.handleError)
+    );
+}
+
+    getResourcesBySupplierId(supplierId : number, eventId : number) : Observable<ResourceDto[]>
     {
-        return this.http.get<ResourceApiResponse[]>(`${this.apiUrl}/Organizer/supplier/${supplierId}/resources`).pipe(
+        return this.http.get<ResourceApiResponse[]>(`${this.apiUrl}/Organizer/supplier/${supplierId}/resources?eventId=${eventId}`).pipe(
             map((response: ResourceApiResponse[]) =>
             response.map(response =>
                 new ResourceDto(
@@ -163,9 +200,11 @@ export class ApiService{
                 response.quantity
                 )
             )),
+
+            catchError(error => this.handleError(error))
         );
 
-        catchError(error => this.handleError(error))
+        
     }
 
     getSuppliersForOrganizer() : Observable<SupplierDto[]>
