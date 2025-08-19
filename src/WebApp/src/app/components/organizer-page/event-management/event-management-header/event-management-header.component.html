@@ -8,7 +8,7 @@
             <button *ngIf="currStatus == 'Draft'" class="delete-btn font-inter" (click) = "deleteEvent()"><i class="pi pi-trash"></i>Delete Event</button>
             <button *ngIf="currStatus == 'Published'" class="cancel-btn font-inter" (click) = "cancelEvent()"><i class="pi pi-times"></i>Cancel Event</button>
             <button *ngIf="currStatus != 'Canceled'" class="edit-btn font-inter" id="cnclbtn" (click)="onEditClick()"><i class="pi pi-pen-to-square"></i>Edit Event</button>
-            <button *ngIf="currStatus == 'Draft'" class="publish-btn font-inter" (click) = "publishEvent()"><i class="pi pi-check"></i>Publish Event</button>
+            <button *ngIf="currStatus == 'Draft'" class="publish-btn font-inter" (click) = "publishEvent()"><i class="pi pi-check-circle"></i>Publish Event</button>
             
             
         </div>

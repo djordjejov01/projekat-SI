@@ -37,6 +37,7 @@ export class DashboardComponent  implements OnInit{
 
   //resources = DUMMY_RESOURCES
   resources : ResourceDto[] = [];
+  availableResources : ResourceDto[] = [];
   selectedResources : Resource[] = []
   loading = false;
   searchValue : string;
@@ -117,6 +118,7 @@ private availabilityLabels: Record<number, string> = {
       next: (response : ResourceDto[]) => 
         {
           this.resources = response;
+          this.availableResources = this.resources.filter(x => x.getIsAvailable() == 0);
           console.log(this.resources)
           this.initChart()
         },

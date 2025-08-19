@@ -9,9 +9,9 @@
                          event.getStatusLabel() === 'Published' ? '#DCFCE7' :
                          event.getStatusLabel() === 'Canceled' ? '#FEE2E2' : 'gray'
    }">{{event.getStatusLabel()}}</p>
-            <p id="time">{{event.getStartDateTime() | date: 'MM/dd/yyyy' }}</p>
+            <p id="time">{{event.getStartDateTime() | date: 'dd/MM/yyyy' }}</p>
         </div>
-        <img [src]="event.getImage()" alt="">
+        <img [src]="event.getImage()" alt="" id="evPic">
     </div>
     <div id="info">
         <p id="tt">{{event.getTitle()}}</p>
@@ -23,7 +23,7 @@
             <i class="pi pi-building"></i>
             <p>{{event.getLocation()}}</p>
         </div>
-        
+
     </div>
     <button (click)="manageEvent(event)" id="mngev">{{"MANAGE" | translate}} <i class="pi pi-arrow-right"></i></button>
 </div>
