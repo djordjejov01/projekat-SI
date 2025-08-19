@@ -102,7 +102,7 @@ export class CreateEventComponent implements OnInit,IDeactivate,OnDestroy{
       tickets: new FormArray([
         new FormGroup({
           name: new FormControl('',[Validators.required, CustomValidators.noWhitespaceValidator]),
-          price: new FormControl('', [Validators.required, Validators.min(0)]),
+          price: new FormControl('', [Validators.required, Validators.min(1)]),
           description: new FormControl('', CustomValidators.noWhitespaceValidator),
           quota: new FormControl('',[Validators.required,Validators.min(1)]),
           validFrom: new FormControl({value: '', disabled: true}, Validators.required),

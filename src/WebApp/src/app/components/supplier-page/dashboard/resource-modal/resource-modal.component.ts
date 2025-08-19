@@ -86,12 +86,12 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
   }
 
 
-  openModal(resourceToEdit? : ResourceDto){
-    this.visible = true;
+openModal(resourceToEdit?: ResourceDto) {
+  this.visible = true;
 
-    if(resourceToEdit){
-      console.log(resourceToEdit)
-      this.resourceForm.patchValue({
+  if (resourceToEdit) {
+    // Editing mode
+    this.resourceForm.patchValue({
       name: resourceToEdit.getName(),
       category: resourceToEdit.getCategory(),
       type: resourceToEdit.getIsExhaustable(),
@@ -99,12 +99,17 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
       quantity: resourceToEdit.getQuantity(),
     });
 
-    this.resourceToEdit = resourceToEdit
-    }
-    else{
-      this.resourceToEdit = null;
-    }
+    // Disable exhaustible field
+    this.resourceForm.get('type')?.disable();
+
+    this.resourceToEdit = resourceToEdit;
+  } else {
+    // Adding mode
+    this.resourceForm.reset();
+    this.resourceForm.get('type')?.enable(); // make sure it’s enabled
+    this.resourceToEdit = null;
   }
+}
 
   closeModal()
   {
@@ -127,7 +132,7 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
       return;
     }
 
-    const formValue = this.resourceForm.value;
+    const formValue = this.resourceForm.getRawValue(); 
     const availability = formValue.type ? (formValue.quantity > 0 ? ResourceAvailability.Available : ResourceAvailability.Unavailable) : ResourceAvailability.Available
 
     const resource = new ResourceDto(
