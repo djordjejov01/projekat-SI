@@ -20,7 +20,7 @@
   },
   "welcomeToSyncUp": "Dobrodošli u SyncUp!",
   "emailPlaceholder": "Email adresa",
-  "passwordPlaceholder": "••••••••",
+  "passwordPlaceholder": "Lozinka",
   "show": "Prikaži",
   "hide": "Sakrij",
   "forgotPassword": "Zaboravili ste lozinku?",
@@ -164,7 +164,7 @@
   "priceDesc": "Cena ↓",
   "popularityDesc": "Popularnost ↓",
   "freeOnly": "Samo besplatni",
-  "reset": "Poništi sve filtere",
+  "reset": "Poništi filtere",
   "noResults": "Nema događaja koji odgovaraju filterima."
 }
 , "freeEvent": "Besplatan događaj"
@@ -180,10 +180,12 @@
   "available": "dostupno",
   "loading": "Učitavanje karata...",
   "redirecting": "Preusmeravanje na kupovinu karata...",
-  "proceed": "Nastavi ka korpi"
+  "proceed": "Nastavi ka korpi",
+  "noTickets": "Nema dostupnih karata za ovaj događaj"
 },
 "resources": {
-  "title": "Resursi"
+  "title": "Resursi",
+  "noResources": "Nema dostupnih resursa za ovaj događaj"
 },
 "cart": {
   "title": "Vaša korpa",
@@ -249,7 +251,12 @@
 "msg":"Unesite broj dinara za uplatu",
 "example": "npr. 1000",
 "button":"Uplati",
-"process":"Obrada uplate..."
+"process":"Obrada uplate...",
+"errorNumber":"Unesite validan broj novca",
+"success":"Uspešno",
+"success2":"dinara je dodato na tvoj račun",
+"errorPayment":"Došlo je do greške prilikom uplate",
+"errorServer":"Došlo je do greške prilikom povezivanja na server"
 }
 
 

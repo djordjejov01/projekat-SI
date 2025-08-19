@@ -26,7 +26,7 @@ export default function TokenPurchaseScreen() {
   const handlePurchase = async () => {
     const parsedAmount = parseInt(amount, 10);
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      Alert.alert('Greška', 'Unesite validan broj novca.');
+      Alert.alert(`${t('error')}`, `${t('payment.errorNumber')}`);
       return;
     }
 
@@ -46,13 +46,13 @@ export default function TokenPurchaseScreen() {
       });
 
       if (response.ok) {
-        Alert.alert('Uspešno', `Dodato je ${parsedAmount} dinara na tvoj račun.`);
+        Alert.alert(`${t('payment.success')}`, `${parsedAmount} ${t('payment.success2')}`);
         setAmount('');
       } else {
-        Alert.alert('Greška', 'Došlo je do greške prilikom uplate.');
+        Alert.alert(`${t('error')}`, `${t('payment.errorPayment')}`);
       }
     } catch (error) {
-      Alert.alert('Greška', 'Greška prilikom povezivanja sa serverom.');
+      Alert.alert(`${t('error')}`, `${t('payment.errorServer')}`);
     } finally {
       setLoading(false);
       setProcessing(false);

@@ -22,7 +22,6 @@ export default function ProfileScreen() {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
 
-
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -33,12 +32,14 @@ export default function ProfileScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [imageModalVisible, setImageModalVisible] = useState(false);
   const defaultAvatar = require('../../assets/images/avatar-placeholder.png');
+
   const normalizeImageUrl = (path: string | null) => {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
-  if (!path.startsWith('/')) path = `/${path}`; // dodaj / ako ga nema
-  return `${API_URL}${path}`;
-};
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+    if (!path.startsWith('/')) path = `/${path}`;
+    return `${API_URL}${path}`;
+  };
+
 
 
   useEffect(() => {
@@ -54,15 +55,13 @@ export default function ProfileScreen() {
         });
 
         if (res.ok) {
-        const data = await res.json();
-        setFirstName(data.firstName || '');
-        setLastName(data.lastName || '');
-        setEmail(data.email || '');
-        const imageUrl = normalizeImageUrl(data.profilePicture || null);
-        setProfilePicture(imageUrl);
-
-      }
-
+          const data = await res.json();
+          setFirstName(data.firstName || '');
+          setLastName(data.lastName || '');
+          setEmail(data.email || '');
+          const imageUrl = normalizeImageUrl(data.profilePicture || null);
+          setProfilePicture(imageUrl);
+        }
 
         const resTickets = await fetch(`${API_URL}/api/ticket/tickets/my`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -81,12 +80,11 @@ export default function ProfileScreen() {
           const data = await resCredits.json();
           setCredits(data.credits);
         }
-
       } catch (error) {
         console.error('Failed to load user data or tickets:', error);
-      }finally {
-      setIsLoading(false); 
-    }
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchUserDataAndTickets();
@@ -118,18 +116,18 @@ export default function ProfileScreen() {
     );
   };
 
- const renderProfileImage = () => (
-  <TouchableOpacity onPress={() => setImageModalVisible(true)}>
-    {isLoading ? (
-      <ActivityIndicator size="large" color="#fff" style={{ width: 68, height: 68 }} />
-    ) : (
-      <Image
-        source={profilePicture ? { uri: profilePicture } : defaultAvatar}
-        style={styles.avatarImage}
-      />
-    )}
-  </TouchableOpacity>
-);
+  const renderProfileImage = () => (
+    <TouchableOpacity onPress={() => setImageModalVisible(true)}>
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#fff" style={{ width: 68, height: 68 }} />
+      ) : (
+        <Image
+          source={profilePicture ? { uri: profilePicture } : defaultAvatar}
+          style={styles.avatarImage}
+        />
+      )}
+    </TouchableOpacity>
+  );
 
   if (!isLoggedIn) {
     return (
@@ -148,15 +146,13 @@ export default function ProfileScreen() {
       <Text style={styles.header}>{t('profile.title')}</Text>
 
       <View style={styles.profileCard}>
-        {renderProfileImage()}
-        <View style={{ flex: 1, marginLeft: 16 }}>
-          <Text style={styles.name}>{`${firstName} ${lastName}`}</Text>
-          <Text style={styles.email}>{email}</Text>
-        </View>
-        <TouchableOpacity onPress={() => router.push('../profile/token')}>
-          <Text style={styles.edit}>{credits} RSD</Text>
-        </TouchableOpacity>
-      </View>
+  {renderProfileImage()}
+  <View style={{ flex: 1, marginLeft: 16 }}>
+    <Text style={styles.name}>{`${firstName} ${lastName}`}</Text>
+    <Text style={styles.email}>{email}</Text>
+    <Text style={styles.credits}>{credits} RSD</Text>
+  </View>
+</View>
 
       <View style={styles.rowContainer}>
         <TouchableOpacity style={styles.statBox} onPress={() => router.push('../profile/myTickets')}>
@@ -199,22 +195,17 @@ export default function ProfileScreen() {
         <Text style={[styles.optionArrow, { color: 'red' }]}>›</Text>
       </TouchableOpacity>
 
-<Modal visible={imageModalVisible} transparent animationType="fade">
-  <Pressable style={styles.modalOverlay} onPress={() => setImageModalVisible(false)}>
-    <View style={styles.modalContent}>
-       <Image
-  source={profilePicture ? { uri: profilePicture } : defaultAvatar}
-  style={styles.modalImage}
-  resizeMode="contain"
-/>
-
-
-    </View>
-  </Pressable>
-</Modal>
-
-
-
+      <Modal visible={imageModalVisible} transparent animationType="fade">
+        <Pressable style={styles.modalOverlay} onPress={() => setImageModalVisible(false)}>
+          <View style={styles.modalContent}>
+            <Image
+              source={profilePicture ? { uri: profilePicture } : defaultAvatar}
+              style={styles.modalImage}
+              resizeMode="contain"
+            />
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -230,7 +221,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: '900',
-    marginBottom: 24,
+    marginBottom: 10,
     textAlign: 'center',
     color: '#1a202c',
     letterSpacing: 0.8,
@@ -385,5 +376,11 @@ modalContent: {
     borderRadius: 12,
   },
 
+credits: {
+  color: 'white',
+  fontSize: 18,
+  fontWeight: '700',
+  marginTop: 4,
+},
 
 });

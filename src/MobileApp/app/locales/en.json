@@ -18,7 +18,7 @@
   "welcomeHome": "Welcome home! User is logged in.",
   "welcomeToSyncUp": "Welcome to SyncUp!",
   "emailPlaceholder": "Email address",
-  "passwordPlaceholder": "••••••••",
+  "passwordPlaceholder": "Password",
   "show": "Show",
   "hide": "Hide",
   "forgotPassword": "Forgot your password?",
@@ -157,7 +157,12 @@
 "msg":"Enter the number of dinars for payment",
 "example": "etc. 1000",
 "button":"Pay",
-"process":"Payment processing..."
+"process":"Payment processing...",
+"errorNumber":"Enter a valid money number",
+"success":"Success",
+"success2":"dinars have been added to your account",
+"errorPayment":"An error occurred during payment",
+"errorServer":"An error occurred while connecting to the server"
 },
 
 "tabs": {
@@ -192,10 +197,12 @@
   "available": "available",
   "loading": "Loading tickets...",
   "redirecting": "Redirecting to ticket purchase...",
-  "proceed": "Proceed to Cart"
+  "proceed": "Proceed to Cart",
+  "noTickets": "No available tickets for this event."
 },
 "resources": {
-  "title": "Resources"
+  "title": "Resources",
+  "noResources": "No available resoursces for this event."
 },
 "cart": {
   "title": "Your Cart",
