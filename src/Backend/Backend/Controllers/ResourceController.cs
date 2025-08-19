@@ -44,7 +44,7 @@ namespace Backend.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
             if (dto.Quantity <= 0)
-                return BadRequest("Količina mora biti veća od nule.");
+                return BadRequest("The quantity must be greater than zero.");
 
             
             var eventResource =await _context.EventResources
@@ -52,13 +52,13 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(er => er.ID == dto.EventResourceID);
 
             if (eventResource == null)
-                return NotFound("Resurs ne postoji.");
+                return NotFound("Resource does not exist.");
 
             if (!eventResource.IsReservable)
-                return BadRequest("Ovaj resurs nije moguće rezervisati.");
+                return BadRequest("This resource cannot be reserved.");
 
             if (eventResource.Event.EndDate < DateTime.UtcNow)
-                return BadRequest("Nije moguće rezervisati resurs za događaj koji je prošao.");
+                return BadRequest("It is not possible to reserve a resource for an event that has already passed.");
 
             if (!eventResource.Event.isFree)
             {
@@ -66,7 +66,7 @@ namespace Backend.Controllers
                 var hasTicket = _context.UserTickets
                     .Any(ut => ut.UserID == userId && ut.Ticket.EventID == eventResource.EventID);
                 if (!hasTicket)
-                    return BadRequest("Morate imati ulaznicu za ovaj događaj da biste rezervisali resurs.");
+                    return BadRequest("You must have a ticket for this event to reserve a resource.");
 
 
                 var userTicket = _context.UserTickets
@@ -74,11 +74,11 @@ namespace Backend.Controllers
                     .FirstOrDefault(ut => ut.UserTicketID == dto.UserTicketID && ut.UserID == userId);
 
                 if (userTicket == null)
-                    return BadRequest("Nemate validnu ulaznicu za ovaj događaj.");
+                    return BadRequest("You do not have a valid ticket for this event.");
 
 
                 if (userTicket.Ticket.EventID != eventResource.EventID)
-                    return BadRequest("Ulaznica nije za isti događaj kao resurs koji pokušavate da rezervišete.");
+                    return BadRequest("The ticket is not for the same event as the resource you are trying to reserve.");
 
             }
             
@@ -87,9 +87,9 @@ namespace Backend.Controllers
                 .Sum(r => r.Quantity);
 
             if (alreadyReserved + dto.Quantity > eventResource.Quantity)
-                return BadRequest("Nema dovoljno dostupnih resursa.");
+                return BadRequest("Not enough available resources.");
 
-            //TODO(ogranicenje kolicine resursa)
+            
 
             var reservation = new UserResourceReservation
             {
@@ -103,7 +103,7 @@ namespace Backend.Controllers
             await _context.UserResourceReservations.AddAsync(reservation);
             await _context.SaveChangesAsync();
 
-            return Ok("Rezervacija uspešna.");
+            return Ok("Reservation successful.");
         }
         [HttpGet("resource-categories")]
         public IActionResult GetResourceCategories()

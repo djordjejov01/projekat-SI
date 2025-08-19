@@ -78,8 +78,10 @@ namespace Backend.Migrations
 
                 b.HasIndex("OrganizerID");
 
+
                 b.ToTable("Events");
             });
+
 
             modelBuilder.Entity("Backend.Models.EventActivity", b =>
             {
@@ -114,8 +116,10 @@ namespace Backend.Migrations
 
                 b.HasIndex("EventID");
 
+
                 b.ToTable("EventActivities");
             });
+
 
             modelBuilder.Entity("Backend.Models.EventCategories", b =>
             {
@@ -130,6 +134,7 @@ namespace Backend.Migrations
                     .HasColumnType("text");
 
                 b.HasKey("CategoryID");
+
 
                 b.ToTable("EventCategories");
             });
@@ -166,8 +171,10 @@ namespace Backend.Migrations
 
                 b.HasKey("Id");
 
+
                 b.ToTable("EventPin");
             });
+
 
             modelBuilder.Entity("Backend.Models.EventResource", b =>
             {
@@ -209,8 +216,10 @@ namespace Backend.Migrations
 
                 b.HasIndex("SupplierID");
 
+
                 b.ToTable("EventResources");
             });
+
 
             modelBuilder.Entity("Backend.Models.FavoriteEvent", b =>
             {
@@ -232,8 +241,10 @@ namespace Backend.Migrations
 
                 b.HasIndex("UserId");
 
+
                 b.ToTable("FavoriteEvents");
             });
+
 
             modelBuilder.Entity("Backend.Models.Organizer", b =>
             {
@@ -270,8 +281,10 @@ namespace Backend.Migrations
 
                 b.HasKey("Id");
 
+
                 b.ToTable("Organizers");
             });
+
 
             modelBuilder.Entity("Backend.Models.PinType", b =>
             {
@@ -287,7 +300,9 @@ namespace Backend.Migrations
 
                 b.HasKey("PinTypeId");
 
+
                 b.ToTable("PinTypes");
+
 
                 b.HasData(
                     new
@@ -385,8 +400,10 @@ namespace Backend.Migrations
 
                 b.HasKey("ResourceID");
 
+
                 b.ToTable("Resources");
             });
+
 
             modelBuilder.Entity("Backend.Models.ResourceLog", b =>
             {
@@ -468,8 +485,10 @@ namespace Backend.Migrations
 
                 b.HasKey("Id");
 
+
                 b.ToTable("Suppliers");
             });
+
 
             modelBuilder.Entity("Backend.Models.Ticket", b =>
             {
@@ -508,8 +527,10 @@ namespace Backend.Migrations
                 b.HasIndex("EventID", "TypeName")
                     .IsUnique();
 
+
                 b.ToTable("Tickets");
             });
+
 
             modelBuilder.Entity("Backend.Models.User", b =>
             {
@@ -572,8 +593,10 @@ namespace Backend.Migrations
 
                 b.HasKey("UserId");
 
+
                 b.ToTable("Users");
             });
+
 
             modelBuilder.Entity("Backend.Models.UserResourceReservation", b =>
             {
@@ -606,8 +629,10 @@ namespace Backend.Migrations
 
                 b.HasIndex("UserTicketID");
 
+
                 b.ToTable("UserResourceReservations");
             });
+
 
             modelBuilder.Entity("Backend.Models.UserRoles", b =>
             {
@@ -622,8 +647,10 @@ namespace Backend.Migrations
 
                 b.HasKey("RoleId");
 
+
                 b.ToTable("UserRoles");
             });
+
 
             modelBuilder.Entity("Backend.Models.UserTicket", b =>
             {
@@ -658,8 +685,10 @@ namespace Backend.Migrations
 
                 b.HasIndex("UserID");
 
+
                 b.ToTable("UserTickets");
             });
+
 
             modelBuilder.Entity("Backend.Models.Event", b =>
             {

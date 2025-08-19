@@ -30,6 +30,7 @@ namespace Backend.Controllers
                     t.Description,
                     t.Price,
                     t.Quota,
+                    t.validUntil,
                     Available = t.Quota - _context.UserTickets.Count(ut => ut.TicketID == t.TicketID)
                 })
                 .ToListAsync();
@@ -46,7 +47,7 @@ namespace Backend.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound("Korisnik nije pronađen.");
+                return NotFound("User not found.");
 
             
             decimal ukupnaCena = 0;
@@ -54,17 +55,17 @@ namespace Backend.Controllers
             {
                 var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.TicketID == dto.TicketID);
                 if (ticket == null)
-                    return NotFound($"Ulaznica sa ID {dto.TicketID} ne postoji.");
+                    return NotFound($"Ticket with ID {dto.TicketID} does not exist.");
 
                 var eventEntity = await _context.Events.FirstOrDefaultAsync(e => e.EventID == ticket.EventID);
                 if (eventEntity == null)
-                    return NotFound($"Događaj za ulaznicu {dto.TicketID} nije pronađen.");
+                    return NotFound($"Event for ticket {dto.TicketID} not found.");
 
                 if (eventEntity.EndDate < DateTime.UtcNow)
-                    return BadRequest($"Nije moguće kupiti kartu za događaj {eventEntity.Title} koji je već prošao.");
+                    return BadRequest($"It is not possible to purchase a ticket for the event {eventEntity.Title} that has already passed.");
 
                 if (eventEntity.isFree)
-                    return BadRequest($"Nije moguće kupiti kartu za besplatan događaj ({eventEntity.Title}).");
+                    return BadRequest($"It is not possible to purchase a ticket for a free event ({eventEntity.Title}).");
 
                 var userTicketsForEvent = await _context.UserTickets
                     .Include(ut => ut.Ticket)
@@ -72,18 +73,19 @@ namespace Backend.Controllers
                     .CountAsync();
 
                 if (userTicketsForEvent + dto.Quantity > 10)
-                    return BadRequest($"Ne možete kupiti više od 10 karata za događaj {eventEntity.Title}. Već imate {userTicketsForEvent} karata.");
+                    return BadRequest($"You cannot purchase more than 10 tickets for the event {eventEntity.Title}. You already have {userTicketsForEvent} tickets.");
+
 
                 int sold =await _context.UserTickets.CountAsync(ut => ut.TicketID == dto.TicketID);
                 if (sold + dto.Quantity > ticket.Quota)
-                    return BadRequest($"Nema dovoljno dostupnih ulaznica za tip {ticket.TypeName}.");
+                    return BadRequest($"Not enough available tickets for type {ticket.TypeName}.");
 
                 ukupnaCena += ticket.Price * dto.Quantity;
             }
 
             
             if (user.Credit < ukupnaCena)
-                return BadRequest("Nedovoljno kredita za kupovinu.");
+                return BadRequest("Insufficient credit for purchase.");
 
             
             using (var transaction =await _context.Database.BeginTransactionAsync())

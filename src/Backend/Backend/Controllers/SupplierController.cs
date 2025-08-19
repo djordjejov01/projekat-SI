@@ -31,7 +31,7 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(s => s.Id == userId);
 
             if (supplier == null)
-                return NotFound("Dobavljač nije pronađen.");
+                return NotFound("Supplier not found.");
 
             var dto = new SupplierDto
             {
@@ -56,18 +56,18 @@ namespace Backend.Controllers
 
             var supplier = await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == userId);
             if (supplier == null)
-                return NotFound(new { message = "Dobavljač nije pronađen." });
+                return NotFound(new { message = "Supplier not found." });
 
             
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound(new { message = "Korisnik nije pronađen." });
+                return NotFound(new { message = "User not found." });
 
             
             if (!string.IsNullOrEmpty(model.Username) && model.Username != supplier.Username)
             {
                 if (await _context.Suppliers.AnyAsync(s => s.Username == model.Username && s.Id != userId))
-                    return BadRequest(new { message = "Korisničko ime već postoji." });
+                    return BadRequest(new { message = "Username already exists." });
 
                 supplier.Username = model.Username;
                 user.Username = model.Username;
@@ -77,9 +77,9 @@ namespace Backend.Controllers
             if (!string.IsNullOrEmpty(model.Email) && model.Email != supplier.Email)
             {
                 if (!CommonHelpers.IsEmailInValidForm(model.Email))
-                    return BadRequest(new { message = "Neispravan format email adrese." });
+                    return BadRequest(new { message = "Invalid email address format." });
                 if (await _context.Suppliers.AnyAsync(s => s.Email == model.Email && s.Id != userId))
-                    return BadRequest(new { message = "Email već postoji." });
+                    return BadRequest(new { message = "Email already exists." });
 
                 supplier.Email = model.Email;
                 user.Email = model.Email;
@@ -89,12 +89,12 @@ namespace Backend.Controllers
             if (!string.IsNullOrEmpty(model.PhoneNumber) && model.PhoneNumber != supplier.PhoneNumber)
             {
                 if (!CommonHelpers.IsPhoneNumberValid(model.PhoneNumber))
-                    return BadRequest(new { message = "Neispravan format broja telefona." });
+                    return BadRequest(new { message = "Invalid phone number format." });
                 if (await _context.Suppliers.AnyAsync(s => s.PhoneNumber == model.PhoneNumber && s.Id != userId))
-                    return BadRequest(new { message = "Broj telefona već postoji." });
+                    return BadRequest(new { message = "Phone number already exists." });
 
                 supplier.PhoneNumber = model.PhoneNumber;
-                user.PhoneNumber = model.PhoneNumber; // Sinhronizacija sa users tabelom
+                user.PhoneNumber = model.PhoneNumber;
             }
 
             
@@ -112,7 +112,7 @@ namespace Backend.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Podaci dobavljača su uspešno ažurirani!" });
+            return Ok(new { message = "Supplier information updated successfully!" });
         }
 
         [HttpPost("change-supplier-picture")]
@@ -314,7 +314,7 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(s => s.UserId == supplierId);
 
             if (supplier == null)
-                return NotFound(new { message = "Dobavljač nije pronađen." });
+                return NotFound(new { message = "Supplier not found." });
 
             
             var reusableResources = await _context.Resources

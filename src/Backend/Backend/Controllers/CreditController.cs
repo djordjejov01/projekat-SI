@@ -37,6 +37,11 @@ namespace Backend.Controllers
             if (user == null)
                 return NotFound();
 
+            if (user.Credit + amount > 1000000)
+            {
+                return BadRequest("Credit cannot exceed 1,000,000.");
+            }
+
             user.Credit += amount;
             await _context.SaveChangesAsync();
 

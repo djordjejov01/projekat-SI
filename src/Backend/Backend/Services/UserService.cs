@@ -1,12 +1,13 @@
+using Backend.Helpers;
+using Backend.Models;
 using Backend.Models.Dto;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 using System;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Linq;
-using Backend.Models;
-using Backend.Helpers;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Backend.Services
 {
@@ -22,12 +23,19 @@ namespace Backend.Services
         public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
         {
             if (!CommonHelpers.IsPasswordStrong(registerDto.Password))
-                throw new Exception("Lozinka mora imati najmanje 8 karaktera, jedno veliko slovo, jedno malo slovo i jedan broj.");
+                throw new Exception("The password must be at least 8 characters long, include one uppercase letter, one lowercase letter, and one number.");
 
             if (await _context.Users.AnyAsync(u => u.Email == registerDto.Email))
             {
-                throw new Exception("Korisnik sa datim emailom već postoji.");
+                throw new Exception("A user with the given email already exists.");
             }
+
+
+            if (registerDto.Role != UserRole.Organizer && registerDto.Role != UserRole.Supplier && registerDto.Role!=UserRole.MobileUser)
+            {
+                throw new Exception("Role not allowed for public registration.");
+            }
+
 
             string hashedPassword = CommonHelpers.HashPassword(registerDto.Password);
 
@@ -98,28 +106,110 @@ namespace Backend.Services
             return userDto;
         }
 
+        public async Task<UserDto> RegisterWebAsync(RegisterWebDto registerWebDto)
+        {
+            if (!CommonHelpers.IsPasswordStrong(registerWebDto.Password))
+                throw new Exception("The password must be at least 8 characters long, contain one uppercase letter, one lowercase letter, and one number.");
+
+            if (await _context.Users.AnyAsync(u => u.Email == registerWebDto.Email))
+                throw new Exception("A user with this email already exists.");
+
+            if (registerWebDto.Role != UserRole.Organizer && registerWebDto.Role != UserRole.Supplier)
+                throw new Exception("Role not permitted for public registration.");
+
+            
+
+            if (await _context.Users.AnyAsync(u => u.Username == registerWebDto.Username))
+                throw new Exception("Username is already taken.");
+
+            string hashedPassword = CommonHelpers.HashPassword(registerWebDto.Password);
+
+            var role = registerWebDto.Role;
+            bool isActive = role == UserRole.Supplier ? false : true;
+
+            var user = new User
+            {
+                Username = registerWebDto.Username,
+                Email = registerWebDto.Email,
+                Password = hashedPassword,
+                FirstName = "",
+                LastName = "",
+                Role = role,
+                IsActive = isActive,
+                ProfilePicture = "",
+                Language = "",
+                PhoneNumber = ""
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            if (user.Role == UserRole.Organizer)
+            {
+                var o = new Organizer
+                {
+                    Id = user.UserId,
+                    Username = user.Username,
+                    Email = user.Email,
+                    Name = user.FirstName + " " + user.LastName,
+                    PhoneNumber = "",
+                    Image = ""
+                };
+                _context.Organizers.Add(o);
+                await _context.SaveChangesAsync();
+            }
+
+            if (user.Role == UserRole.Supplier)
+            {
+                var s = new Supplier
+                {
+                    Id = user.UserId,
+                    Username = user.Username,
+                    CompanyName = "",
+                    Email = user.Email,
+                    PhoneNumber = "",
+                    Website = "",
+                    CompanyBio = "",
+                    Image = ""
+                };
+                _context.Suppliers.Add(s);
+                await _context.SaveChangesAsync();
+            }
+
+            return new UserDto
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Role = user.Role,
+                IsActive = user.IsActive
+            };
+        }
+
         public async Task<UserDto> LoginAsync(LoginDto loginDto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
             if (user == null)
             {
-                throw new Exception("Korisnik sa datim emailom ne postoji.");
+                throw new Exception("The user with the given email address does not exist.");
             }
 
             string hashedInputPassword = CommonHelpers.HashPassword(loginDto.Password);
             if (user.Password != hashedInputPassword)
             {
-                throw new Exception("Pogrešna lozinka.");
+                throw new Exception("Wrong password.");
             }
 
             if (user.Role == UserRole.Supplier && !user.IsActive)
             {
-                throw new Exception("Dobavljač još nije odobren od strane admina.");
+                throw new Exception("Supplier not yet approved by admin.");
             }
 
             if (!user.IsActive)
             {
-                throw new Exception("Korisnik nije aktivan.");
+                throw new Exception("The user is not active.");
             }
 
             user.LastLoginTime = DateTime.UtcNow;
@@ -140,11 +230,11 @@ namespace Backend.Services
 
         private string GenerateBaseUsername(string firstName, string lastName)
         {
-            // Ukloni specijalne karaktere i pretvori u lowercase
+            
             string cleanFirstName = RemoveSpecialCharacters(firstName.ToLower());
             string cleanLastName = RemoveSpecialCharacters(lastName.ToLower());
 
-            // Generiši base username (ime + prezime)
+            
             return $"{cleanFirstName}{cleanLastName}";
         }
 
@@ -153,7 +243,7 @@ namespace Backend.Services
             string candidateUsername = baseUsername;
             int counter = 1;
 
-            // Proverava da li username već postoji, ako da, dodaje broj
+            
             while (await _context.Users.AnyAsync(u => u.Username == candidateUsername))
             {
                 candidateUsername = $"{baseUsername}{counter}";

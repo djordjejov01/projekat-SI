@@ -37,7 +37,11 @@ namespace Backend.Controllers
                 return BadRequest(ModelState);
 
             if (registerDto.Password != registerDto.ConfirmPassword)
-                return BadRequest(new { message = "Lozinka i potvrda lozinke se ne poklapaju." });
+                return BadRequest(new { message = "Password and password confirmation do not match." });
+
+            
+            if (registerDto.Role != UserRole.Organizer && registerDto.Role != UserRole.Supplier && registerDto.Role != UserRole.MobileUser)
+                return BadRequest(new { message = "Role not allowed for public registration." });
 
             try
             {
@@ -45,6 +49,29 @@ namespace Backend.Controllers
                 return Ok(user);
             }
             catch (System.Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpPost("register-web")]
+        public async Task<IActionResult> RegisterWeb([FromBody] RegisterWebDto registerDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (registerDto.Password != registerDto.ConfirmPassword)
+                return BadRequest(new { message = "Password and confirmation password do not match." });
+
+            if (registerDto.Role != UserRole.Organizer && registerDto.Role != UserRole.Supplier)
+                return BadRequest(new { message = "Role not allowed for public registration." });
+
+            try
+            {
+                var user = await _userService.RegisterWebAsync(registerDto);
+                return Ok(user);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
@@ -111,23 +138,23 @@ namespace Backend.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var user =await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound("Korisnik nije pronađen.");
+                return NotFound("User not found.");
 
             
             if (CommonHelpers.HashPassword(dto.CurrentPassword) != user.Password)
-                return BadRequest("Trenutna lozinka nije ispravna.");
+                return BadRequest("The current password is incorrect.");
 
             
             if (string.IsNullOrWhiteSpace(dto.NewPassword) || dto.NewPassword.Length < 8 ||
                 !dto.NewPassword.Any(char.IsUpper) ||
                 !dto.NewPassword.Any(char.IsLower) ||
                 !dto.NewPassword.Any(char.IsDigit))
-                return BadRequest("Nova lozinka mora imati bar 8 karaktera, veliko i malo slovo i cifru.");
+                return BadRequest("The new password must be at least 8 characters long and include an uppercase letter, a lowercase letter, and a number.");
 
             
             user.Password = CommonHelpers.HashPassword(dto.NewPassword);
             await _context.SaveChangesAsync();
-            return Ok("Lozinka uspešno promenjena.");
+            return Ok("Password changed successfully.");
         }
 
         [Authorize]

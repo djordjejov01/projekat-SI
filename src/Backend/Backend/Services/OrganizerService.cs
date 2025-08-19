@@ -170,8 +170,8 @@ namespace Backend.Services
 
 
             
-            if (eventEntity.StartDate <= DateTime.Today.AddDays(30))
-                throw new InvalidOperationException("Event must be published at least 30 day before start date.");
+            if (eventEntity.StartDate <= DateTime.Today.AddDays(15))
+                throw new InvalidOperationException("Event must be published at least 15 day before start date.");
 
             
             if (eventEntity.StartDate > DateTime.Today.AddYears(1))
@@ -222,79 +222,85 @@ namespace Backend.Services
 
         public async Task DeleteEvent(int eventId,int organizerId)
         {
-            var eventEntity = await _context.Events
-                .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
 
-            if (eventEntity == null)
-                throw new ArgumentException("Event not found or you don't have permission to delete it.");
-
-            
-            if (eventEntity.Status != EventStatus.Draft)
-                throw new InvalidOperationException("Event can only be deleted if it's in draft status.");
-
-            
-            var activities = await _context.EventActivities
-                .Where(a => a.EventID == eventId)
-                .ToListAsync();
-            _context.EventActivities.RemoveRange(activities);
-
-            
-            var subevents = await _context.Events
-                .Where(e => e.ParentEventId == eventId)
-                .ToListAsync();
-
-            
-            foreach (var subevent in subevents)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try 
             {
-                var subeventActivities = await _context.EventActivities
-                    .Where(a => a.EventID == subevent.EventID)
+                var eventEntity = await _context.Events
+                    .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
+
+                if (eventEntity == null)
+                    throw new ArgumentException("Event not found or you don't have permission to delete it.");
+
+            
+                if (eventEntity.Status != EventStatus.Draft && eventEntity.Status != EventStatus.Canceled)
+                    throw new InvalidOperationException("Event can be deleted only if it's Draft or Canceled.");
+
+            
+                var activities = await _context.EventActivities
+                    .Where(a => a.EventID == eventId)
                     .ToListAsync();
-                _context.EventActivities.RemoveRange(subeventActivities);
-            }
+                _context.EventActivities.RemoveRange(activities);
 
             
-            var eventPins = await _context.EventPin
-                .Where(p => p.EventId == eventId)
-                .ToListAsync();
-            _context.EventPin.RemoveRange(eventPins);
-
-            
-            foreach (var subevent in subevents)
-            {
-                var subeventPins = await _context.EventPin
-                    .Where(p => p.EventId == subevent.EventID)
+                var subevents = await _context.Events
+                    .Where(e => e.ParentEventId == eventId)
                     .ToListAsync();
-                _context.EventPin.RemoveRange(subeventPins);
-            }
-
-
-            await DeallocateEventResources(eventId);
 
             
-            foreach (var subevent in subevents)
-            {
-                await DeallocateEventResources(subevent.EventID);
-            }
+                foreach (var subevent in subevents)
+                {
+                    var subeventActivities = await _context.EventActivities
+                        .Where(a => a.EventID == subevent.EventID)
+                        .ToListAsync();
+                    _context.EventActivities.RemoveRange(subeventActivities);
+                }
 
             
-            _context.Events.RemoveRange(subevents);
+                var eventPins = await _context.EventPin
+                    .Where(p => p.EventId == eventId)
+                    .ToListAsync();
+                _context.EventPin.RemoveRange(eventPins);
 
             
-            var tickets = await _context.Tickets
-                .Where(t => t.EventID == eventId)
-                .ToListAsync();
-            _context.Tickets.RemoveRange(tickets);
+                foreach (var subevent in subevents)
+                {
+                    var subeventPins = await _context.EventPin
+                        .Where(p => p.EventId == subevent.EventID)
+                        .ToListAsync();
+                    _context.EventPin.RemoveRange(subeventPins);
+                }
+
+
+                await DeallocateEventResources(eventId);
+
+            
+                foreach (var subevent in subevents)
+                {
+                    await DeallocateEventResources(subevent.EventID);
+                }
+
+            
+                _context.Events.RemoveRange(subevents);
+
+            
+                var tickets = await _context.Tickets
+                    .Where(t => t.EventID == eventId)
+                    .ToListAsync();
+                _context.Tickets.RemoveRange(tickets);
 
 
             
-            _context.Events.Remove(eventEntity);
+                _context.Events.Remove(eventEntity);
 
-            try
-            {
+            
                 await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
             }
             catch (Exception)
             {
+                await transaction.RollbackAsync();
                 throw;
             }
         }
@@ -336,7 +342,7 @@ namespace Backend.Services
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Greška prilikom oslobađanja resursa za event {eventId}: {ex.Message}", ex);
+                throw new InvalidOperationException($"Error releasing resources for event {eventId}: {ex.Message}", ex);
             }
         }
 
@@ -490,7 +496,7 @@ namespace Backend.Services
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Greška pri oslobađanju resursa za event {eventId}: {ex.Message}", ex);
+                throw new InvalidOperationException($"Error releasing resources for event {eventId}: {ex.Message}", ex);
             }
         }
 
