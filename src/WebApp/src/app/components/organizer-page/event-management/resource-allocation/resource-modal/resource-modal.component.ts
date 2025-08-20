@@ -79,7 +79,7 @@ private applyConditionalValidators() {
     // Apply the max validator to ALL resources.
     // The `selectedResource.quantity` should reflect the true maximum available,
     // which for "single-use" inexhaustible resources will be 1 (from backend filtering).
-    Validators.max(this.selectedResource.quantity)
+   // Validators.max(this.selectedResource.quantity)
   ]);
   
   if (this.selectedResource.isExhaustable) {
