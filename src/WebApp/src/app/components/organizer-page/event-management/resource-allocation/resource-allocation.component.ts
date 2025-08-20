@@ -359,7 +359,7 @@ private openNextModal() {
 
 // FIX: onModalSave no longer manages the isModalOpen state.
 onModalSave(savedResource: PicklistItem) {
-  this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Resource allocated successfully.', life: 3000 });
+  this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Resource allocation request sent.', life: 3000 });
   this.loadResources(); // This call will correctly update both lists.
 
   // The onModalClosed event will now handle opening the next modal.
