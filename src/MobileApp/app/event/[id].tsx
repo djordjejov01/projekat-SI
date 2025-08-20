@@ -553,7 +553,7 @@ const handleBuyTicket = async () => {
                         {new Date(activity.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </Text>
                       <Text style={[styles.scheduleTitle, { fontWeight: '500' }]}>
-                        {activity.title} ({t('activity')})
+                        {activity.title} 
                       </Text>
                       <Text style={styles.scheduleDesc}>{activity.description}</Text>
                     </View>
