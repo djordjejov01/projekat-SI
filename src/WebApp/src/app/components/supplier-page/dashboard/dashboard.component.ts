@@ -64,8 +64,8 @@ export class DashboardComponent  implements OnInit{
 resourceCategoryOptions: { name: string, value: number }[] = [];
 resourceAvailabilityOptions : { name: string, value: number }[] = [];
 resourceTypeOptions = [
-  { name: 'Exhaustible', value: ResourceType.Exhaustable },
-  { name: 'Inexhaustible', value: ResourceType.Inexhaustable }
+  { name: 'Exhaustible', value: true },
+  { name: 'Inexhaustible', value: false }
 ];
 
 private availabilityLabels: Record<number, string> = {
