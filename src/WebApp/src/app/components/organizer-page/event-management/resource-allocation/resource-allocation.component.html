@@ -66,12 +66,11 @@
                 styleClass="px-3 py-1 text-sm h-6 bg-gray-200"
             ></p-chip>
 
-            <p-chip 
-                *ngIf="resource.status === undefined && findSupplier(resource.supplierID) as supplier"
-                [label]="supplier.getUsername()" 
-                [image]="supplier.getImage()">
-            </p-chip>
-
+        <p-chip 
+        *ngIf="resource.status === undefined && findSupplier(resource.supplierID) as supplier"
+        [label]="supplier.getUsername()" 
+        [image]="supplier.getImage()">
+        </p-chip>
             </div>
         </div>
         </ng-template>

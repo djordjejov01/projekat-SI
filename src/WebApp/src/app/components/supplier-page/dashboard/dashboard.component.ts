@@ -46,6 +46,10 @@ export class DashboardComponent  implements OnInit{
   pieChartData: any;
   platformId = inject(PLATFORM_ID);
 
+  isRequestsModalVisible: boolean = false; // Add this property
+  currentSupplierId: number | null = null; // Add this property
+  pendingRequestsCount: number = 0; 
+
   @ViewChild('pieChart') pieChartComponent!: UIChart
 
    @HostListener('window:resize')
@@ -90,7 +94,7 @@ private availabilityLabels: Record<number, string> = {
 
   ngOnInit(): void {
     
-
+    this.currentSupplierId = this.authService.getUserId();
     this.resourceAvailabilityService.loadAvailabilitiesIfEmpty()
     .pipe(take(1))
     .subscribe(availabilities => {
@@ -110,7 +114,10 @@ private availabilityLabels: Record<number, string> = {
     });
 
     this.fetchResources();
+    this.fetchPendingRequestsCount();
   }
+
+  
 
   fetchResources()
   {
@@ -131,6 +138,27 @@ private availabilityLabels: Record<number, string> = {
             life: 3000 });
         }
     })
+  }
+
+  fetchPendingRequestsCount() {
+    if (!this.currentSupplierId) {
+      return;
+    }
+
+    this.apiService.getPendingEventResources(this.currentSupplierId)
+      .subscribe({
+        next: (data) => {
+          this.pendingRequestsCount = data.length;
+        },
+        error: (err) => {
+          console.error('Error fetching pending requests count:', err);
+        }
+      });
+  }
+
+  updateCounts() {
+    this.fetchResources();
+    this.fetchPendingRequestsCount();
   }
 
        initChart() {
@@ -342,6 +370,10 @@ getAvailabilityClass(status: ResourceAvailability): string {
         });
       })
 
+  }
+
+  openRequestsModal(): void {
+    this.isRequestsModalVisible = true;
   }
 
 }

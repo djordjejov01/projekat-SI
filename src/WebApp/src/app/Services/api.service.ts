@@ -41,6 +41,7 @@ import { ResourceApiResponse } from "../Interfaces/ResourceApiResponse";
 import { ResourceDto } from "../Models/ResourceDto";
 import { EventResourceDto } from "../Models/EventResourceDto";
 import { EventResourceApiResponse } from "../Interfaces/EventResourceApiResponse";
+import { PendingRequest } from "../Interfaces/PendingRequestApiResponse";
 import { EventResourceCalendarResponse } from "../Interfaces/EventResourceCalendarResponse";
 
 // Match Backend.Models.Dto.EventDto
@@ -148,6 +149,21 @@ export class ApiService{
     private apiUrl = 'https://localhost:7269/api';
 
     constructor(private http: HttpClient) {}
+
+// services/api.service.ts
+
+updateEventResourceStatus(eventResourceId: number, newStatus: number): Observable<string> {
+    const url = `${this.apiUrl}/Supplier/eventresource/${eventResourceId}/status`;
+    
+    // Add responseType: 'text' to correctly parse the backend's response
+    return this.http.put(url, newStatus, { responseType: 'text' });
+}
+
+    getPendingEventResources(supplierId: number): Observable<PendingRequest[]> {
+    return this.http.get<PendingRequest[]>(`${this.apiUrl}/Supplier/supplier/${supplierId}/eventresources/pending`).pipe(
+        catchError(this.handleError)
+    );
+    }
 
     deallocateResource(resourceId: number, eventId: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/Organizer/eventresource/deallocate/${resourceId}/${eventId}`)
