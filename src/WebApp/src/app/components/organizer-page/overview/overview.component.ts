@@ -33,11 +33,11 @@ export class OverviewComponent implements OnInit {
                 //console.log(response);
               },
               error:(errorResponse) =>{
-                this.messageService.add({
+                /*this.messageService.add({
                     severity: 'error',
                     summary: 'Error',
                     detail: errorResponse.message,
-                    life: 3000 });
+                    life: 3000 });*/
               }
       
             })

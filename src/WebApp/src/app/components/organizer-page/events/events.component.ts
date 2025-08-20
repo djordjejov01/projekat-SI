@@ -332,7 +332,7 @@ export class EventsComponent implements OnInit {
           labels: this.data1Labels,
           datasets: [
             {
-              label: 'Prihod',
+              label: 'Posetioci',
               backgroundColor: 'rgba(100,106,232, 0.2)',
               borderColor: 'rgb(139, 92, 246)',
               borderWidth: 1,
@@ -344,7 +344,7 @@ export class EventsComponent implements OnInit {
           labels: this.data4Labels,
           datasets: [
             {
-              label: 'Posetioci',
+              label: 'Prihod',
               backgroundColor: 'rgba(100,106,232, 0.2)',
               borderColor: 'rgb(139, 92, 246)',
               borderWidth: 1,
