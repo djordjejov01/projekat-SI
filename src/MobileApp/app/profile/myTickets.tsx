@@ -21,6 +21,7 @@ type PurchasedTicket = {
   price: number;
   eventID: number; 
   userTicketID: number;
+  validationToken: string;
   eventImage?: string;
 };
 
@@ -36,6 +37,7 @@ type GroupedTicket = {
 
 export default function ProfileTickets() {
   const [groupedTickets, setGroupedTickets] = useState<GroupedTicket[]>([]);
+  const [ticketsData, setTicketsData] = useState<PurchasedTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { t } = useTranslation();
@@ -57,6 +59,7 @@ export default function ProfileTickets() {
 
         if (res.ok) {
           const data: PurchasedTicket[] = await res.json();
+          setTicketsData(data); // čuvamo sve originalne karte
 
           const grouped: { [key: string]: GroupedTicket } = {};
 
@@ -97,10 +100,17 @@ export default function ProfileTickets() {
       style={styles.ticketItem}
       activeOpacity={0.7}
       onPress={() => {
+        // Skupi sve token-e za karte u grupi
+        const ticketTokens: string[] = item.ticketIDs.map(id => {
+          const original = ticketsData.find(t => t.userTicketID === id);
+          return original?.validationToken || '';
+        });
+
         router.push({
           pathname: '../event/ticketDetails',
           params: {
             ticketIDs: JSON.stringify(item.ticketIDs),
+            validationTokens: JSON.stringify(ticketTokens), // prosleđujemo token-e
             eventName: item.eventName,
             ticketType: item.ticketType,
             eventID: item.eventID,
@@ -150,7 +160,6 @@ export default function ProfileTickets() {
 
   return (
     <View style={styles.container}>
-      {/* Header sa strelicom za povratak */}
       <View style={styles.headerContainer}>
         <TouchableOpacity
           onPress={() => router.back()}
@@ -178,76 +187,15 @@ export default function ProfileTickets() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 35,
-    paddingBottom: 12,
-  },
-  backButton: {
-    marginRight: 12,
-    padding: 6,
-    borderRadius: 8,
-    // Ako želiš možeš dodati pozadinsku boju na dugme:
-    // backgroundColor: '#eee',
-  },
-  header: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    flex: 1,
-    textAlign: 'center',
-    marginRight: 40, // da naslov ne bi lepio strelicu sa desne strane
-  },
-  ticketItem: {
-    backgroundColor: '#fefefe',
-    padding: 20,
-    borderRadius: 14,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: '#e1e4e8',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 10,
-    color: '#34495e',
-  },
-  row: {
-    flexDirection: 'row',
-    marginBottom: 6,
-    alignItems: 'center',
-  },
-  label: {
-    fontWeight: '600',
-    color: '#7f8c8d',
-    width: 110,
-  },
-  value: {
-    fontWeight: '400',
-    color: '#34495e',
-    flexShrink: 1,
-  },
-  center: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#fff',
-  },
-  emptyText: {
-    fontSize: 18,
-    color: '#95a5a6',
-    textAlign: 'center',
-  },
+  container: { flex: 1, backgroundColor: '#fff' },
+  headerContainer: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 35, paddingBottom: 12 },
+  backButton: { marginRight: 12, padding: 6, borderRadius: 8 },
+  header: { fontSize: 28, fontWeight: 'bold', color: '#2c3e50', flex: 1, textAlign: 'center', marginRight: 40 },
+  ticketItem: { backgroundColor: '#fefefe', padding: 20, borderRadius: 14, marginBottom: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.12, shadowRadius: 6, elevation: 4, borderWidth: 1, borderColor: '#e1e4e8' },
+  title: { fontSize: 20, fontWeight: '700', marginBottom: 10, color: '#34495e' },
+  row: { flexDirection: 'row', marginBottom: 6, alignItems: 'center' },
+  label: { fontWeight: '600', color: '#7f8c8d', width: 110 },
+  value: { fontWeight: '400', color: '#34495e', flexShrink: 1 },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16, backgroundColor: '#fff' },
+  emptyText: { fontSize: 18, color: '#95a5a6', textAlign: 'center' },
 });
