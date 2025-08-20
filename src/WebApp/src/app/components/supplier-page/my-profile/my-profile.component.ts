@@ -61,7 +61,7 @@ export class MyProfileComponent implements OnInit {
     this.apiService.changeSupplierPicture(formData).subscribe({
 
         next:(response : any) => {
-          console.log(response);
+          //console.log(response);
           this.previewUrl = this.currSupplier.getImage();
           this.getSupplierCall();
           this.sharedService.notifyProfileImageChanged();
@@ -86,7 +86,7 @@ export class MyProfileComponent implements OnInit {
   bookedResources : ResourceDto[];
   username : string;
   ngOnInit(): void {
-    console.log(this.authService.getUserId())
+    //console.log(this.authService.getUserId())
     this.username = this.authService.getUserName();
     this.getSupplierCall();
 
@@ -114,11 +114,8 @@ export class MyProfileComponent implements OnInit {
 
         next:(response : SupplierDto) => {
           this.currSupplier = response;
-          if(this.currSupplier.getImage()!="https://localhost:7269/")
-          {
-            this.previewUrl = this.currSupplier.getImage();
-          }
-          console.log(response);
+          this.previewUrl = this.currSupplier.getImage();
+          //console.log(response);
         },
         error:(errorResponse) =>{
           this.messageService.add({
@@ -138,8 +135,8 @@ export class MyProfileComponent implements OnInit {
     const bio = (document.getElementById('bio') as HTMLInputElement).value;
     const website = (document.getElementById('website') as HTMLInputElement).value;
     const toUpdate = new UpdateSupplierDto(username1,name,email,phone,website,bio);
-    console.log("SALJEM: ");
-    console.log(toUpdate);
+    //console.log("SALJEM: ");
+    //console.log(toUpdate);
     this.apiService.updateSupplier(toUpdate).subscribe({
       next:(response : string) =>{
         this.getSupplierCall();

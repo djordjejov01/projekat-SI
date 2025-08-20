@@ -10,7 +10,7 @@ import { catchError, map, Observable, of, tap } from 'rxjs';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
-
+import { CommonModule } from '@angular/common';
 
 import * as Leaflet from 'leaflet'
 
@@ -24,7 +24,7 @@ Leaflet.Icon.Default.mergeOptions({
 
 @Component({
   selector: 'app-map-section',
-  imports: [PinModalComponent,DialogModule,ButtonModule,TooltipModule],
+  imports: [CommonModule,PinModalComponent,DialogModule,ButtonModule,TooltipModule],
   templateUrl: './map-section.component.html',
   styleUrl: './map-section.component.css',
   encapsulation: ViewEncapsulation.None
@@ -173,7 +173,7 @@ private geocodeAddress(): Observable<void> {
       const category = pin.getPinCategory();
       const filename = this.pinCategoryService.isValidCategory(category) ? `${category}.png` : 'unknown.png';
       const icon = this.createIcon(filename);
-      console.log('Pin category type and value:', typeof category, category);
+      //console.log('Pin category type and value:', typeof category, category);
 
 
       const marker = Leaflet.marker([pin.getLatitude(), pin.getLongitude()], {
@@ -270,7 +270,7 @@ private geocodeAddress(): Observable<void> {
       const lat = e.latlng.lat;
       const lon = e.latlng.lng;
 
-      console.log(lat,lon);
+      //console.log(lat,lon);
       this.openPinModal(lat,lon);
     });
   }

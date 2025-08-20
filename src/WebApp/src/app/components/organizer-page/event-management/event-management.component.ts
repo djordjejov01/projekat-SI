@@ -75,8 +75,8 @@ export class EventManagementComponent implements OnInit{
 
           this.loadAllPins(this.eventBasicInfo.getEventID(), subevents)
 
-          console.log(subevents)
-          console.log(activities)
+          //console.log(subevents)
+          //console.log(activities)
         },
           error: err => {
             this.messageService.add({

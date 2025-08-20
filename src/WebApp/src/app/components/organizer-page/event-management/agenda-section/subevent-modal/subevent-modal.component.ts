@@ -132,7 +132,7 @@ export class SubeventModalComponent implements OnInit,OnDestroy, OnChanges, IDea
     onLocationSelect(event: any) {
       const location = event.value;
       this.subeventForm.patchValue({ location: location.display_name });
-      console.log(this.subeventForm.get('location')?.value);
+      //console.log(this.subeventForm.get('location')?.value);
     }
 
 

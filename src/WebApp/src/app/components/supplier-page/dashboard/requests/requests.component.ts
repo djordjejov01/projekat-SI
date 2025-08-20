@@ -66,7 +66,7 @@ export class RequestsComponent implements OnChanges {
       next: (data) => {
         this.pendingRequests = data;
         this.loading = false;
-        console.log('Fetched pending requests:', this.pendingRequests);
+        //console.log('Fetched pending requests:', this.pendingRequests);
         this.pendingRequestCount.emit(this.pendingRequests.length); 
       },
       error: (error) => {

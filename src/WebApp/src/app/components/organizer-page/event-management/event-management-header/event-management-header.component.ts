@@ -25,6 +25,9 @@ export class EventManagementHeaderComponent implements OnInit, OnChanges{
   @Input() eventID : number;
   @Input() eventInfo : EventBasicInfo;
   currStatus : string;
+  @Output() eventAction = new EventEmitter<void>();
+
+
 
   private lastParentEventId: number | null = null;
   private parentEventTitle: string | null = null;
@@ -102,6 +105,7 @@ export class EventManagementHeaderComponent implements OnInit, OnChanges{
     this.apiService.publishEvent(this.eventID).subscribe({
       next:(response : any) =>{
         this.currStatus = "Published";
+        this.eventAction.emit();
         this.messageService.add({
               severity: 'success',
               summary: 'Success',
@@ -128,6 +132,7 @@ export class EventManagementHeaderComponent implements OnInit, OnChanges{
     this.apiService.cancelEvent(this.eventID).subscribe({
       next:(response : any) =>{
         this.currStatus = "Canceled";
+        this.eventAction.emit();
         this.messageService.add({
               severity: 'success',
               summary: 'Success',

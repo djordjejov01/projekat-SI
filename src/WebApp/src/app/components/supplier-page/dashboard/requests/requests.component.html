@@ -55,7 +55,7 @@
           <td>{{ request.eventTitle }}</td>
           <td>{{ request.organizerUsername }}</td>
           <td>
-            <ng-container *ngIf="request.isReservable; else nonReservable">
+            <ng-container *ngIf="request.startDateTimeBooked != null && request.endDateTimeBooked != null">
                 {{ request.startDateTimeBooked | date:'short' }} - {{ request.endDateTimeBooked | date:'short' }}
             </ng-container>
             <ng-template #nonReservable>
