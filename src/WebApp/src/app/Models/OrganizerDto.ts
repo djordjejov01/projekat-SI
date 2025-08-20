@@ -1,3 +1,5 @@
+import { environment } from "../../environments/environment";
+
 export class OrganizerDto{
 
     constructor(
@@ -30,7 +32,7 @@ export class OrganizerDto{
         }
 
         getImage() : string {
-            const backendBaseUrl = 'https://localhost:7269';
+            const backendBaseUrl = environment.backendBaseUrl;
             return `${backendBaseUrl}/${this.image}`;
         }
 }

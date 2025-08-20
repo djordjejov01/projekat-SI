@@ -78,9 +78,9 @@
             </ng-template>
             <ng-template #header>
                 <tr>
-                    <th style="width: 4rem">
+                    <!-- <th style="width: 4rem">
                         <p-tableHeaderCheckbox />
-                    </th>
+                    </th> -->
                     <th style="width: 4rem" style="max-width: 5rem">
                         Picture
                     </th>
@@ -158,11 +158,11 @@
             </ng-template>
             <ng-template #body let-event>
                 <tr class="p-selectable-row">
-                    <td>
+                    <!-- <td>
                         <p-tableCheckbox [value]="event" />
-                    </td>
+                    </td> -->
                     <td>
-                        <img [src]="event.getImage()" alt="Event image">
+                        <img [src]="event.getImage()" class="event-image" alt="Event image">
                     </td>
                     <td>
                         {{ event.title }}
