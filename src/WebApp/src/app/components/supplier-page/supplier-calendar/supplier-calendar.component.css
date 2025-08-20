@@ -1,12 +1,31 @@
 .calendar {
-  max-width: 920px;
+  max-width: 900px;
   width: 100%;
   margin: 0 auto;
   padding: 2rem;
   border: 1px solid #EBEBEA;
   border-radius: 12px;
   margin-top: 1rem;
-  margin-bottom: 1rem;
+
+}
+
+.calendarTitle{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+
+}
+
+.calendarTitle h3{
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.calendarTitle p{
+    font-size: 1rem;
+    color: #8C8D8B;
 }
 
 ::ng-deep .fc {

@@ -1,3 +1,4 @@
+import { environment } from "../../environments/environment";
 import { StatusMap } from "./Event";
 
 export class EventBasicInfo {
@@ -53,7 +54,7 @@ export class EventBasicInfo {
     }
 
     getImageUrl(): string {
-        const backendBaseUrl = 'https://localhost:7269';
+        const backendBaseUrl = environment.backendBaseUrl;
         return `${backendBaseUrl}/${this.imageUrl}`;
     }
     setImage(url : string){
