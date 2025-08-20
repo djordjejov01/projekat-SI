@@ -12,7 +12,7 @@
 #main{
     display: flex;
     flex-direction: row;
-    gap:30px;
+    gap:15px;
     margin-bottom: 50px;
 }
 #role{
@@ -43,7 +43,6 @@
 #rightside{
     display: flex;
     flex-direction: column;
-    
     border: 2px solid rgb(232, 232, 232);
     border-radius: 10px;
     gap:20px;

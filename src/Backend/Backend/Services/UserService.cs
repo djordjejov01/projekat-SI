@@ -153,7 +153,7 @@ namespace Backend.Services
                     Email = user.Email,
                     Name = user.FirstName + " " + user.LastName,
                     PhoneNumber = "",
-                    Image = ""
+                    Image = "images/default-pfp.png"
                 };
                 _context.Organizers.Add(o);
                 await _context.SaveChangesAsync();
@@ -170,7 +170,7 @@ namespace Backend.Services
                     PhoneNumber = "",
                     Website = "",
                     CompanyBio = "",
-                    Image = ""
+                    Image = "images/default-pfp.png"
                 };
                 _context.Suppliers.Add(s);
                 await _context.SaveChangesAsync();

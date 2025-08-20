@@ -29,14 +29,16 @@
                 </div>
                 <p class="font-archivo">3</p>
             </div>
-            <div class="card light-purple pr" (click)="requestsModal.openModal()">
+             <div class="stat-cards">
+            <div class="card light-purple pr" (click)="openRequestsModal()">
                 <div class="card-header">
                     <p>Pending Requests</p>
                     <i class="pi pi-clock"></i>
                 </div>
-                <p class="font-archivo">3</p>
-                <p id="view" (click)="requestsModal.openModal()">View</p>
+                <p class="font-archivo">{{ pendingRequestsCount }}</p>
+                <p id="view">View</p>
             </div>
+        </div>
 
         </div>
 
@@ -282,14 +284,14 @@
                 <ng-template #emptymessage>
                     <tr>
                         <td colspan="8">
-                        <div class="gap-4 py-8 no-tickets">
+                        <div class="gap-4 py-8 no-resources">
                             <i class="pi pi-box text-4xl text-gray-400"></i>
                             <h2 class="text-xl font-semibold text-gray-700">No Resources Added</h2>
                             <p class="text-gray-500 max-w-md">
                                 Add resources for organizers to allocate for their events.
                             </p>
                             <div class="flex gap-4">
-                                <button pButton type="button" icon="pi pi-plus" label="Add Ticket"></button>
+                                <button pButton type="button" icon="pi pi-plus" label="Add Resource" (click)="resourceModal.openModal()"></button>
                             </div>
                         </div>
 
@@ -307,5 +309,10 @@
     </div>
 
     <app-resource-modal (resourceSaved)="noteSavedResource($event)" #resourceModal></app-resource-modal>
-    <app-requests (resourceSaved)="noteSavedResource($event)" #requestsModal></app-requests>
+     <app-requests
+      [(visible)]="isRequestsModalVisible"
+      [supplierId]="currentSupplierId"
+      (requestProcessed)="updateCounts()"
+      (pendingRequestCount)="pendingRequestsCount = $event">
+    </app-requests>
 </main>
