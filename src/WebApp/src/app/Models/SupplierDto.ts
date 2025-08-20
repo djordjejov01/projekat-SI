@@ -1,3 +1,5 @@
+import { environment } from "../../environments/environment";
+
 export class SupplierDto {
 
     constructor(
@@ -37,7 +39,7 @@ export class SupplierDto {
     }
 
     getImage(): string {
-        const backendBaseUrl = 'https://localhost:7269';
+        const backendBaseUrl = environment.backendBaseUrl;
         return `${backendBaseUrl}/${this.image}`;
     }
 }

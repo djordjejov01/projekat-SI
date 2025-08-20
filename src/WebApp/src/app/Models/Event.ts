@@ -1,4 +1,5 @@
 import { User } from "./User";
+import { environment } from "../../environments/environment";
 
 export const StatusMap: Record<number, string> = {
   0: 'Draft',
@@ -65,7 +66,7 @@ export class Event
   }
 
   getImage(): string {
-    const backendBaseUrl = 'https://localhost:7269';
+    const backendBaseUrl = environment.backendBaseUrl;
     return `${backendBaseUrl}/${this.image}`;
   }
   
