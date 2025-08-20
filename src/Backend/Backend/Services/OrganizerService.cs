@@ -179,14 +179,6 @@ namespace Backend.Services
 
 
             
-            if (eventEntity.StartDate <= DateTime.Today.AddDays(15))
-                throw new InvalidOperationException("Event must be published at least 15 day before start date.");
-
-            
-            if (eventEntity.StartDate > DateTime.Today.AddYears(1))
-                throw new InvalidOperationException("Event cannot be published more than 1 year in advance.");
-
-            
             var subevents = await _context.Events
                 .Where(e => e.ParentEventId == eventId)
                 .ToListAsync();

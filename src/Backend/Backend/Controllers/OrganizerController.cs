@@ -174,7 +174,7 @@ namespace Backend.Controllers
             }
         }
 
-        
+
         [HttpPut("events")]
         public async Task<IActionResult> UpdateEvent([FromBody] UpdateEventDto dto)
         {
@@ -201,7 +201,7 @@ namespace Backend.Controllers
                 .Where(t => t.EventID == eventEntity.EventID)
                 .SumAsync(t => (int?)t.Quota) ?? 0;
 
-            if (dto.Capacity != -1 && dto.Capacity < currentTotalQuota)
+            if (dto.Capacity != -1 && dto.Capacity <= currentTotalQuota)
                 return BadRequest($"Cannot set capacity below current total ticket quota ({currentTotalQuota}).");
 
             eventEntity.NumberOfPeople = dto.Capacity;
@@ -558,7 +558,7 @@ namespace Backend.Controllers
             {
                 if (cap == null)
                     return BadRequest("Event capacity is not set.");
-                if (cap < usedQuota + ticketDto.Quota)
+                if (cap <= usedQuota + ticketDto.Quota)
                     return BadRequest($"Total tickets across all types would exceed event capacity ({cap}).");
             }
 
@@ -631,7 +631,7 @@ namespace Backend.Controllers
                 .SumAsync(t => (int?)t.Quota) ?? 0;
 
             var cap = targetEventEntity.NumberOfPeople;
-            if (cap != -1 && cap < otherQuotas + ticketDto.Quota)
+            if (cap != -1 && cap <= otherQuotas + ticketDto.Quota)
                 return BadRequest($"Total tickets across all types would exceed event capacity ({cap}).");
 
 
