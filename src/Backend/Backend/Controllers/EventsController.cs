@@ -38,6 +38,7 @@ namespace Backend.Controllers
                     Title = e.Title,
                     Location = e.Location,
                     StartDate = e.StartDate,
+                    EndDate=e.EndDate,
                     ImageUrl = e.ImageUrl,
                     Category=e.Category,
                     AttendingCount = _context.UserTickets.Count(ut => ut.Ticket.EventID == e.EventID),
