@@ -43,6 +43,7 @@ import { EventResourceDto } from "../Models/EventResourceDto";
 import { EventResourceApiResponse } from "../Interfaces/EventResourceApiResponse";
 import { PendingRequest } from "../Interfaces/PendingRequestApiResponse";
 import { EventResourceCalendarResponse } from "../Interfaces/EventResourceCalendarResponse";
+import { environment } from "../../environments/environment";
 
 // Match Backend.Models.Dto.EventDto
 export interface EventDto {
@@ -146,7 +147,7 @@ export interface GeocodingResult {
 
 export class ApiService{
     
-    private apiUrl = 'https://localhost:7269/api';
+    private apiUrl = environment.apiUrl;
 
     constructor(private http: HttpClient) {}
 

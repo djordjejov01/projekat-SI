@@ -8,7 +8,7 @@ import { PasswordModule } from 'primeng/password';
 import { DividerModule } from 'primeng/divider';
 import { KnobModule } from 'primeng/knob';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CustomValidators } from '../../Validators/custom.validators';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
@@ -46,7 +46,8 @@ export class RegisterForm implements OnInit, IDeactivate {
     private messageService: MessageService,
     private confirmationDialogService: ConfirmationDialogService,
     private apiService: ApiService,
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+    private router : Router) { }
 
   roles: Object[];
   userToRegister: RegisterDto | undefined;
@@ -112,6 +113,7 @@ handleEnter(event: KeyboardEvent) {
           });
 
           this.registerForm.reset()
+          this.router.navigate(['login']);
         },
 
         error: (errorResponse) => {
@@ -125,6 +127,8 @@ handleEnter(event: KeyboardEvent) {
       });
 
       console.log('New user to register: ', this.userToRegister)
+
+      
 
     }
     else {
