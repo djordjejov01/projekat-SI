@@ -744,7 +744,7 @@ namespace Backend.Controllers
         public async Task<IActionResult> GetSupplierResources(int supplierId, int eventId)
         {
             var resources = await _context.Resources
-                .Where(r => r.SupplierID == supplierId)
+                .Where(r => r.SupplierID == supplierId && r.IsAvailable == ResourceAvailability.Available)
                 .ToListAsync();
 
             var ourEvent = await _context.Events
@@ -795,30 +795,36 @@ namespace Backend.Controllers
             if (supplierResource == null)
                 return NotFound("Resource not found.");
 
-            // Find the existing EventResource entry for this event and resource.
             var existingEventResource = await _context.EventResources
                 .FirstOrDefaultAsync(er => er.EventID == dto.EventID && er.ResourceID == dto.ResourceID);
 
             if (existingEventResource != null)
             {
-                // Calculate the new total quantity for the existing request.
-                int newTotalQuantity = existingEventResource.Quantity + dto.Quantity;
-
-                // CRITICAL FIX: Check for enough quantity if the resource is exhaustible.
-                if (supplierResource.IsExhaustable && supplierResource.Quantity < newTotalQuantity)
+                // If the resource is exhaustible and the request was previously approved,
+                // we need to return the original quantity to the supplier's pool.
+                if (supplierResource.IsExhaustable && existingEventResource.Status == EventResourceStatus.Approved)
                 {
-                    return BadRequest("Not enough quantity available to add to existing request.");
+                    supplierResource.Quantity += existingEventResource.Quantity;
                 }
 
-                // If an entry already exists, update its quantity and dates.
-                existingEventResource.Quantity = newTotalQuantity;
+                // Now, check if the supplier has enough to fulfill the new quantity
+                if (supplierResource.IsExhaustable && supplierResource.Quantity < dto.Quantity)
+                {
+                    return BadRequest("Not enough quantity available to fulfill the new request.");
+                }
+
+                // Update the event resource to the new quantity, dates, and status.
+                existingEventResource.Quantity = dto.Quantity;
                 existingEventResource.StartDateTimeBooked = dto.StartDateTimeBooked;
                 existingEventResource.EndDateTimeBooked = dto.EndDateTimeBooked;
+                existingEventResource.Status = EventResourceStatus.Pending;
+
                 _context.EventResources.Update(existingEventResource);
+                _context.Resources.Update(supplierResource); // Mark supplier resource for update
             }
             else
             {
-                // If no entry exists, check initial quantity and create a new one.
+                // For a new request, check if the quantity is available.
                 if (supplierResource.IsExhaustable && supplierResource.Quantity < dto.Quantity)
                 {
                     return BadRequest("Not enough quantity available for a new request.");
@@ -831,18 +837,14 @@ namespace Backend.Controllers
                     ResourceID = dto.ResourceID,
                     Quantity = dto.Quantity,
                     IsReservable = dto.IsReservable,
-                    Status = EventResourceStatus.Pending, // Always Pending on initial request
+                    Status = EventResourceStatus.Pending,
                     StartDateTimeBooked = dto.StartDateTimeBooked,
                     EndDateTimeBooked = dto.EndDateTimeBooked
                 };
                 _context.EventResources.Add(newEventResource);
             }
 
-            // Do NOT change the supplier's resource quantity here.
-            // The quantity and availability status change will happen only upon approval.
-
             await _context.SaveChangesAsync();
-
             return Ok(new { message = "Resource request submitted or updated successfully." });
         }
 
