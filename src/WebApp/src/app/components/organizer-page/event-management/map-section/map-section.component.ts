@@ -13,6 +13,7 @@ import { TooltipModule } from 'primeng/tooltip';
 
 
 import * as Leaflet from 'leaflet'
+import { environment } from '../../../../../environments/environment';
 
 // Fix Leaflet icon paths
 delete (Leaflet.Icon.Default.prototype as any)._getIconUrl;
@@ -63,7 +64,7 @@ export class MapSectionComponent implements AfterViewInit, OnChanges{
 
 private createIcon(filename: string): Leaflet.Icon {
   return Leaflet.icon({
-    iconUrl: `https://localhost:7269/pins/${filename}`,
+    iconUrl: `${environment.backendBaseUrl}/pins/${filename}`,
     iconSize: [32, 32],
     iconAnchor: [16, 32],
     popupAnchor: [0, -32],

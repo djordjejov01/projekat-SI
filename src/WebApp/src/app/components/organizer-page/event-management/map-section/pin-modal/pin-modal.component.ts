@@ -18,6 +18,7 @@ import { MessageService } from 'primeng/api';
 import { IDeactivate } from '../../../../../Interfaces/IDeactivate';
 import { ConfirmationDialogService } from '../../../../../Services/confirmation-dialog.service';
 import { DropdownModule } from 'primeng/dropdown';
+import { environment } from '../../../../../../environments/environment';
 
 @Component({
   selector: 'app-pin-modal',
@@ -66,7 +67,7 @@ export class PinModalComponent implements OnInit,IDeactivate{
         this.pinTypeOptions = categories.map(cat => ({
           label: cat.name,
           value: cat.id,
-          icon: `https://localhost:7269/pins/${cat.id}.png` // or .svg depending on your icons
+          icon: `${environment.backendBaseUrl}/pins/${cat.id}.png` // Use the environment variable here
         }));
       });
 
