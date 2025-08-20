@@ -124,6 +124,7 @@
   "passwordChanged": "Password changed successfully.",
   "changeFailed": "Password change failed."
 },
+
 "personalInfo": {
   "permissionDenied": "Permission to access media library was denied.",
   "confirmDelete": "Delete Profile Picture",
@@ -151,6 +152,20 @@
   "updateFailed": "Failed to update profile."
 },
 
+  "auth": {
+    "notLoggedInTitle": "Not logged in",
+    "notLoggedInMessage": "You need to log in to continue.",
+    "login": "Log in",
+    "cancel": "Cancel"
+  }
+,
+"profileCheck": {
+    "incompleteTitle": "Profile Incomplete",
+    "incompleteMessage": "To continue, please fill in your basic profile information.",
+    "fillProfile": "Complete Profile",
+    "errorTitle": "Error",
+    "errorMessage": "An error occurred while checking the profile."
+  },
 "payment": 
 {
 "header": "Payment💸",
@@ -205,6 +220,8 @@
   "noResources": "No available resoursces for this event."
 },
 "cart": {
+    "viewTicket": "View Ticket",
+  "backToEvents": "Back to Events",
   "title": "Your Cart",
   "tickets": "Tickets",
   "resources": "Resources",
@@ -236,7 +253,8 @@
     "unknownUser": "Unknown user",
     "noTickets": "No ticket IDs provided.",
     "ticket": "Ticket",
-      "viewEventDetails": "View event details"
+      "viewEventDetails": "View event details",
+        "qrError": "QR code could not be generated."
   },
   "buttons": {
     "download": "Download",

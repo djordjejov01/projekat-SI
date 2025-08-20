@@ -188,6 +188,8 @@
   "noResources": "Nema dostupnih resursa za ovaj događaj"
 },
 "cart": {
+    "viewTicket": "Vidi kartu",
+  "backToEvents": "Nazad na događaje",
   "title": "Vaša korpa",
   "tickets": "Ulaznice",
   "resources": "Resursi",
@@ -209,8 +211,23 @@
   "free": "Besplatno"
 }
 ,
-
+  "auth": {
+    "notLoggedInTitle": "Niste ulogovani",
+    "notLoggedInMessage": "Da biste nastavili, potrebno je da se prijavite.",
+    "login": "Uloguj se",
+    "cancel": "Otkaži"
+  },
+  
+  "profileCheck": {
+    "incompleteTitle": "Nalog nije potpun",
+    "incompleteMessage": "Da biste nastavili, molimo vas da popunite osnovne podatke o sebi.",
+    "fillProfile": "Popuni profil",
+    "errorTitle": "Greška",
+    "errorMessage": "Došlo je do greške prilikom provere profila."
+  }
+,
   "ticketDetails": {
+      "qrError": "QR kod nije mogao biti generisan.",
     "title": "Detalji karte",
     "location": "Lokacija",
     "ticketType": "Tip karte",

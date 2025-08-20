@@ -235,19 +235,23 @@ const checkUserProfile = async () => {
     const token = await AsyncStorage.getItem('token');
 
     if (!token) {
-      Alert.alert(
-        'Niste ulogovani',
-        'Da biste nastavili, potrebno je da se prijavite.',
-        [
-          {
-            text: 'Uloguj se',
-            onPress: () => router.push('/login'), 
-          },
-          { text: 'Otkaži', style: 'cancel' },
-        ]
-      );
-      return false;
-    }
+  Alert.alert(
+    t('auth.notLoggedInTitle'),     
+    t('auth.notLoggedInMessage'),    
+    [
+      {
+        text: t('auth.login'),   
+        onPress: () => router.push('/login'),
+      },
+      {
+        text: t('auth.cancel'),    
+        style: 'cancel',
+      },
+    ]
+  );
+  return false;
+}
+
 
     const response = await fetch(`${API_URL}/api/MobileUser/profile`, {
       headers: {
@@ -264,11 +268,12 @@ const checkUserProfile = async () => {
 
     if (!firstName || !lastName || !email) {
       Alert.alert(
-        'Nalog nije potpun',
-        'Da biste nastavili, molimo vas da popunite osnovne podatke o sebi.',
+        t('profileCheck.incompleteTitle'),
+        t('profileCheck.incompleteMessage'),
+
         [
           {
-            text: 'Popuni profil',
+             text: t('profileCheck.fillProfile'),
             onPress: () => router.push('../profile/personal-info'),
           },
         ]
@@ -279,7 +284,7 @@ const checkUserProfile = async () => {
     return true;
   } catch (err) {
     console.error(err);
-    Alert.alert('Greška', 'Došlo je do greške prilikom provere profila.');
+    Alert.alert(t('profileCheck.errorTitle'), t('profileCheck.errorMessage'));
     return false;
   }
 };
