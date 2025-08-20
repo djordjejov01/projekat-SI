@@ -110,12 +110,12 @@ defaultImage = 'assets/default-picture.png';
               this.allEvents = response;
             },
             error: (errorResponse) => {
-              this.messageService.add({
+              /*this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
                 detail: errorResponse.message,
                 life: 3000
-              });
+              });*/
             }
       
           })
@@ -125,12 +125,12 @@ defaultImage = 'assets/default-picture.png';
               this.upcomingEvents = response;
             },
             error: (errorResponse) => {
-              this.messageService.add({
+              /*this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
                 detail: errorResponse.message,
                 life: 3000
-              });
+              });*/
             }
       
           })
@@ -140,12 +140,12 @@ defaultImage = 'assets/default-picture.png';
               //console.log(response);
             },
             error: (errorResponse) => {
-              this.messageService.add({
+              /*this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
                 detail: errorResponse.message,
                 life: 3000
-              });
+              });*/
             }
           })
   }
@@ -213,7 +213,7 @@ defaultImage = 'assets/default-picture.png';
       this.messageService.add({
               severity: 'error',
               summary: 'Error',
-              detail: "Šifre se ne poklapaju",
+              detail: "Passwords don't match.",
               life: 3000 });
     }
   }
