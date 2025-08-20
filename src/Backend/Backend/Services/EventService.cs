@@ -60,6 +60,9 @@ namespace Backend.Services
 
                 query = query.Where(e => eventIdsWithTickets.Contains(e.EventID));
             }
+
+            query = query.Where(e => e.ParentEventId == 0);
+
             if (!string.IsNullOrEmpty(sortBy) && sortBy.ToLower() == "price")
             {
                 if (!string.IsNullOrEmpty(sortOrder) && sortOrder.ToLower() == "desc")
