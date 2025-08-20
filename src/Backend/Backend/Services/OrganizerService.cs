@@ -56,10 +56,12 @@ namespace Backend.Services
                     throw new ArgumentException("Tickets must have a price greater than 0.");
                 }
             }
+            if (model.Capacity != -1 && model.Capacity <= 0)
+                throw new ArgumentException("Capacity must be -1 (unlimited) or a positive number.");
 
             //provera da broj karata ne predje kapacitet
             var totalQuota = model.Tickets?.Sum(t => t.Quota) ?? 0;
-            if (totalQuota > model.Capacity)
+            if (model.Capacity != -1 && totalQuota > model.Capacity)
             {
                 throw new ArgumentException("Total ticket quota cannot exceed event capacity.");
             }
