@@ -50,7 +50,7 @@
             </div>
 
             <p-fileUpload *ngIf="eventBasicInfo?.getStatusLabel() != 'Canceled'" #fileUploader mode="basic"
-                maxFileSize="5000000" [customUpload]="true" [auto]="true" accept="image/*" [showUploadButton]="false"
+                maxFileSize="20000000" [customUpload]="true" [auto]="true" accept="image/*" [showUploadButton]="false"
                 [showCancelButton]="false" styleClass="hidden" (uploadHandler)="onImageUpload($event)"></p-fileUpload>
 
             <button *ngIf="eventBasicInfo?.getStatusLabel() != 'Canceled'" (click)="triggerFileInput()"

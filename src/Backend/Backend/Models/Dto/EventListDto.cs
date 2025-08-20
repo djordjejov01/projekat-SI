@@ -11,6 +11,7 @@ namespace Backend.Models.Dto
         public EventCategory Category { get; set; }
         public string Location { get; set; }
         public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
         public string ImageUrl { get; set; }
         public int AttendingCount { get; set; }
         public int ParentEventId { get; set; }

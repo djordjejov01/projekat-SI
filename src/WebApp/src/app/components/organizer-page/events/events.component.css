@@ -132,6 +132,13 @@ display: flex;
   border: none;
 }
 
+.event-image {
+  width: 200px; 
+  height: 50px;
+  object-fit: cover; 
+  border-radius: 4px; 
+}
+
  :host ::ng-deep {
         .p-paginator {
             .p-paginator-current {

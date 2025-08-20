@@ -16,10 +16,10 @@ import { TicketModalComponent } from './ticket-modal/ticket-modal.component';
 import { ApiService } from '../../../../Services/api.service';
 import { MessageService } from 'primeng/api';
 import { ConfirmationDialogService } from '../../../../Services/confirmation-dialog.service';
-
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-ticket-section',
-  imports: [TableModule,ButtonModule,MultiSelectModule,InputTextModule,DropdownModule,FormsModule,InputIcon,IconField,TooltipModule, DatePipe,TicketModalComponent],
+  imports: [CommonModule,TableModule,ButtonModule,MultiSelectModule,InputTextModule,DropdownModule,FormsModule,InputIcon,IconField,TooltipModule, DatePipe,TicketModalComponent],
   templateUrl: './ticket-section.component.html',
   styleUrl: './ticket-section.component.css'
 })

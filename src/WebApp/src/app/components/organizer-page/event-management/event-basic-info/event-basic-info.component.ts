@@ -126,7 +126,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
     onLocationSelect(event: any) {
       const location = event.value;
       this.eventForm.patchValue({ location: location.display_name });
-      console.log(this.eventForm.get('location')?.value);
+      //console.log(this.eventForm.get('location')?.value);
     }
 
 
@@ -149,7 +149,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
           formValues.isUnlimitedCapacity ? -1 : formValues.capacity
         );
 
-        console.log(updateDto)
+        //console.log(updateDto)
 
         this.apiService.updateEvent(updateDto).subscribe({
           next: (data) =>{
@@ -215,7 +215,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
   }
 
   onImageUpload(event : any){
-    console.log("CALLING CHANGE IMAGE");
+    //console.log("CALLING CHANGE IMAGE");
     const file: File = event.files[0];
 
     if(!file) return;

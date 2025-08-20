@@ -103,9 +103,11 @@ namespace Backend.Services
                     Title = e.Title,
                     Location = e.Location,
                     StartDate = e.StartDate,
+                    EndDate=e.EndDate,
                     ImageUrl = e.ImageUrl,
                     Category = e.Category,
-                    AttendingCount = attendingCounts.ContainsKey(e.EventID) ? attendingCounts[e.EventID] : 0
+                    AttendingCount = attendingCounts.ContainsKey(e.EventID) ? attendingCounts[e.EventID] : 0,
+                    ParentEventId=e.ParentEventId
 
                 })
                 .ToListAsync();

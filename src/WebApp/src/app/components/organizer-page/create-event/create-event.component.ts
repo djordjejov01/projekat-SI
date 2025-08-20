@@ -12,7 +12,7 @@ import { ButtonModule } from 'primeng/button';
 import { FileUpload } from 'primeng/fileupload';
 import { CustomValidators } from '../../../Validators/custom.validators';
 import { MessageService } from 'primeng/api';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../../Services/api.service';
 import { AuthService } from '../../../Services/auth.service';
 import { SelectModule } from 'primeng/select';
@@ -56,7 +56,8 @@ export class CreateEventComponent implements OnInit,IDeactivate,OnDestroy{
     private authService : AuthService,
     private confirmationDialogService : ConfirmationDialogService,
     private categoryService : CategoryService,
-    private fromValidationService : FormValidationService) {}
+    private fromValidationService : FormValidationService,
+    private router : Router) {}
 
   ngOnInit(): void {
 
@@ -227,7 +228,7 @@ export class CreateEventComponent implements OnInit,IDeactivate,OnDestroy{
    onLocationSelect(event: any) {
       const location = event.value;
       this.eventForm.patchValue({ location: location.display_name });
-      console.log(this.eventForm.get('location')?.value);
+      //console.log(this.eventForm.get('location')?.value);
     }
 
 submitForm(): void {
@@ -266,7 +267,7 @@ submitForm(): void {
   });
 
   for (const pair of formData.entries()) {
-  console.log(pair[0]+ ': ' + pair[1]);
+  //console.log(pair[0]+ ': ' + pair[1]);
 }
 
   const organizerId = this.authService.getUserId();
@@ -295,6 +296,8 @@ submitForm(): void {
         validUntil: new FormControl({ value: '', disabled: true }, Validators.required)
       }, { validators: CustomValidators.startBeforeEndDates('validFrom', 'validUntil') }));
 
+      
+       this.router.navigate(["/organizer/overview"]);
     },
     error: () => {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to create event.' });
