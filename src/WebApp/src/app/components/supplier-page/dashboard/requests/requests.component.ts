@@ -1,195 +1,125 @@
-import { Component, EventEmitter, OnInit, Output, Resource } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CustomValidators } from '../../../../Validators/custom.validators';
-import { FormValidationService } from '../../../../Services/FormValidationService';
-import { DialogModule } from 'primeng/dialog';
-import { FloatLabelModule } from 'primeng/floatlabel';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { SelectModule } from 'primeng/select';
-import { ButtonModule } from 'primeng/button';
-import { IDeactivate } from '../../../../Interfaces/IDeactivate';
-import { Observable, take } from 'rxjs';
-import { ConfirmDialog } from 'primeng/confirmdialog';
-import { ConfirmationDialogService } from '../../../../Services/confirmation-dialog.service';
-import { RESOURCE_CATEGORIES, ResourceAvailability, ResourceMeasure, ResourceType } from '../../../../MockData/MockResources';
-import { InputText } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
-import { ResourceAvailabilityService } from '../../../../Services/ResourceAvailabilityService';
-import { ResourceCategoryService } from '../../../../Services/ResourceCategoryService';
-import { ResourceDto } from '../../../../Models/ResourceDto';
-import { ApiService } from '../../../../Services/api.service';
-import { AuthService } from '../../../../Services/auth.service';
+// requests.component.ts
+
+import { Component, OnInit, OnChanges, Input, Output, EventEmitter, SimpleChanges } from "@angular/core";
+import { CommonModule } from '@angular/common';
+import { ButtonModule } from "primeng/button";
+import { DialogModule } from "primeng/dialog";
+import { TableModule } from 'primeng/table';
 import { MessageService } from 'primeng/api';
+import { PendingRequest } from "../../../../Interfaces/PendingRequestApiResponse";
+import { ApiService } from '../../../../Services/api.service';
+
+enum EventResourceStatus {
+  Pending,
+  Approved,
+  Declined
+}
 
 @Component({
   selector: 'app-requests',
-  imports: [ReactiveFormsModule,DialogModule,FloatLabelModule,InputNumberModule,SelectModule,ButtonModule,TextareaModule],
+  imports: [
+    CommonModule,
+    DialogModule,
+    TableModule,
+    ButtonModule,
+  ],
   templateUrl: './requests.component.html',
-  styleUrl: './requests.component.css'
+  styleUrl: './requests.component.css',
+  providers: [MessageService] // Add MessageService provider
 })
-export class RequestsComponent implements OnInit, IDeactivate {
-
-  resourceForm : FormGroup;
-  visible : boolean = false;
-  resourceCategoryOptions: { label: string, value: number }[] = [];
-  resourceAvailabilityOptions : { label: string; value: number }[] = []
-  @Output() resourceSaved = new EventEmitter<ResourceDto>();
-  resourceToEdit : ResourceDto | null = null;
-
-  resourceTypeOptions = [
-  { label: 'Exhaustible', value: true },
-  { label: 'Inexhaustible', value: false }
-];
 
 
+// Implement the OnChanges lifecycle hook
+export class RequestsComponent implements OnChanges {
+
+  @Input() visible: boolean = false;
+  @Output() visibleChange = new EventEmitter<boolean>(); // Add this line
+  @Input() supplierId: number | null = null;
+  @Output() modalClosed = new EventEmitter<void>();
+  @Output() requestProcessed = new EventEmitter<void>();
+  @Output() pendingRequestCount = new EventEmitter<number>();
+
+  pendingRequests: PendingRequest[] = [];
+  loading: boolean = false;
 
   constructor(
-    private formValidationService : FormValidationService,
-    private confirmationDialogService : ConfirmationDialogService,
-    private resourceAvailabilityService : ResourceAvailabilityService,
-    private resourceCategoryService : ResourceCategoryService,
-    private apiService : ApiService,
-    private authService : AuthService,
-    private messageService : MessageService
-    ) {}
+    private apiService: ApiService,
+    private messageService: MessageService
+  ) {}
 
-  ngOnInit(): void {
-
-    this.resourceAvailabilityService.loadAvailabilitiesIfEmpty()
-    .pipe(take(1))
-    .subscribe(availabilities => {
-      this.resourceAvailabilityOptions = availabilities.map(availability => ({
-        label: availability.name,
-        value: availability.id
-      }));
-    });
-
-    this.resourceCategoryService.loadCategoriesIfEmpty()
-    .pipe(take(1))
-    .subscribe(categories => {
-      this.resourceCategoryOptions = categories.map(category => ({
-        label: category.name,
-        value: category.id
-      }));
-    });
-    
-    
-    this.resourceForm = new FormGroup({
-      name: new FormControl('',[Validators.required, CustomValidators.noWhitespaceValidator]),
-      category: new FormControl('',Validators.required),
-      type: new FormControl('', Validators.required),
-      quantity: new FormControl(null,[ Validators.required,Validators.min(0)]),
-      description: new FormControl('',CustomValidators.noWhitespaceValidator)
-
-    })
-
-  }
-
-
-  openModal(resourceToEdit? : ResourceDto){
-    this.visible = true;
-
-    if(resourceToEdit){
-      console.log(resourceToEdit)
-      this.resourceForm.patchValue({
-      name: resourceToEdit.getName(),
-      category: resourceToEdit.getCategory(),
-      type: resourceToEdit.getIsExhaustable(),
-      description: resourceToEdit.getDescription(),
-      quantity: resourceToEdit.getQuantity(),
-    });
-
-    this.resourceToEdit = resourceToEdit
-    }
-    else{
-      this.resourceToEdit = null;
+ ngOnChanges(changes: SimpleChanges): void {
+    // Check if the 'visible' property has changed and is now true
+    // and if the 'supplierId' has a valid value.
+    if (changes['visible'] && changes['visible'].currentValue === true && this.supplierId) {
+      this.fetchPendingRequests();
     }
   }
 
-  closeModal()
-  {
-    this.visible = false;
-    this.resourceForm.reset();
-  }
-
-  async onCancelClick(){
-    const canLeave = await this.canExit();
-    if(canLeave){
-      this.closeModal()
-    }
-  }
-
-  submitForm()
-  {
-    if(!this.resourceForm.valid)
-    {
-      this.formValidationService.showValidationErrors(this.resourceForm, 'Resource Form');
+  fetchPendingRequests(): void {
+    if (!this.supplierId) {
+      console.error('Supplier ID is missing. Cannot fetch requests.');
       return;
     }
 
-    const formValue = this.resourceForm.value;
-    const availability = formValue.type ? (formValue.quantity > 0 ? ResourceAvailability.Available : ResourceAvailability.Unavailable) : ResourceAvailability.Available
-
-    const resource = new ResourceDto(
-      this.resourceToEdit ? this.resourceToEdit.getResourceID() : 0,
-      formValue.name,
-      formValue.category,
-      formValue.type,
-      availability,
-      formValue.description,
-      this.authService.getUserId(),
-      formValue.quantity
-      )
-
-
-    if(this.resourceToEdit)
-    {
-
-      this.apiService.editResource(resource).subscribe({
-        next: (msg) => 
-        {
-          this.messageService.add({ severity: 'success', summary: 'Edited', detail: msg});
-          this.resourceSaved.emit(null);
-          this.closeModal()
-        },
-         error: (errorResponse) => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: errorResponse.message,
-              life: 3000 });
-          }
-      });
-
-    }else{
-      this.apiService.addResource(resource).subscribe({
-        next: (addedResource : ResourceDto) => 
-        {
-          this.messageService.add({ severity: 'success', summary: 'Added', detail: 'Resource Added Successfully!' });
-          this.resourceSaved.emit(addedResource)
-          this.closeModal()
-        },
-        error: (errorResponse) => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: errorResponse.message,
-              life: 3000 });
-          }
-      });
-    }
-
-
+    this.loading = true;
+    this.apiService.getPendingEventResources(this.supplierId).subscribe({
+      next: (data) => {
+        this.pendingRequests = data;
+        this.loading = false;
+        console.log('Fetched pending requests:', this.pendingRequests);
+        this.pendingRequestCount.emit(this.pendingRequests.length); 
+      },
+      error: (error) => {
+        console.error('Error fetching pending requests:', error);
+        this.messageService.add({severity: 'error', summary: 'Error', detail: 'Could not load pending requests.'});
+        this.loading = false;
+      }
+    });
   }
 
-      canExit () : boolean | Observable<boolean> | Promise<boolean>{
-    
-        return (this.resourceForm.dirty || this.resourceForm.touched) ? this.confirmationDialogService.confirm(
-            'You have unsaved changes. Are you sure you want to close the modal?',
-            'Unsaved Changes'
-          )
-        : true;
-    
-      }
+  closeModal(): void {
+    this.visibleChange.emit(false); // Emit the change to the parent
+    this.modalClosed.emit();
+  }
 
+  openModal()
+  {
+    this.visible = true;
+  }
+
+// Update the approveRequest method
+  approveRequest(request: PendingRequest): void {
+    this.loading = true;
+    this.apiService.updateEventResourceStatus(request.id, EventResourceStatus.Approved)
+      .subscribe({
+        next: (response) => {
+          this.messageService.add({severity: 'success', summary: 'Success', detail: 'Request approved!'});
+          // After success, re-fetch the pending requests to update the table
+          this.fetchPendingRequests();
+          this.requestProcessed.emit();
+        },
+        error: (err) => {
+          this.messageService.add({severity: 'error', summary: 'Error', detail: err.error || 'Failed to approve request.'});
+          this.loading = false;
+        }
+      });
+  }
+
+  // Update the declineRequest method
+  declineRequest(request: PendingRequest): void {
+    this.loading = true;
+    this.apiService.updateEventResourceStatus(request.id, EventResourceStatus.Declined)
+      .subscribe({
+        next: (response) => {
+          this.messageService.add({severity: 'success', summary: 'Success', detail: 'Request declined!'});
+          // After success, re-fetch the pending requests to update the table
+          this.fetchPendingRequests();
+          this.requestProcessed.emit();
+        },
+        error: (err) => {
+          this.messageService.add({severity: 'error', summary: 'Error', detail: err.error || 'Failed to decline request.'});
+          this.loading = false;
+        }
+      });
+  }
 }

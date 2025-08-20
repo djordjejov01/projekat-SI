@@ -31,7 +31,7 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(s => s.Id == userId);
 
             if (supplier == null)
-                return NotFound("Supplier not found.");
+                return NotFound("Dobavljač nije pronađen.");
 
             var dto = new SupplierDto
             {
@@ -56,18 +56,18 @@ namespace Backend.Controllers
 
             var supplier = await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == userId);
             if (supplier == null)
-                return NotFound(new { message = "Supplier not found." });
+                return NotFound(new { message = "Dobavljač nije pronađen." });
 
             
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound(new { message = "User not found." });
+                return NotFound(new { message = "Korisnik nije pronađen." });
 
             
             if (!string.IsNullOrEmpty(model.Username) && model.Username != supplier.Username)
             {
                 if (await _context.Suppliers.AnyAsync(s => s.Username == model.Username && s.Id != userId))
-                    return BadRequest(new { message = "Username already exists." });
+                    return BadRequest(new { message = "Korisničko ime već postoji." });
 
                 supplier.Username = model.Username;
                 user.Username = model.Username;
@@ -77,9 +77,9 @@ namespace Backend.Controllers
             if (!string.IsNullOrEmpty(model.Email) && model.Email != supplier.Email)
             {
                 if (!CommonHelpers.IsEmailInValidForm(model.Email))
-                    return BadRequest(new { message = "Invalid email address format." });
+                    return BadRequest(new { message = "Neispravan format email adrese." });
                 if (await _context.Suppliers.AnyAsync(s => s.Email == model.Email && s.Id != userId))
-                    return BadRequest(new { message = "Email already exists." });
+                    return BadRequest(new { message = "Email već postoji." });
 
                 supplier.Email = model.Email;
                 user.Email = model.Email;
@@ -89,12 +89,12 @@ namespace Backend.Controllers
             if (!string.IsNullOrEmpty(model.PhoneNumber) && model.PhoneNumber != supplier.PhoneNumber)
             {
                 if (!CommonHelpers.IsPhoneNumberValid(model.PhoneNumber))
-                    return BadRequest(new { message = "Invalid phone number format." });
+                    return BadRequest(new { message = "Neispravan format broja telefona." });
                 if (await _context.Suppliers.AnyAsync(s => s.PhoneNumber == model.PhoneNumber && s.Id != userId))
-                    return BadRequest(new { message = "Phone number already exists." });
+                    return BadRequest(new { message = "Broj telefona već postoji." });
 
                 supplier.PhoneNumber = model.PhoneNumber;
-                user.PhoneNumber = model.PhoneNumber;
+                user.PhoneNumber = model.PhoneNumber; // Sinhronizacija sa users tabelom
             }
 
             
@@ -112,7 +112,7 @@ namespace Backend.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Supplier information updated successfully!" });
+            return Ok(new { message = "Podaci dobavljača su uspešno ažurirani!" });
         }
 
         [HttpPost("change-supplier-picture")]
@@ -254,55 +254,69 @@ namespace Backend.Controllers
             var requests = await _context.EventResources
                 .Where(er => er.SupplierID == supplierId && er.Status == EventResourceStatus.Pending)
                 .Include(er => er.Resource)
+                .Include(er => er.Event)
+                .ThenInclude(e => e.Organizer)
+                .Select(er => new
+                {
+                    // FIX: Use the correct property name from your model.
+                    id = er.ID,
+                    quantity = er.Quantity,
+                    isReservable = er.IsReservable,
+                    startDateTimeBooked = er.StartDateTimeBooked,
+                    endDateTimeBooked = er.EndDateTimeBooked,
+                    resourceName = er.Resource.Name,
+                    eventTitle = er.Event.Title,
+                    organizerUsername = er.Event.Organizer.Username
+                })
                 .ToListAsync();
 
             return Ok(requests);
         }
 
         [HttpPut("eventresource/{id}/status")]
-        public async Task<IActionResult> UpdateEventResourceStatus(int id, [FromBody] EventResourceStatus newStatus)
+    public async Task<IActionResult> UpdateEventResourceStatus(int id, [FromBody] EventResourceStatus newStatus)
+    {
+        var eventResource = await _context.EventResources.Include(er => er.Resource).FirstOrDefaultAsync(er => er.ID == id);
+        if (eventResource == null)
+            return NotFound();
+
+        if (eventResource.Status != EventResourceStatus.Pending)
+            return BadRequest("Can only update pending requests.");
+
+        // Logic for Approved status
+        if (newStatus == EventResourceStatus.Approved)
         {
-            var eventResource = await _context.EventResources.Include(er => er.Resource).FirstOrDefaultAsync(er => er.ID == id);
-            if (eventResource == null)
-                return NotFound();
-
-            if (eventResource.Status != EventResourceStatus.Pending)
-                return BadRequest("Can only update pending requests.");
-
-            // Logic for Approved status
-            if (newStatus == EventResourceStatus.Approved)
+            // Only subtract quantity if the original resource is exhaustable.
+            if (eventResource.Resource.IsExhaustable)
             {
-                // Only subtract quantity if the original resource is exhaustable.
-                if (eventResource.Resource.IsExhaustable)
+                // Check for available quantity before subtracting. This is a crucial final check.
+                if (eventResource.Resource.Quantity < eventResource.Quantity)
                 {
-                    // Check for available quantity before subtracting. This is a crucial final check.
-                    if (eventResource.Resource.Quantity < eventResource.Quantity)
-                    {
-                        // This scenario could happen if another event approved the same resource first.
-                        return BadRequest("Not enough quantity available. Another event may have booked it.");
-                    }
-
-                    // Subtract the quantity from the supplier's resource.
-                    eventResource.Resource.Quantity -= eventResource.Quantity;
-
-                    // Update IsAvailable status if quantity drops to 0.
-                    if (eventResource.Resource.Quantity <= 0)
-                    {
-                        eventResource.Resource.IsAvailable = ResourceAvailability.Unavailable;
-                    }
+                    // This scenario could happen if another event approved the same resource first.
+                    return BadRequest("Not enough quantity available. Another event may have booked it.");
                 }
 
-                // Update the supplier's resource in the database.
-                _context.Resources.Update(eventResource.Resource);
+                // Subtract the quantity from the supplier's resource.
+                eventResource.Resource.Quantity -= eventResource.Quantity;
+
+                // Update IsAvailable status if quantity drops to 0.
+                if (eventResource.Resource.Quantity <= 0)
+                {
+                    eventResource.Resource.IsAvailable = ResourceAvailability.Unavailable;
+                }
             }
-
-            // Update the EventResource status and save changes.
-            eventResource.Status = newStatus;
-            _context.EventResources.Update(eventResource);
-            await _context.SaveChangesAsync();
-
-            return Ok("Status updated successfully.");
+        
+            // Update the supplier's resource in the database.
+            _context.Resources.Update(eventResource.Resource);
         }
+
+        // Update the EventResource status and save changes.
+        eventResource.Status = newStatus;
+        _context.EventResources.Update(eventResource);
+        await _context.SaveChangesAsync();
+
+        return Ok("Status updated successfully.");
+    }
 
         [HttpGet("ReusableResources")]
         public async Task<IActionResult> GetSupplierReusableResources()
@@ -314,7 +328,7 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(s => s.UserId == supplierId);
 
             if (supplier == null)
-                return NotFound(new { message = "Supplier not found." });
+                return NotFound(new { message = "Dobavljač nije pronađen." });
 
             
             var reusableResources = await _context.Resources
