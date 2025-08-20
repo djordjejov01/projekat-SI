@@ -1,0 +1,50 @@
+<ng-container *ngIf="eventBasicInfo">
+  <div class="content">
+
+    <header>
+      <app-event-management-header 
+        [eventTitle]="eventBasicInfo.getTitle()" 
+        [editMode]="editMode" 
+        (editModeChange)="onToggleEditMode($event)"
+        [parentEventId]="eventBasicInfo.getParentEventId()"
+        [eventID] = "eventBasicInfo.getEventID()"
+        [eventInfo] = "eventBasicInfo"
+        (eventAction) = "loadEvent(eventBasicInfo.getEventID())">
+      </app-event-management-header>
+    </header>
+
+    <div class="basic-info-and-map">
+
+      <app-event-basic-info 
+        [eventBasicInfo]="eventBasicInfo" 
+        [editMode]="editMode"
+        (cancelEdit)="onToggleEditMode(false)"
+        (eventUpdated)="onEventUpdated($event)"
+        >
+      </app-event-basic-info>
+
+      <app-map-section [eventBasicInfo]="eventBasicInfo" [pins]="pins" (pinSaved)="onPinSaved()"></app-map-section>
+
+    </div>
+
+    <div class="agenda-section-and-tickets">
+        <app-agenda-section
+          [eventBasicInfo]="eventBasicInfo"
+          [activities]="activities"
+          [subevents]="subevents"
+          (agendaChanged)="onAgendaChanged()">
+        </app-agenda-section>
+
+        <app-ticket-section [eventBasicInfo]="eventBasicInfo" *ngIf="eventBasicInfo.getParentEventId() == 0"></app-ticket-section>
+    </div>
+
+    <app-resource-allocation *ngIf="eventBasicInfo.getParentEventId() == 0 && eventBasicInfo.getStatusLabel()!='Canceled'"
+      [eventBasicInfo]="eventBasicInfo"
+    >
+    </app-resource-allocation>
+  </div>
+</ng-container>
+
+
+
+

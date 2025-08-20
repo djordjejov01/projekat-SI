@@ -1,0 +1,57 @@
+<section class="form-container">
+
+  <div class="form-and-header">
+
+    <img src="/assets/logo91.png" alt="logo" routerLink="/home" />
+    <h1>{{"Log" | translate}}<span class="text-[#636AE8]">{{"In" | translate}}</span></h1>
+
+
+    <form action="" class="login-form" [formGroup]="loginForm"  (ngSubmit)="submitForm()">
+
+      <div class="form-inputs">
+
+        <div class="input-wrapper">
+
+          <p>Email</p>
+          <p-floatlabel class="w-full md:w-56" variant="on">
+            <input type="text" pInputText placeholder=" " formControlName="email" inputId="email"
+              class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]" />
+            <label for="email">{{"EMAILPH" | translate}}</label>
+          </p-floatlabel>
+
+        </div>
+
+        <div class="input-wrapper">
+
+          <p>{{"Password" | translate}}</p>
+          <p-floatlabel class="w-full md:w-56" variant="on" inputId="password">
+            <p-password formControlName="password" styleClass="w-full md:w-56" [toggleMask]="true" [feedback]="false" inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]">
+            </p-password>
+            <label for="password">{{"PASSPH" | translate}}</label>
+          </p-floatlabel>
+
+        </div>
+
+      </div>
+
+
+
+      <p-toast [breakpoints]="{ '920px': { width: '100%', right: '0', left: '0' } }" />
+      <p-confirmdialog />
+      <button type="submit" class="bg-[#636AE8] text-white rounded-md px-4 py-2 hover:bg-[#575FCE] "
+        >
+        {{"LOGIN" | translate}}
+      </button>
+
+      <p class="text-[#636AE8] noacc" routerLink="/register">
+        {{"NOACC" | translate}}
+      </p>
+
+    </form>
+    <select (change)="changeLanguage($event)">
+      <option value="sr">Srpski</option>
+      <option value="en">English</option>
+    </select>
+  </div>
+
+</section>

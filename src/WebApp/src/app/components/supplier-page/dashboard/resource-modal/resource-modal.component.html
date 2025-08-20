@@ -1,0 +1,135 @@
+<p-dialog
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '50rem', height: '55rem' }"
+  (onHide)="onCancleClick()"
+  [closable]="false"
+  [dismissableMask]="false"
+  [closeOnEscape]="false"
+>
+  <ng-template pTemplate="header">
+    <div class="flex justify-between items-start w-full">
+      <div class="formTitle">
+        <h3>Add New Resource</h3>
+        <p>Fill in the details below to add your new resource.</p>
+      </div>
+      <button
+        type="button"
+        class="p-dialog-header-icon p-link p-button-rounded p-button-text exit-button"
+        (click)="onCancleClick()"
+        pTooltip="Close"
+        tooltipPosition="left"
+      >
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  </ng-template>
+    
+    <form action="" [formGroup]="resourceForm" class="resourceForm">
+
+        <div class="form-inputs">
+
+            <div  class="input-wrapper">
+
+                <p>Resource Name</p>
+                <p-floatlabel class="w-full md:w-56" variant="on">
+                    <input  type="text"  pInputText  placeholder=" "  formControlName="name"  inputId="name"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                <label for="name">Enter Resource Name</label>
+                </p-floatlabel>
+
+            </div>
+
+            <div class="category-type">
+
+                <div  class="input-wrapper">
+
+                    <p>Category</p>
+                    <p-floatlabel class="w-full" variant="on">
+                        <p-select  [options]="resourceCategoryOptions"  name="category"  formControlName="category"  placeholder=" "  inputId="category"  class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"/>
+                        <label for="category">Select Resource Category</label>
+                    </p-floatlabel>
+
+                </div>
+
+                 <div  class="input-wrapper">
+
+                    <p>Resource Type</p>
+                    <p-floatlabel class="w-full" variant="on">
+                        <p-select  [options]="resourceTypeOptions"  name="type"  formControlName="type"  placeholder=" "  inputId="type"  class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"/>
+                        <label for="type">Select Resource Type</label>
+                    </p-floatlabel>
+
+                </div>
+
+            </div>
+
+            
+
+
+            <!-- <div  class="input-wrapper">
+
+                <p>Location</p>
+                <p-floatlabel class="w-full md:w-56" variant="on">
+                    <input  type="text"  pInputText  placeholder=" "  formControlName="location"  inputId="location"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                <label for="location">Enter Resource Location</label>
+                </p-floatlabel>
+
+            </div> -->
+
+
+            <!-- <div class="quantity-measure"> -->
+
+                <div  class="input-wrapper">
+
+                    <p>Quantity</p>
+                        
+                    <p-floatlabel class="w-full md:w-56" variant="on">
+                        <p-inputnumber
+                            formControlName="quantity"
+                            inputId="quantity"
+                            [min]="0"
+                            [useGrouping]="false"
+                            [showButtons]="false"
+                            [style]="{ width: '100%' }"
+                            inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                        ></p-inputnumber>
+                        <label for="quantity">Enter Resource Quantity</label>
+                    </p-floatlabel>
+
+                </div>
+
+            <!-- </div> -->
+
+
+
+             <div  class="input-wrapper">
+
+                <p>Description</p>
+                <p-floatlabel class="w-full md:w-56" variant="on">
+                    <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
+                <label for="description">Describe Your Resource</label>
+                </p-floatlabel>
+
+            </div>
+
+            <div class="form-buttons">
+                <p-button 
+                label="Add Resource"
+                icon="pi pi-pen-to-square"
+                [raised]="true"
+                (onClick)="submitForm()"
+                severity="primary"
+                ></p-button>
+
+                <p-button 
+                    label="Cancel"
+                    icon="pi pi-times"
+                    [raised]="true"
+                    severity="secondary"
+                    type="button"
+                    (onClick)="onCancleClick()"
+                ></p-button>
+            </div>
+        </div>
+    </form>
+</p-dialog>

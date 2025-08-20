@@ -1,0 +1,58 @@
+.container{
+    padding: 2rem;
+    border: 1px solid #EBEBEAFF;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 1rem;
+    min-width: 20vw;
+}
+
+.top{
+    display: flex;
+    justify-content: space-between;
+}
+
+.top p{
+    color: #8C8D8BFF;
+    font-weight: 500;
+}
+
+.content{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.content h1{
+
+    font-size: 2.25rem;
+    color: #242524FF;
+    font-weight: 700;
+}
+
+.content p {
+    color: #8C8D8BFF;
+    font-size: 0.875rem;
+}
+
+.bottom{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.better{
+    color: #22C55EFF;
+}
+
+.worse{
+    color: #EF4444FF;
+}
+
+
+.bottom i{
+    font-size: 0.75rem;
+}

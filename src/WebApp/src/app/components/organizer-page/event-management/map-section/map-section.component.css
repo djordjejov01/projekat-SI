@@ -1,0 +1,99 @@
+.map-section{
+    min-width: 700px;
+    min-height: 517px;
+    border-radius: 8px;
+    border: 1px solid #EBEBEAFF;
+    border-radius: 12px;
+    /* max-width: 700px; */
+}
+
+.map-section h1{
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.map-container{
+    max-width: 700px;
+    min-height: 517px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    box-sizing: border-box;
+    overflow: hidden;
+    position: relative; /* important: NOT absolute/fixed */
+    z-index: 0; /* prevent overlay */
+}
+
+.map-header{
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.map-header button{
+    background-color: white;
+    border: 1px solid #EBEBEA;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: #242524;
+    display: flex;
+    align-items: center;
+}
+
+.map-header button i {
+    padding-right: 0.5rem;
+}
+
+.custom-hr {
+  height: 2px;
+  background-color: #EBEBEA;
+  border: none;
+}
+
+.action{
+    padding-top: 1rem;
+}
+
+.action-buttons{
+    padding: 2rem;
+    padding-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+
+/* Pulse marker styles for Leaflet main event marker */
+.leaflet-container .pulse-marker{
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 0, 0, 0.7);
+  box-shadow: 0 0 6px 2px rgba(255, 0, 0, 0.5);
+  position: relative;
+}
+
+.pulse-marker::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+  background-color: rgba(255, 0, 0, 0.4);
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}

@@ -1,0 +1,292 @@
+{
+  "events": "Events",
+  "loadingEvents": "Loading events...",
+  "noEvents": "No events found.",
+  "logOut": "Log out",
+  "loggedOut": "Logged out",
+  "youHaveBeenLoggedOut": "You have been logged out.",
+  "notLoggedIn": "Not logged in",
+  "loginToAddFavorites": "You must be logged in to add favorites.",
+  "continueAsGuest": "Continue as guest",
+  "logIn": "Log in",
+  "attending": "Attending",
+  "yourFavorites": "Your Favorites",
+  "mustBeLoggedInToViewFavorites": "You must be logged in to view favorites.",
+  "noFavoriteEvents": "You have no favorite events yet.",
+  "loadingFavorites": "Loading favorites...",
+  "guestLoadingMessage": "You are browsing as a guest. Loading events...",
+  "welcomeHome": "Welcome home! User is logged in.",
+  "welcomeToSyncUp": "Welcome to SyncUp!",
+  "emailPlaceholder": "Email address",
+  "passwordPlaceholder": "Password",
+  "show": "Show",
+  "hide": "Hide",
+  "forgotPassword": "Forgot your password?",
+  "login": "Log in",
+  "signup": "Sign up",
+  "or": "OR",
+  "continueWithGoogle": "Continue with Google",
+  "error": "Error",
+  "fillAllFields": "Please fill in both fields",
+  "loginFailed": "Login Failed",
+  "invalidEmail": "Invalid email format",
+  "invalidPassword": "Invalid password.",
+  "loginError": "Login Error",
+  "genericError": "Something went wrong",
+  "noToken": "No token received from server.",
+  "googleUserInfoFailed": "Failed to get user info",
+  "createAccount": "Create Your Account",
+  "fullNamePlaceholder": "Full name",
+  "confirmPasswordPlaceholder": "Confirm Password",
+  "passwordMust": "Password must:",
+  "atLeast8": "At least 8 characters",
+  "upperLower": "Uppercase and lowercase letters",
+  "atLeastOneNumber": "At least one number",
+  "oneSpecial": "One special character",
+  "alreadyHaveAccount": "Already have an account?",
+  "allFieldsRequired": "All fields are required",
+  "success": "Success",
+  "accountCreated": "Account created successfully!",
+  "passwordRequirements": "Password must meet all the listed requirements",
+  "passwordMismatch": "Passwords do not match",
+    "guest": {
+    "loadingMessage": "You are browsing as a guest. Loading events..."
+  },
+  
+  "home": {
+    "login_signup": "Login / Sign up",
+    "guest_mode": "Guest mode"
+  },
+  "addToFavorites": "Add to favorites",
+  "removeFromFavorites": "Remove from favorites",
+  "buyTicket": "Buy Ticket",
+  "eventDescription": "Event Description",
+  "agenda": "Agenda",
+  "location": "Location",
+  "organizer": "Organizer",
+  "loading": "Loading...",
+  "eventNotFound": "Event not found.",
+  "failedToLoadEvent": "Failed to load event.",
+  "failedToLoadEventDetails": "Failed to load event details.",
+  "authenticationRequired": "Authentication required",
+  "loginToManageFavorites": "Please log in to manage favorites.",
+  "cancel": "Cancel",
+  "failedToUpdateFavorite": "Failed to update favorite",
+  "backToEvents": "Back to events",
+  "profile": {
+  "notLoggedIn": "You're not logged in",
+  "loginPrompt": "Please log in to view your profile.",
+  "loginNow": "Log in now",
+  "title": "My Profile",
+  "edit": "Edit Profile",
+  "tickets": "Tickets Purchased",
+  "favorites": "Favorite Events",
+  "accountSettings": "Account Settings",
+  "personalInfo": "Personal Information",
+  "communication": "Communication Preferences",
+  "changePassword": "Change Password",
+  "application": "Application",
+  "about": "About SyncUp",
+  "logout": "Sign Out",
+  "logoutTitle": "Log Out",
+  "logoutConfirm": "Are you sure you want to log out?",
+  "cancel": "Cancel",
+  "error": "Error",
+  "logoutError": "Failed to log out.",
+  "payment": "Payment"
+},
+"aboutScreen": {
+  "heading": "About us",
+  "description": "SyncUp is your ultimate event companion. We help people find, attend, and stay informed about events they love – from concerts and tech meetups to workshops and art festivals.",
+  "missionTitle": "🌟 Our Mission",
+  "missionText": "To connect people through shared experiences. Whether you’re into music, technology, art, or education – SyncUp makes sure you never miss out.",
+  "whyTitle": "🚀 Why SyncUp?",
+  "whyText": "- Discover personalized events near you\n- Save your favorites and buy tickets seamlessly\n- Stay updated with schedules, maps & agendas\n- Enjoy an intuitive, user-friendly experience",
+  "locationTitle": "📍 Where We’re Based",
+  "locationText": "Kragujevac, Serbia – but SyncUp is built to connect people everywhere.",
+  "contactTitle": "📬 Contact Us",
+  "contactText": "Email: contact@syncup.rs\nInstagram: @syncup.events\nLinkedIn: SyncUp Team",
+  "footer": "© 2025 SyncUp. All rights reserved."
+},
+"changePassword": {
+  "title": "Change Password",
+  "currentPassword": "Current Password",
+  "newPassword": "New Password",
+  "confirmPassword": "Confirm New Password",
+  "saveChanges": "Save Changes",
+  "error": "Error",
+  "allFieldsRequired": "All fields are required.",
+  "invalidPasswordTitle": "Invalid Password",
+  "invalidPasswordMessage": "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.",
+  "passwordMismatch": "New passwords do not match.",
+  "notLoggedIn": "You are not logged in.",
+  "success": "Success",
+  "passwordChanged": "Password changed successfully.",
+  "changeFailed": "Password change failed."
+},
+
+"personalInfo": {
+  "permissionDenied": "Permission to access media library was denied.",
+  "confirmDelete": "Delete Profile Picture",
+  "confirmDeleteMessage": "Are you sure you want to delete your profile picture?",
+  "delete": "Delete",
+  "cancel": "Cancel",
+  "editImage": "Edit profile picture",
+  "deleteImage": "Delete profile picture",
+  "goBack": "Go back",
+  "uploadFailed": "Failed to upload image.",
+  "title": "Personal Information",
+  "firstName": "First Name",
+  "firstNamePlaceholder": "John",
+  "lastName": "Last Name",
+  "lastNamePlaceholder": "Doe",
+  "email": "Email",
+  "emailPlaceholder": "example@email.com",
+  "phone": "Phone Number",
+  "phonePlaceholder": "+381 64 123 4567",
+  "saveChanges": "Save Changes",
+  "error": "Error",
+  "notLoggedIn": "You are not logged in.",
+  "success": "Success",
+  "updated": "Your information has been updated.",
+  "updateFailed": "Failed to update profile."
+},
+
+  "auth": {
+    "notLoggedInTitle": "Not logged in",
+    "notLoggedInMessage": "You need to log in to continue.",
+    "login": "Log in",
+    "cancel": "Cancel"
+  }
+,
+"profileCheck": {
+    "incompleteTitle": "Profile Incomplete",
+    "incompleteMessage": "To continue, please fill in your basic profile information.",
+    "fillProfile": "Complete Profile",
+    "errorTitle": "Error",
+    "errorMessage": "An error occurred while checking the profile."
+  },
+"payment": 
+{
+"header": "Payment💸",
+"msg":"Enter the number of dinars for payment",
+"example": "etc. 1000",
+"button":"Pay",
+"process":"Payment processing...",
+"errorNumber":"Enter a valid money number",
+"success":"Success",
+"success2":"dinars have been added to your account",
+"errorPayment":"An error occurred during payment",
+"errorServer":"An error occurred while connecting to the server"
+},
+
+"tabs": {
+  "events": "Events",
+  "search": "Search",
+  "favorites": "Favorites",
+  "profile": "Profile"
+},
+"aboutEvent": "About Event",
+  "freeEvent": "Free Event",
+"search": {
+  "header": "Search Events",
+  "placeholder": "Search by title or description...",
+  "startDate": "Start Date",
+  "endDate": "End Date",
+  "selectLocation": "Select location...",
+  "sortBy": "Sort by...",
+  "selectCategory": "Select category",
+  "dateAsc": "Date ↑",
+  "dateDesc": "Date ↓",
+  "priceAsc": "Price ↑",
+  "priceDesc": "Price ↓",
+  "popularityDesc": "Popularity ↓",
+  "freeOnly": "Free Only",
+  "reset": "Clear All Filters",
+  "noResults": "No events found matching your filters."
+}
+,
+
+"tickets": {
+  "title": "Tickets",
+  "available": "available",
+  "loading": "Loading tickets...",
+  "redirecting": "Redirecting to ticket purchase...",
+  "proceed": "Proceed to Cart",
+  "noTickets": "No available tickets for this event."
+},
+"resources": {
+  "title": "Resources",
+  "noResources": "No available resoursces for this event."
+},
+"cart": {
+    "viewTicket": "View Ticket",
+  "backToEvents": "Back to Events",
+  "title": "Your Cart",
+  "tickets": "Tickets",
+  "resources": "Resources",
+  "noTickets": "You haven't selected any tickets.",
+  "noResources": "No additional resources selected.",
+  "total": "Total",
+  "purchase": "Purchase",
+  "purchasing": "Purchasing...",
+  "confirmTitle": "Purchase Confirmation",
+  "confirmMessage": "Are you sure you want to complete the purchase?",
+  "cancel": "Cancel",
+  "successTitle": "Success",
+  "successMessage": "Tickets and resources were successfully purchased.",
+  "errorTitle": "Error",
+  "loginRequired": "You must be logged in to purchase tickets.",
+  "genericError": "An error occurred during purchase.",
+  "fetchError": "Failed to load data.",
+  "ok": "OK",
+  "free": "Free"
+},
+
+  "ticketDetails": {
+    "title": "Ticket Details",
+    "location": "Location",
+    "ticketType": "Ticket Type",
+    "purchasedAt": "Purchased At",
+    "price": "Price",
+    "purchasedBy": "Purchased by",
+    "unknownUser": "Unknown user",
+    "noTickets": "No ticket IDs provided.",
+    "ticket": "Ticket",
+      "viewEventDetails": "View event details",
+        "qrError": "QR code could not be generated."
+  },
+  "buttons": {
+    "download": "Download",
+    "share": "Share",
+    "backToEvents": "Back to Events"
+  },
+  "qr": {
+    "savedTitle": "Saved!",
+    "savedMessage": "QR code saved to {{filename}}",
+    "errorTitle": "Error",
+    "saveError": "Failed to save QR code",
+    "shareError": "Failed to share QR code"
+  
+},
+
+  "profileTickets": {
+    "title": "My Tickets",
+    "ticketType": "Ticket Type",
+    "quantity": "Quantity",
+    "price": "Price",
+    "purchasedOn": "Purchased on",
+    "noTickets": "You currently have no purchased tickets."
+  }
+
+
+
+
+
+
+
+}
+
+
+
+

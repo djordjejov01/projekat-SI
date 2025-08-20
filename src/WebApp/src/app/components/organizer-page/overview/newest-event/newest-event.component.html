@@ -1,0 +1,12 @@
+<main>
+    <img [src]="image" alt="">
+    <div id="bot">
+        <h1>{{title}}</h1>
+        <div id="info">
+            <i class ="pi pi-map-marker"></i>
+            <p>{{location}} - {{time}}</p>
+        </div>
+        <p id="desc">{{desc}}</p>
+        <button id="mngev" (click)="manageEvent(event)">{{"MANAGE" | translate}} <i class="pi pi-arrow-right"></i></button>
+    </div>
+</main>

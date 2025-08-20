@@ -1,0 +1,20 @@
+.menu-item{
+    display: flex;
+    background-color: white;
+    padding: 10px;
+    gap:10px;
+    align-items: center;
+    max-width: 250px;
+    border-radius: 5px;
+    color: gray;
+}
+.menu-item:hover{
+    background-color: #d9dbff;
+    cursor: pointer;
+}
+
+.menu-item.selected{
+    background-color: #636AE8;
+    color:white;
+}
+

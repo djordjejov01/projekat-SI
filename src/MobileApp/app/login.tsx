@@ -1,0 +1,229 @@
+import React, { useState } from 'react';
+import { router } from 'expo-router';
+import { useFavorites } from './context/FavoriteContext';
+import { API_URL } from '../config';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
+
+export default function LoginScreen() {
+  const { t } = useTranslation();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const { loadFavorites } = useFavorites();
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert(t('error'), t('fillAllFields'));
+      return;
+    }
+
+    const isValidEmail = email.includes('@');
+    if (!isValidEmail) {
+      Alert.alert(t('loginFailed'), t('invalidEmail'));
+      return;
+    }
+
+    const criteria = {
+      length: password.length >= 8,
+      upperLower: /[A-Z]/.test(password) && /[a-z]/.test(password),
+      number: /[0-9]/.test(password),
+      special: /[!@#$%^&*(),.?":{}|<>_\-+=]/.test(password),
+    };
+
+    const isValidPassword = Object.values(criteria).every(Boolean);
+    if (!isValidPassword) {
+      Alert.alert(t('loginFailed'), t('invalidPassword'));
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/api/User/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || t('loginFailed'));
+      }
+
+      const data = await response.json();
+
+      if (!data.token) {
+        Alert.alert(t('error'), t('noToken'));
+        return;
+      }
+
+      // 🔐 Proveri rolu korisnika koristeći dobijeni token
+      const roleResponse = await fetch(`${API_URL}/api/User/role`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${data.token}`,
+        },
+      });
+
+      if (!roleResponse.ok) {
+        throw new Error('Greška pri proveri role');
+      }
+
+      const roleData = await roleResponse.text(); // Vraca string "MobileUser" itd.
+      
+
+      if (roleData !== '{"role":"MobileUser"}') {
+        Alert.alert('Pristup odbijen', 'Dozvoljen je samo pristup korisnicima mobilne aplikacije.');
+        return;
+      }
+
+      // ✅ Rola odgovara, sacuvaj token i nastavi
+      await AsyncStorage.setItem('token', data.token);
+      loadFavorites();
+      router.replace('./(tabs)/events');
+    } catch (error: any) {
+      Alert.alert(t('loginError'), error.message || t('genericError'));
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>{t('welcomeToSyncUp')}</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder={t('emailPlaceholder')}
+        keyboardType="email-address"
+        autoCapitalize="none"
+        onChangeText={setEmail}
+        value={email}
+      />
+
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder={t('passwordPlaceholder')}
+          secureTextEntry={!showPassword}
+          onChangeText={setPassword}
+          value={password}
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Text style={styles.toggleText}>
+            {showPassword ? t('hide') : t('show')}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+        <Text style={styles.loginText}>{t('login')}</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.signupButton}
+        onPress={() => router.push('/signup')}
+      >
+        <Text style={styles.signupText}>{t('signup')}</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 24,
+    justifyContent: 'center',
+    backgroundColor: '#F9FAFB',
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 32,
+    textAlign: 'center',
+  },
+  input: {
+    height: 50,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  passwordInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#111827',
+  },
+  toggleText: {
+    color: '#3B82F6',
+    fontWeight: '600',
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  forgot: {
+    color: '#EF4444',
+    fontSize: 14,
+    textAlign: 'right',
+    marginBottom: 28,
+  },
+  loginButton: {
+    backgroundColor: '#3B82F6',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  loginText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  signupButton: {
+    borderWidth: 1.5,
+    borderColor: '#3B82F6',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  signupText: {
+    color: '#3B82F6',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+});

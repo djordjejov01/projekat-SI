@@ -1,0 +1,151 @@
+.font-inter{
+    font-family: "Inter", sans-serif;
+}
+
+.font-archivo{
+    font-family: "Archivo", sans-serif;
+}
+
+header,.page-title{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+}
+
+
+.page-title h1, .card > p{
+    font-size: 1.875rem;
+    font-weight: bold;
+    color: #242524;
+}
+
+.page-title p{
+    font-size: 1rem;
+    font-weight: 400;
+    color: #8C8D8B;
+}
+
+.stat-cards{
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.light-blue{
+    background-color: rgba(247, 250, 255, 1);
+}
+
+.light-green{
+    background-color: rgba(247, 254, 249, 1);
+}
+
+.light-yellow{
+    background-color: rgba(254, 253, 243, 1);
+}
+
+.light-purple{
+    background-color: rgba(251, 248, 255, 1);
+}
+
+.card-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header p,i {
+    color: #8C8D8B;
+}
+
+.card{
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #EBEBEA;
+    border-radius: 8px;
+    min-width: 350px;
+    padding: 2rem;
+    gap: 3rem;
+}
+
+
+.resource-table{
+    border: 1px solid #EBEBEAFF;
+    border-radius: 12px;
+    max-width: 1100px;
+}
+
+
+.table-header{
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-header button{
+    background-color: #636AE8;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+
+.table-header button i {
+    padding-right: 0.5rem;
+    color: #fff;
+}
+
+.table-header h1{
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.custom-hr {
+  height: 2px;
+  background-color: #EBEBEA;
+  border: none;
+}
+
+.chart-box{
+    max-width: 400px;
+    max-height: 400px;
+}
+
+.table-and-sidecontent{
+    display: flex;
+    margin-top: 2rem;
+    gap: 2rem;
+}
+
+#btn1:hover{
+    cursor: pointer;
+    background-color: #5156bc;
+}
+
+.pr{
+    position: relative;
+    cursor: pointer;
+}
+.pr:hover{
+    background-color: rgb(242, 239, 245);
+}
+#view{
+    position: absolute;
+    bottom: 5px;
+    right:10px;
+    font-size: 18px;
+    margin:0;
+    color: rgb(183, 130, 251);
+    cursor: pointer;
+}
+
+.no-resources{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

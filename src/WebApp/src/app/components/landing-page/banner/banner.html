@@ -1,0 +1,11 @@
+<main>
+    <div id="leftside">
+        <p id="title">{{ 'TITLE1' | translate }}</p>
+        <p id="desc">{{ 'DESC1' | translate }}</p>
+        <div id="buttons">
+        <button id="gs" routerLink="/register">{{ 'GS' | translate }}</button>
+        <button id="lm" (click)="scrollToPosition()">{{ 'LM' | translate }}</button>
+        </div>
+    </div>
+    <img src="./assets/bannerImage.png" alt="people gathered at event">
+</main>

@@ -1,0 +1,62 @@
+.font-inter {
+    font-family: "Inter", sans-serif;
+}
+
+.font-archivo {
+    font-family: "Archivo", sans-serif;
+}
+
+
+.agenda {
+    border: 1px solid #EBEBEA;
+    border-radius: 8px;
+    /* height: 100%; */
+    /* min-width: 737px; */
+    width: 100%;
+}
+
+.agenda-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.agenda h1 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    padding-left: 1rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.buttons {
+    display: flex;
+    gap: 1rem;
+    padding-right: 1rem;
+}
+
+.buttons button {
+    background-color: white;
+    border: 1px solid #EBEBEA;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: #242524;
+    display: flex;
+    align-items: center;
+}
+
+.buttons button i {
+    padding-right: 0.5rem;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+.custom-hr {
+    height: 2px;
+    background-color: #EBEBEA;
+    border: none;
+}
+
