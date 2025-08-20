@@ -241,7 +241,7 @@ const checkUserProfile = async () => {
         [
           {
             text: 'Uloguj se',
-            onPress: () => router.push('/login'), // prilagodi rutu ako treba
+            onPress: () => router.push('/login'), 
           },
           { text: 'Otkaži', style: 'cancel' },
         ]
@@ -295,7 +295,7 @@ const handleBuyTicket = async () => {
 
     const fetchEventPins = async (eventId: number) => {
   try {
-    const token = await AsyncStorage.getItem('token'); // <-- dodaj ovo
+    const token = await AsyncStorage.getItem('token'); 
 
     const headers: any = {
       'Content-Type': 'application/json',
@@ -526,9 +526,13 @@ const handleBuyTicket = async () => {
               </TouchableOpacity>
               {/* Ikonica lupice za otvaranje detalja poddogađaja */}
               {isSubevent && (
-                <TouchableOpacity onPress={() => handleOpenSubeventDetail(item.id.replace('event-', ''))} style={{ paddingHorizontal: 8 }}>
+                   <TouchableOpacity
+                  onPress={() => handleToggleSubevent(item.id)}
+                  style={{ paddingHorizontal: 8 }}
+                >
                   <Ionicons name="search-outline" size={24} color="#2563EB" />
                 </TouchableOpacity>
+
               )}
             </View>
 
