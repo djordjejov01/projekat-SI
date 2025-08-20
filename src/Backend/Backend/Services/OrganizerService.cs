@@ -57,6 +57,13 @@ namespace Backend.Services
                 }
             }
 
+            //provera da broj karata ne predje kapacitet
+            var totalQuota = model.Tickets?.Sum(t => t.Quota) ?? 0;
+            if (totalQuota > model.Capacity)
+            {
+                throw new ArgumentException("Total ticket quota cannot exceed event capacity.");
+            }
+
             string imageName = null;
             if (model.ImageFile != null)
             {
@@ -317,27 +324,47 @@ namespace Backend.Services
                     .ToListAsync();
 
                 if (!eventResources.Any())
-                    return; 
+                    return;
 
-                
+
                 foreach (var eventResource in eventResources)
                 {
                     if (eventResource.Status == EventResourceStatus.Approved)
                     {
                         var resource = eventResource.Resource;
-                        resource.Quantity += eventResource.Quantity;
-                        
+
+                        if (resource.IsExhaustable)
+                        {
+                            resource.Quantity += eventResource.Quantity;
+                        }
+
                         
                         if (resource.IsAvailable == ResourceAvailability.Booked)
                         {
-                            resource.IsAvailable = ResourceAvailability.Available;
+                            
+                            if (resource.IsExhaustable && resource.Quantity > 0)
+                            {
+                                resource.IsAvailable = ResourceAvailability.Available;
+                            }
+                            
+                            else if (!resource.IsExhaustable)
+                            {
+                                var otherApprovedReservations = await _context.EventResources
+                                    .Where(er => er.ResourceID == resource.ResourceID
+                                             && er.ID != eventResource.ID
+                                             && er.Status == EventResourceStatus.Approved)
+                                    .AnyAsync();
+
+                                if (!otherApprovedReservations)
+                                {
+                                    resource.IsAvailable = ResourceAvailability.Available;
+                                }
+                            }
                         }
-                        
+
                         _context.Resources.Update(resource);
                     }
                 }
-
-                
                 _context.EventResources.RemoveRange(eventResources);
             }
             catch (Exception ex)
@@ -444,20 +471,18 @@ namespace Backend.Services
             }
         }
 
-        private async Task DeallocateEventResourcesForPublishedEvent(int eventId)
+        public async Task DeallocateEventResourcesForPublishedEvent(int eventId)
         {
             try
             {
-                
                 var eventResources = await _context.EventResources
                     .Include(er => er.Resource)
                     .Where(er => er.EventID == eventId)
                     .ToListAsync();
 
                 if (!eventResources.Any())
-                    return; 
+                    return;
 
-                
                 foreach (var eventResource in eventResources)
                 {
                     if (eventResource.Status == EventResourceStatus.Approved)
@@ -467,18 +492,24 @@ namespace Backend.Services
                         
                         if (!resource.IsExhaustable)
                         {
-                            resource.Quantity += eventResource.Quantity;
+                            
+                            var otherApprovedReservations = await _context.EventResources
+                                .Where(er => er.ResourceID == resource.ResourceID
+                                         && er.ID != eventResource.ID
+                                         && er.Status == EventResourceStatus.Approved)
+                                .AnyAsync();
 
                             
-                            if (resource.IsAvailable == ResourceAvailability.Booked)
+                            if (!otherApprovedReservations)
                             {
                                 resource.IsAvailable = ResourceAvailability.Available;
                             }
                         }
+
+                        _context.Resources.Update(resource);
                     }
                 }
 
-                
                 var eventResourceIds = eventResources.Select(er => er.ID).ToList();
 
                 if (eventResourceIds.Any())

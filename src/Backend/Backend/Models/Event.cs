@@ -36,7 +36,8 @@ namespace Backend.Models
     {
         Draft,
         Published,
-        Canceled
+        Canceled,
+        Finished
     }
 
 }

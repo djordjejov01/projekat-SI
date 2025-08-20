@@ -11,17 +11,14 @@
                 <img src="./assets/logo91.png" alt="logo" routerLink="/home" id="lg">
                 <ul>
                     <li [ngClass]="{'active-link' : currentPage === 'Dashboard'}">Dashboard</li>
-                    <li>Settings</li>
                 </ul>
 
             </div>
 
             <div class="user-actions">
                 <button (click)="onLogoutClick()" id="lgout">Logout</button>
-                <i class="pi pi-bell"></i>
-
                 <div class="pfp">
-                    <img src="./assets/user-example-pfp.jpg" alt="Profile Picture">
+                    <img src="./assets/default-picture.png" alt="Profile Picture">
                 </div>
             </div>
 

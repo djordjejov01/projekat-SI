@@ -77,7 +77,7 @@ export class EventManagementHeaderComponent implements OnInit, OnChanges{
     if (this.parentEventTitle) {
       this.items = [
         { label: 'Events', routerLink: '/organizer/overview' },
-        { label: this.parentEventTitle, routerLink: `/organizer/event/${this.lastParentEventId}` },
+        { label: this.parentEventTitle, routerLink: `/organizer/event-management/${this.lastParentEventId}` },
         { label: this.eventTitle }
       ];
     } else {
