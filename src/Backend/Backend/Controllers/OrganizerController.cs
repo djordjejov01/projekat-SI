@@ -186,6 +186,8 @@ namespace Backend.Controllers
             if (eventEntity.OrganizerID != userId)
                 return NotFound("You do not have permission to edit this event.");
 
+            if (dto.Capacity != -1 && dto.Capacity <= 0)
+                return BadRequest("Capacity must be -1 (unlimited) or a positive number.");
 
             eventEntity.Title = dto.Title;
             eventEntity.Description = dto.Description;
@@ -199,7 +201,7 @@ namespace Backend.Controllers
                 .Where(t => t.EventID == eventEntity.EventID)
                 .SumAsync(t => (int?)t.Quota) ?? 0;
 
-            if (dto.Capacity < currentTotalQuota)
+            if (dto.Capacity != -1 && dto.Capacity < currentTotalQuota)
                 return BadRequest($"Cannot set capacity below current total ticket quota ({currentTotalQuota}).");
 
             eventEntity.NumberOfPeople = dto.Capacity;
@@ -551,8 +553,14 @@ namespace Backend.Controllers
                 .Where(t => t.EventID == ticketDto.EventId)
                 .SumAsync(t => (int?)t.Quota) ?? 0;
 
-            if ((eventEntity.NumberOfPeople ?? 0) < usedQuota + ticketDto.Quota)
-                return BadRequest($"Total tickets across all types would exceed event capacity ({eventEntity.NumberOfPeople}).");
+            var cap = eventEntity.NumberOfPeople;
+            if (cap != -1) // skip ako je unlimited
+            {
+                if (cap == null)
+                    return BadRequest("Event capacity is not set.");
+                if (cap < usedQuota + ticketDto.Quota)
+                    return BadRequest($"Total tickets across all types would exceed event capacity ({cap}).");
+            }
 
             _context.Tickets.Add(newTicket);
 
@@ -622,8 +630,9 @@ namespace Backend.Controllers
                 .Where(t => t.EventID == targetEventId && t.TicketID != ticketDto.TicketId)
                 .SumAsync(t => (int?)t.Quota) ?? 0;
 
-            if ((targetEventEntity.NumberOfPeople ?? 0) < otherQuotas + ticketDto.Quota)
-                return BadRequest($"Total tickets across all types would exceed event capacity ({targetEventEntity.NumberOfPeople}).");
+            var cap = targetEventEntity.NumberOfPeople;
+            if (cap != -1 && cap < otherQuotas + ticketDto.Quota)
+                return BadRequest($"Total tickets across all types would exceed event capacity ({cap}).");
 
 
             existingTicket.TypeName = ticketDto.Name;

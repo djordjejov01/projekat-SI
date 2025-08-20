@@ -272,8 +272,8 @@ export class EventsComponent implements OnInit {
           value: cat.id
         }));
       });
-    console.log("KER");
-    console.log(this.categories);
+    //console.log("KER");
+    //console.log(this.categories);
     this.currUser = this.authService.getUserName();
     this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe({
 
@@ -297,7 +297,7 @@ export class EventsComponent implements OnInit {
     this.apiService.getDashboardMetrics().subscribe({
       next: (response: DashboardMetrics) => {
         this.dashboardMetrics = response;
-        console.log(response);
+        //console.log(response);
       },
       error: (errorResponse) => {
         this.messageService.add({
@@ -312,7 +312,7 @@ export class EventsComponent implements OnInit {
     this.apiService.getMonthlyMetrics(this.authService.getUserId(), 2025).subscribe({
       next: (response: MonthlyMetrics[]) => {
         this.monthlyMetrics = response;
-        console.log(response);
+        //console.log(response);
         for (const [key, value] of Object.entries(response)) {
           for (const [key1, value1] of Object.entries(value)) {
             if (key1 == "month") {

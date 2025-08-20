@@ -23,7 +23,7 @@ namespace Backend.Controllers
         public async Task<IActionResult> GetTicketsForEvent(int eventId)
         {
             var tickets = await _context.Tickets
-                .Where(t => t.EventID == eventId)
+                .Where(t => t.EventID == eventId && t.validUntil.Date > DateTime.UtcNow.Date)
                 .Select(t => new {
                     t.TicketID,
                     t.TypeName,

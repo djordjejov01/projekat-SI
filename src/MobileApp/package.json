@@ -24,6 +24,7 @@
     "buffer": "^6.0.3",
     "expo": "53.0.19",
     "expo-auth-session": "~6.2.1",
+    "expo-barcode-scanner": "^13.0.1",
     "expo-blur": "~14.1.5",
     "expo-constants": "~17.1.6",
     "expo-file-system": "~18.1.11",

@@ -47,7 +47,7 @@
     border-radius: 10px;
     gap:20px;
     padding: 45px;
-    min-width: 360px;
+    max-width: 400px;
     max-height: 440px;
     
 }
@@ -168,7 +168,7 @@ input{
     border-radius: 6px;
     border: 2px solid rgb(232, 232, 232);
     padding: 10px;
-    padding-right: 150px;
+    padding-right: 80px;
     padding-left: 20px;
 }
 

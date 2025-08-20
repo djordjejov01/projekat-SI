@@ -548,7 +548,7 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
         return this.http.get<EventApiResponse[]>(`${this.apiUrl}/Organizer/events?id=${organizerId}`).pipe(
             map(data => 
                 data.map(event => {
-                    console.log(data)
+                    //console.log(data)
                     const organizer = event.organizer
                     ?  new User(
                         event.organizer.userId,
@@ -597,7 +597,7 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
         return this.http.get<EventApiResponse[]>(`${this.apiUrl}/Organizer/upcoming-events?id=${organizerId}`).pipe(
             map(data => 
                 data.map(event => {
-                    console.log(data)
+                    //console.log(data)
                     const organizer = event.organizer
                     ?  new User(
                         event.organizer.userId,
@@ -718,7 +718,7 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
         return this.http.post<UserDtoResponse>(`${this.apiUrl}/User/register-web`, data).pipe(
 
             map(data => {
-                console.log('Raw backend response Register:', data);
+                //console.log('Raw backend response Register:', data);
                 return new UserDto(
                 data.userId,
                 data.username,

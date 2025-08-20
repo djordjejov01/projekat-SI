@@ -126,7 +126,7 @@ handleEnter(event: KeyboardEvent) {
         }
       });
 
-      console.log('New user to register: ', this.userToRegister)
+      //console.log('New user to register: ', this.userToRegister)
 
       
 

@@ -27,20 +27,21 @@ import { MessageService } from 'primeng/api';
 import { CategoryService } from '../../../Services/EventCategoryService';
 import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
 import { RequestsComponent } from './requests/requests.component';
+import { EventResourceCalendarResponse } from '../../../Interfaces/EventResourceCalendarResponse';
 @Component({
   selector: 'app-dashboard',
-  imports: [RequestsComponent,TableModule,ButtonModule,IconField,InputIcon,FormsModule,MultiSelect,TooltipModule,InputTextModule,CommonModule,ChartModule,ResourceModalComponent,IconFieldModule,InputIconModule],
+  imports: [RequestsComponent, TableModule, ButtonModule, IconField, InputIcon, FormsModule, MultiSelect, TooltipModule, InputTextModule, CommonModule, ChartModule, ResourceModalComponent, IconFieldModule, InputIconModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent  implements OnInit{
+export class DashboardComponent implements OnInit {
 
   //resources = DUMMY_RESOURCES
-  resources : ResourceDto[] = [];
-  availableResources : ResourceDto[] = [];
-  selectedResources : Resource[] = []
+  resources: ResourceDto[] = [];
+  availableResources: ResourceDto[] = [];
+  selectedResources: Resource[] = []
   loading = false;
-  searchValue : string;
+  searchValue: string;
 
   pieChartOptions: any;
   pieChartData: any;
@@ -48,12 +49,12 @@ export class DashboardComponent  implements OnInit{
 
   isRequestsModalVisible: boolean = false; // Add this property
   currentSupplierId: number | null = null; // Add this property
-  pendingRequestsCount: number = 0; 
+  pendingRequestsCount: number = 0;
 
   @ViewChild('pieChart') pieChartComponent!: UIChart
 
-   @HostListener('window:resize')
-    onResize() {
+  @HostListener('window:resize')
+  onResize() {
     if (this.pieChartComponent && this.pieChartComponent.chart) {
       this.pieChartComponent.chart.resize();
       // Optional:
@@ -68,75 +69,89 @@ resourceTypeOptions = [
   { name: 'Inexhaustible', value: false }
 ];
 
-private availabilityLabels: Record<number, string> = {
-  [ResourceAvailability.Available]: 'Available',
-  [ResourceAvailability.Unavailable]: 'Unavailable',
-  [ResourceAvailability.Booked]: 'Booked'
-};
 
-
+  private availabilityLabels: Record<number, string> = {
+    [ResourceAvailability.Available]: 'Available',
+    [ResourceAvailability.Unavailable]: 'Unavailable',
+    [ResourceAvailability.Booked]: 'Booked'
+  };
 
 
   selectedCategories: any[] = [];
   selectedAvailability: any[] = [];
   selectedTypes: any[] = [];
   selectedMeasures: any[] = [];
-
+  bookedResources: EventResourceCalendarResponse[] = [];
 
   constructor(private cd: ChangeDetectorRef,
-    private resourceAvailabilityService : ResourceAvailabilityService,
-    private resourceCategoryService : ResourceCategoryService,
-    private apiService : ApiService,
-    private authService : AuthService,
-    private messageService : MessageService,
-    private confirmationDialogService : ConfirmationDialogService
-    ){}
+    private resourceAvailabilityService: ResourceAvailabilityService,
+    private resourceCategoryService: ResourceCategoryService,
+    private apiService: ApiService,
+    private authService: AuthService,
+    private messageService: MessageService,
+    private confirmationDialogService: ConfirmationDialogService
+  ) { }
 
   ngOnInit(): void {
-    
+
     this.currentSupplierId = this.authService.getUserId();
     this.resourceAvailabilityService.loadAvailabilitiesIfEmpty()
-    .pipe(take(1))
-    .subscribe(availabilities => {
-      this.resourceAvailabilityOptions = availabilities.map(availability => ({
-        name: availability.name,
-        value: availability.id
-      }));
-    });
-
-  this.resourceCategoryService.loadCategoriesIfEmpty()
-    .pipe(take(1))
-    .subscribe(categories => {
-      this.resourceCategoryOptions = categories.map(category => ({
-        name: category.name,
-        value: category.id
-      }));
-    });
+      .pipe(take(1))
+      .subscribe(availabilities => {
+        this.resourceAvailabilityOptions = availabilities.map(availability => ({
+          name: availability.name,
+          value: availability.id
+        }));
+      });
+    this.getBooked();
+    this.resourceCategoryService.loadCategoriesIfEmpty()
+      .pipe(take(1))
+      .subscribe(categories => {
+        this.resourceCategoryOptions = categories.map(category => ({
+          name: category.name,
+          value: category.id
+        }));
+      });
 
     this.fetchResources();
     this.fetchPendingRequestsCount();
   }
 
-  
+  getBooked() {
+    this.apiService.getBookedResources().subscribe({
 
-  fetchResources()
-  {
+      next: (response: any) => {
+        this.bookedResources = response;
+      },
+      error: (errorResponse) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: errorResponse.message,
+          life: 3000
+        });
+      }
+
+    })
+  }
+
+  fetchResources() {
     this.apiService.getResources(this.authService.getUserId()).subscribe({
-      next: (response : ResourceDto[]) => 
-        {
-          this.resources = response;
-          this.availableResources = this.resources.filter(x => x.getIsAvailable() == 0);
-          console.log(this.resources)
-          this.initChart()
-        },
+      next: (response: ResourceDto[]) => {
+        this.resources = response;
+        this.availableResources = this.resources.filter(x => x.getIsAvailable() == 0);
+        //console.log(this.resources)
+        this.initChart()
+      },
 
-       error: (errorResponse) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: errorResponse.message,
-            life: 3000 });
-        }
+      error: (errorResponse) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: errorResponse.message,
+          life: 3000
+        });
+      }
     })
   }
 
@@ -159,86 +174,87 @@ private availabilityLabels: Record<number, string> = {
   updateCounts() {
     this.fetchResources();
     this.fetchPendingRequestsCount();
+    this.getBooked();
   }
 
-       initChart() {
+  initChart() {
 
-        const stats = this.getResourceCategoryChartData(this.resources);
+    const stats = this.getResourceCategoryChartData(this.resources);
 
-        if (isPlatformBrowser(this.platformId)) {
-            const documentStyle = getComputedStyle(document.documentElement);
-            const textColor = documentStyle.getPropertyValue('--text-color');
+    if (isPlatformBrowser(this.platformId)) {
+      const documentStyle = getComputedStyle(document.documentElement);
+      const textColor = documentStyle.getPropertyValue('--text-color');
 
-            this.pieChartData = {
-            labels: stats.labels,
-            datasets: [
-              {
-                data: stats.counts,
-                backgroundColor: [
-                  'rgba(100,106,232,0.2)',  // Equipment
-                  'rgba(126,230,78,0.2)',   // Furniture
-                  'rgba(255,193,7,0.2)',    // Electrical
-                  'rgba(233,99,141,0.2)',   // Sanitation
-                  'rgba(23,162,184,0.2)',   // Food & Beverage
-                  'rgba(220,53,69,0.2)',    // Medical
-                  'rgba(153,102,255,0.2)',  // Security
-                  'rgba(255,159,64,0.2)',   // Merchandise
-                  'rgba(108,117,125,0.2)',  // Transportation
-                  'rgba(54,162,235,0.2)',   // Technology
-                  'rgba(180,180,180,0.2)'   // Undefined
-                ],
-                borderColor: [
-                  'rgba(100,106,232,0.7)',
-                  'rgba(126,230,78,0.7)',
-                  'rgba(255,193,7,0.7)',
-                  'rgba(233,99,141,0.7)',
-                  'rgba(23,162,184,0.7)',
-                  'rgba(220,53,69,0.7)',
-                  'rgba(153,102,255,0.7)',
-                  'rgba(255,159,64,0.7)',
-                  'rgba(108,117,125,0.7)',
-                  'rgba(54,162,235,0.7)',
-                  'rgba(180,180,180,0.7)'
-                ],
-                hoverBackgroundColor: [
-                  'rgba(100,106,232,0.4)',
-                  'rgba(126,230,78,0.4)',
-                  'rgba(255,193,7,0.4)',
-                  'rgba(233,99,141,0.4)',
-                  'rgba(23,162,184,0.4)',
-                  'rgba(220,53,69,0.4)',
-                  'rgba(153,102,255,0.4)',
-                  'rgba(255,159,64,0.4)',
-                  'rgba(108,117,125,0.4)',
-                  'rgba(54,162,235,0.4)',
-                  'rgba(180,180,180,0.4)'
-                ],
-                borderWidth: 1
-              }
-            ]
-          };
+      this.pieChartData = {
+        labels: stats.labels,
+        datasets: [
+          {
+            data: stats.counts,
+            backgroundColor: [
+              'rgba(100,106,232,0.2)',  // Equipment
+              'rgba(126,230,78,0.2)',   // Furniture
+              'rgba(255,193,7,0.2)',    // Electrical
+              'rgba(233,99,141,0.2)',   // Sanitation
+              'rgba(23,162,184,0.2)',   // Food & Beverage
+              'rgba(220,53,69,0.2)',    // Medical
+              'rgba(153,102,255,0.2)',  // Security
+              'rgba(255,159,64,0.2)',   // Merchandise
+              'rgba(108,117,125,0.2)',  // Transportation
+              'rgba(54,162,235,0.2)',   // Technology
+              'rgba(180,180,180,0.2)'   // Undefined
+            ],
+            borderColor: [
+              'rgba(100,106,232,0.7)',
+              'rgba(126,230,78,0.7)',
+              'rgba(255,193,7,0.7)',
+              'rgba(233,99,141,0.7)',
+              'rgba(23,162,184,0.7)',
+              'rgba(220,53,69,0.7)',
+              'rgba(153,102,255,0.7)',
+              'rgba(255,159,64,0.7)',
+              'rgba(108,117,125,0.7)',
+              'rgba(54,162,235,0.7)',
+              'rgba(180,180,180,0.7)'
+            ],
+            hoverBackgroundColor: [
+              'rgba(100,106,232,0.4)',
+              'rgba(126,230,78,0.4)',
+              'rgba(255,193,7,0.4)',
+              'rgba(233,99,141,0.4)',
+              'rgba(23,162,184,0.4)',
+              'rgba(220,53,69,0.4)',
+              'rgba(153,102,255,0.4)',
+              'rgba(255,159,64,0.4)',
+              'rgba(108,117,125,0.4)',
+              'rgba(54,162,235,0.4)',
+              'rgba(180,180,180,0.4)'
+            ],
+            borderWidth: 1
+          }
+        ]
+      };
 
 
-            this.pieChartOptions = {
-                plugins: {
-                    legend: {
-                        labels: {
-                            usePointStyle: true,
-                            color: textColor
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Resource Category Distribution',
-                        color: textColor,
-                        font: { size: 16 }
-                      }
-                }
-            };
-            this.cd.markForCheck()
+      this.pieChartOptions = {
+        plugins: {
+          legend: {
+            labels: {
+              usePointStyle: true,
+              color: textColor
+            }
+          },
+          title: {
+            display: true,
+            text: 'Resource Category Distribution',
+            color: textColor,
+            font: { size: 16 }
+          }
         }
+      };
+      this.cd.markForCheck()
     }
-  
+  }
+
 
   onCategoryFilterChange(selectedOptions: any[], filterFn: (val: any) => void) {
     this.selectedCategories = selectedOptions || [];
@@ -266,41 +282,41 @@ private availabilityLabels: Record<number, string> = {
   }
 
   onMeasureFilterChange(selectedOptions: any[], filterFn: (val: any) => void) {
-  this.selectedMeasures = selectedOptions || [];
+    this.selectedMeasures = selectedOptions || [];
 
-  const filterValues = this.selectedMeasures.map(m => m.value);
+    const filterValues = this.selectedMeasures.map(m => m.value);
 
-  filterFn(filterValues.length ? filterValues : null);
-}
-
-
-getAvailabilityName(value: ResourceAvailability): string {
-  return this.availabilityLabels[value] ?? 'Unknown';
-}
-
-getTypeName(value: boolean): string {
-  return value ? 'Exhaustible' : 'Inexhaustible';
-}
-
-
-// 4. For Category (lookup from resourceCategoryOptions)
-getCategoryName(value: number): string {
-  const category = this.resourceCategoryOptions.find(c => c.value === value);
-  return category ? category.name : 'Unknown';
-}
-
-getAvailabilityClass(status: ResourceAvailability): string {
-  switch (status) {
-    case ResourceAvailability.Available:
-      return 'bg-[#dcfce7] text-[#2f784a]';
-    case ResourceAvailability.Unavailable:
-      return 'bg-[#fee2e2] text-[#a83838]';
-    case ResourceAvailability.Booked:
-      return 'bg-[#fef9c3] text-[#946325]';
-    default:
-      return '';
+    filterFn(filterValues.length ? filterValues : null);
   }
-}
+
+
+  getAvailabilityName(value: ResourceAvailability): string {
+    return this.availabilityLabels[value] ?? 'Unknown';
+  }
+
+  getTypeName(value: boolean): string {
+    return value ? 'Exhaustible' : 'Inexhaustible';
+  }
+
+
+  // 4. For Category (lookup from resourceCategoryOptions)
+  getCategoryName(value: number): string {
+    const category = this.resourceCategoryOptions.find(c => c.value === value);
+    return category ? category.name : 'Unknown';
+  }
+
+  getAvailabilityClass(status: ResourceAvailability): string {
+    switch (status) {
+      case ResourceAvailability.Available:
+        return 'bg-[#dcfce7] text-[#2f784a]';
+      case ResourceAvailability.Unavailable:
+        return 'bg-[#fee2e2] text-[#a83838]';
+      case ResourceAvailability.Booked:
+        return 'bg-[#fef9c3] text-[#946325]';
+      default:
+        return '';
+    }
+  }
 
   getTypeClass(type: boolean): string {
     switch (type) {
@@ -312,7 +328,7 @@ getAvailabilityClass(status: ResourceAvailability): string {
         return '';
     }
   }
-      
+
   clear(table: Table) {
     table.clear();
     this.selectedResources = []
@@ -333,40 +349,38 @@ getAvailabilityClass(status: ResourceAvailability): string {
     return { labels, counts };
   }
 
-  noteSavedResource(savedResource : ResourceDto)
-  {
-    if(savedResource){
+  noteSavedResource(savedResource: ResourceDto) {
+    if (savedResource) {
       this.resources.push(savedResource);
       this.initChart();
     }
-    else{
+    else {
       this.fetchResources()
     }
-    
+
   }
 
-  deleteResource(resource : ResourceDto)
-  {
-    
-      this.confirmationDialogService
+  deleteResource(resource: ResourceDto) {
+
+    this.confirmationDialogService
       .confirm(`Are you sure you want to delete the resource "${resource.getName()}"?`)
       .then(confirmed => {
-        
-        if(!confirmed) return;
+
+        if (!confirmed) return;
 
         this.apiService.deleteResource(resource.getResourceID()).subscribe({
-          next: (msg) => 
-            {
-              this.fetchResources();
-              this.messageService.add({ severity: 'success', summary: 'Deleted', detail: msg});
-            },
-            error: (errorResponse) => {
-                this.messageService.add({
-                  severity: 'error',
-                  summary: 'Error',
-                  detail: errorResponse.message,
-                  life: 3000 });
-              }
+          next: (msg) => {
+            this.fetchResources();
+            this.messageService.add({ severity: 'success', summary: 'Deleted', detail: msg });
+          },
+          error: (errorResponse) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000
+            });
+          }
         });
       })
 

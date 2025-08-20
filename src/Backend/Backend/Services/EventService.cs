@@ -60,6 +60,9 @@ namespace Backend.Services
 
                 query = query.Where(e => eventIdsWithTickets.Contains(e.EventID));
             }
+
+            query = query.Where(e => e.ParentEventId == 0);
+
             if (!string.IsNullOrEmpty(sortBy) && sortBy.ToLower() == "price")
             {
                 if (!string.IsNullOrEmpty(sortOrder) && sortOrder.ToLower() == "desc")
@@ -103,9 +106,11 @@ namespace Backend.Services
                     Title = e.Title,
                     Location = e.Location,
                     StartDate = e.StartDate,
+                    EndDate=e.EndDate,
                     ImageUrl = e.ImageUrl,
                     Category = e.Category,
-                    AttendingCount = attendingCounts.ContainsKey(e.EventID) ? attendingCounts[e.EventID] : 0
+                    AttendingCount = attendingCounts.ContainsKey(e.EventID) ? attendingCounts[e.EventID] : 0,
+                    ParentEventId=e.ParentEventId
 
                 })
                 .ToListAsync();

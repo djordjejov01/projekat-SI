@@ -25,30 +25,40 @@ export default function EventsScreen() {
   const { t } = useTranslation();
 
   useEffect(() => {
-    const fetchEvents = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(`${API_URL}/api/events`);
-        if (response.ok) {
-          const data = await response.json();
+  const fetchEvents = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/events`);
+      if (response.ok) {
+        const data = await response.json();
 
-          // Filter only upcoming events
-          const now = new Date();
-          const upcomingEvents = data.filter((event: any) => new Date(event.startDate) >= now);
+        const now = new Date();
 
-          setEvents(upcomingEvents);
-        } else {
-          console.error('Failed to fetch events:', response.status);
-        }
-      } catch (err) {
-        console.error('Error fetching events:', err);
-      } finally {
-        setLoading(false);
+        const filtered = data.filter((event: any) => {
+          // pokupi vrednost parentId bez obzira kako se zove
+          const parentId = event.parentEventId;
+
+          const endDate = new Date(event.endDate);
+
+          // parentId može biti string → pretvorimo ga u broj
+          const parentIdNum = Number(parentId);
+
+          return parentIdNum === 0 && endDate >= now;
+        });
+        setEvents(filtered);
+      } else {
+        console.error("Failed to fetch events:", response.status);
       }
-    };
+    } catch (err) {
+      console.error("Error fetching events:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchEvents();
-  }, []);
+  fetchEvents();
+}, []);
+
 
   const handleToggleFavorite = async (eventId: number) => {
     const token = await AsyncStorage.getItem('token');

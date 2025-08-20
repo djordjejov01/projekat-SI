@@ -60,7 +60,7 @@ defaultImage = 'assets/default-picture.png';
   this.apiService.changeOrganizerPicture(formData).subscribe({
 
         next:(response : any) => {
-          console.log(response);
+          //console.log(response);
           this.previewUrl = this.currOrganizer.getImage();
           this.getOrganizerCall();
           this.sharedService.notifyProfileImageChanged();
@@ -86,11 +86,8 @@ defaultImage = 'assets/default-picture.png';
 
         next:(response : OrganizerDto) => {
           this.currOrganizer = response;
-          if(this.currOrganizer.getImage()!="https://localhost:7269/")
-          {
-            this.previewUrl = this.currOrganizer.getImage();
-          }
-          console.log(response);
+          this.previewUrl = this.currOrganizer.getImage();
+          //console.log(response);
         },
         error:(errorResponse) =>{
           this.messageService.add({
@@ -104,7 +101,7 @@ defaultImage = 'assets/default-picture.png';
   }
 
   ngOnInit(): void {
-    console.log(this.authService.getUserId())
+    //console.log(this.authService.getUserId())
       this.getOrganizerCall();
 
       this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe({
@@ -140,7 +137,7 @@ defaultImage = 'assets/default-picture.png';
       this.apiService.getDashboardMetrics().subscribe({
             next: (response: DashboardMetrics) => {
               this.dashboardMetrics = response;
-              console.log(response);
+              //console.log(response);
             },
             error: (errorResponse) => {
               this.messageService.add({
@@ -162,7 +159,7 @@ defaultImage = 'assets/default-picture.png';
     const phone = (document.getElementById('phone') as HTMLInputElement).value;
 
     const toUpdate = new OrganizerDto(this.authService.getUserId(),name,username5,email,phone,"");
-    console.log(toUpdate)
+    //console.log(toUpdate)
     this.apiService.updateOrg(toUpdate).subscribe({
       next:(response : string) =>{
         this.messageService.add({

@@ -10,8 +10,9 @@ namespace Backend.Helpers
         {
             if (string.IsNullOrWhiteSpace(email))
                 return false;
-            const string allowed = @"A-Za-z0-9!#$%&'*+/=?^_`{|}~\-";
-            var pattern = $@"^[{allowed}]{{3,}}@[{allowed}]{{2,}}\.[{allowed}]{{2,}}$";
+
+            
+            var pattern = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
 
             return Regex.IsMatch(email, pattern);
         }

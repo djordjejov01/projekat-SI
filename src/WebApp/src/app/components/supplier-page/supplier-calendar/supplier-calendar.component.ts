@@ -85,9 +85,6 @@ export class SupplierCalendarComponent implements OnInit {
           
                 next: (response: any) => {
                   this.bookedResources = response;
-                  console.log(this.bookedResources);
-                  console.log(this.bookedResources);
-                  console.log("KER",this.mapToCalendarEvents(this.bookedResources));
                   this.calendarOptions.events = this.mapToCalendarEvents(this.bookedResources);
                 },
                 error: (errorResponse) => {

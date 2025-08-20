@@ -7,6 +7,7 @@ import {
   ScrollView,
   Alert,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { useLocalSearchParams } from 'expo-router';
@@ -15,20 +16,24 @@ import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import { API_URL } from '../../config';
 import { useTranslation } from 'react-i18next';
+import { Ionicons } from '@expo/vector-icons';
+
+type TicketType = {
+  id: number;
+  name: string;
+  quantity: number;
+};
 
 export default function TicketDetails() {
   const { t } = useTranslation();
-  const params = useLocalSearchParams();
   const router = useRouter();
-
-  const { ticketIDs, validationTokens, eventName, eventID, purchasedAt } = params;
+  const { ticketIDs, validationTokens, eventName, eventID, purchasedAt, ticketTypes } = useLocalSearchParams();
 
   const [fullName, setFullName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-
   const svgRefs = useRef<Array<any>>([]);
 
-  // Parsiranje ID-eva karata
+  // Parsiranje ID-eva karata i tokena
   let ids: number[] = [];
   try {
     if (ticketIDs) ids = JSON.parse(ticketIDs as string);
@@ -36,7 +41,6 @@ export default function TicketDetails() {
     console.error('Invalid ticketIDs param', error);
   }
 
-  // Parsiranje ValidationToken-a
   let tokens: string[] = [];
   try {
     if (validationTokens) tokens = JSON.parse(validationTokens as string);
@@ -44,16 +48,33 @@ export default function TicketDetails() {
     console.error('Invalid validationTokens param', error);
   }
 
+  // Parsiranje tipova karata
+  let parsedTicketTypes: TicketType[] = [];
+  try {
+    if (ticketTypes) parsedTicketTypes = JSON.parse(ticketTypes as string);
+  } catch (error) {
+    console.error('Invalid ticketTypes param', error);
+  }
+
   const formattedDate = purchasedAt
     ? new Date(purchasedAt as string).toLocaleString()
     : '';
+
+  // Funkcija za pronalazenje imena tipa karte
+  const getTicketTypeName = (id: number): string => {
+    const ticketType = parsedTicketTypes.find(t => t.id === id);
+    return ticketType ? ticketType.name : t('ticketDetails.unknownTicket');
+  };
 
   // Fetch user info
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
-        if (!token) return;
+        if (!token) {
+          setLoading(false);
+          return;
+        }
 
         const res = await fetch(`${API_URL}/api/MobileUser/profile`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -109,6 +130,11 @@ export default function TicketDetails() {
         encoding: FileSystem.EncodingType.Base64,
       });
 
+      if (!(await Sharing.isAvailableAsync())) {
+        Alert.alert(t('qr.shareNotAvailableTitle'), t('qr.shareNotAvailable'));
+        return;
+      }
+
       await Sharing.shareAsync(fileUri);
     } catch (error) {
       console.error('Share error:', error);
@@ -120,6 +146,15 @@ export default function TicketDetails() {
     typeof eventName === 'string' && eventName.trim() !== ''
       ? eventName
       : t('ticketDetails.viewEventDetails');
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0047FF" />
+        <Text style={{ marginTop: 10 }}>{t('loading')}</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -148,51 +183,50 @@ export default function TicketDetails() {
       </Text>
 
       {/* QR kodovi */}
-      {ids.map((id, index) => (
-        <View key={index} style={styles.ticketCard}>
-          <Text style={styles.ticketLabel}>
-            🎫 {t('ticketDetails.ticket')} #{index + 1}
-          </Text>
-
-          <QRCode
-            value={`${API_URL}/api/TicketValidation/validate/${id}/${tokens[index]}`}
-            size={250}
-            backgroundColor="white"
-            color="black"
-            getRef={(ref) => (svgRefs.current[index] = ref)}
-          />
-
-          <View style={styles.cardDetails}>
-            <Text style={styles.detail}>
-              {t('ticketDetails.purchasedAt')}: {formattedDate}
+      {ids.map((id, index) => {
+        const token = tokens[index];
+        return (
+          <View key={index} style={styles.ticketCard}>
+            <Text style={styles.ticketLabel}>
+              🎫 {getTicketTypeName(id)}
             </Text>
-            {!loading && (
-              <Text style={styles.detail}>
-                {t('ticketDetails.purchasedBy')}:{' '}
-                <Text style={{ fontWeight: '600' }}>
-                  {fullName ?? t('ticketDetails.unknownUser')}
-                </Text>
+            
+            <Text style={styles.detailText}>
+              {t('ticketDetails.userTicketId')}: {id}
+            </Text>
+
+            {token ? (
+              <QRCode
+                value={`${API_URL}/api/TicketValidation/validate/${id}/${token}`}
+                size={250}
+                backgroundColor="white"
+                color="black"
+                getRef={(ref) => (svgRefs.current[index] = ref)}
+              />
+            ) : (
+              <Text style={styles.errorText}>
+                {t('ticketDetails.qrError')}
               </Text>
             )}
-          </View>
 
-          <View style={styles.actions}>
-            <TouchableOpacity
-              onPress={() => downloadQR(index)}
-              style={styles.button}
-            >
-              <Text style={styles.buttonText}>📥 {t('buttons.download')}</Text>
-            </TouchableOpacity>
+            <View style={styles.actions}>
+              <TouchableOpacity
+                onPress={() => downloadQR(index)}
+                style={styles.button}
+              >
+                <Text style={styles.buttonText}>📥 {t('buttons.download')}</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => shareQR(index)}
-              style={styles.buttonSecondary}
-            >
-              <Text style={styles.buttonText}>📤 {t('buttons.share')}</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => shareQR(index)}
+                style={styles.buttonSecondary}
+              >
+                <Text style={styles.buttonText}>📤 {t('buttons.share')}</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      ))}
+        );
+      })}
 
       <TouchableOpacity
         style={styles.backToEventsButton}
@@ -223,6 +257,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 10,
     color: '#3478f6',
+    textDecorationLine: 'underline',
   },
   detail: {
     fontSize: 16,
@@ -247,16 +282,21 @@ const styles = StyleSheet.create({
   ticketLabel: {
     fontSize: 22,
     fontWeight: '700',
-    marginBottom: 22,
+    marginBottom: 12,
     color: '#333',
     textAlign: 'center',
     width: '100%',
   },
-  cardDetails: {
-    marginTop: 14,
-    alignSelf: 'stretch',
-    width: '100%',
-    paddingLeft: 8,
+  detailText: {
+    fontSize: 16,
+    marginBottom: 16,
+    color: '#555',
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 20,
+    fontWeight: '600',
   },
   actions: {
     flexDirection: 'row',
@@ -304,5 +344,10 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: '700',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
