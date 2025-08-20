@@ -1,0 +1,21 @@
+<header>
+    <div id="leftside">
+        <img src="./assets/logo91.png" alt="syncup logo" id="logo">
+        <p routerLink="/home">{{ 'HOME' | translate }}</p>
+    </div>
+    <div id="rightside">
+        <select (change)="changeLanguage($event)">
+            <option value="sr">Srpski</option>
+            <option value="en">English</option>
+        </select>
+        <p>|</p>
+        <p id="dashboard" *ngIf="isLoggedIn" [routerLink]="dashboardRoute"> Dashboard </p>
+
+        <ng-container  *ngIf="!isLoggedIn">
+            <p id="login" routerLink="/login">{{ 'LOGIN' | translate }}</p>
+            <p>/</p>
+            <p id="register" routerLink="/register">{{ 'REGISTER' | translate }}</p>
+        </ng-container>
+
+    </div>
+</header>

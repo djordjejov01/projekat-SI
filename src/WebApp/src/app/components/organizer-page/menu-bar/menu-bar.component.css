@@ -1,0 +1,33 @@
+#bar{
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    border-right: 2px solid rgb(232, 232, 232);
+    gap:10px;
+    border-bottom: 2px solid rgb(232, 232, 232);
+    border-bottom-right-radius: 10px;
+    position: fixed;
+    margin-top: 53px;
+    z-index: 10;
+    background-color: white;
+    height: 95%;
+}
+
+#menu{
+    position: sticky;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    margin-left: 25px;
+    margin-right: 25px;
+    gap:5px;
+    height: 100%;
+}
+
+@media screen and (width <= 1531px) {
+#bar{
+    border-left: 2px solid rgb(232, 232, 232);
+    border-bottom-left-radius: 10px;
+}
+}

@@ -1,0 +1,26 @@
+<div class="container">
+
+    <div class="top">
+        <p>{{ cardTitle }}</p>
+        <img [src]='imgUrl' alt="Users Icon">
+    </div>
+
+    <div class="content">
+        <h1>{{ statValue }}</h1>
+        <p>{{ statDesc }}</p>
+    </div>
+    
+    <div class="bottom">
+        <i class="pi"
+        [ngClass]="{
+            'pi-arrow-up-right' : statPercent > 0,
+            'pi-arrow-down-right' : statPercent < 0 ,
+            'better' : (statPercent > 0 && cardTitle !== 'Dormant Accounts') || (statPercent < 0 && cardTitle === 'Dormant Accounts'),
+            'worse' : (statPercent < 0 && cardTitle !== 'Dormant Accounts') || (statPercent > 0 && cardTitle === 'Dormant Accounts')}"></i>
+        <p 
+        [ngClass]="{
+         'better' : (statPercent > 0 && cardTitle !== 'Dormant Accounts') || (statPercent < 0 && cardTitle === 'Dormant Accounts'),
+         'worse' : (statPercent < 0 && cardTitle !== 'Dormant Accounts') || (statPercent > 0 && cardTitle === 'Dormant Accounts')}">{{ statPercent }}% compared to previous period</p>
+    </div>
+
+</div>

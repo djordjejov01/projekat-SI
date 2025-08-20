@@ -1,0 +1,68 @@
+.resource-form{
+    padding: 2rem;
+    padding-top: 0;
+    padding-bottom: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.form-inputs{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    gap: 2rem;
+}
+
+.dates{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.formTitle{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 2rem;
+    padding-bottom: 0;
+    padding-top: 1rem;
+}
+
+.formTitle h3{
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.formTitle p{
+    font-size: 0.875rem;
+    color: #8C8D8B;
+}
+
+.input-wrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.input-wrapper p{
+    color: #8C8D8B;
+}
+
+.form-buttons{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    /* padding-top: 5rem; */
+}
+
+.exit-button{
+    height: 32px;
+    width: 32px;
+}
+
+::ng-deep .p-dialog-content {
+    overflow: visible !important;
+}

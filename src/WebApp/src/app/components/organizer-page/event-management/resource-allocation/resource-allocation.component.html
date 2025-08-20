@@ -1,0 +1,91 @@
+<div class="content">
+
+     <div class="resource-header">
+        <h1>Resource Allocation</h1>
+    </div>
+
+    <hr class="custom-hr">
+
+    <div class="pick-list">
+        <p-pickList 
+        [source]="availableResources" 
+        [target]="allocatedResources" 
+        sourceHeader="Available Resources" 
+        targetHeader="Allocated to Event"
+        [showSourceControls]="false" 
+        [showTargetControls]="false"
+        [dragdrop]="true"
+        [responsive]="true"
+        [style]="{height:'400px'}"
+        filterBy="name"
+        sourceFilterPlaceholder="Search by name"
+        targetFilterPlaceholder="Search by name"
+        breakpoint="1400px"
+        [sourceTrackBy]="'resourceID'" 
+        [targetTrackBy]="'resourceID'"
+        (onMoveToTarget)="handleMoveToTarget($event)"
+        (onMoveToSource)="handleMoveToSource($event)"
+        >
+
+        <ng-template let-resource pTemplate="item">
+        <div class="flex justify-between items-center w-full">
+            <span class="font-medium">{{ resource.name }}</span>
+
+            <div class="flex gap-2 items-center">
+
+            <p-chip 
+                label="{{ getCategoryName(resource) }}" 
+                [ngStyle]="getCategoryStyle(resource)"
+                class="px-3 py-1 text-sm h-6 rounded-full font-medium">
+            </p-chip>
+            
+            <!-- Display Quantity for resources in the source (available) list -->
+            <p-chip 
+                *ngIf="resource.status === undefined"
+                label="Qty left: {{ resource.quantity }}"
+                styleClass="px-3 py-1 text-sm h-6 bg-quantity"
+            />
+
+            <!-- Display Allocated Quantity for resources in the target (allocated) list -->
+            <p-chip 
+                *ngIf="resource.status !== undefined"
+                label="Qty alloc: {{ resource.allocatedQuantity }}"
+                styleClass="px-3 py-1 text-sm h-6 bg-quantity"
+            />
+
+            <p-chip 
+                *ngIf="resource.status !== undefined"
+                [label]="getStatusText(resource.status)"
+                [ngClass]="getStatusClass(resource.status)" 
+                class="px-3 py-1 text-sm h-6 rounded-full font-medium">
+            </p-chip>
+
+            <p-chip
+                *ngIf="resource.status !== undefined && !resource.isExhaustable"
+                [label]="getShortDateRange(resource.startDateTimeBooked, resource.endDateTimeBooked)"
+                styleClass="px-3 py-1 text-sm h-6 bg-gray-200"
+            ></p-chip>
+
+        <p-chip 
+        *ngIf="resource.status === undefined && findSupplier(resource.supplierID) as supplier"
+        [label]="supplier.getUsername()" 
+        [image]="supplier.getImage()">
+        </p-chip>
+            </div>
+        </div>
+        </ng-template>
+        </p-pickList>
+    </div>
+
+
+    <app-resource-modal
+  (save)="onModalSave($event)"
+  (cancel)="onModalCancel($event)"
+  (onHide)="onModalClosed()" 
+  [eventBasicInfo]="eventBasicInfo"
+  #resourceModal
+>
+</app-resource-modal>
+
+   
+</div>

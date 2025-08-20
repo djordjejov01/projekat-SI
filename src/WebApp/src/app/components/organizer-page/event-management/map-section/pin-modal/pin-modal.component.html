@@ -1,0 +1,113 @@
+<p-dialog
+  [modal]="true"
+  [(visible)]="visible"
+  [style]="{ width: '30rem', height: '40rem' }"
+  (onHide)="onCancleClick()"
+  [closable]="false"
+  [dismissableMask]="false"
+  [closeOnEscape]="false"
+>
+  <ng-template pTemplate="header">
+    <div class="flex justify-between items-start w-full">
+      <div class="formTitle">
+        <h3>Create New Pin</h3>
+        <p>Fill in the details below to set up your pin.</p>
+      </div>
+      <button
+        type="button"
+        class="p-dialog-header-icon p-link p-button-rounded p-button-text exit-button"
+        (click)="onCancleClick()"
+        pTooltip="Close"
+        tooltipPosition="left"
+      >
+        <i class="pi pi-times"></i>
+      </button>
+    </div>
+  </ng-template>
+    
+    <form action="" [formGroup]="pinForm" class="pinForm">
+
+        <div class="form-inputs">
+
+            <div  class="input-wrapper">
+
+                <p>Pin Title</p>
+                <p-floatlabel class="w-full md:w-56" variant="on">
+                    <input  type="text"  pInputText  placeholder=" "  formControlName="title"  inputId="title"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                <label for="title">Enter Pin Title</label>
+                </p-floatlabel>
+
+            </div>
+
+          <div class="input-wrapper">
+            <p>Type</p>
+            <p-floatlabel class="w-full" variant="on">
+              <p-dropdown
+                [options]="pinTypeOptions"
+                formControlName="type"
+                optionLabel="label"
+                optionValue="value"
+                placeholder=" "
+                inputId="type"
+                class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"
+              >
+                <!-- Dropdown items -->
+                <ng-template let-option pTemplate="item">
+                  <div class="flex items-center gap-2">
+                    <img [src]="option.icon" alt="{{ option.label }}" class="w-5 h-5 object-contain" />
+                    <span>{{ option.label }}</span>
+                  </div>
+                </ng-template>
+
+                <!-- Selected item -->
+              <ng-template let-selected pTemplate="selectedItem">
+                <div class="flex items-center gap-2" *ngIf="selected">
+                  <img [src]="selected.icon" alt="Selected" class="w-5 h-5 object-contain" />
+                  <span>{{ selected.label }}</span>
+                </div>
+                <span *ngIf="!selected">Select Pin Type</span>
+              </ng-template>
+
+
+              </p-dropdown>
+
+              <label for="type">Select Pin Type</label>
+            </p-floatlabel>
+          </div>
+
+
+
+
+
+            <div  class="input-wrapper">
+
+                <p>Description</p>
+                <p-floatlabel class="w-full md:w-56" variant="on">
+                    <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" [ngClass]="{'p-inputtext-filled': pinForm?.get('description')?.value}"></textarea>
+                <label for="description">Describe Your Pin</label>
+                </p-floatlabel>
+
+            </div>
+
+
+            <div class="form-buttons">
+                <p-button 
+                label="Save Changes"
+                icon="pi pi-pen-to-square"
+                [raised]="true"
+                (onClick)="savePin()"
+                severity="primary"
+                ></p-button>
+
+                <p-button 
+                    label="Cancel"
+                    icon="pi pi-times"
+                    [raised]="true"
+                    severity="secondary"
+                    type="button"
+                    (onClick)="onCancleClick()"
+                ></p-button>
+            </div>
+        </div>
+    </form>
+</p-dialog>

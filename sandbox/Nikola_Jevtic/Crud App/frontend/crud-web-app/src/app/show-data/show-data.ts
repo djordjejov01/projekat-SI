@@ -28,7 +28,7 @@ export class ShowData {
       },
 
       error: (err) =>{
-        console.log('Error when deleting player', err);
+        //console.log('Error when deleting player', err);
       }
     })
   }

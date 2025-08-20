@@ -1,0 +1,13 @@
+<div id="bar">
+    <div id="menu">
+        <app-menu-item
+    *ngFor="let item of items; let i = index"
+    [title]="item.title"
+    [link] = "item.link"
+    [image]="selectedIndex === i ? item.imageWhite : item.image"
+    [isSelected]="selectedIndex === i"
+    (clicked)="selectItem(i)"
+    [id] = "'item' + i">
+  </app-menu-item>
+    </div>
+</div>

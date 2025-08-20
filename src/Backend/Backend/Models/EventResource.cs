@@ -1,0 +1,34 @@
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace Backend.Models
+{
+    public class EventResource
+    {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ID { get; set; }
+
+        [ForeignKey(nameof(Supplier))]
+        public int SupplierID { get; set; }
+
+        [ForeignKey(nameof(Event))]
+        public int EventID { get; set; }
+        public int Quantity { get; set; }
+        public bool IsReservable { get; set; }
+        public User Supplier { get; set; }
+        public Event Event { get; set; }
+
+        [ForeignKey(nameof(Resource))]
+        public int ResourceID { get; set; }
+        public Resource Resource { get; set; }
+        public EventResourceStatus Status { get; set; }
+        public DateTime? StartDateTimeBooked { get; set; }
+        public DateTime? EndDateTimeBooked { get; set; }
+    }
+    public enum EventResourceStatus
+    {
+        Pending,
+        Approved,
+        Declined
+    }
+}
