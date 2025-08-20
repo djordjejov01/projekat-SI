@@ -2,7 +2,7 @@
 
     <div class="table-styles-header">
         <h1>Event Tickets</h1>
-        <button  icon="pi pi-plus" (click)="ticketModal.show()"><i class="pi pi-plus"></i>Add Ticket</button>
+        <button *ngIf = "eventBasicInfo.getStatusLabel()!='Canceled'" icon="pi pi-plus" (click)="ticketModal.show()"><i class="pi pi-plus"></i>Add Ticket</button>
     </div>
 
     <hr class="custom-hr">
@@ -90,7 +90,7 @@
                     </div>
                 </th>
 
-                <th style="width: 5rem">Actions</th>
+                <th style="width: 5rem" *ngIf = "eventBasicInfo.getStatusLabel()!='Canceled'">Actions</th>
             </tr>
         </ng-template>
 
@@ -128,7 +128,7 @@
                <td >
 
                 <div class="flex gap-2">
-                    <button
+                    <button *ngIf = "eventBasicInfo.getStatusLabel()!='Canceled'"
                         pButton
                         type="button"
                         icon="pi pi-pencil"
@@ -138,7 +138,7 @@
                         tooltipPosition="top">
                     </button>
 
-                    <button
+                    <button *ngIf = "eventBasicInfo.getStatusLabel()!='Canceled'"
                         pButton
                         type="button"
                         icon="pi pi-trash"

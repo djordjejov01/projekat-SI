@@ -107,8 +107,8 @@ selectedRoles: any[] = [];
       this.initializeDateRangers();
       this.initBarChart();
       this.initDoughnutChart();
-      console.log(this.users)
-      console.log("USERS",this.users[0]);
+      //console.log(this.users)
+      //console.log("USERS",this.users[0]);
     },
     error: (err) => {
       this.loading = false;
@@ -218,7 +218,7 @@ onRoleFilterChange(selectedOptions: any[], filterFn: (val: any) => void) {
   initDoughnutChart() {
 
     const stats = this.getRoleDistribution()
-    console.log(stats)
+    //console.log(stats)
 
     if (isPlatformBrowser(this.platformId)) {
                 const documentStyle = getComputedStyle(document.documentElement);
@@ -418,8 +418,8 @@ onRoleFilterChange(selectedOptions: any[], filterFn: (val: any) => void) {
       }).length)
     }
 
-    console.log(counts)
-    console.log(labels)
+    //console.log(counts)
+    //console.log(labels)
     return { counts, labels };
 
   }
@@ -499,7 +499,7 @@ onRoleFilterChange(selectedOptions: any[], filterFn: (val: any) => void) {
 
   //     next: (users) => {
   //       this.lazyUsers = users;
-  //       console.log(this.lazyUsers);
+  //       //console.log(this.lazyUsers);
   //       this.loading = false;
   //     },
   //     error: () =>{

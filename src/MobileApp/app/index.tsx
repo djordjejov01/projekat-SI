@@ -38,7 +38,7 @@ export default function HomeScreen() {
           }
         }
       } catch (error) {
-        console.log('Token check failed:', error);
+        //console.log('Token check failed:', error);
         await AsyncStorage.removeItem('token');
       }
     };

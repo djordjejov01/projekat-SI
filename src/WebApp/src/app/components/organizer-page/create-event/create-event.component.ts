@@ -227,7 +227,7 @@ export class CreateEventComponent implements OnInit,IDeactivate,OnDestroy{
    onLocationSelect(event: any) {
       const location = event.value;
       this.eventForm.patchValue({ location: location.display_name });
-      console.log(this.eventForm.get('location')?.value);
+      //console.log(this.eventForm.get('location')?.value);
     }
 
 submitForm(): void {
@@ -266,7 +266,7 @@ submitForm(): void {
   });
 
   for (const pair of formData.entries()) {
-  console.log(pair[0]+ ': ' + pair[1]);
+  //console.log(pair[0]+ ': ' + pair[1]);
 }
 
   const organizerId = this.authService.getUserId();
