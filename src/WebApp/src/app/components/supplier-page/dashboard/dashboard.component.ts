@@ -62,20 +62,19 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  resourceCategoryOptions: { name: string, value: number }[] = [];
-  resourceAvailabilityOptions: { name: string, value: number }[] = [];
-  resourceTypeOptions = [
-    { name: 'Exhaustible', value: ResourceType.Exhaustable },
-    { name: 'Inexhaustible', value: ResourceType.Inexhaustable }
-  ];
+resourceCategoryOptions: { name: string, value: number }[] = [];
+resourceAvailabilityOptions : { name: string, value: number }[] = [];
+resourceTypeOptions = [
+  { name: 'Exhaustible', value: true },
+  { name: 'Inexhaustible', value: false }
+];
+
 
   private availabilityLabels: Record<number, string> = {
     [ResourceAvailability.Available]: 'Available',
     [ResourceAvailability.Unavailable]: 'Unavailable',
     [ResourceAvailability.Booked]: 'Booked'
   };
-
-
 
 
   selectedCategories: any[] = [];
