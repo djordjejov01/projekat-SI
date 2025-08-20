@@ -57,6 +57,13 @@ namespace Backend.Services
                 }
             }
 
+            //provera da broj karata ne predje kapacitet
+            var totalQuota = model.Tickets?.Sum(t => t.Quota) ?? 0;
+            if (totalQuota > model.Capacity)
+            {
+                throw new ArgumentException("Total ticket quota cannot exceed event capacity.");
+            }
+
             string imageName = null;
             if (model.ImageFile != null)
             {

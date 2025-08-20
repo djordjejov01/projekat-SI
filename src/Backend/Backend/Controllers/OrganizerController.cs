@@ -193,6 +193,15 @@ namespace Backend.Controllers
             eventEntity.StartDate = dto.StartDate;
             eventEntity.EndDate = dto.EndDate;
             eventEntity.Category = dto.Category;
+
+            //provera da novi kapacitet ne sme da bude manji od broja vec postojecih karata
+            var currentTotalQuota = await _context.Tickets
+                .Where(t => t.EventID == eventEntity.EventID)
+                .SumAsync(t => (int?)t.Quota) ?? 0;
+
+            if (dto.Capacity < currentTotalQuota)
+                return BadRequest($"Cannot set capacity below current total ticket quota ({currentTotalQuota}).");
+
             eventEntity.NumberOfPeople = dto.Capacity;
 
 
@@ -506,10 +515,14 @@ namespace Backend.Controllers
                 return BadRequest("Ticket information was not provided.");
             }
 
+            if (ticketDto.Quota <= 0)
+                return BadRequest("Ticket quota must be greater than 0.");
+
             if (ticketDto.Price <= 0)
             {
                 return BadRequest("The ticket must have a price greater than 0 EUR.");
             }
+
 
             var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
@@ -517,6 +530,11 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(e => e.EventID == ticketDto.EventId && e.OrganizerID == organizerId);
             if (eventEntity == null)
                 return NotFound("Event not found or you do not have permission to add a ticket for this event.");
+
+            if (ticketDto.ValidFrom >= ticketDto.ValidUntil)
+                return BadRequest("Ticket validFrom must be before validUntil.");
+            if (ticketDto.ValidFrom < eventEntity.StartDate || ticketDto.ValidUntil > eventEntity.EndDate)
+                return BadRequest("Ticket validity must be within event dates.");
 
             var newTicket = new Ticket
             {
@@ -528,6 +546,14 @@ namespace Backend.Controllers
                 validFrom = ticketDto.ValidFrom,
                 validUntil = ticketDto.ValidUntil
             };
+
+            var usedQuota = await _context.Tickets
+                .Where(t => t.EventID == ticketDto.EventId)
+                .SumAsync(t => (int?)t.Quota) ?? 0;
+
+            if ((eventEntity.NumberOfPeople ?? 0) < usedQuota + ticketDto.Quota)
+                return BadRequest($"Total tickets across all types would exceed event capacity ({eventEntity.NumberOfPeople}).");
+
             _context.Tickets.Add(newTicket);
 
             eventEntity.isFree = false;
@@ -554,6 +580,8 @@ namespace Backend.Controllers
             if (ticketDto == null)
                 return BadRequest();
 
+            if (ticketDto.Quota <= 0) return BadRequest("Ticket quota must be greater than 0.");
+
             if (ticketDto.Price <= 0)
             {
                 return BadRequest("The ticket must have a price greater than 0 EUR.");
@@ -579,7 +607,25 @@ namespace Backend.Controllers
                     return NotFound("Event not found or you do not have permission to use this event.");
             }
 
-            
+
+            var targetEventId = ticketDto.EventId;
+            var targetEventEntity = await _context.Events.FirstOrDefaultAsync(e => e.EventID == targetEventId);
+            if (targetEventEntity == null)
+                return NotFound("Event not found.");
+
+            if (ticketDto.ValidFrom >= ticketDto.ValidUntil)
+                return BadRequest("Ticket validFrom must be before validUntil.");
+            if (ticketDto.ValidFrom < targetEventEntity.StartDate || ticketDto.ValidUntil > targetEventEntity.EndDate)
+                return BadRequest("Ticket validity must be within event dates.");
+
+            var otherQuotas = await _context.Tickets
+                .Where(t => t.EventID == targetEventId && t.TicketID != ticketDto.TicketId)
+                .SumAsync(t => (int?)t.Quota) ?? 0;
+
+            if ((targetEventEntity.NumberOfPeople ?? 0) < otherQuotas + ticketDto.Quota)
+                return BadRequest($"Total tickets across all types would exceed event capacity ({targetEventEntity.NumberOfPeople}).");
+
+
             existingTicket.TypeName = ticketDto.Name;
             existingTicket.Price = ticketDto.Price;
             existingTicket.EventID = ticketDto.EventId;
