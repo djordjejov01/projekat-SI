@@ -43,9 +43,7 @@ export class SupplierPageComponent implements OnInit{
     
           next: (response: SupplierDto) => {
             this.currSupplier = response;
-            if (this.currSupplier.getImage() != "https://localhost:7269/") {
               this.previewUrl = this.currSupplier.getImage();
-            }
           },
           error: (errorResponse) => {
             this.messageService.add({

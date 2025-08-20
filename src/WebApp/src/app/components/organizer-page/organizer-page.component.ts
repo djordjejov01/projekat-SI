@@ -43,9 +43,7 @@ export class OrganizerPageComponent implements AfterContentInit, OnInit {
 
       next: (response: OrganizerDto) => {
         this.currOrganizer = response;
-        if (this.currOrganizer.getImage() != "https://localhost:7269/") {
-          this.previewUrl = this.currOrganizer.getImage();
-        }
+        this.previewUrl = this.currOrganizer.getImage();
       },
       error: (errorResponse) => {
         this.messageService.add({

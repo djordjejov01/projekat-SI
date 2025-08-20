@@ -121,7 +121,7 @@ export class LoginForm implements OnInit,IDeactivate{
         })
        
 
-        // console.log('New user to login: ', this.userToLogin)
+        // //console.log('New user to login: ', this.userToLogin)
       } 
       else
       {

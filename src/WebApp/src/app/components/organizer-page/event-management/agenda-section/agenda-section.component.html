@@ -1,7 +1,7 @@
     <div class="agenda">
         <div class="agenda-header">
             <h1 class="font-archivo">Event Agenda</h1>
-            <div class="buttons">
+            <div class="buttons" *ngIf = "eventBasicInfo.getStatusLabel()!='Canceled'">
                     <button *ngIf="eventBasicInfo.getParentEventId() === 0"  icon="pi pi-plus" (click)="subeventModal.show()"><i class="pi pi-plus"></i>Add Subevent</button>
                     <button  icon="pi pi-plus" (click)="activityModal.show()" ><i class="pi pi-plus" ></i>Add Activity</button>
             </div>
@@ -83,7 +83,7 @@
                 Here you can add sub-events and activities that make up your event's program.
             </p>
             <div class="flex gap-4">
-                <button pButton type="button" icon="pi pi-plus" label="Add Subevent" (click)="subeventModal.show()"></button>
+                <button *ngIf="eventBasicInfo.getParentEventId() == 0" pButton type="button" icon="pi pi-plus" label="Add Subevent" (click)="subeventModal.show()"></button>
                 <button pButton type="button" icon="pi pi-plus" label="Add Activity" class="p-button-outlined" (click)="activityModal.show()"></button>
             </div>
         </div>

@@ -30,7 +30,7 @@ export class OverviewComponent implements OnInit {
               next:(response : Event[]) => {
                 this.allEvents = response;
                 this.filteredEvents = response;
-                console.log(response);
+                //console.log(response);
               },
               error:(errorResponse) =>{
                 this.messageService.add({

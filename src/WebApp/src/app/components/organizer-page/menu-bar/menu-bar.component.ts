@@ -20,11 +20,11 @@ export class MenuBarComponent {
       const showID = params['showID'];
       if (showID) {
         this.selectedIndex = Number(showID);
-        console.log(this.selectedIndex)
+        //console.log(this.selectedIndex)
       }
     });
     const currentRoute = this.router.url.split('/').pop();
-    console.log(currentRoute);
+    //console.log(currentRoute);
     const foundIndex = this.items.findIndex(item => item.link === currentRoute);
     if (foundIndex !== -1) {
       this.selectedIndex = foundIndex;

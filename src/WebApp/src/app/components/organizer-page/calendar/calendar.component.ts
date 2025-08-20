@@ -62,7 +62,7 @@ export class CalendarComponent implements OnInit{
   ngOnInit(): void {
     
     this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe((events: Event[]) => {
-      console.log(events)
+      //console.log(events)
       const calendarEvents : EventInput[] = events.map( event => ({
         title: event.getTitle(),
         start: event.getStartDateTime().toISOString(),
