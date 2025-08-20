@@ -33,7 +33,7 @@ export default function TicketDetails() {
   const [loading, setLoading] = useState(true);
   const svgRefs = useRef<Array<any>>([]);
 
-  // Parsiranje ID-eva karata i tokena
+  // Parsiranje ID-eva karata
   let ids: number[] = [];
   try {
     if (ticketIDs) ids = JSON.parse(ticketIDs as string);
@@ -41,6 +41,7 @@ export default function TicketDetails() {
     console.error('Invalid ticketIDs param', error);
   }
 
+  // Parsiranje tokena
   let tokens: string[] = [];
   try {
     if (validationTokens) tokens = JSON.parse(validationTokens as string);
@@ -188,12 +189,9 @@ export default function TicketDetails() {
         return (
           <View key={index} style={styles.ticketCard}>
             <Text style={styles.ticketLabel}>
-              🎫 {getTicketTypeName(id)}
+              🎫 {t('ticketDetails.ticket')} #{index + 1}
             </Text>
             
-            <Text style={styles.detailText}>
-              {t('ticketDetails.userTicketId')}: {id}
-            </Text>
 
             {token ? (
               <QRCode
@@ -208,6 +206,19 @@ export default function TicketDetails() {
                 {t('ticketDetails.qrError')}
               </Text>
             )}
+            <View style={styles.cardDetails}>
+            <Text style={styles.detail}>
+              {t('ticketDetails.purchasedAt')}: {formattedDate}
+            </Text>
+            {!loading && (
+              <Text style={styles.detail}>
+                {t('ticketDetails.purchasedBy')}:{' '}
+                <Text style={{ fontWeight: '600' }}>
+                  {fullName ?? t('ticketDetails.unknownUser')}
+                </Text>
+              </Text>
+            )}
+          </View>
 
             <View style={styles.actions}>
               <TouchableOpacity
@@ -257,7 +268,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 10,
     color: '#3478f6',
-    textDecorationLine: 'underline',
   },
   detail: {
     fontSize: 16,
@@ -282,21 +292,10 @@ const styles = StyleSheet.create({
   ticketLabel: {
     fontSize: 22,
     fontWeight: '700',
-    marginBottom: 12,
+    marginBottom: 22, 
     color: '#333',
     textAlign: 'center',
     width: '100%',
-  },
-  detailText: {
-    fontSize: 16,
-    marginBottom: 16,
-    color: '#555',
-  },
-  errorText: {
-    color: 'red',
-    textAlign: 'center',
-    marginTop: 20,
-    fontWeight: '600',
   },
   actions: {
     flexDirection: 'row',
@@ -349,5 +348,22 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  detailText: {
+    fontSize: 16,
+    marginBottom: 16,
+    color: '#555',
+  },
+    cardDetails: {
+    marginTop: 14,
+    alignSelf: 'stretch',
+    width: '100%',
+    paddingLeft: 8,
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginTop: 20,
+    fontWeight: '600',
   },
 });

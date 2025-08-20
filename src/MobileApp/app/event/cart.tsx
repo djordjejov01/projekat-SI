@@ -120,13 +120,18 @@ export default function CartScreen() {
               return;
             }
 
-            // 1️⃣ Kupovina karata (ako ih ima)
+            const myTicketsBeforeRes = await fetch(`${API_URL}/api/Ticket/tickets/my`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!myTicketsBeforeRes.ok) throw new Error('Neuspešno dohvaćanje postojećih karata.');
+            const myTicketsBeforePurchase = await myTicketsBeforeRes.json();
+            const existingTicketIDs = new Set(myTicketsBeforePurchase.map((t: any) => t.userTicketID));
+
             if (selectedTickets.length > 0) {
               const ticketRequestBody = selectedTickets.map(ticket => ({
                 TicketID: ticket.id,
                 Quantity: ticket.quantity,
               }));
-
               const purchaseRes = await fetch(`${API_URL}/api/Ticket/purchase`, {
                 method: 'POST',
                 headers: {
@@ -135,15 +140,12 @@ export default function CartScreen() {
                 },
                 body: JSON.stringify(ticketRequestBody),
               });
-
               if (!purchaseRes.ok) {
                 const errorText = await purchaseRes.text();
-                console.error('Purchase failed:', errorText);
                 throw new Error(`Kupovina ulaznica nije uspela. ${errorText}`);
               }
             }
 
-            // 2️⃣ Rezervacija resursa
             for (const resId of selectedResources) {
               await fetch(`${API_URL}/api/Resource/reserve`, {
                 method: 'POST',
@@ -154,29 +156,24 @@ export default function CartScreen() {
                 body: JSON.stringify({
                   EventResourceID: resId,
                   Quantity: 1,
-                  UserTicketID: null, // Ostavljamo null jer nemamo ID karte odmah
+                  UserTicketID: null,
                 }),
               });
             }
 
-            // 3️⃣ Dohvatanje kupljenih karata sa servera (uključujući tokene)
-            const myTicketsRes = await fetch(`${API_URL}/api/Ticket/tickets/my`, {
+            const myTicketsAfterRes = await fetch(`${API_URL}/api/Ticket/tickets/my`, {
               headers: { Authorization: `Bearer ${token}` },
             });
-            
-            if (!myTicketsRes.ok) {
-              throw new Error('Neuspešno dohvaćanje kupljenih karata.');
-            }
-            
-            const allMyTickets = await myTicketsRes.json();
-            
-            // Filtriranje karata koje pripadaju ovom eventu
-            const purchasedEventTickets = allMyTickets.filter((t: any) => t.eventID === Number(eventId));
+            if (!myTicketsAfterRes.ok) throw new Error('Neuspešno dohvaćanje kupljenih karata nakon kupovine.');
+            const allMyTicketsAfterPurchase = await myTicketsAfterRes.json();
 
-            const ticketIDs = purchasedEventTickets.map((t: any) => t.userTicketID);
-            const validationTokens = purchasedEventTickets.map((t: any) => t.validationToken);
-            
-            // Priprema podataka za ekran potvrde
+            const newlyPurchasedTickets = allMyTicketsAfterPurchase.filter((t: any) =>
+              t.eventID === Number(eventId) && !existingTicketIDs.has(t.userTicketID)
+            );
+
+            const ticketIDs = newlyPurchasedTickets.map((t: any) => t.userTicketID);
+            const validationTokens = newlyPurchasedTickets.map((t: any) => t.validationToken);
+
             const ticketTypes = selectedTickets.map(t => {
               const info = getTicketInfo(t.id);
               return {
@@ -187,25 +184,35 @@ export default function CartScreen() {
             });
 
             setLoading(false);
-            Alert.alert(t('cart.successTitle'), t('cart.successMessage'), [
-              {
-                text: t('cart.ok'),
-                onPress: () =>
-                  router.replace({
-                    pathname: '../event/ticketDetails',
-                    params: {
-                      ticketIDs: JSON.stringify(ticketIDs),
-                      validationTokens: JSON.stringify(validationTokens),
-                      eventName: eventName ?? '',
-                      ticketTypes: JSON.stringify(ticketTypes),
-                      purchasedAt: new Date().toISOString(),
-                      eventID: eventId?.toString() ?? '',
-                      price: calculateTotal().toString(),
-                      location: eventLocation ?? '',
-                    },
-                  }),
-              },
-            ]);
+            Alert.alert(
+              t('cart.successTitle'),
+              t('cart.successMessage'),
+              [
+                {
+                  text: t('cart.viewTicket'),
+                  onPress: () =>
+                    router.replace({
+                      pathname: '../event/ticketDetails',
+                      params: {
+                        ticketIDs: JSON.stringify(ticketIDs),
+                        validationTokens: JSON.stringify(validationTokens),
+                        eventName: eventName ?? '',
+                        ticketTypes: JSON.stringify(ticketTypes),
+                        purchasedAt: new Date().toISOString(),
+                        eventID: eventId?.toString() ?? '',
+                        price: calculateTotal().toString(),
+                        location: eventLocation ?? '',
+                      },
+                    }),
+                },
+                {
+                  text: t('cart.backToEvents'),
+                  onPress: () => router.replace('/(tabs)/events'),
+                  style: 'cancel',
+                },
+              ],
+              { cancelable: false }
+            );
           } catch (error: any) {
             setLoading(false);
             Alert.alert(t('cart.errorTitle'), error.message || t('cart.genericError'));
@@ -220,7 +227,6 @@ export default function CartScreen() {
       <TouchableOpacity onPress={() => router.back()} style={styles.backArrow}>
         <Ionicons name="arrow-back" size={24} color="black" />
       </TouchableOpacity>
-
       <Text style={styles.title}>{t('cart.title')}</Text>
 
       <Text style={styles.sectionTitle}>{t('cart.tickets')}</Text>
