@@ -14,6 +14,7 @@ import { Event } from '../../../Models/Event';
 import { CategoryService } from '../../../Services/EventCategoryService';
 import { ResourceDto } from '../../../Models/ResourceDto';
 import { MessageService } from 'primeng/api';
+import { EventResourceCalendarResponse } from '../../../Interfaces/EventResourceCalendarResponse';
 
 @Component({
   selector: 'app-supplier-calendar',
@@ -60,6 +61,9 @@ export class SupplierCalendarComponent implements OnInit {
     events: []
   }
   reusableResources : ResourceDto[];
+
+  bookedResources : EventResourceCalendarResponse[] = [];
+
   ngOnInit(): void {
 
       this.apiService.getReusableResources().subscribe({
@@ -77,26 +81,27 @@ export class SupplierCalendarComponent implements OnInit {
                 }
           
               })
-      console.log(this.reusableResources);
-      this.calendarOptions.events = [
-    {
-        "title": "Mikrofon",
-        "start": "2025-07-23T22:00:00.000Z",
-        "end": "2025-07-26T21:59:59.999Z",
-        "allDay": false
-    },
-    {
-        "title": "Zvucnici",
-        "start": "2025-07-28T22:00:00.000Z",
-        "end": "2025-07-31T21:59:59.999Z",
-        "allDay": false
-    },
-    {
-        "title": "Bina",
-        "start": "2025-08-09T22:00:00.000Z",
-        "end": "2025-08-15T22:00:00.000Z",
-        "allDay": true
-    }];
+      this.apiService.getBookedResources().subscribe({
+          
+                next: (response: any) => {
+                  this.bookedResources = response;
+                  console.log(this.bookedResources);
+                  console.log(this.bookedResources);
+                  console.log("KER",this.mapToCalendarEvents(this.bookedResources));
+                  this.calendarOptions.events = this.mapToCalendarEvents(this.bookedResources);
+                },
+                error: (errorResponse) => {
+                  this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: errorResponse.message,
+                    life: 3000
+                  });
+                }
+          
+              })
+      
+      
 
   }
 
@@ -109,4 +114,20 @@ export class SupplierCalendarComponent implements OnInit {
       end.getTime() - start.getTime() >= 24 * 60 * 60 * 1000
     );
   }
+
+  // Pretvaranje u FullCalendar format
+mapToCalendarEvents(apiResponse: EventResourceCalendarResponse[]) {
+  return apiResponse.map(item => {
+    const start = new Date(item.EventStartDate);
+    const end = new Date(item.EventEndDate);
+
+    return {
+      title: item.ResourceName,   // ili item.eventTitle ako želiš event ime
+      start: start.toISOString(),
+      end: end.toISOString(),
+      allDay: this.isAllDayEvent(start, end)
+    };
+  });
+}
+
 }

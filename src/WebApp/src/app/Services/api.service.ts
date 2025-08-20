@@ -41,6 +41,7 @@ import { ResourceApiResponse } from "../Interfaces/ResourceApiResponse";
 import { ResourceDto } from "../Models/ResourceDto";
 import { EventResourceDto } from "../Models/EventResourceDto";
 import { EventResourceApiResponse } from "../Interfaces/EventResourceApiResponse";
+import { EventResourceCalendarResponse } from "../Interfaces/EventResourceCalendarResponse";
 
 // Match Backend.Models.Dto.EventDto
 export interface EventDto {
@@ -635,6 +636,36 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
             catchError(this.handleError)
         );
     }
+    getBookedResources() {
+  return this.http.get<any[]>(`${this.apiUrl}/Supplier/booked-resources`).pipe(
+    map(response =>
+      response.map(dto =>
+        new EventResourceCalendarResponse(
+          new EventResourceDto(
+          dto.eventResource.id,
+          dto.eventResource.supplierID,
+          dto.eventResource.eventID,
+          dto.eventResource.resourceID,
+          dto.eventResource.quantity,
+          dto.eventResource.isReservable,
+          dto.eventResource.status,
+          dto.eventResource.startDateTimeBooked ? new Date(dto.eventResource.startDateTimeBooked) : null,
+          dto.eventResource.endDateTimeBooked ? new Date(dto.eventResource.endDateTimeBooked) : null
+        ), 
+          dto.resourceName,
+          dto.resourceCategory,
+          dto.eventTitle,
+          dto.resourceDescription,
+          dto.eventStartDate ? new Date(dto.eventStartDate) : null,
+          dto.eventEndDate ? new Date(dto.eventEndDate) : null
+        )
+      )
+    ),
+    catchError(this.handleError)
+  );
+}
+
+    
     getCategoryMetrics() : Observable<CategoryMetrics>
     {
         return this.http.get<CategoryMetrics>(`${this.apiUrl}/Organizer/event-category-stats`).pipe(
@@ -667,7 +698,7 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
 
     register(data : RegisterDto): Observable<UserDto>{
 
-        return this.http.post<UserDtoResponse>(`${this.apiUrl}/User/register`, data).pipe(
+        return this.http.post<UserDtoResponse>(`${this.apiUrl}/User/register-web`, data).pipe(
 
             map(data => {
                 console.log('Raw backend response Register:', data);
