@@ -11,6 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { API_URL } from '../../config';
 
 export default function AboutSyncUpScreen() {
   const router = useRouter();
@@ -40,7 +41,7 @@ export default function AboutSyncUpScreen() {
         )}
         <Image
           source={{
-            uri: 'https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=1050&q=80',
+            uri: `${API_URL}/images/about.jpg`,
           }}
           style={styles.image}
           onLoadEnd={() => setImageLoading(false)}
