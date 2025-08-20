@@ -471,7 +471,7 @@ namespace Backend.Services
             }
         }
 
-        private async Task DeallocateEventResourcesForPublishedEvent(int eventId)
+        public async Task DeallocateEventResourcesForPublishedEvent(int eventId)
         {
             try
             {

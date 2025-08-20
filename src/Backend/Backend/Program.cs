@@ -86,6 +86,8 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddAuthorization();
 
+builder.Services.AddHostedService<EventLifecycleHostedService>();
+
 var app = builder.Build();
 
 app.UseStaticFiles();

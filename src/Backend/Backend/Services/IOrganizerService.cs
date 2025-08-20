@@ -13,5 +13,6 @@ namespace Backend.Services
         Task PublishEvent(int eventId, int organizerId);
         Task DeleteEvent(int eventId,int organizerId);
         Task CancelEvent(int eventId,int organizerId);
+        Task DeallocateEventResourcesForPublishedEvent(int eventId);
     }
 }
