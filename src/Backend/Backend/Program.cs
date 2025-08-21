@@ -1,6 +1,7 @@
 using Backend.Models;
 using Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -101,7 +102,13 @@ using (var scope = app.Services.CreateScope())
 
 // Order matters: UseStaticFiles must be before UseRouting
 app.UseDefaultFiles();
-app.UseStaticFiles();
+var provider = new FileExtensionContentTypeProvider();
+provider.Mappings[".apk"] = "application/vnd.android.package-archive";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = provider
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
