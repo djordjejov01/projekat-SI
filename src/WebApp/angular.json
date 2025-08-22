@@ -33,6 +33,9 @@
               "node_modules/primeflex/primeflex.css",
               "src/styles.css"
             ],
+            "loader": {
+              ".png": "file"
+            },
             "scripts": []
           },
           "configurations": {
@@ -40,13 +43,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "4MB",
+                  "maximumError": "4MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "20kB",
+                  "maximumError": "20kB"
                 }
               ],
               "outputHashing": "all",

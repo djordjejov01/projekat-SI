@@ -1,15 +1,17 @@
 using Backend.Models;
 using Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Microsoft.AspNetCore.SpaServices.AngularCli;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
+// Add services to the container.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -47,7 +49,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
-                                      Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                                                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
 builder.Services.AddSwaggerGen(c =>
@@ -69,7 +71,7 @@ builder.Services.AddSwaggerGen(c =>
             new OpenApiSecurityScheme {
                 Reference = new OpenApiReference {
                     Type = ReferenceType.SecurityScheme,
-                    Id   = "Bearer"
+                    Id = "Bearer"
                 }
             },
             new string[] {}
@@ -87,10 +89,30 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddAuthorization();
 
 builder.Services.AddHostedService<EventLifecycleHostedService>();
-
+builder.Services.AddSpaStaticFiles(configuration =>
+{
+    configuration.RootPath = "wwwroot";
+});
+builder.WebHost.UseUrls("http://0.0.0.0:11061");
 var app = builder.Build();
 
-app.UseStaticFiles();
+// Run database migrations on startup
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<AppDbContext>();
+    dbContext.Database.Migrate();
+}
+
+// Order matters: UseStaticFiles must be before UseRouting
+app.UseDefaultFiles();
+var provider = new FileExtensionContentTypeProvider();
+provider.Mappings[".apk"] = "application/vnd.android.package-archive";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = provider
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -99,7 +121,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
@@ -108,5 +130,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.UseSpa(spa =>
+{
+    // U produkciji, servirajte fajlove iz wwwroot-a
+    spa.Options.SourcePath = "wwwroot";
+});
 app.Run();
