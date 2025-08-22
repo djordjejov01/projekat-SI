@@ -15,7 +15,7 @@ import { SharedService } from '../../Services/shared.service';
 import { Router } from '@angular/router';
 import { MenuBarComponent } from '../organizer-page/menu-bar/menu-bar.component';
 import { SupplierDto } from '../../Models/SupplierDto';
-
+import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-supplier-page',
   imports: [RouterModule, ConfirmDialogModule, ToastModule, TranslateModule, Toast, MenuBarComponent],
@@ -23,7 +23,7 @@ import { SupplierDto } from '../../Models/SupplierDto';
   styleUrl: './supplier-page.component.css'
 })
 export class SupplierPageComponent implements OnInit{
-  defaultImage = 'assets/default-picture.png';
+  defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
   previewUrl: string | ArrayBuffer | null = null;
   username : string;
   constructor(

@@ -15,6 +15,7 @@ import { ApiService } from '../../Services/api.service';
 import { OrganizerDto } from '../../Models/OrganizerDto';
 import { SharedService } from '../../Services/shared.service';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-organizer-page',
   imports: [MenuBarComponent, RouterModule, ConfirmDialogModule, ToastModule, TranslateModule, Toast],
@@ -35,7 +36,7 @@ export class OrganizerPageComponent implements AfterContentInit, OnInit {
     private router : Router) { }
 
   currOrganizer: OrganizerDto;
-  defaultImage = 'assets/default-picture.png';
+  defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
   previewUrl: string | ArrayBuffer | null = null;
   username : string;
   getOrganizerCall() {
