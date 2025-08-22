@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Microsoft.AspNetCore.SpaServices.AngularCli;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,7 +89,10 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddAuthorization();
 
 builder.Services.AddHostedService<EventLifecycleHostedService>();
-
+builder.Services.AddSpaStaticFiles(configuration =>
+{
+    configuration.RootPath = "wwwroot";
+});
 builder.WebHost.UseUrls("http://0.0.0.0:11061");
 var app = builder.Build();
 
@@ -126,5 +130,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.UseSpa(spa =>
+{
+    // U produkciji, servirajte fajlove iz wwwroot-a
+    spa.Options.SourcePath = "wwwroot";
+});
 app.Run();

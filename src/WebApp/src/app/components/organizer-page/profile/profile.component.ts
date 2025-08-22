@@ -8,7 +8,7 @@ import { ChangePasswordDto } from '../../../Models/ChangePasswordDto';
 import { DashboardMetrics } from '../../../Interfaces/DashboardMetricsResponse';
 import { ViewChild } from '@angular/core';
 import { SharedService } from '../../../Services/shared.service';
-
+import { environment } from '../../../../environments/environment';
 @Component({
   selector: 'app-profile',
   imports: [FormsModule],
@@ -18,7 +18,7 @@ import { SharedService } from '../../../Services/shared.service';
 
 export class ProfileComponent implements OnInit {
 
-defaultImage = 'assets/default-picture.png';
+defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
   previewUrl: string | ArrayBuffer | null = null;
   selectedFile?: File;
   
