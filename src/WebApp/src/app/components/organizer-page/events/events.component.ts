@@ -282,12 +282,12 @@ export class EventsComponent implements OnInit {
         this.loading = false;
       },
       error: (errorResponse) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: errorResponse.message,
-          life: 3000
-        });
+        // this.messageService.add({
+        //   severity: 'error',
+        //   summary: 'Error',
+        //   detail: errorResponse.message,
+        //   life: 3000
+        // });
       }
 
     })

@@ -38,6 +38,8 @@ h2:hover, img:hover{
 #sec1{
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
     gap:20px;
 }
 

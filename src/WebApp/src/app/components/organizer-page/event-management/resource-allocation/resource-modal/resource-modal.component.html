@@ -36,7 +36,7 @@
             <p-floatlabel class="w-full md:w-56" variant="on">
                 <input type="text" pInputText placeholder=" " formControlName="allocatedQuantity" inputId="allocatedQuantity"
                     class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-                <label for="allocatedQuantity">Enter Resource Quantity</label>
+                <label for="allocatedQuantity">Enter Resource Quantity (max: {{ selectedResource?.quantity }})</label>
             </p-floatlabel>
         </div>
 
