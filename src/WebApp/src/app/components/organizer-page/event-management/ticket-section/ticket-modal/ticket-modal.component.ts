@@ -112,7 +112,7 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy, IDeact
 
      this.ticketForm = new FormGroup({
       name: new FormControl('',[Validators.required, CustomValidators.noWhitespaceValidator]),
-      price: new FormControl('', [Validators.required, Validators.min(0)]),
+      price: new FormControl('', [Validators.required, Validators.min(1)]),
       description: new FormControl('', CustomValidators.noWhitespaceValidator),
       quota: new FormControl('',[Validators.required,Validators.min(1)]),
       validFrom: new FormControl('', Validators.required),

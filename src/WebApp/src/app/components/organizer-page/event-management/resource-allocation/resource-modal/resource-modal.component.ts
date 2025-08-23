@@ -109,10 +109,10 @@ onSaveClick() {
 
     // CRITICAL FIX: The quantity check should now apply to ALL resources,
     // as `selectedResource.quantity` correctly reflects the max.
-    if (formValue.allocatedQuantity > this.selectedResource.quantity) {
-        this.messageService.add({ severity: 'error', summary: 'Quantity Error', detail: `The quantity cannot exceed the available amount (${this.selectedResource.quantity}).`, life: 3000 });
-        return;
-    }
+    // if (formValue.allocatedQuantity > this.selectedResource.quantity) {
+    //     this.messageService.add({ severity: 'error', summary: 'Quantity Error', detail: `The quantity cannot exceed the available amount (${this.selectedResource.quantity}).`, life: 3000 });
+    //     return;
+    // }
     
     // Create the DTO instance to send to the backend.
     const newEventResource = new EventResourceDto(

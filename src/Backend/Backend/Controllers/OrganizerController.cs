@@ -808,7 +808,7 @@ namespace Backend.Controllers
                 }
 
                 // Now, check if the supplier has enough to fulfill the new quantity
-                if (supplierResource.IsExhaustable && supplierResource.Quantity < dto.Quantity)
+                if (supplierResource.Quantity < dto.Quantity)
                 {
                     return BadRequest("Not enough quantity available to fulfill the new request.");
                 }
@@ -825,7 +825,7 @@ namespace Backend.Controllers
             else
             {
                 // For a new request, check if the quantity is available.
-                if (supplierResource.IsExhaustable && supplierResource.Quantity < dto.Quantity)
+                if (supplierResource.Quantity < dto.Quantity)
                 {
                     return BadRequest("Not enough quantity available for a new request.");
                 }

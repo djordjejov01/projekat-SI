@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://api.your-app.com/api', // Your production URL
-  backendBaseUrl: 'https://api.your-app.com' // Add this line
+  apiUrl: 'http://softeng.pmf.kg.ac.rs:11061/api', // Your backend API URL with /api
+  backendBaseUrl: 'http://softeng.pmf.kg.ac.rs:11061' // Your backend base URL
 };

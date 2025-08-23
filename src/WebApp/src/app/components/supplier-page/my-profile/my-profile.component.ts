@@ -12,7 +12,7 @@ import { Select } from 'primeng/select';
 import { SupplierDto } from '../../../Models/SupplierDto';
 import { UpdateSupplierDto } from '../../../Models/UpdateSupplierDto';
 import { ResourceDto } from '../../../Models/ResourceDto';
-
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-my-profile',
@@ -22,7 +22,7 @@ import { ResourceDto } from '../../../Models/ResourceDto';
 })
 export class MyProfileComponent implements OnInit {
 
-  defaultImage = 'assets/default-picture.png';
+  defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
   previewUrl: string | ArrayBuffer | null = null;
   selectedFile?: File;
   constructor(private apiService: ApiService, private authService: AuthService, private messageService: MessageService, private sharedService: SharedService) { }

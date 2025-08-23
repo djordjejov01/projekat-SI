@@ -34,3 +34,15 @@ img{
 h2:hover, img:hover{
     cursor: pointer;
 }
+
+#sec1{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap:20px;
+}
+
+#sec1 img{
+    max-width: 200px;
+}
