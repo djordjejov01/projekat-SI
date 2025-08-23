@@ -53,11 +53,15 @@
   "addToFavorites": "Dodaj u omiljene",
   "removeFromFavorites": "Ukloni iz omiljenih",
   "buyTicket": "Kupi kartu",
+  "reserve":"Rezerviši(besplatno)",
   "eventDescription": "Opis događaja",
   "agenda": "Program",
   "success": "Uspešno",
   "accountCreated": "Nalog je uspešno kreiran!",
   "location": "Lokacija",
+    "Legend": "Legenda",
+  "standardView": "Standardna",
+  "satelliteView": "Satelitska",
   "organizer": "Organizator",
   "loading": "Učitavanje...",
   "eventNotFound": "Događaj nije pronađen.",
@@ -243,7 +247,8 @@
   "buttons": {
     "download": "Preuzmi",
     "share": "Podeli",
-      "backToEvents": "Nazad na događaje"
+      "backToEvents": "Nazad na događaje",
+      "backToMyTickets": "Nazad na moje karte"
   },
   "qr": {
     "savedTitle": "Sačuvano!",

@@ -25,7 +25,7 @@ export default function PersonalInfoScreen() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhone] = useState('');
-  const defaultAvatar = require('../../assets/images/avatar-placeholder.png');
+  const defaultAvatar = require('../../assets/images/avatar_placeholder.png');
 
   const [isLoading, setIsLoading] = useState(false);
   const [profilePicture, setProfilePicture] = useState<string | null>('');
