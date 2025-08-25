@@ -116,6 +116,7 @@ export default function ProfileTickets() {
             eventID: item.eventID,
             purchasedAt: item.purchasedAt,
             price: item.price.toString(),
+            from: 'myTickets', 
           },
         });
       }}

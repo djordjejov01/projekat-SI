@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { API_URL } from '../../config';
+import { MaterialIcons } from '@expo/vector-icons';
+import { WebView } from 'react-native-webview';
 import {
   View,
   Text,
@@ -87,6 +89,72 @@ type EventPin = {
   pinnedAt: string;
   pinCategory: number;
 };
+function buildLeafletHtml(payload: {
+  center: { latitude: number; longitude: number };
+  pins: { lat: number; lng: number; title: string; desc: string; iconUrl?: string; emoji?: string }[];
+  zones: any[];
+  mapType: 'standard' | 'satellite';
+}) {
+  const safeJson = JSON.stringify(payload).replace(/<\/(script)/gi, '<\\/$1');
+  return `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  html, body, #map { height: 100%; margin: 0; padding: 0; }
+  .leaflet-container { background: #dfe5f3; }
+  .emojiMarker { border: 0; background: transparent; }
+  .emojiMarker .em { font-size: 22px; line-height: 22px; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function() {
+  const DATA = ${safeJson};
+  const center = [DATA.center.latitude, DATA.center.longitude];
+  const isSat = DATA.mapType === 'satellite';
+
+  var map = L.map('map', { zoomControl: false });
+  var osm  = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap' });
+  var esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri' });
+
+  (isSat ? esri : osm).addTo(map);
+
+  var bounds = L.latLngBounds([]);
+
+  // Pins
+  (DATA.pins || []).forEach(function(p){
+    var icon = p.iconUrl
+      ? L.icon({ iconUrl: p.iconUrl, iconSize:[30,30], iconAnchor:[15,15] })
+      : L.divIcon({ className:'emojiMarker', html:'<div class="em">'+(p.emoji||'📍')+'</div>', iconSize:[24,24], iconAnchor:[12,12] });
+
+    var m = L.marker([p.lat, p.lng], { icon }).addTo(map);
+    if (p.title || p.desc) m.bindPopup('<b>'+ (p.title||'') +'</b>' + (p.desc ? '<br/>'+p.desc : ''));
+    bounds.extend([p.lat, p.lng]);
+  });
+
+  // Zones (trenutno prazno)
+  (DATA.zones || []).forEach(function(z){
+    if(!z.coords) return;
+    var coords = z.coords.map(c => [c[0], c[1]]);
+    var poly = L.polygon(coords, { color: z.stroke || '#2196f3', fillColor: z.fill || z.stroke || '#2196f3', fillOpacity:0.25 }).addTo(map);
+    if(z.desc) poly.bindPopup(z.desc);
+    try { bounds.extend(poly.getBounds()); } catch(e){}
+  });
+
+  if(bounds.isValid()) map.fitBounds(bounds, { padding: [20,20] });
+  else map.setView(center, 15);
+
+  L.control.zoom({ position:'topright' }).addTo(map);
+})();
+</script>
+</body>
+</html>`;
+}
 
 
 export default function EventDetailScreen() {
@@ -104,6 +172,8 @@ export default function EventDetailScreen() {
   const [error, setError] = useState<string | null>(null);
   const [updatingFavorite, setUpdatingFavorite] = useState(false);
   const [pinCategories, setPinCategories] = useState<PinCategory[]>([]);
+  const [mapType, setMapType] = useState<'standard' | 'satellite'>('standard');
+
   const { loadFavorites } = useFavorites();
   const [openSubeventId, setOpenSubeventId] = useState<string | null>(null);
   const handleToggleSubevent = (id: string) => {
@@ -113,9 +183,10 @@ export default function EventDetailScreen() {
       setOpenSubeventId(id);
     }
   };
-  const handleOpenSubeventDetail = (id: string) => {
-  router.push(`/event/${id}`);
-};
+//   const handleOpenSubeventDetail = (id: string) => {
+//   router.push(`/event/${id}`);
+// };
+
 
 
   const [agendaLoading, setAgendaLoading] = useState(false);
@@ -173,6 +244,59 @@ const [agendaData, setAgendaData] = useState<EventsSubeventsActivitiesDto | null
 
   fetchEvent();
 }, [currentId]);
+// useEffect(() => {
+//   if (!event) return;
+
+//   const fetchMainEventPins = async () => {
+//     try {
+//       const response = await fetch(`${API_URL}/pins/by-events?ids=${event.id}`);
+//       if (!response.ok) throw new Error('Failed to fetch pins');
+
+//       const data: EventPin[] = await response.json();
+
+//       // ukloni duplikate po ID-u
+//       const uniquePins = data.filter((pin, index, self) =>
+//         index === self.findIndex(p => p.id === pin.id)
+//       );
+
+//       setEventPins(uniquePins);
+//     } catch (err) {
+//       console.error(err);
+//     }
+//   };
+
+//   fetchMainEventPins();
+// }, [event]);
+
+useEffect(() => {
+  if (!event) return;
+
+  const fetchResources = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const headers: any = {};
+      if (token) headers.Authorization = `Bearer ${token}`;
+
+      const response = await fetch(`${API_URL}/api/Resource/${event.id}/resources`, { headers });
+      if (!response.ok) throw new Error('Failed to load resources');
+
+      const data = await response.json();
+      setHasResources(data.length > 0);
+    } catch (err) {
+      console.error(err);
+      setHasResources(false);
+    }
+  };
+
+  fetchResources();
+}, [event]);
+useEffect(() => {
+  if (!agendaData) return;
+
+
+}, [agendaData]);
+
+
 useEffect(() => {
   if (!currentId) return;
 
@@ -202,6 +326,32 @@ useEffect(() => {
 
   fetchAgenda();
 }, [currentId]);
+const [hasResources, setHasResources] = useState<boolean | null>(null);
+
+useEffect(() => {
+  if (!currentId) return;
+
+  const fetchResources = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+
+      const headers: any = {};
+      if (token) headers.Authorization = `Bearer ${token}`;
+
+      const response = await fetch(`${API_URL}/api/Resource/${currentId}/resources`, { headers });
+      if (!response.ok) throw new Error('Failed to load resources');
+
+      const data = await response.json();
+      setHasResources(data.length > 0);
+    } catch (err) {
+      console.error(err);
+      setHasResources(false);
+    }
+  };
+
+  fetchResources();
+}, [currentId]);
+
 
   const combinedSortedAgendaItems = () => {
   if (!agendaData) return [];
@@ -290,43 +440,70 @@ const checkUserProfile = async () => {
 };
 
 
-const handleBuyTicket = async () => {
+
+
+const handleAction = async () => {
+  // free + bez resursa → dugme je disabled i ne može ni da pozove handleAction
+  if (event?.isFree && !hasResources) return;
+
+  // u svim ostalim slučajevima proveravamo usera tek kad klikne
   const isProfileComplete = await checkUserProfile();
   if (!isProfileComplete) return;
 
-  router.push({ pathname: './tickets', params: { eventId: event?.id.toString() } })
+  if (event && !event?.isFree) {
+    // ima karata za kupovinu
+    router.push({ pathname: './tickets', params: { eventId: event.id.toString() } });
+  } else if (event?.isFree && hasResources) {
+    // free event ali ima resurse
+    router.push({ pathname: './tickets', params: { eventId: event.id.toString() } });
+  }
 };
+
+
 
 
     const fetchEventPins = async (eventId: number) => {
   try {
-    const token = await AsyncStorage.getItem('token'); 
+    // Za guest ne zahtevamo token
+    const token = await AsyncStorage.getItem('token');
 
     const headers: any = {
       'Content-Type': 'application/json',
     };
+    if (token) headers.Authorization = `Bearer ${token}`;
 
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${API_URL}/api/MobileUser/event/${eventId}`, {
+    // Ispravan endpoint
+    const response = await fetch(`${API_URL}/api/EventPin/event/?eventId=${eventId}`, {
       headers,
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.warn('Ne mogu da učitam pinove:', errorText);
+      setEventPins([]); // fallback
       return;
     }
 
-    const text = await response.text();
-    const data: EventPin[] = JSON.parse(text);
-    setEventPins(data);
+    const data: EventPin[] = await response.json();
+
+    // Spoj sa kategorijama za ikonice
+    const pinsWithCategory = data.map((pin) => {
+      const category = pinCategories.find((c) => c.id === pin.pinCategory);
+      return {
+        ...pin,
+        iconUrl: category ? `${API_URL}/pins/${category.id}.png` : undefined,
+        emoji: '📍', // fallback emoji
+        title: pin.label + (category ? ` (${category.name})` : ''),
+      };
+    });
+
+    setEventPins(pinsWithCategory);
   } catch (err) {
     console.warn('Greška pri učitavanju pinova:', err);
+    setEventPins([]);
   }
 };
+
 
 
   const geocodeLocation = async (location: string) => {
@@ -469,48 +646,61 @@ const handleBuyTicket = async () => {
         )}
       </View>
 
-      <View style={styles.actions}>
-        <TouchableOpacity
-          style={styles.favoriteBtn}
-          onPress={toggleFavorite}
-          activeOpacity={0.7}
-          disabled={updatingFavorite}
-        >
-          <Ionicons
-            name={event.isFavorite ? 'heart' : 'heart-outline'}
-            size={24}
-            color={event.isFavorite ? '#FF2D55' : '#2563EB'}
-          />
-          <Text style={[styles.favoriteText, { color: event.isFavorite ? '#FF2D55' : '#2563EB' }]}>
-            {event.isFavorite ? t('removeFromFavorites') : t('addToFavorites')}
-          </Text>
-        </TouchableOpacity>
+   <View style={styles.actions}>
+  {/* Favorite dugme */}
+  <TouchableOpacity
+    style={styles.favoriteBtn}
+    onPress={toggleFavorite}
+    activeOpacity={0.7}
+    disabled={updatingFavorite}
+  >
+    <Ionicons
+      name={event.isFavorite ? 'heart' : 'heart-outline'}
+      size={24}
+      color={event.isFavorite ? '#FF2D55' : '#2563EB'}
+    />
+    <Text style={[styles.favoriteText, { color: event.isFavorite ? '#FF2D55' : '#2563EB' }]}>
+      {event.isFavorite ? t('removeFromFavorites') : t('addToFavorites')}
+    </Text>
+  </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={handleBuyTicket}
-          style={styles.buyButton}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.buyButtonText}>
-            {event.isFree ? t('freeEvent') : t('buyTicket')}
-          </Text>
-        </TouchableOpacity>
+  {/* Dugme za kupovinu / rezervaciju */}
+<TouchableOpacity
+  onPress={handleAction}
+  style={[
+    styles.buyButton,
+    event?.isFree && !hasResources ? { backgroundColor: '#d1d5db' } : {},
+  ]}
+  disabled={event?.isFree && !hasResources}
+>
+  <Text style={styles.buyButtonText}>
+    {!event?.isFree
+      ? t('buyTicket')     
+      : hasResources
+      ? t('reserve')        
+      : t('freeEvent')}     
+  </Text>
+</TouchableOpacity>
 
 
 
-      </View>
+
+
+</View>
 
       <Text style={styles.sectionTitle}>{t('eventDescription')}</Text>
       <Text style={styles.description}>{event.description}</Text>
-
-    {!agendaLoading && !agendaError && agendaData && (
+{!agendaLoading && !agendaError && agendaData && (
   <>
     <Text style={styles.sectionTitle}>{t('agenda')}</Text>
+
     {combinedSortedAgendaItems().map((item) => {
       if (item.type === 'event') {
-        // Ovo je glavni događaj ili poddogađaj
-        const isSubevent = agendaData.eventsAndSubevents.some(e => e.eventId === parseInt(item.id.replace('event-', '')) && e.parentEventId !== 0);
-        // Prikazujemo bold samo ako je poddogađaj (parentEventId !== 0)
+        const subeventId = parseInt(item.id.replace('event-', ''));
+        const isSubevent = agendaData.eventsAndSubevents.some(
+          (e) => e.eventId === subeventId && e.parentEventId !== 0
+        );
+
         return (
           <View key={item.id} style={styles.scheduleItem}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -529,23 +719,23 @@ const handleBuyTicket = async () => {
                   {item.title}
                 </Text>
               </TouchableOpacity>
-              {/* Ikonica lupice za otvaranje detalja poddogađaja */}
+
+              {/* Lupica za otvaranje detalja poddogađaja
               {isSubevent && (
-                   <TouchableOpacity
-                  onPress={() => handleToggleSubevent(item.id)}
+                <TouchableOpacity
+                  onPress={() => handleOpenSubeventDetail(subeventId.toString())}
                   style={{ paddingHorizontal: 8 }}
                 >
                   <Ionicons name="search-outline" size={24} color="#2563EB" />
                 </TouchableOpacity>
-
-              )}
+              )} */}
             </View>
 
-            {/* Padajući meni aktivnosti ako je otvoren */}
+            {/* Padajući meni aktivnosti poddogađaja */}
             {isSubevent && openSubeventId === item.id && (
               <View style={{ marginTop: 8, paddingLeft: 16 }}>
                 {agendaData.activities
-                  .filter((a) => a.eventId === parseInt(item.id.replace('event-', '')))
+                  .filter((a) => a.eventId === subeventId)
                   .map((activity) => (
                     <View key={`activity-${activity.activityId}`} style={styles.scheduleItem}>
                       <Text style={styles.scheduleTime}>
@@ -553,7 +743,7 @@ const handleBuyTicket = async () => {
                         {new Date(activity.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </Text>
                       <Text style={[styles.scheduleTitle, { fontWeight: '500' }]}>
-                        {activity.title} 
+                        {activity.title}
                       </Text>
                       <Text style={styles.scheduleDesc}>{activity.description}</Text>
                     </View>
@@ -563,109 +753,119 @@ const handleBuyTicket = async () => {
           </View>
         );
       } else {
-        // Aktivnosti (ako nisu u dropdown-u) ih ne prikazujemo ovde, jer su u dropdownu ispod poddogađaja
-        return null;
+        return null; // aktivnosti su već prikazane unutar poddogađaja ili kasnije
       }
     })}
-    {/* Prikaz aktivnosti koje nisu vezane za poddogađaje */}
-{agendaData.activities
-  .filter((activity) => {
-    // Aktivnosti koje nisu vezane ni za jedan poddogađaj
-    // tj. eventId nije id nijednog poddogađaja
-    const isForSubevent = agendaData.eventsAndSubevents.some(
-      (e) => e.eventId === activity.eventId && e.parentEventId !== 0
-    );
-    return !isForSubevent;
-  })
-  .map((activity) => (
-    <View key={`activity-${activity.activityId}`} style={styles.scheduleItem}>
-      <Text style={styles.scheduleTime}>
-        {new Date(activity.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -{' '}
-        {new Date(activity.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-      </Text>
-      <Text style={[styles.scheduleTitle, { fontWeight: '500' }]}>
-        {activity.title} 
-      </Text>
-      <Text style={styles.scheduleDesc}>{activity.description}</Text>
-    </View>
-  ))}
 
+    {/* Aktivnosti koje nisu vezane ni za jedan poddogađaj */}
+    {agendaData.activities
+      .filter((activity) => {
+        return !agendaData.eventsAndSubevents.some(
+          (e) => e.eventId === activity.eventId && e.parentEventId !== 0
+        );
+      })
+      .map((activity) => (
+        <View key={`activity-${activity.activityId}`} style={styles.scheduleItem}>
+          <Text style={styles.scheduleTime}>
+            {new Date(activity.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -{' '}
+            {new Date(activity.endDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </Text>
+          <Text style={[styles.scheduleTitle, { fontWeight: '500' }]}>
+            {activity.title}
+          </Text>
+          <Text style={styles.scheduleDesc}>{activity.description}</Text>
+        </View>
+      ))}
   </>
 )}
 
-      {coords && (
-        <>
-          <Text style={styles.sectionTitle}>{t('location')}</Text>
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: coords.latitude,
-              longitude: coords.longitude,
-              latitudeDelta: 0.004,
-              longitudeDelta: 0.004,
-            }}
-          >
-            <UrlTile
-              urlTemplate="https://a.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png"
-              maximumZ={19}
-              flipY={false}
-              shouldReplaceMapContent={true}
-            />
-            <Marker
-              coordinate={coords}
-              title={event.title}
-              description={event.location}
-              pinColor="#e61e1eff"
-            />
-            {eventPins.map((pin) => {
+{coords && (
+  <>
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginVertical: 10 }}>
+  <Text style={styles.sectionTitle}>{t('location')}</Text>
+
+  <TouchableOpacity
+    onPress={() => setMapType(mapType === 'standard' ? 'satellite' : 'standard')}
+    style={{
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#2563EB',
+      paddingVertical: 6,
+      paddingHorizontal: 10,
+      borderRadius: 8,
+    }}
+  >
+    <MaterialIcons
+      name={mapType === 'standard' ? 'satellite' : 'map'}
+      size={20}
+      color="#fff"
+      style={{ marginRight: 6 }}
+    />
+    <Text style={{ color: '#fff', fontWeight: '600' }}>
+      {mapType === 'standard' ? t('satelliteView') : t('standardView')}
+    </Text>
+  </TouchableOpacity>
+</View>
+
+
+
+{/* ---------------- MAPA ---------------- */}
+{coords && (
+  <>
+    <View style={styles.mapWrapper}>
+      <WebView
+        originWhitelist={['*']}
+        style={{ flex: 1 }}
+        source={{
+          html: buildLeafletHtml({
+            center: coords,
+            pins: eventPins.map((pin) => {
               const category = pinCategories.find((c) => c.id === pin.pinCategory);
-              return (
-                <Marker
-                  key={pin.id}
-                  coordinate={{ latitude: pin.latitude, longitude: pin.longitude }}
-                  title={`${pin.label} (${category?.name || 'Nepoznata kategorija'})`}
-                  description={pin.description}
-                >
-                  <Image
-                    source={{
-                      uri: `${API_URL}/pins/${pin.pinCategory}.png`,
-                    }}
-                    style={{ width: 30, height: 30 }}
-                    resizeMode="contain"
-                  />
-                </Marker>
-              );
-            })}
+              return {
+                lat: pin.latitude,
+                lng: pin.longitude,
+                emoji: '📍',
+                title: pin.label + (category ? ` (${category.name})` : ''),
+                desc: pin.description,
+                iconUrl: `${API_URL}/pins/${pin.pinCategory}.png`,
+              };
+            }),
+            zones: [],
+            mapType,
+          }),
+        }}
+        javaScriptEnabled
+        domStorageEnabled
+        automaticallyAdjustContentInsets={false}
+        scrollEnabled={false}
+      />
+    </View>
 
-
-          </MapView>
-
-          {/* Legenda */}
-          <View style={{ marginTop: 12 }}>
-          <Text style={{ fontSize:18, fontWeight: 'bold', marginBottom: 6 }}>📍 {t('Legend') || 'Legenda'}</Text>
-          {Array.from(new Set(eventPins.map((pin) => pin.pinCategory))).map((catId) => {
-            const category = pinCategories.find((c) => c.id === catId);
-            return (
-              <View
-                key={catId}
-                style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}
-              >
-                <Image
-                  source={{
-                    uri: `${API_URL}/pins/${catId}.png`,
-                  }}
-                  style={{ width: 24, height: 24, marginRight: 8 }}
-                  resizeMode="contain"
-                />
-                <Text style={{ fontSize: 14 }}>{category?.name || 'Nepoznata kategorija'}</Text>
-              </View>
-            );
-          })}
+    {/* ---------------- LEGENDA ---------------- */}
+    <View style={styles.legendWrapper}>
+      <Text style={styles.legendTitle}>📍 {t('Legend')}</Text>
+      {Array.from(new Set(eventPins.map((pin) => pin.pinCategory))).map((catId) => {
+      const category = pinCategories.find((c) => c.id === catId);
+      return (
+        <View key={catId} style={styles.legendItem}>
+          <Image
+            source={{ uri: `${API_URL}/pins/${catId}.png` }}
+            style={styles.legendIcon}
+            resizeMode="contain"
+          />
+          <Text style={styles.legendText}>{category?.name || 'Nepoznata kategorija'}</Text>
         </View>
+      );
+    })}
+    </View>
+  </>
+)}     
+  </>
+)}
 
 
-        </>
-      )}
+
+  
     </ScrollView>
   );
 }
@@ -831,5 +1031,38 @@ buyButtonText: {
   fontWeight: 'bold',
   fontSize: 16,
 },
+  mapWrapper: {
+    width: '100%',
+    height: screen.height * 0.35,
+    borderRadius: 15,
+    overflow: 'hidden',
+    backgroundColor: '#dfe5f3',
+    marginTop: 10,
+  },
+  legendWrapper: {
+    marginTop: 20,
+    marginBottom: 40, // veći bottom padding da se ne seče
+    paddingHorizontal: 10,
+  },
+  legendTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#111827',
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  legendIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 8,
+  },
+  legendText: {
+    fontSize: 14,
+    color: '#374151',
+  },
 
 });
