@@ -72,6 +72,17 @@ namespace Backend.Services
                 imageName = await CommonHelpers.SaveImageAsync(model.ImageFile, _env);
             }
             bool isFree = model.Tickets == null || !model.Tickets.Any();
+
+            EventStatus initialStatus = EventStatus.Draft;
+            if (model.ParentEventId > 0)
+            {
+                var parentEvent = await _context.Events.FindAsync(model.ParentEventId);
+                if (parentEvent != null && parentEvent.Status == EventStatus.Published)
+                {
+                    initialStatus = EventStatus.Published;
+                }
+            }
+
             var newEvent = new Event
             {
                 Title = model.Title,
@@ -83,7 +94,7 @@ namespace Backend.Services
                 ImageUrl = imageName ?? "images/default-image.png",
                 OrganizerID = organizerID,
                 Category = model.Category,
-                Status = EventStatus.Draft,
+                Status = initialStatus,
                 ParentEventId = model.ParentEventId,
                 isFree = isFree
             };

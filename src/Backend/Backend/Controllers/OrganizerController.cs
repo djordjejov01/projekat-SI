@@ -604,7 +604,7 @@ namespace Backend.Controllers
             {
                 if (cap == null)
                     return BadRequest("Event capacity is not set.");
-                if (cap <= usedQuota + ticketDto.Quota)
+                if (cap < usedQuota + ticketDto.Quota)
                     return BadRequest($"Total tickets across all types would exceed event capacity ({cap}).");
             }
 
