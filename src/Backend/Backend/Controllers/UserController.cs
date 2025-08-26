@@ -138,23 +138,23 @@ namespace Backend.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var user =await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound("User not found.");
+                return NotFound(new { message = "User not found." });
 
             
             if (CommonHelpers.HashPassword(dto.CurrentPassword) != user.Password)
-                return BadRequest("The current password is incorrect.");
+                return BadRequest(new { message = "The current password is incorrect." });
 
             
             if (string.IsNullOrWhiteSpace(dto.NewPassword) || dto.NewPassword.Length < 8 ||
                 !dto.NewPassword.Any(char.IsUpper) ||
                 !dto.NewPassword.Any(char.IsLower) ||
                 !dto.NewPassword.Any(char.IsDigit))
-                return BadRequest("The new password must be at least 8 characters long and include an uppercase letter, a lowercase letter, and a number.");
+                return BadRequest(new { message = "The new password must be at least 8 characters long and include an uppercase letter, a lowercase letter, and a number." });
 
             
             user.Password = CommonHelpers.HashPassword(dto.NewPassword);
             await _context.SaveChangesAsync();
-            return Ok("Password changed successfully.");
+            return Ok(new { message = "Password changed successfully." });
         }
 
         [Authorize]
