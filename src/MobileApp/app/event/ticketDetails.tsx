@@ -27,7 +27,8 @@ type TicketType = {
 export default function TicketDetails() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { ticketIDs, validationTokens, eventName, eventID, purchasedAt, ticketTypes } = useLocalSearchParams();
+  const { ticketIDs, validationTokens, eventName, eventID, purchasedAt, ticketTypes, from } = useLocalSearchParams();
+
 
   const [fullName, setFullName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -240,11 +241,19 @@ export default function TicketDetails() {
       })}
 
       <TouchableOpacity
-        style={styles.backToEventsButton}
-        onPress={() => router.replace('/(tabs)/events')}
-      >
-        <Text style={styles.backToEventsText}>{t('buttons.backToEvents')}</Text>
-      </TouchableOpacity>
+  style={styles.backToEventsButton}
+  onPress={() => {
+    if (from === 'myTickets') {
+      router.replace('../profile/myTickets');
+    } else {
+      router.replace('/(tabs)/events'); 
+    }
+  }}
+>
+  <Text style={styles.backToEventsText}>
+    {from === 'myTickets' ? t('buttons.backToMyTickets') : t('buttons.backToEvents')}
+  </Text>
+</TouchableOpacity>
     </ScrollView>
   );
 }
@@ -262,6 +271,41 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#1e1e1e',
   },
+  actions: {
+  flexDirection: 'row',
+  marginTop: 22,
+  justifyContent: 'space-between',
+  width: '100%',
+},
+button: {
+  flex: 1,
+  backgroundColor: '#5C5EE0',
+  paddingVertical: 12,
+  borderRadius: 10,
+  marginHorizontal: 5,
+  alignItems: 'center',
+  shadowColor: '#5c5ee0',
+  shadowOpacity: 0.35,
+  shadowRadius: 8,
+  shadowOffset: { width: 0, height: 3 },
+  maxWidth: 160, 
+},
+buttonSecondary: {
+  flex: 1,
+  backgroundColor: '#6B7280',
+  paddingVertical: 12,
+  borderRadius: 10,
+  marginHorizontal: 5,
+  alignItems: 'center',
+  maxWidth: 160,
+},
+buttonText: {
+  color: '#fff',
+  fontWeight: '700',
+  fontSize: 16,
+  textAlign: 'center',
+},
+
   eventName: {
     fontSize: 20,
     fontWeight: '700',
@@ -297,42 +341,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: '100%',
   },
-  actions: {
-    flexDirection: 'row',
-    marginTop: 22,
-    justifyContent: 'center',
-    gap: 18,
-  },
-  button: {
-    backgroundColor: '#5C5EE0',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginHorizontal: 5,
-    shadowColor: '#5c5ee0',
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-  },
-  buttonSecondary: {
-    backgroundColor: '#6B7280',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginHorizontal: 5,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 16,
-  },
   backToEventsButton: {
     backgroundColor: '#1A56DB',
     paddingVertical: 16,
     paddingHorizontal: 26,
     borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 50,
     marginTop: 12,
     shadowColor: '#1a56db',
     shadowOpacity: 0.4,

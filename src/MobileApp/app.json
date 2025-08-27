@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "MobileApp",
+    "name": "SyncUp",
     "slug": "MobileApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/SyncUpLogo2.png",
     "scheme": "mobileapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -13,10 +13,12 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/SyncUpLogo2.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.js03.SyncUp",
+      "usesCleartextTraffic": true
     },
     "web": {
       "bundler": "metro",
@@ -34,10 +36,26 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-build-properties",
+        {
+          "android":{
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
+
+      
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "13127f08-86e2-4bc4-aed8-3799671fda45"
+      }
     }
   }
 }
