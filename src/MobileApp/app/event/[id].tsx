@@ -20,6 +20,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFavorites } from '../context/FavoriteContext';
 import { useTranslation } from 'react-i18next';
 
+
 const screen = Dimensions.get('window');
 
 
@@ -160,7 +161,8 @@ function buildLeafletHtml(payload: {
 export default function EventDetailScreen() {
   const { id, from } = useLocalSearchParams();
   const router = useRouter();
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
+
 
   const currentId = typeof id === 'string' ? id : '';
 
@@ -622,16 +624,15 @@ const handleAction = async () => {
       </View>
 
       <Text style={styles.title}>{event.title}</Text>
-      <Text style={styles.date}>
-        📅{' '}
-        {new Date(event.startDate).toLocaleDateString(undefined, {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })}
-      </Text>
-
+    <Text style={styles.date}>
+  📅{' '}
+  {new Date(event.startDate).toLocaleDateString(i18n.language, {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  })}
+</Text>
       <View style={styles.infoCard}>
         <Text style={styles.info}>
           🕒 {t('time')}: {new Date(event.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h -{' '}
@@ -641,7 +642,7 @@ const handleAction = async () => {
         <Text style={styles.info}>🏢 {t('organizer')}: {event.organizerName}</Text>
         {!event.isFree && event.minPrice != null && event.maxPrice != null && (
           <Text style={styles.info}>
-            💸 {t('Price')}: {event.minPrice === event.maxPrice ? `${event.minPrice} RSD` : `${event.minPrice} - ${event.maxPrice} RSD`}
+            💸 {t('price')}: {event.minPrice === event.maxPrice ? `${event.minPrice} RSD` : `${event.minPrice} - ${event.maxPrice} RSD`}
           </Text>
         )}
       </View>
@@ -853,7 +854,10 @@ const handleAction = async () => {
             style={styles.legendIcon}
             resizeMode="contain"
           />
-          <Text style={styles.legendText}>{category?.name || 'Nepoznata kategorija'}</Text>
+          <Text style={styles.legendText}>
+            {category?.name ? t(`map.pins.${category.name}`) : t('map.pins.Unknown')}
+          </Text>
+
         </View>
       );
     })}

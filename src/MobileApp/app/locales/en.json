@@ -57,6 +57,7 @@
     "login_signup": "Login / Sign up",
     "guest_mode": "Guest mode"
   },
+  "price": "Price",
   "addToFavorites": "Add to favorites",
   "removeFromFavorites": "Remove from favorites",
   "buyTicket": "Buy Ticket",
@@ -181,8 +182,7 @@
 "success":"Success",
 "success2":"dinars have been added to your account",
 "errorPayment":"An error occurred during payment",
-"errorServer":"An error occurred while connecting to the server",
-"moneyError":"You cannot have more than 1,000,000 dinars in your account."
+"errorServer":"An error occurred while connecting to the server"
 },
 
 "tabs": {
@@ -283,7 +283,55 @@
     "price": "Price",
     "purchasedOn": "Purchased on",
     "noTickets": "You currently have no purchased tickets."
+  },
+"time":"Time",
+"pins": {
+  "title": "Pins",
+  "noPins": "No pins for this event.",
+  "category": "Category"
+},
+"errors": {
+  "failedToLoadAgenda": "Failed to load agenda.",
+  "failedToLoadPins": "Failed to load pins.",
+  "failedToLoadResources": "Failed to load resources."
+},
+"common": {
+  "ok": "OK",
+  "retry": "Retry",
+  "close": "Close",
+  "yes": "Yes",
+  "no": "No",
+  "loadingData": "Loading data...",
+  "somethingWentWrong": "Something went wrong",
+  "noData": "No data available."
+},
+"days": {
+  "monday": "Monday",
+  "tuesday": "Tuesday",
+  "wednesday": "Wednesday",
+  "thursday": "Thursday",
+  "friday": "Friday",
+  "saturday": "Saturday",
+  "sunday": "Sunday"
+},
+"map": {
+  "pins": {
+    "Booth": "Booth",
+    "Stage": "Stage",
+    "Entrance": "Entrance",
+    "Exit": "Exit",
+    "FirstAid": "First Aid",
+    "Food": "Food",
+    "Drink": "Drink",
+    "Restroom": "Restroom",
+    "Info": "Info",
+    "Security": "Security",
+    "Parking": "Parking",
+    "LostAndFound": "Lost & Found",
+    "Unknown": "Unknown category"
   }
+}
+
 
 
 

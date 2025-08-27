@@ -99,6 +99,7 @@
   "payment": "Uplata novca"
 },
   "aboutEvent": "O događaju",
+      "price": "Cena",
 "aboutScreen": {
   "heading": "O nama",
   "description": "SyncUp je vaš idealan saputnik za događaje. Pomažemo ljudima da pronađu, prisustvuju i budu informisani o događajima koje vole – od koncerata i IT okupljanja do radionica i umetničkih festivala.",
@@ -154,6 +155,8 @@
   "updated": "Vaši podaci su uspešno sačuvani.",
   "updateFailed": "Nije uspelo ažuriranje profila."
 },
+"time":"Vreme"
+,
 "search": {
   "header": "Pretraga događaja",
   "placeholder": "Pretraga po nazivu ili opisu...",
@@ -278,9 +281,29 @@
 "success":"Uspešno",
 "success2":"dinara je dodato na tvoj račun",
 "errorPayment":"Došlo je do greške prilikom uplate",
-"errorServer":"Došlo je do greške prilikom povezivanja na server",
-"moneyError":"Ne možeš imati više od 1,000,000 dinara na svom računu."
+"errorServer":"Došlo je do greške prilikom povezivanja na server"
 }
+,
+"map": {
+  "pins": {
+    "Booth": "Štand",
+    "Stage": "Bina",
+    "Entrance": "Ulaz",
+    "Exit": "Izlaz",
+    "FirstAid": "Prva pomoć",
+    "Food": "Hrana",
+    "Drink": "Piće",
+    "Restroom": "Toalet",
+    "Info": "Info",
+    "Security": "Obezbeđenje",
+    "Parking": "Parking",
+    "LostAndFound": "Izgubljeno-nađeno",
+    "Unknown": "Nepoznata kategorija"
+  }
+}
+
+  
+
 
 
 
