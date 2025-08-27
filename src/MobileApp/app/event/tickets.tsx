@@ -188,7 +188,6 @@ export default function TicketPurchaseScreen() {
         <Text style={styles.cardTitle}>{res.name}</Text>
         <Text style={styles.cardText}>
           {res.price ? `${res.price} RSD - ` : ''}
-          {res.quantity} {res.measure}
         </Text>
       </View>
     </TouchableOpacity>
@@ -219,7 +218,10 @@ export default function TicketPurchaseScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
+  container: {     
+    flex: 1,
+    padding: 35,
+    backgroundColor: '#fff', },
   sectionTitle: { fontSize: 22, fontWeight: 'bold', marginVertical: 16, color: '#0047FF' },
   card: {
     backgroundColor: '#fff',

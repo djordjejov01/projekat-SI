@@ -61,8 +61,12 @@
   "removeFromFavorites": "Remove from favorites",
   "buyTicket": "Buy Ticket",
   "eventDescription": "Event Description",
+    "reserve": "Reserve (free)",
   "agenda": "Agenda",
   "location": "Location",
+  "Legend": "Legend",
+  "standardView": "Standard",
+  "satelliteView": "Satellite",
   "organizer": "Organizer",
   "loading": "Loading...",
   "eventNotFound": "Event not found.",
@@ -259,7 +263,8 @@
   "buttons": {
     "download": "Download",
     "share": "Share",
-    "backToEvents": "Back to Events"
+    "backToEvents": "Back to Events",
+    "backToMyTickets": "Back to My Tickets"
   },
   "qr": {
     "savedTitle": "Saved!",

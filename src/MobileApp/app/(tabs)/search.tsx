@@ -52,6 +52,7 @@ const SearchScreen = () => {
   const [events, setEvents] = useState<EventType[]>([]);
   const [loading, setLoading] = useState(false);
   const [imageLoading, setImageLoading] = useState<{ [key: number]: boolean }>({});
+  
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -95,6 +96,20 @@ const SearchScreen = () => {
     setSortBy('popularity');
     setSelectedCategory(null); 
   };
+    const fetchLocations = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/Events`);
+      const data: EventType[] = await response.json();
+
+      const uniqueLocations = Array.from(new Set(data.map(ev => ev.location)))
+        .filter(Boolean) // ukloni null/undefined
+        .map(loc => ({ label: loc!, value: loc! }));
+
+      setLocations(uniqueLocations);
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    }
+  };
 
   const fetchEventDetailsPrice = async (eventId: number) => {
     try {
@@ -113,71 +128,79 @@ const SearchScreen = () => {
     }
   };
 
-  const fetchEvents = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (searchQuery) params.append('name', searchQuery);
-      if (selectedLocation) params.append('location', selectedLocation);
-      if (startDate) params.append('startDate', startDate.toISOString());
-      if (endDate) params.append('endDate', endDate.toISOString());
-      if (isFree) params.append('isFree', 'true');
-      if (sortBy) {
-        switch (sortBy) {
-          case 'popularity':
-            params.append('sortBy', 'popularity');
-            params.append('sortOrder', 'desc');
-            break;
-          case 'priceAsc':
-            params.append('sortBy', 'price');
-            params.append('sortOrder', 'asc');
-            break;
-          case 'priceDesc':
-            params.append('sortBy', 'price');
-            params.append('sortOrder', 'desc');
-            break;
-          case 'dateAsc':
-            params.append('sortBy', 'startDate');
-            params.append('sortOrder', 'asc');
-            break;
-          case 'dateDesc':
-            params.append('sortBy', 'startDate');
-            params.append('sortOrder', 'desc');
-            break;
-        }
+const fetchEvents = useCallback(async () => {
+  setLoading(true);
+  try {
+    const params = new URLSearchParams();
+    if (searchQuery) params.append('name', searchQuery);
+    if (selectedLocation) params.append('location', selectedLocation);
+    if (startDate) params.append('startDate', startDate.toISOString());
+    if (endDate) params.append('endDate', endDate.toISOString());
+    if (sortBy) {
+      switch (sortBy) {
+        case 'popularity':
+          params.append('sortBy', 'popularity');
+          params.append('sortOrder', 'desc');
+          break;
+        case 'priceAsc':
+          params.append('sortBy', 'price');
+          params.append('sortOrder', 'asc');
+          break;
+        case 'priceDesc':
+          params.append('sortBy', 'price');
+          params.append('sortOrder', 'desc');
+          break;
+        case 'dateAsc':
+          params.append('sortBy', 'startDate');
+          params.append('sortOrder', 'asc');
+          break;
+        case 'dateDesc':
+          params.append('sortBy', 'startDate');
+          params.append('sortOrder', 'desc');
+          break;
       }
-      if (selectedCategory) params.append('category', selectedCategory);
-
-
-      const response = await fetch(`${SEARCH_API_URL}?${params.toString()}`);
-      const data: EventType[] = await response.json();
-
-      setEvents(data);
-
-      // Reset prices jer došli novi eventi
-      setEventPrices({});
-
-      // fetchuj detalje za svaki event da dobijes cene
-      data.forEach(event => {
-        fetchEventDetailsPrice(event.id);
-      });
-
-      // Lokacije iz eventa, kao label + value
-      const uniqueLocs = Array.from(new Set(data.map(e => String(e.location)))).map(loc => ({
-        label: loc,
-        value: loc,
-      }));
-      setLocations(uniqueLocs);
-    } catch (error) {
-      console.error('Fetch error', error);
-    } finally {
-      setLoading(false);
     }
-  }, [searchQuery, selectedLocation, selectedCategory ,startDate, endDate, isFree, sortBy]);
+    if (selectedCategory) params.append('category', selectedCategory);
 
-  useEffect(() => {
-    fetchEvents();
-  }, [fetchEvents]);
+    const response = await fetch(`${SEARCH_API_URL}?${params.toString()}`);
+    let data: EventType[] = await response.json();
+
+    // fetchuj cene za svaki event
+    await Promise.all(
+      data.map(async (event) => {
+        const resp = await fetch(`${DETAILS_API_URL}?id=${event.id}`);
+        const details = await resp.json();
+        setEventPrices((prev) => ({
+          ...prev,
+          [event.id]: { minPrice: details.minPrice, maxPrice: details.maxPrice },
+        }));
+      })
+    );
+
+    // frontend filter za "Free only"
+    if (isFree) {
+      data = data.filter((event) => {
+        const price = eventPrices[event.id];
+        return price && (!price.minPrice && !price.maxPrice || price.minPrice === 0 && price.maxPrice === 0);
+      });
+    }
+
+    setEvents(data);
+  } catch (error) {
+    console.error('Fetch error', error);
+  } finally {
+    setLoading(false);
+  }
+}, [searchQuery, selectedLocation, selectedCategory, startDate, endDate, isFree, sortBy]);
+
+
+useEffect(() => {
+  fetchEvents();
+}, [fetchEvents]);
+
+useEffect(() => {
+  fetchLocations();
+}, []);
 
   // OVDE je logika za proveru gosta i toggle favorite sa alertom
   const handleToggleFavorite = async (eventID: number) => {
@@ -288,6 +311,7 @@ const SearchScreen = () => {
         <TextInput
           style={styles.searchInput}
           placeholder={t('search.placeholder')}
+          placeholderTextColor="#9CA3AF" 
           value={searchQuery}
           onChangeText={setSearchQuery}
         />

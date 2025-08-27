@@ -9,6 +9,7 @@ import {
   Image,
   Modal,
   Pressable,
+  ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -31,7 +32,7 @@ export default function ProfileScreen() {
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [imageModalVisible, setImageModalVisible] = useState(false);
-  const defaultAvatar = require('../../assets/images/avatar-placeholder.png');
+  const defaultAvatar = require('../../assets/images/avatar_placeholder.png');
 
   const normalizeImageUrl = (path: string | null) => {
     if (!path) return null;
@@ -212,16 +213,17 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flex: 1, 
     paddingHorizontal: 24,
-    paddingTop: 50,
-    paddingBottom: 40,
+    paddingTop: 40, 
+    paddingBottom: 20,
     backgroundColor: '#fff',
+    justifyContent: 'space-between', 
   },
   header: {
     fontSize: 24,
     fontWeight: '900',
-    marginBottom: 10,
+    marginBottom: 8, 
     textAlign: 'center',
     color: '#1a202c',
     letterSpacing: 0.8,
@@ -231,14 +233,54 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#7c3aed',
     borderRadius: 16,
-    padding: 20,
-    marginBottom: 28,
+    padding: 16, 
+    marginBottom: 20, 
     shadowColor: '#7c3aed',
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 8 },
     shadowRadius: 15,
     elevation: 10,
   },
+  rowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 24, 
+  },
+  statBox: {
+    backgroundColor: '#edeff1ff',
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 16, 
+    marginHorizontal: 6, 
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '900',
+    marginBottom: 12, 
+    color: '#2d3748',
+  },
+  option: {
+    backgroundColor: '#edeff1ff',
+    paddingVertical: 14, 
+    paddingHorizontal: 16, 
+    borderRadius: 14,
+    marginBottom: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 2,
+  },
+ 
   avatarImage: {
     width: 68,
     height: 68,
@@ -260,24 +302,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
   },
-  rowContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 32,
-  },
-  statBox: {
-    backgroundColor: '#edeff1ff',
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 20,
-    marginHorizontal: 8,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
-    elevation: 3,
-  },
+ 
   statNumber: {
     fontSize: 26,
     fontWeight: '900',
@@ -288,27 +313,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#6b7280',
     textAlign: 'center',
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '900',
-    marginBottom: 16,
-    color: '#2d3748',
-  },
-  option: {
-    backgroundColor: '#edeff1ff',
-    paddingVertical: 16,
-    paddingHorizontal: 18,
-    borderRadius: 14,
-    marginBottom: 5,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 6,
-    elevation: 2,
   },
   optionArrow: {
     fontSize: 20,
