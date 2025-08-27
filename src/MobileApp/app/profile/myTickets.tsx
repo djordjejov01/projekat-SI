@@ -82,7 +82,10 @@ export default function ProfileTickets() {
             }
           });
 
-          setGroupedTickets(Object.values(grouped));
+          const groupedArray = Object.values(grouped);
+          groupedArray.sort((a, b) => new Date(b.purchasedAt).getTime() - new Date(a.purchasedAt).getTime());
+
+          setGroupedTickets(groupedArray);
 
         } else {
           console.warn('Failed to fetch tickets');
@@ -188,7 +191,7 @@ export default function ProfileTickets() {
         renderItem={renderItem}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
         showsVerticalScrollIndicator={false}
-      />
+      />110
     </View>
   );
 }
