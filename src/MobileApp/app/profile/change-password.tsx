@@ -37,55 +37,98 @@ export default function ChangePasswordScreen() {
     );
   };
 
-  const handleChangePassword = async () => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      Alert.alert(t('changePassword.error'), t('changePassword.allFieldsRequired'));
-      return;
-    }
+const handleChangePassword = async () => {
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    Alert.alert(
+      t('changePassword.error'),
+      t('changePassword.allFieldsRequired')
+    );
+    return;
+  }
 
-    if (!validatePassword(newPassword)) {
+  if (!validatePassword(newPassword)) {
+    Alert.alert(
+      t('changePassword.invalidPasswordTitle'),
+      t('changePassword.invalidPasswordMessage')
+    );
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    Alert.alert(
+      t('changePassword.error'),
+      t('changePassword.passwordMismatch')
+    );
+    return;
+  }
+
+  try {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) {
       Alert.alert(
-        t('changePassword.invalidPasswordTitle'),
-        t('changePassword.invalidPasswordMessage')
+        t('changePassword.error'),
+        t('changePassword.notLoggedIn')
       );
       return;
     }
 
-    if (newPassword !== confirmPassword) {
-      Alert.alert(t('changePassword.error'), t('changePassword.passwordMismatch'));
-      return;
-    }
+    const res = await fetch(`${API_URL}/api/User/change-password`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        currentPassword,
+        newPassword,
+      }),
+    });
 
+    // Sigurno parsiranje odgovora (JSON ili plain text)
+    let data: any;
+    const raw = await res.text();
     try {
-      const token = await AsyncStorage.getItem('token');
-      if (!token) {
-        Alert.alert(t('changePassword.error'), t('changePassword.notLoggedIn'));
-        return;
-      }
-
-      const res = await fetch(`${API_URL}/api/User/change-password`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          currentPassword,
-          newPassword,
-        }),
-      });
-
-      if (res.ok) {
-        Alert.alert(t('changePassword.success'), t('changePassword.passwordChanged'));
-        router.push('../(tabs)/profile');
-      } else {
-        const err = await res.json();
-        throw new Error(err.message || t('changePassword.changeFailed'));
-      }
-    } catch (error: any) {
-      Alert.alert(t('changePassword.error'), error.message);
+      data = JSON.parse(raw);
+    } catch {
+      data = { message: raw };
     }
-  };
+
+    if (res.ok) {
+      Alert.alert(
+        t('changePassword.success'),
+        t('changePassword.passwordChanged')
+      );
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      router.push('../(tabs)/profile');
+    } else {
+      // mapiranje poruka na lokalizovane stringove
+      let message = data.message;
+
+      if (data.message === "The current password is incorrect.") {
+        message = t('changePassword.currentPasswordIncorrect');
+      } else if (
+        data.message?.includes("The new password must be at least 8 characters long")
+      ) {
+        message = t('changePassword.invalidPasswordMessage');
+      }
+
+      Alert.alert(
+        t('changePassword.error'),
+        message || t('changePassword.changeFailed')
+      );
+    }
+  } catch (error) {
+    Alert.alert(
+      t('changePassword.error'),
+      t('changePassword.errorServer')
+    );
+  }
+};
+
+
+
 
   return (
     <View style={styles.container}>
