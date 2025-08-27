@@ -93,7 +93,7 @@ export class CreateEventComponent implements OnInit,IDeactivate,OnDestroy{
 
     this.eventForm = new FormGroup({
       title: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
-      description: new FormControl('', CustomValidators.noWhitespaceValidator),
+      description: new FormControl('', [CustomValidators.noWhitespaceValidator,Validators.required]),
       location: new FormControl('', [Validators.required,CustomValidators.noWhitespaceValidator]),
       isUnlimitedCapacity: new FormControl(false),
       capacity: new FormControl('', [Validators.required,Validators.min(1)]),
@@ -104,7 +104,7 @@ export class CreateEventComponent implements OnInit,IDeactivate,OnDestroy{
         new FormGroup({
           name: new FormControl('',[Validators.required, CustomValidators.noWhitespaceValidator]),
           price: new FormControl('', [Validators.required, Validators.min(1)]),
-          description: new FormControl('', CustomValidators.noWhitespaceValidator),
+          description: new FormControl('', [CustomValidators.noWhitespaceValidator,Validators.required]),
           quota: new FormControl('',[Validators.required,Validators.min(1)]),
           validFrom: new FormControl({value: '', disabled: true}, Validators.required),
           validUntil: new FormControl({value: '', disabled: true},Validators.required)
@@ -174,7 +174,7 @@ export class CreateEventComponent implements OnInit,IDeactivate,OnDestroy{
       new FormGroup({
           name: new FormControl('',[Validators.required, CustomValidators.noWhitespaceValidator]),
           price: new FormControl('', [Validators.required, Validators.min(0)]),
-          description: new FormControl('', CustomValidators.noWhitespaceValidator),
+          description: new FormControl('', [CustomValidators.noWhitespaceValidator,Validators.required]),
           quota: new FormControl('',[Validators.required,Validators.min(1)]),
           validFrom: new FormControl({value: '', disabled: !(this.eventStart && this.eventEnd)}, Validators.required),
           validUntil: new FormControl({value: '', disabled: !(this.eventStart && this.eventEnd)},Validators.required)
@@ -290,7 +290,7 @@ submitForm(): void {
       ticketsArray.push(new FormGroup({
         name: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
         price: new FormControl('', [Validators.required, Validators.min(0)]),
-        description: new FormControl('', CustomValidators.noWhitespaceValidator),
+        description: new FormControl('', [CustomValidators.noWhitespaceValidator,Validators.required]),
         quota: new FormControl('', [Validators.required, Validators.min(1)]),
         validFrom: new FormControl({ value: '', disabled: true }, Validators.required),
         validUntil: new FormControl({ value: '', disabled: true }, Validators.required)

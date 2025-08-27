@@ -79,7 +79,7 @@ export class SubeventModalComponent implements OnInit,OnDestroy, OnChanges, IDea
 
      this.subeventForm = new FormGroup({
       title: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
-      description: new FormControl('', CustomValidators.noWhitespaceValidator),
+      description: new FormControl('', [CustomValidators.noWhitespaceValidator,Validators.required]),
       location: new FormControl(this.parentEventBasicInfo.getLocation(), [Validators.required, CustomValidators.noWhitespaceValidator]),
       isUnlimitedCapacity: new FormControl({ value: isParentUnlimited, disabled: !isParentUnlimited }),
       capacity: new FormControl({value : capacityValue, disabled: isParentUnlimited} ,[Validators.required, Validators.min(1)]),

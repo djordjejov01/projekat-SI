@@ -79,7 +79,7 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
       category: new FormControl('',Validators.required),
       type: new FormControl('', Validators.required),
       quantity: new FormControl(null,[ Validators.required,Validators.min(0)]),
-      description: new FormControl('',CustomValidators.noWhitespaceValidator)
+      description: new FormControl('',[CustomValidators.noWhitespaceValidator,Validators.required])
 
     })
 

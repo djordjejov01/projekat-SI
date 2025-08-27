@@ -62,7 +62,7 @@ export class ActivityModalComponent implements OnInit, OnChanges,IDeactivate{
 
     this.activityForm = new FormGroup({
       title: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
-      description: new FormControl('', CustomValidators.noWhitespaceValidator),
+      description: new FormControl('', [CustomValidators.noWhitespaceValidator,Validators.required]),
       startTime: new FormControl('',Validators.required),
       endTime: new FormControl('',Validators.required),
       category: new FormControl('',Validators.required)

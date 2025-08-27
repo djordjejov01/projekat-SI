@@ -81,7 +81,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy{
       
       this.eventForm = new FormGroup({
         title: new FormControl(this.eventBasicInfo.getTitle(), [Validators.required, CustomValidators.noWhitespaceValidator]),
-        description: new FormControl(this.eventBasicInfo.getDescription(), CustomValidators.noWhitespaceValidator),
+        description: new FormControl(this.eventBasicInfo.getDescription(), [CustomValidators.noWhitespaceValidator,Validators.required]),
         location: new FormControl(this.eventBasicInfo.getLocation(), [Validators.required, CustomValidators.noWhitespaceValidator]),
         isUnlimitedCapacity: new FormControl(this.eventBasicInfo.getCapacity() === -1),
         capacity: new FormControl(
