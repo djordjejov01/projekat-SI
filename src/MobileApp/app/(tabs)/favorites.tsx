@@ -98,12 +98,13 @@ export default function FavoritesScreen() {
 
       <View style={styles.row}>
         <Text style={styles.attending}>
-          {item.attendingCount || 0}+ {t('attending')}
+          {item.attendingCount === 0 ? '0' : `${item.attendingCount}+`} {t('attending')}
         </Text>
         <TouchableOpacity onPress={() => toggleFavorite(item.id)}>
           <AntDesign name="heart" size={20} color="#FF2D55" />
         </TouchableOpacity>
       </View>
+
     </TouchableOpacity>
   );
 
