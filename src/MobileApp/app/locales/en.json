@@ -329,15 +329,20 @@
     "Parking": "Parking",
     "LostAndFound": "Lost & Found",
     "Unknown": "Unknown category"
+  },
+
+  "category": {
+    "music": "Music",
+    "sports": "Sports",
+    "entertainment": "Entertainment",
+    "protest": "Protest",
+    "charity": "Charity",
+    "business": "Business",
+    "culture": "Culture",
+    "other": "Other"
   }
+  
 }
-
-
-
-
-
-
-
 
 }
 

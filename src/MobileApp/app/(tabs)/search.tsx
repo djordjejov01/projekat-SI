@@ -64,16 +64,17 @@ const SearchScreen = () => {
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const categoryOptions = [
-    { label: 'Music', value: 'Music' },
-    { label: 'Sports', value: 'Sports' },
-    { label: 'Entertainment', value: 'Entertainment' },
-    { label: 'Protest', value: 'Protest' },
-    { label: 'Charity', value: 'Charity' },
-    { label: 'Business', value: 'Business' },
-    { label: 'Culture', value: 'Culture' },
-    { label: 'Other', value: 'Other' },
+    const categoryOptions = [
+    { label: t('category.music'), value: 'Music' },
+    { label: t('category.sports'), value: 'Sports' },
+    { label: t('category.entertainment'), value: 'Entertainment' },
+    { label: t('category.protest'), value: 'Protest' },
+    { label: t('category.charity'), value: 'Charity' },
+    { label: t('category.business'), value: 'Business' },
+    { label: t('category.culture'), value: 'Culture' },
+    { label: t('category.other'), value: 'Other' },
   ];
+
 
 
   const [locations, setLocations] = useState<LocationType[]>([]);

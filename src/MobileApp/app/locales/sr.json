@@ -301,6 +301,17 @@
     "Unknown": "Nepoznata kategorija"
   }
 }
+,
+"category": {
+    "music": "Muzika",
+    "sports": "Sport",
+    "entertainment": "Zabava",
+    "protest": "Protest",
+    "charity": "Humanitarno",
+    "business": "Biznis",
+    "culture": "Kultura",
+    "other": "Ostalo"
+  }
 
   
 
