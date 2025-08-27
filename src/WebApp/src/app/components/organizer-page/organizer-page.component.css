@@ -76,6 +76,7 @@ flex-direction: column;
     margin-right: 1rem;
     /*max-height: 800px;
     overflow-y: auto;*/
+    transition: 0.8s;
 }
 img:hover{
     cursor: pointer;
@@ -84,20 +85,6 @@ hr{
     color: rgb(232, 232, 232);
 }
 
-/* Desktop adjustments already present */
-@media screen and (max-width: 1666px) {
-    /*#page{
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap:10px;
-    }*/
-    #show{
-        padding:0;
-        padding-left:290px;
-        padding-right: 10px;
-    }
-}
 
 #lgout{
     border: 1px solid rgb(232, 232, 232);
@@ -135,7 +122,7 @@ select:hover, option:hover{
     #show{
         padding-left: 1rem;
         padding-right: 1rem;
-        padding-top: 5.5rem; /* account for fixed header */
+        transition: 0.8s;
     }
     /* adjust header height if needed */
     #head{
@@ -146,4 +133,37 @@ select:hover, option:hover{
 
 @media screen and (width <= 1531px) {
 
+}
+
+/* Desktop adjustments already present */
+@media screen and (max-width: 1666px) {
+    /*#page{
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap:10px;
+    }*/
+    #show{
+        padding:0;
+        padding-left:320px;
+        padding-right: 10px;
+        transition: 0.8s;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #show{
+        padding-left:50px;
+        padding-right: 0px;
+        margin-top: 100px;
+        transition: 0.8s;
+    }
+}
+
+@media screen and (max-width: 328px) {
+
+    #show{
+        margin-top: 125px;
+        transition: 0.8s;
+    }
 }
