@@ -126,7 +126,8 @@
   "notLoggedIn": "You are not logged in.",
   "success": "Success",
   "passwordChanged": "Password changed successfully.",
-  "changeFailed": "Password change failed."
+  "changeFailed": "Password change failed.",
+  "currentPasswordIncorrect":"Current password is incorrect"
 },
 
 "personalInfo": {

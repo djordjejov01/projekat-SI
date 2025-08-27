@@ -126,7 +126,8 @@
   "notLoggedIn": "Niste prijavljeni.",
   "success": "Uspeh",
   "passwordChanged": "Lozinka je uspešno promenjena.",
-  "changeFailed": "Promena lozinke nije uspela."
+  "changeFailed": "Promena lozinke nije uspela.",
+  "currentPasswordIncorrect":"Trenutna šifra je nepravilna"
 },
 "personalInfo": {
   "permissionDenied": "Pristup galeriji nije dozvoljen.",
