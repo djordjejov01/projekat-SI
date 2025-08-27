@@ -199,11 +199,12 @@ namespace Backend.Controllers
                     }
                 }
 
-                user.ProfilePicture = "";
-                await _context.SaveChangesAsync();
+                
             }
-
-            return Ok(new { message = "Profile picture deleted." });
+            const string defaultImagePath = "images/default-pfp.png";
+            user.ProfilePicture = defaultImagePath;
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Profile picture deleted.",imageUrl=defaultImagePath });
         }
 
     }
