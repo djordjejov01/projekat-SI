@@ -235,7 +235,7 @@ useEffect(() => {
       <TouchableOpacity
         style={styles.eventItem}
         onPress={() => {
-          router.push({ pathname: '/event/[id]', params: { id: String(item.id) } });
+          router.push({ pathname: '/event/[id]', params: { id: String(item.id), from: 'search' } });
         }}
       >
         <View style={{ position: 'relative' }}>
