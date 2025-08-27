@@ -126,7 +126,8 @@
   "notLoggedIn": "You are not logged in.",
   "success": "Success",
   "passwordChanged": "Password changed successfully.",
-  "changeFailed": "Password change failed."
+  "changeFailed": "Password change failed.",
+  "currentPasswordIncorrect":"Current password is incorrect"
 },
 
 "personalInfo": {
@@ -181,7 +182,8 @@
 "success":"Success",
 "success2":"dinars have been added to your account",
 "errorPayment":"An error occurred during payment",
-"errorServer":"An error occurred while connecting to the server"
+"errorServer":"An error occurred while connecting to the server",
+"moneyError":"You cannot have more than 1,000,000 dinars in your account."
 },
 
 "tabs": {

@@ -7,7 +7,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
-  ScrollView,
   Image,
   ActivityIndicator,
 } from 'react-native';
@@ -27,18 +26,20 @@ export default function PersonalInfoScreen() {
   const [phoneNumber, setPhone] = useState('');
   const defaultAvatar = require('../../assets/images/avatar_placeholder.png');
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [profilePicture, setProfilePicture] = useState<string | null>('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [newProfileImage, setNewProfileImage] = useState<any>(null);
 
   const normalizeImageUrl = (path: string | null) => {
-  if (!path) return null;
-  if (path.startsWith('http')) return path;
-  if (!path.startsWith('/')) path = `/${path}`; // dodaj / ako ga nema
-  return `${API_URL}${path}`;
-};
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+    if (!path.startsWith('/')) path = `/${path}`;
+    return `${API_URL}${path}`;
+  };
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchUserInfo = async () => {
       setIsLoading(true);
       try {
@@ -46,50 +47,47 @@ export default function PersonalInfoScreen() {
         if (!token) return;
 
         const res = await fetch(`${API_URL}/api/MobileUser/profile`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (res.ok) {
           const data = await res.json();
+          if (!isMounted) return;
           setName(data.firstName || '');
           setLastName(data.lastName || '');
           setEmail(data.email || '');
           setPhone(data.phoneNumber || '');
-          const imageUrl = normalizeImageUrl(data.profilePicture || null);
-          setProfilePicture(imageUrl);
+          setProfilePicture(normalizeImageUrl(data.profilePicture || null));
         }
       } catch (error) {
         console.error(error);
       } finally {
-        setIsLoading(false);
+        if (isMounted) setIsLoading(false);
       }
     };
 
     fetchUserInfo();
+    return () => { isMounted = false; };
   }, []);
 
- const pickImage = async () => {
-  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  if (status !== 'granted') {
-    Alert.alert(t('personalInfo.error'), t('personalInfo.permissionDenied'));
-    return;
-  }
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(t('personalInfo.error'), t('personalInfo.permissionDenied'));
+      return;
+    }
 
-  let result = await ImagePicker.launchImageLibraryAsync({
-    mediaTypes: ImagePicker.MediaTypeOptions.Images,
-    allowsEditing: true,
-    aspect: [1, 1],
-    quality: 0.7,
-  });
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.7,
+    });
 
     if (!result.canceled && result.assets.length > 0) {
-    const picked = result.assets[0];
-    setNewProfileImage(picked);
-
-  }
-};
+      setNewProfileImage(result.assets[0]);
+    }
+  };
 
   const handleDeleteImage = () => {
     Alert.alert(
@@ -111,7 +109,6 @@ export default function PersonalInfoScreen() {
 
   const uploadProfileImage = async (): Promise<string | null> => {
     if (!newProfileImage) return profilePicture;
-
     try {
       const token = await AsyncStorage.getItem('token');
       if (!token) throw new Error(t('personalInfo.notLoggedIn'));
@@ -134,7 +131,6 @@ export default function PersonalInfoScreen() {
       });
 
       if (!res.ok) throw new Error(await res.text());
-
       const data = await res.json();
       return data.imageUrl || null;
     } catch (error) {
@@ -174,7 +170,7 @@ export default function PersonalInfoScreen() {
         uploadedImageUrl = await uploadProfileImage();
       } else if (profilePicture === '') {
         await deleteProfileImageOnServer();
-        uploadedImageUrl = "";
+        uploadedImageUrl = '';
       }
 
       const res = await fetch(`${API_URL}/api/MobileUser/profileUpdate`, {
@@ -231,16 +227,19 @@ export default function PersonalInfoScreen() {
       </View>
 
       <View style={styles.imageContainer}>
-              <Image
+        {profilePicture || newProfileImage ? (
+          <Image
             source={
               newProfileImage
-                ? { uri: newProfileImage.uri }   // lokalna izabrana slika
-                : profilePicture
-                ? { uri: normalizeImageUrl(profilePicture)! }  // slika sa servera
-                : defaultAvatar
+                ? { uri: newProfileImage.uri }
+                : { uri: normalizeImageUrl(profilePicture!) }
             }
             style={styles.profileImage}
+            onError={() => setProfilePicture('')}
           />
+        ) : (
+          <Image source={defaultAvatar} style={styles.profileImage} />
+        )}
 
         <TouchableOpacity onPress={pickImage} style={styles.editButton}>
           <Ionicons name="pencil" size={24} color="#2563EB" />
@@ -300,31 +299,63 @@ const styles = StyleSheet.create({
   titleWrapper: { flex: 1, alignItems: 'center', marginRight: 34 },
   title: { fontSize: 22, fontWeight: '700' },
   imageContainer: {
-    alignItems: 'center', marginBottom: 24, position: 'relative',
-    width: 120, height: 120, justifyContent: 'center', alignSelf: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+    position: 'relative',
+    width: 120,
+    height: 120,
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
   profileImage: {
-    width: 120, height: 120, borderRadius: 60,
-    borderWidth: 2, borderColor: '#2563EB', alignSelf: 'center',
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 2,
+    borderColor: '#2563EB',
+    alignSelf: 'center',
   },
   editButton: {
-    position: 'absolute', bottom: 0, left: 0, backgroundColor: '#fff',
-    borderRadius: 16, padding: 4, elevation: 5, shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.3, shadowRadius: 2,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 4,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
   },
   deleteButton: {
-    position: 'absolute', top: 0, right: 0, backgroundColor: '#fff',
-    borderRadius: 16, padding: 4, elevation: 5, shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.3, shadowRadius: 2,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 4,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
   },
   label: { fontSize: 14, fontWeight: '600', marginBottom: 6, marginTop: 16 },
   input: {
-    height: 48, borderWidth: 1, borderColor: '#ccc', borderRadius: 8,
-    paddingHorizontal: 14, fontSize: 16,
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    fontSize: 16,
   },
   saveButton: {
-    backgroundColor: '#2563EB', paddingVertical: 14, borderRadius: 8,
-    alignItems: 'center', marginTop: 32,
+    backgroundColor: '#2563EB',
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 32,
   },
   saveText: { color: '#fff', fontWeight: '600', fontSize: 16 },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
