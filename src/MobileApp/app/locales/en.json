@@ -225,6 +225,9 @@
   "noResources": "No available resoursces for this event."
 },
 "cart": {
+   "fetchMyTicketsFailed": "Failed to fetch your existing tickets.",
+  "purchaseFailed": "Ticket purchase failed: {{error}}",
+  "fetchAfterPurchaseFailed": "Failed to fetch tickets after purchase.",
     "viewTicket": "View Ticket",
   "backToEvents": "Back to Events",
   "title": "Your Cart",

@@ -195,6 +195,9 @@
   "noResources": "Nema dostupnih resursa za ovaj događaj"
 },
 "cart": {
+   "fetchMyTicketsFailed": "Neuspešno dohvaćanje postojećih karata.",
+  "purchaseFailed": "Kupovina ulaznica nije uspela: {{error}}",
+  "fetchAfterPurchaseFailed": "Neuspešno dohvaćanje karata nakon kupovine.",
     "viewTicket": "Vidi kartu",
   "backToEvents": "Nazad na događaje",
   "title": "Vaša korpa",

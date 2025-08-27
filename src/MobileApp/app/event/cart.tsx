@@ -123,7 +123,7 @@ export default function CartScreen() {
             const myTicketsBeforeRes = await fetch(`${API_URL}/api/Ticket/tickets/my`, {
               headers: { Authorization: `Bearer ${token}` },
             });
-            if (!myTicketsBeforeRes.ok) throw new Error('Neuspešno dohvaćanje postojećih karata.');
+            if (!myTicketsBeforeRes.ok) throw new Error(t('cart.fetchMyTicketsFailed'));
             const myTicketsBeforePurchase = await myTicketsBeforeRes.json();
             const existingTicketIDs = new Set(myTicketsBeforePurchase.map((t: any) => t.userTicketID));
 
@@ -142,7 +142,7 @@ export default function CartScreen() {
               });
               if (!purchaseRes.ok) {
                 const errorText = await purchaseRes.text();
-                throw new Error(`Kupovina ulaznica nije uspela. ${errorText}`);
+                throw new Error(t('cart.purchaseFailed', { error: errorText }));
               }
             }
 
@@ -164,7 +164,7 @@ export default function CartScreen() {
             const myTicketsAfterRes = await fetch(`${API_URL}/api/Ticket/tickets/my`, {
               headers: { Authorization: `Bearer ${token}` },
             });
-            if (!myTicketsAfterRes.ok) throw new Error('Neuspešno dohvaćanje kupljenih karata nakon kupovine.');
+            if (!myTicketsAfterRes.ok) throw new Error(t('cart.fetchAfterPurchaseFailed'));
             const allMyTicketsAfterPurchase = await myTicketsAfterRes.json();
 
             const newlyPurchasedTickets = allMyTicketsAfterPurchase.filter((t: any) =>
