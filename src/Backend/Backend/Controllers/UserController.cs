@@ -23,11 +23,13 @@ namespace Backend.Controllers
         private readonly IUserService _userService;
         private readonly IConfiguration _config;
         private readonly AppDbContext _context;
-        public UserController(IUserService userService, IConfiguration config, AppDbContext context)
+        private readonly IWebHostEnvironment _env;
+        public UserController(IUserService userService, IConfiguration config, AppDbContext context, IWebHostEnvironment env)
         {
             _userService = userService;
             _config = config;
             _context = context;
+            _env = env;
         }
 
         [HttpPost("register")]
@@ -138,23 +140,23 @@ namespace Backend.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var user =await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound("User not found.");
+                return NotFound(new { message = "User not found." });
 
             
             if (CommonHelpers.HashPassword(dto.CurrentPassword) != user.Password)
-                return BadRequest("The current password is incorrect.");
+                return BadRequest(new { message = "The current password is incorrect." });
 
             
             if (string.IsNullOrWhiteSpace(dto.NewPassword) || dto.NewPassword.Length < 8 ||
                 !dto.NewPassword.Any(char.IsUpper) ||
                 !dto.NewPassword.Any(char.IsLower) ||
                 !dto.NewPassword.Any(char.IsDigit))
-                return BadRequest("The new password must be at least 8 characters long and include an uppercase letter, a lowercase letter, and a number.");
+                return BadRequest(new { message = "The new password must be at least 8 characters long and include an uppercase letter, a lowercase letter, and a number." });
 
             
             user.Password = CommonHelpers.HashPassword(dto.NewPassword);
             await _context.SaveChangesAsync();
-            return Ok("Password changed successfully.");
+            return Ok(new { message = "Password changed successfully." });
         }
 
         [Authorize]
@@ -167,6 +169,42 @@ namespace Backend.Controllers
                 return NotFound();
 
             return Ok(new { role = user.Role.ToString() });
+        }
+
+        [Authorize(Roles = "Organizer,Supplier,Admin")]
+        [HttpDelete("delete-profile-picture")]
+        public async Task<IActionResult> DeleteProfilePicture()
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (user == null)
+                return NotFound(new { message = "User not found." });
+
+            if (!string.IsNullOrEmpty(user.ProfilePicture))
+            {
+                // Assume user.ProfilePicture is stored like "/profile-images/filename.jpg"
+                var relativePath = user.ProfilePicture.TrimStart('/');
+                var absolutePath = Path.Combine(_env.WebRootPath, relativePath);
+
+                if (System.IO.File.Exists(absolutePath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(absolutePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        return StatusCode(500, new { message = "Error deleting image:" + ex.Message });
+                    }
+                }
+
+                
+            }
+            const string defaultImagePath = "images/default-pfp.png";
+            user.ProfilePicture = defaultImagePath;
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Profile picture deleted.",imageUrl=defaultImagePath });
         }
 
     }
