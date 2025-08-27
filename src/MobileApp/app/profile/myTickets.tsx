@@ -8,10 +8,10 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
 import { API_URL } from '../../config';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 
 type PurchasedTicket = {
   ticketID: number;
@@ -40,6 +40,7 @@ export default function ProfileTickets() {
   const [ticketsData, setTicketsData] = useState<PurchasedTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { from } = useLocalSearchParams();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -82,6 +83,7 @@ export default function ProfileTickets() {
           });
 
           setGroupedTickets(Object.values(grouped));
+
         } else {
           console.warn('Failed to fetch tickets');
         }
@@ -162,13 +164,17 @@ export default function ProfileTickets() {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="arrow-back" size={28} color='black' />
-        </TouchableOpacity>
+       <TouchableOpacity
+        onPress={() => {
+          if (from === 'profile') router.replace('/profile');
+          else router.back(); // fallback
+        }}
+        style={styles.backButton}
+        activeOpacity={0.7}
+      >
+        <Ionicons name="arrow-back" size={28} color='black' />
+      </TouchableOpacity>
+
         <Text style={styles.header}>{t('profileTickets.title')}</Text>
       </View>
 
@@ -200,3 +206,4 @@ const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16, backgroundColor: '#fff' },
   emptyText: { fontSize: 18, color: '#95a5a6', textAlign: 'center' },
 });
+

@@ -156,10 +156,19 @@ export default function ProfileScreen() {
 </View>
 
       <View style={styles.rowContainer}>
-        <TouchableOpacity style={styles.statBox} onPress={() => router.push('../profile/myTickets')}>
+        <TouchableOpacity
+          style={styles.statBox}
+          onPress={() =>
+            router.push({
+              pathname: '../profile/myTickets',
+              params: { from: 'profile' }, 
+            })
+          }
+        >
           <Text style={styles.statNumber}>{ticketsCount}</Text>
           <Text style={styles.statLabel}>{t('profile.tickets')}</Text>
         </TouchableOpacity>
+
 
         <TouchableOpacity style={styles.statBox} onPress={() => router.push('/favorites')}>
           <Text style={styles.statNumber}>{favorites.length}</Text>
