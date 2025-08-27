@@ -278,7 +278,8 @@
 "success":"Uspešno",
 "success2":"dinara je dodato na tvoj račun",
 "errorPayment":"Došlo je do greške prilikom uplate",
-"errorServer":"Došlo je do greške prilikom povezivanja na server"
+"errorServer":"Došlo je do greške prilikom povezivanja na server",
+"moneyError":"Ne možeš imati više od 1,000,000 dinara na svom računu."
 }
 
 
