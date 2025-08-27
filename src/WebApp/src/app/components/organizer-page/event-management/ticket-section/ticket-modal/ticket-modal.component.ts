@@ -156,12 +156,12 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy, IDeact
 
       this.apiService.updateTicket(ticketDto).subscribe({
         next: (msg) => {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: msg });
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: msg, life: 3000 });
           this.ticketCreated.emit();
           this.hide();
         },
         error: (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message, life: 3000 });
         }
       });
     }
@@ -169,12 +169,12 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy, IDeact
 
       this.apiService.createTicket(ticketDto).subscribe({
         next: (msg) =>{
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: msg });
+          this.messageService.add({ severity: 'success', summary: 'Success', detail: msg, life: 3000 });
           this.ticketCreated.emit();
           this.hide();
         },
         error: (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message, life: 3000 });
         }
       });
 

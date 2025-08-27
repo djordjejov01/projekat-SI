@@ -64,7 +64,7 @@ export class FormValidationService {
   const summary = 'Form fields are not valid:';
   const detail = errors.join('\n');
 
-  this.messageService.add({ severity: 'error', summary, detail, sticky: true });
+  this.messageService.add({ severity: 'error', summary, detail, sticky: true, life: 3000 });
 }
 
 

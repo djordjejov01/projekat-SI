@@ -112,7 +112,7 @@ selectedRoles: any[] = [];
     },
     error: (err) => {
       this.loading = false;
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed To Load Users' });
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed To Load Users',life: 3000 });
       // Optionally show an error message to the user here
     }
   });
@@ -476,14 +476,16 @@ onRoleFilterChange(selectedOptions: any[], filterFn: (val: any) => void) {
           this.messageService.add({
           severity: newStatus ? 'success' : 'info',
           summary: newStatus ? 'Activated' : 'Deactivated',
-          detail: `${user.getUsername()} has been ${newStatus ? 'activated' : 'deactivated'}.`
+          detail: `${user.getUsername()} has been ${newStatus ? 'activated' : 'deactivated'}.`,
+          life: 3000
         });
       },
       error: () => {
          this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: `Could not ${newStatus ? 'activate' : 'deactivate'} ${user.getUsername()}`
+          detail: `Could not ${newStatus ? 'activate' : 'deactivate'} ${user.getUsername()}`,
+          life: 3000
         });
       }
     })

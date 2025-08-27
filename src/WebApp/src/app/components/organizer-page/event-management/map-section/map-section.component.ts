@@ -256,6 +256,7 @@ private geocodeAddress(): Observable<void> {
       severity: 'info',
       summary: 'Add Pin Mode',
       detail: 'Click on the map to place your pin.',
+      life: 3000
     });
 
     this.map.once('click', (e: Leaflet.LeafletMouseEvent) => {

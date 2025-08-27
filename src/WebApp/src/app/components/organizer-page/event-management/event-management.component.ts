@@ -83,7 +83,7 @@ export class EventManagementComponent implements OnInit{
               severity: 'error',
               summary: 'Error loading agenda',
               detail: err.message || 'Unknown error',
-              life: 5000
+              life: 3000
             });
           }
       })

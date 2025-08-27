@@ -107,7 +107,7 @@ export class ActivityModalComponent implements OnInit, OnChanges,IDeactivate{
     this.apiService.createActivity(activity).subscribe({
       next: (response) => {
         const message = response.headers?.get('Location') || 'Activity created successfully!';
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: message });
+        this.messageService.add({ severity: 'success', summary: 'Success', detail: message,life: 3000 });
         this.hide()
         this.activityCreated.emit()
       },

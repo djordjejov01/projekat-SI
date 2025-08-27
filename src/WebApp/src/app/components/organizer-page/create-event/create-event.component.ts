@@ -275,7 +275,7 @@ submitForm(): void {
   this.apiService.createEvent(formData, organizerId).subscribe({
     next: (response) => {
       const message = response.headers?.get('Location') || 'Event created successfully!';
-      this.messageService.add({ severity: 'success', summary: 'Success', detail: message });
+      this.messageService.add({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
 
       this.eventForm.reset();
       this.selectedImageFile = null; // Reset the image file after successful submission
@@ -300,7 +300,7 @@ submitForm(): void {
        this.router.navigate(["/organizer/overview"]);
     },
     error: () => {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to create event.' });
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to create event.', life: 3000 });
     }
   });
 }

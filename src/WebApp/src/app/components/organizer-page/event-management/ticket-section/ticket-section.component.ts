@@ -81,10 +81,10 @@ export class TicketSectionComponent implements OnInit{
 
       this.apiService.deleteTicket(ticket.getTicketID()).subscribe({
         next: (msg) =>{
-          this.messageService.add({ severity: 'success', summary: 'Deleted', detail: msg });
+          this.messageService.add({ severity: 'success', summary: 'Deleted', detail: msg, life: 3000 });
           this.loadTickets(); // Refresh ticket list
         },  error: (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message, life: 3000 });
         }
       });
     });

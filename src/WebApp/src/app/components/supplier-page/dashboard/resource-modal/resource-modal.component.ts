@@ -153,7 +153,7 @@ openModal(resourceToEdit?: ResourceDto) {
       this.apiService.editResource(resource).subscribe({
         next: (msg) => 
         {
-          this.messageService.add({ severity: 'success', summary: 'Edited', detail: msg});
+          this.messageService.add({ severity: 'success', summary: 'Edited', detail: msg, life: 3000});
           this.resourceSaved.emit(null);
           this.closeModal()
         },
@@ -170,7 +170,7 @@ openModal(resourceToEdit?: ResourceDto) {
       this.apiService.addResource(resource).subscribe({
         next: (addedResource : ResourceDto) => 
         {
-          this.messageService.add({ severity: 'success', summary: 'Added', detail: 'Resource Added Successfully!' });
+          this.messageService.add({ severity: 'success', summary: 'Added', detail: 'Resource Added Successfully!',life: 3000});
           this.resourceSaved.emit(addedResource)
           this.closeModal()
         },
