@@ -87,7 +87,7 @@ export default function ProfileTickets() {
         groupedArray.sort((a, b) => {
           const dateA = new Date(a.purchasedAt).getTime();
           const dateB = new Date(b.purchasedAt).getTime();
-          return dateB - dateA; // rastući redosled (najstarija kupovina prva)
+          return dateB - dateA; 
         });
 
         setGroupedTickets(groupedArray);
