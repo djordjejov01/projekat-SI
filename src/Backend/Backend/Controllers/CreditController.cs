@@ -39,7 +39,7 @@ namespace Backend.Controllers
 
             if (user.Credit + amount > 1000000)
             {
-                return BadRequest("Credit cannot exceed 1,000,000.");
+                return BadRequest(new { message = "Credit cannot exceed 1,000,000." });
             }
 
             user.Credit += amount;

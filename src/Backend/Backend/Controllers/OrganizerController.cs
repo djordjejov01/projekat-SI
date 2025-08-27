@@ -381,6 +381,52 @@ namespace Backend.Controllers
             }
         }
 
+        [HttpPut("activity")]
+        public async Task<IActionResult> UpdateActivity([FromBody] ActivityDto dto)
+        {
+            try
+            {
+                var organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+                
+                var existingActivity = await _context.EventActivities
+                    .Include(a => a.Event)
+                    .FirstOrDefaultAsync(a => a.ActivityID == dto.ActivityId);
+
+                if (existingActivity == null)
+                    return NotFound(new { message = "Activity not found." });
+
+                
+                if (existingActivity.Event.OrganizerID != organizerId)
+                    return StatusCode(403, new { message = "You can only edit activities from your own events." });
+
+                
+                if (dto.StartDate >= dto.EndDate)
+                    return BadRequest(new { message = "Start time must be before end time." });
+
+                if (dto.StartDate < existingActivity.Event.StartDate || dto.EndDate > existingActivity.Event.EndDate)
+                    return BadRequest(new { message = "Activity time must be within event dates." });
+
+                
+                existingActivity.Title = dto.Title;
+                existingActivity.Description = dto.Description;
+                existingActivity.StartTime = dto.StartDate;
+                existingActivity.EndTime = dto.EndDate;
+                existingActivity.Category = dto.Category;
+
+
+                _context.EventActivities.Update(existingActivity);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Activity updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
         [HttpDelete("activity")]
         public async Task<IActionResult> DeleteActivity([FromBody] int activityId)
         {
@@ -558,7 +604,7 @@ namespace Backend.Controllers
             {
                 if (cap == null)
                     return BadRequest("Event capacity is not set.");
-                if (cap <= usedQuota + ticketDto.Quota)
+                if (cap < usedQuota + ticketDto.Quota)
                     return BadRequest($"Total tickets across all types would exceed event capacity ({cap}).");
             }
 
