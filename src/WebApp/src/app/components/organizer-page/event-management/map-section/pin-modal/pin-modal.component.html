@@ -10,8 +10,8 @@
   <ng-template pTemplate="header">
     <div class="flex justify-between items-start w-full">
       <div class="formTitle">
-        <h3>Create New Pin</h3>
-        <p>Fill in the details below to set up your pin.</p>
+        <h3>{{ editingPin ? 'Edit Pin' : 'Create New Pin' }}</h3>
+        <p>{{ editingPin ? 'Update the details below.' : 'Fill in the details below to set up your pin.' }}</p>
       </div>
       <button
         type="button"
@@ -90,24 +90,24 @@
             </div>
 
 
-            <div class="form-buttons">
-                <p-button 
-                label="Save Changes"
-                icon="pi pi-pen-to-square"
-                [raised]="true"
-                (onClick)="savePin()"
-                severity="primary"
-                ></p-button>
+           <div class="form-buttons">
+            <p-button 
+            [label]="editingPin ? 'Save Changes' : 'Create Pin'"
+            [icon]="editingPin ? 'pi pi-save' : 'pi pi-plus'"
+            [raised]="true"
+            (onClick)="savePin()"
+            severity="primary"
+            ></p-button>
 
-                <p-button 
-                    label="Cancel"
-                    icon="pi pi-times"
-                    [raised]="true"
-                    severity="secondary"
-                    type="button"
-                    (onClick)="onCancleClick()"
+            <p-button 
+                label="Cancel"
+                icon="pi pi-times"
+                [raised]="true"
+                severity="secondary"
+                type="button"
+                (onClick)="onCancleClick()"
                 ></p-button>
-            </div>
+        </div>
         </div>
     </form>
 </p-dialog>

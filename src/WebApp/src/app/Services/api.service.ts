@@ -76,12 +76,15 @@ export interface EventsSubeventsActivitiesDto {
 
 // Your frontend models (can keep same shape but camelCase)
 export interface Activity {
-  id: number;
+  id: number;             // maps to activityId
+  eventId: number;        // new
   title: string;
   description: string;
   startDateTime: Date;
   endDateTime: Date;
+  category: number;       // new
 }
+
 
 export interface Subevent {
   id: number;
@@ -100,32 +103,36 @@ export function mapBackendResponse(
     (e) => e.parentEventId === mainEventId
   );
 
-  const mainEventActivities = backendData.activities
-    .filter((a) => a.eventId === mainEventId)
+const mainEventActivities = backendData.activities
+  .filter((a) => a.eventId === mainEventId)
+  .map((a) => ({
+    id: a.activityId,
+    eventId: a.eventId,
+    title: a.title,
+    description: a.description,
+    startDateTime: new Date(a.startDate),
+    endDateTime: new Date(a.endDate),
+    category: Number(a.category) // convert if needed
+  }));
+
+const subevents = subeventsDtos.map((sub) => ({
+  id: sub.eventId,
+  title: sub.title,
+  description: sub.description,
+  startDateTime: new Date(sub.startDate),
+  endDateTime: new Date(sub.endDate),
+  activities: backendData.activities
+    .filter((a) => a.eventId === sub.eventId)
     .map((a) => ({
       id: a.activityId,
+      eventId: a.eventId,
       title: a.title,
       description: a.description,
       startDateTime: new Date(a.startDate),
       endDateTime: new Date(a.endDate),
-    }));
-
-  const subevents = subeventsDtos.map((sub) => ({
-    id: sub.eventId,
-    title: sub.title,
-    description: sub.description,
-    startDateTime: new Date(sub.startDate),
-    endDateTime: new Date(sub.endDate),
-    activities: backendData.activities
-      .filter((a) => a.eventId === sub.eventId)
-      .map((a) => ({
-        id: a.activityId,
-        title: a.title,
-        description: a.description,
-        startDateTime: new Date(a.startDate),
-        endDateTime: new Date(a.endDate),
-      })),
-  }));
+      category: Number(a.category)
+    })),
+}));
 
   return {
     subevents,
@@ -453,6 +460,31 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
             catchError(this.handleError)
         );
 
+    }
+
+
+    updateActivity(activityId: number, activityDto: ActivityDto): Observable<SuccessfulMessageResponse> {
+        
+        const dtoWithId = new ActivityDto(
+            activityDto.getEventId(),
+            activityDto.getTitle(),
+            activityDto.getStartDate(),
+            activityDto.getEndDate(),
+            activityDto.getDescription(),
+            activityDto.getCategory(),
+            activityDto.getActivityId()
+        );
+      return this.http.put<SuccessfulMessageResponse>(`${this.apiUrl}/Organizer/activity`, dtoWithId).pipe(
+        catchError(this.handleError)
+      );
+    }
+
+    // **Updated: Delete an activity**
+    deleteActivity(activityId: number): Observable<SuccessfulMessageResponse> {
+      // Backend expects the ID in the request body, not as a URL parameter
+      return this.http.delete<SuccessfulMessageResponse>(`${this.apiUrl}/Organizer/activity`, { body: activityId }).pipe(
+        catchError(this.handleError)
+      );
     }
 
     createActivity(activity : ActivityDto) : Observable<any>{

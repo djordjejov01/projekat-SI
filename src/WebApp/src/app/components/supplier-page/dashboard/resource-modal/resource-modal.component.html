@@ -10,8 +10,8 @@
   <ng-template pTemplate="header">
     <div class="flex justify-between items-start w-full">
       <div class="formTitle">
-        <h3>Add New Resource</h3>
-        <p>Fill in the details below to add your new resource.</p>
+        <h3>{{ resourceToEdit ? 'Edit Resource' : 'Add New Resource' }}</h3>
+        <p>{{ resourceToEdit ? 'Update the details below.' : 'Fill in the details below to add your new resource.' }}</p>
       </div>
       <button
         type="button"
@@ -114,8 +114,8 @@
 
             <div class="form-buttons">
                 <p-button 
-                label="Add Resource"
-                icon="pi pi-pen-to-square"
+                [label]="resourceToEdit ? 'Save Changes' : 'Add Resource'"
+                [icon]="resourceToEdit ? 'pi pi-save' : 'pi pi-plus'"
                 [raised]="true"
                 (onClick)="submitForm()"
                 severity="primary"
@@ -128,7 +128,7 @@
                     severity="secondary"
                     type="button"
                     (onClick)="onCancleClick()"
-                ></p-button>
+                    ></p-button>
             </div>
         </div>
     </form>
