@@ -13,6 +13,7 @@ import { SupplierDto } from '../../../Models/SupplierDto';
 import { UpdateSupplierDto } from '../../../Models/UpdateSupplierDto';
 import { ResourceDto } from '../../../Models/ResourceDto';
 import { environment } from '../../../../environments/environment';
+import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-my-profile',
@@ -25,7 +26,9 @@ export class MyProfileComponent implements OnInit {
   defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
   previewUrl: string | ArrayBuffer | null = null;
   selectedFile?: File;
-  constructor(private apiService: ApiService, private authService: AuthService, private messageService: MessageService, private sharedService: SharedService) { }
+  constructor(private apiService: ApiService, private authService: AuthService, private messageService: MessageService, private sharedService: SharedService,
+    private confirmationDialogService : ConfirmationDialogService
+  ) { }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -57,7 +60,7 @@ export class MyProfileComponent implements OnInit {
     const formData = new FormData();
     formData.append('Image', this.selectedFile);
     formData.append('Id', this.authService.getUserId().toString());
-
+    this.selectedFile = null;
     this.apiService.changeSupplierPicture(formData).subscribe({
 
         next:(response : any) => {
@@ -197,5 +200,33 @@ export class MyProfileComponent implements OnInit {
         life: 3000
       });
     }
+  }
+
+    async deletePic(){
+    const confirmed = await this.confirmationDialogService.confirm(
+      `Are you sure you want to remove the picture?`,
+      `Remove picture`
+    )
+    if(!confirmed) return;
+
+    this.apiService.removePicture().subscribe({
+      next:(response : any) =>{
+        this.previewUrl = this.currSupplier.getImage();
+          this.getSupplierCall();
+          this.sharedService.notifyProfileImageChanged();
+        this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: response.message,
+              life: 3000 });
+        },
+        error:(errorResponse) =>{
+          this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000 });
+      }
+    })
   }
 }

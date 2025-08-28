@@ -63,8 +63,8 @@ namespace Backend.Controllers
             string oldOrganizerImage = organizer.Image;
             string oldUserImage = user.ProfilePicture;
 
-            
-            await CommonHelpers.RemovePhoto(organizer.Image, _env);
+            if(oldOrganizerImage != "images/default-pfp.png")
+                await CommonHelpers.RemovePhoto(organizer.Image, _env);
             organizer.Image = imageName;
             user.ProfilePicture = imageName;
 

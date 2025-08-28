@@ -208,7 +208,8 @@ namespace Backend.Controllers
             Event o = _context.Events.Where(o => o.EventID == model.Id).First();
             if (o is null)
                 return BadRequest("ERROR!");
-            await CommonHelpers.RemovePhoto(o.ImageUrl, _env);
+            if(o.ImageUrl != "images/default-image.png")
+                await CommonHelpers.RemovePhoto(o.ImageUrl, _env);
             o.ImageUrl = ImageName;
             _context.Events.Update(o);
             _context.SaveChanges();

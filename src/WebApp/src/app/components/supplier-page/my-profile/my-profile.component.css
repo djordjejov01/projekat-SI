@@ -218,3 +218,25 @@ input{
     font-size: 18px;
     font-weight: bold;
 }
+
+.del{
+        color:white;
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:8px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 5px;
+    pointer-events:all;
+    user-select:none;
+    margin-top: 20px;
+    background-color: rgb(228, 1, 1);
+}
+.del:hover{
+    cursor: pointer;
+    background-color: rgb(210, 2, 2);
+}

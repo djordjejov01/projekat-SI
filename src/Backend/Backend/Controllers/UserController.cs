@@ -177,7 +177,9 @@ namespace Backend.Controllers
         {
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
-
+            
+                
+            
             if (user == null)
                 return NotFound(new { message = "User not found." });
 
@@ -203,8 +205,18 @@ namespace Backend.Controllers
             }
             const string defaultImagePath = "images/default-pfp.png";
             user.ProfilePicture = defaultImagePath;
+            if (user.Role == UserRole.Organizer)
+            {
+                var organizer = await _context.Organizers.FirstOrDefaultAsync(s => s.Id == userId);
+                organizer.Image = defaultImagePath;
+            }
+            else if(user.Role == UserRole.Supplier)
+            {
+                var supplier = await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == userId);
+                supplier.Image = defaultImagePath;
+            }
             await _context.SaveChangesAsync();
-            return Ok(new { message = "Profile picture deleted.",imageUrl=defaultImagePath });
+            return Ok(new { message = "Profile picture deleted."});
         }
 
     }

@@ -11,8 +11,12 @@
                     <img [src]="previewUrl || defaultImage" class="profile-img" alt="Profile" />
                     <input type="file" id="fileUpload" (change)="onFileSelected($event)" accept="image/*" hidden />
                 </label>
-                <button id="upbut" (click)="triggerFileUpload()">
+                <button id="upbut"(click)="triggerFileUpload()">
                     <i class="pi pi-upload"></i>Choose
+                </button>
+
+                <button class="del" (click)="deletePic()">
+                    <i class="pi pi-times"></i>Remove Picture
                 </button>
             </div>
 
