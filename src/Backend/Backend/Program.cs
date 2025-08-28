@@ -110,7 +110,8 @@ provider.Mappings[".apk"] = "application/vnd.android.package-archive";
 
 var allowedReferers = new[]
 {
-    "http://softeng.pmf.kg.ac.rs:11061"           
+    "http://softeng.pmf.kg.ac.rs:11061",
+    "http://localhost:4200"
 };
 
 app.UseWhen(ctx => ctx.Request.Path.StartsWithSegments("/images"), branch =>
