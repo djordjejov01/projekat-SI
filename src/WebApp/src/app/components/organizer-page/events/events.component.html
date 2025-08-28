@@ -37,6 +37,7 @@
                 <p-chart *ngIf="data1" type="bar" [data]="data1" [options]="options1" class="bar" />
             </div>
             <div class="chart-box pad">
+                <p>Categories</p>
                 <p-chart *ngIf="data2" type="pie" [data]="data2" [options]="options3" class="pad" />
             </div>
         </div>
@@ -45,6 +46,7 @@
                 <p-chart *ngIf="data4" type="line" [data]="data4" [options]="options1" class="bar" />
             </div>
             <div class="chart-box pad">
+                <p>Status</p>
                 <p-chart *ngIf="data3" type="doughnut" [data]="data3" [options]="options3" class="pad" />
             </div>
         </div>
@@ -63,7 +65,7 @@
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [filterDelay]="0"
             [globalFilterFields]="['title', 'startDateTime', 'endDateTime', 'category', 'status' , 'location']">
             <ng-template #caption>
-                <div class="flex justify-between">
+                <div class="line">
                     <div style="display: flex; gap:20px;">
                         <p-button [outlined]="true" icon="pi pi-filter-slash" label="Clear" (click)="clear(dt)" />
                         <button id="ae" (click)="createEvent()"><i class="pi pi-plus"></i>Add</button>
