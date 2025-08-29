@@ -194,6 +194,7 @@
 },
 "aboutEvent": "About Event",
   "freeEvent": "Free Event",
+  "freeResources":"Resources",
 "search": {
   "header": "Search Events",
   "placeholder": "Search by title or description...",
@@ -237,6 +238,7 @@
   "purchase": "Purchase",
   "purchasing": "Purchasing...",
   "confirmTitle": "Purchase Confirmation",
+  "confirmTitle2": "Reservation Confirmation",
   "confirmMessage": "Are you sure you want to complete the purchase?",
   "cancel": "Cancel",
   "successTitle": "Success",
@@ -246,7 +248,10 @@
   "genericError": "An error occurred during purchase.",
   "fetchError": "Failed to load data.",
   "ok": "OK",
-  "free": "Free"
+  "free": "Free",
+  "reserveBtn":"Reserve",
+  "confirmReserveMessage":"Are you sure you want to reserve resources?",
+  "resourceReservedMessage":"Resources were successfully reserved"
 },
 
   "ticketDetails": {

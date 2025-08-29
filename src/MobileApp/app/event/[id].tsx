@@ -443,18 +443,19 @@ const checkUserProfile = async () => {
 
 
 const handleAction = async () => {
-  // free + bez resursa → dugme je disabled i ne može ni da pozove handleAction
+  // free + bez resursa → dugme je disabled i ne treba da pozove ništa
   if (event?.isFree && !hasResources) return;
 
-  // u svim ostalim slučajevima proveravamo usera tek kad klikne
+  // u svim ostalim slučajevima proveravamo user profil
   const isProfileComplete = await checkUserProfile();
   if (!isProfileComplete) return;
 
-  if (event && !event?.isFree) {
-    // ima karata za kupovinu
+  // ako nije free → vodi na tickets
+  if (event && !event.isFree) {
     router.push({ pathname: './tickets', params: { eventId: event.id.toString() } });
-  } else if (event?.isFree && hasResources) {
-    // free event ali ima resurse
+  } 
+  // free + ima resurse → vodi na tickets
+  else if (event?.isFree && hasResources) {
     router.push({ pathname: './tickets', params: { eventId: event.id.toString() } });
   }
 };
@@ -675,12 +676,13 @@ const handleAction = async () => {
 >
   <Text style={styles.buyButtonText}>
     {!event?.isFree
-      ? t('buyTicket')     
+      ? t('buyTicket')        
       : hasResources
-      ? t('reserve')        
-      : t('freeEvent')}     
+      ? t('freeResources')        
+      : t('freeEvent')}       
   </Text>
 </TouchableOpacity>
+
 
 
 
