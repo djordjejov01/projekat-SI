@@ -3,6 +3,7 @@ using Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -105,6 +106,39 @@ using (var scope = app.Services.CreateScope())
 app.UseDefaultFiles();
 var provider = new FileExtensionContentTypeProvider();
 provider.Mappings[".apk"] = "application/vnd.android.package-archive";
+
+
+var allowedReferers = new[]
+{
+    "http://softeng.pmf.kg.ac.rs:11061",
+    "http://localhost:4200"
+};
+
+app.UseWhen(ctx => ctx.Request.Path.StartsWithSegments("/images"), branch =>
+{
+    branch.Use(async (context, next) =>
+    {
+        var referer = context.Request.Headers["Referer"].ToString();
+        var isAllowed = !string.IsNullOrEmpty(referer) &&
+                        allowedReferers.Any(origin => referer.StartsWith(origin, StringComparison.OrdinalIgnoreCase));
+
+        if (!isAllowed)
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            await context.Response.WriteAsync("Forbidden");
+            return;
+        }
+
+        await next();
+    });
+
+    branch.UseStaticFiles(new StaticFileOptions
+    {
+        RequestPath = "/images",
+        FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.WebRootPath, "images"))
+    });
+});
+
 
 app.UseStaticFiles(new StaticFileOptions
 {
