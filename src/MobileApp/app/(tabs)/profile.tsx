@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import i18n from '../i18n';
 import { API_URL } from '../../config';
 import {
   View,
@@ -33,6 +34,9 @@ export default function ProfileScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [imageModalVisible, setImageModalVisible] = useState(false);
   const defaultAvatar = require('../../assets/images/avatar_placeholder.png');
+
+  const [selectedLang, setSelectedLang] = useState<'en' | 'sr'>('en');
+  const [languageModalVisible, setLanguageModalVisible] = useState(false);
 
   const normalizeImageUrl = (path: string | null) => {
     if (!path) return null;
@@ -90,7 +94,16 @@ export default function ProfileScreen() {
 
     fetchUserDataAndTickets();
   }, []);
+    useEffect(() => {
+    setSelectedLang(i18n.language === 'sr' ? 'sr' : 'en');
+  }, []);
 
+  const handleLanguageSwitch = async (lang: 'en' | 'sr') => {
+    await i18n.changeLanguage(lang);
+    await i18n.services.languageDetector.cacheUserLanguage(lang);
+    setSelectedLang(lang);
+    setLanguageModalVisible(false);
+  };
   const handleLogout = () => {
     Alert.alert(
       t('profile.logoutTitle'),
@@ -199,6 +212,13 @@ export default function ProfileScreen() {
         <Text>❓ {t('profile.about')}</Text>
         <Text style={styles.optionArrow}>›</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.option} onPress={() => setLanguageModalVisible(true)}>
+        <Text>🌐 {t('profile.language')}</Text>
+        <Text style={styles.optionArrow}>
+          {selectedLang === 'en' ? '🇬🇧' : '🇷🇸'} ›
+        </Text>
+      </TouchableOpacity>
+
 
       <TouchableOpacity style={styles.option} onPress={handleLogout}>
         <Text style={{ color: 'red' }}>🚪 {t('profile.logout')}</Text>
@@ -216,6 +236,33 @@ export default function ProfileScreen() {
           </View>
         </Pressable>
       </Modal>
+        <Modal
+    transparent
+    animationType="fade"
+    visible={languageModalVisible}
+    onRequestClose={() => setLanguageModalVisible(false)}
+  >
+    <Pressable
+      style={styles.modalOverlay}
+      onPress={() => setLanguageModalVisible(false)}
+    >
+      <View style={styles.modalContent1}>
+        <TouchableOpacity
+          style={styles.langOption}
+          onPress={() => handleLanguageSwitch('en')}
+        >
+          <Text style={styles.optionText}>🇬🇧 English</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.langOption}
+          onPress={() => handleLanguageSwitch('sr')}
+        >
+          <Text style={styles.optionText}>🇷🇸 Srpski</Text>
+        </TouchableOpacity>
+      </View>
+    </Pressable>
+  </Modal>
+
     </View>
   );
 }
@@ -395,5 +442,29 @@ credits: {
   fontWeight: '700',
   marginTop: 4,
 },
+langOption: {
+  paddingVertical: 12,
+  paddingHorizontal: 16,
+},
+optionText: {
+  fontSize: 16,
+  fontWeight: '500',
+},
+modalOverlay1: {
+  flex: 1,
+  backgroundColor: 'rgba(0,0,0,0.3)',
+  justifyContent: 'flex-start',
+  alignItems: 'flex-end',
+  paddingTop: 80,
+  paddingRight: 20,
+},
+modalContent1: {
+  backgroundColor: '#fff',
+  borderRadius: 10,
+  paddingVertical: 10,
+  width: 150,
+  elevation: 4,
+},
+
 
 });
