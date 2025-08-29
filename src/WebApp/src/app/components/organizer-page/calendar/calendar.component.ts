@@ -56,7 +56,8 @@ export class CalendarComponent implements OnInit{
       minute: '2-digit',
       hour12: false
     },
-    events: []
+    events: [],
+    eventClick: this.handleEventClick.bind(this) // Dodata nova opcija
   }
 
   ngOnInit(): void {
@@ -67,6 +68,7 @@ export class CalendarComponent implements OnInit{
         title: event.getTitle(),
         start: event.getStartDateTime().toISOString(),
         end: event.getEndDateTime().toISOString(),
+        id: event.getEventId().toString(),
         allDay: this.isAllDayEvent(event.getStartDateTime(),event.getEndDateTime()),
         extendedProps: {
           category: this.categoryService.getCategoryName(event.getCategoryId()),
@@ -111,5 +113,10 @@ export class CalendarComponent implements OnInit{
     selectInfo.view.calendar.unselect();
 
   }
-
+  handleEventClick(clickInfo: any) {
+    const eventId = clickInfo.event.id; 
+    if (eventId) {
+        this.router.navigate(['/organizer/event-management/', eventId]); 
+    }
+  }
 }

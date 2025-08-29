@@ -185,7 +185,12 @@ export class CreateEventComponent implements OnInit,IDeactivate,OnDestroy{
     this.toggleTicketDateControls();
   }
 
-  removeTicket(index: number){
+  async removeTicket(index: number){
+    const confirmed = await this.confirmationDialogService.confirm(
+      `Are you sure you want to remove the ticket?`,
+      `Remove ticket`
+    )
+    if(!confirmed) return;
     this.tickets.removeAt(index);
   }
 

@@ -79,10 +79,10 @@
         <div class="no-agenda flex flex-col items-center justify-center text-center gap-4 py-8" *ngIf="subevents.length === 0 && activities.length === 0">
             <i class="pi pi-calendar-times text-4xl text-gray-400"></i>
             <h2 class="text-xl font-semibold text-gray-700">No Agenda Added</h2>
-            <p class="text-gray-500 max-w-md">
+            <p class="text-gray-500 max-w-md" *ngIf = "eventBasicInfo.getStatusLabel()!='Canceled'">
                 Here you can add sub-events and activities that make up your event's program.
             </p>
-            <div class="flex gap-4">
+            <div class="flex gap-4" *ngIf = "eventBasicInfo.getStatusLabel()!='Canceled'">
                 <button *ngIf="eventBasicInfo.getParentEventId() == 0" pButton type="button" icon="pi pi-plus" label="Add Subevent" (click)="subeventModal.show()"></button>
                 <button pButton type="button" icon="pi pi-plus" label="Add Activity" class="p-button-outlined" (click)="activityModal.show()"></button>
             </div>
