@@ -1,6 +1,5 @@
 ﻿namespace Backend.Services.Email
 {
-    // Email/MailKitEmailSender.cs
     using MailKit.Net.Smtp;
     using MailKit.Security;
     using Microsoft.Extensions.Options;

@@ -1,5 +1,6 @@
-using Backend.Models;
+﻿using Backend.Models;
 using Backend.Services;
+using Backend.Services.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -91,8 +92,24 @@ builder.Services.AddHostedService<EventLifecycleHostedService>();
 
 
 builder.WebHost.UseUrls("http://0.0.0.0:11061");
+
+
+builder.Services.AddEmail(builder.Configuration);
+
 var app = builder.Build();
 
+app.MapPost("/test-email", async (IEmailSender email, CancellationToken ct) =>
+{
+    await email.SendAsync(new EmailMessage
+    {
+        To = { new EmailAddress("you@example.com", "You") },
+        Subject = "Hello from .NET 9 ✅",
+        HtmlBody = "<h2>It works!</h2><p>This was sent via MailKit.</p>",
+        TextBody = "It works! This was sent via MailKit."
+    }, ct);
+
+    return Results.Ok(new { sent = true });
+});
 // Run database migrations on startup
 using (var scope = app.Services.CreateScope())
 {
