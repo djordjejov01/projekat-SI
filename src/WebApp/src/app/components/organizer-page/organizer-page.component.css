@@ -62,20 +62,15 @@ flex-direction: column;
 #page{
     display: flex;
     justify-content: space-between;
-    flex-wrap: nowrap; /*Nikola menjao*/
+    flex-wrap: nowrap; 
 }
 #show{
-    /* Nikola menjao
-    padding-left: 30px;
-    padding-top:40px; */
     padding: 2rem;
     padding-left: 0.25rem;
     max-width: 1500px;
     width: 100%;
     padding-top: 5rem;
     margin-right: 1rem;
-    /*max-height: 800px;
-    overflow-y: auto;*/
     transition: 0.8s;
 }
 img:hover{
@@ -137,14 +132,8 @@ select:hover, option:hover{
 
 /* Desktop adjustments already present */
 @media screen and (max-width: 1666px) {
-    /*#page{
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap:10px;
-    }*/
     #show{
-        padding:0;
+        padding-top: 55px;
         padding-left:320px;
         padding-right: 10px;
         transition: 0.8s;

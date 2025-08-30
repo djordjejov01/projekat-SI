@@ -60,7 +60,7 @@
 
         <hr class="custom-hr">
 
-        <p-table #dt [value]="allEvents" [responsive]="true" [(selection)]="selectedEvents" dataKey="eventId" [rowHover]="true" [rows]="5"
+        <p-table #dt [value]="allEvents" [(selection)]="selectedEvents" dataKey="eventId" [rowHover]="true" [rows]="5"
             [showCurrentPageReport]="true" [rowsPerPageOptions]="[5 ,10, 25, 50]" [loading]="loading" [paginator]="true"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [filterDelay]="0"
             [globalFilterFields]="['title', 'startDateTime', 'endDateTime', 'category', 'status' , 'location']">

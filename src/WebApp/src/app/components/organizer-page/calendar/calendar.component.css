@@ -25,6 +25,7 @@
 .calendarTitle p{
     font-size: 1rem;
     color: #8C8D8B;
+    text-wrap: wrap;
 }
 
 ::ng-deep .fc {
