@@ -127,6 +127,41 @@ namespace Backend.Controllers
                 });
             return Ok(avs);
         }
+
+        [Authorize(Roles = "MobileUser")]
+        [HttpGet("my-reservations")]
+        public async Task<IActionResult> GetMyResourceReservations()
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var myReservations = await _context.UserResourceReservations
+                .Where(urr => urr.UserID == userId)
+                .Include(urr => urr.EventResource)
+                    .ThenInclude(er => er.Resource)
+                .Include(urr => urr.EventResource)
+                    .ThenInclude(er => er.Event)
+                .Select(urr => new
+                {
+                    ReservationID = urr.Id,
+                    ResourceName = urr.EventResource.Resource.Name,
+                    ResourceCategory = urr.EventResource.Resource.Category.ToString(),
+                    EventTitle = urr.EventResource.Event.Title,
+                    EventDate = urr.EventResource.Event.StartDate,
+                    EventLocation = urr.EventResource.Event.Location,
+                    Quantity = urr.Quantity,
+                    ReservedAt = urr.ReservedAt,
+                    EventResourceID = urr.EventResourceID,
+                    EventID = urr.EventResource.EventID,
+                    IsEventFree = urr.EventResource.Event.isFree,
+                    EventEndDate = urr.EventResource.Event.EndDate,
+                    
+                    ResourceDescription = urr.EventResource.Resource.Description
+                })
+                .OrderByDescending(urr => urr.ReservedAt)
+                .ToListAsync();
+
+            return Ok(myReservations);
+        }
     }
 
 }
