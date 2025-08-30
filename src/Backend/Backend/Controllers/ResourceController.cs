@@ -18,19 +18,24 @@ namespace Backend.Controllers
             _context = context;
         }
 
-        [Authorize(Roles ="MobileUser")]
+        [Authorize(Roles = "MobileUser")]
         [HttpGet("{eventId}/resources")]
         public async Task<IActionResult> GetResourcesForEvent(int eventId)
         {
-            var resources =await _context.EventResources
+            var resources = await _context.EventResources
                 .Where(er => er.EventID == eventId && er.IsReservable && er.Event.EndDate > DateTime.UtcNow)
                 .Select(er => new {
-                    id = er.ID,                            
+                    id = er.ID,
                     supplierID = er.SupplierID,
                     eventID = er.EventID,
                     quantity = er.Quantity,
-                    name = er.Resource.Name
+                    name = er.Resource.Name,
+                    
+                    availableQuantity = er.Quantity - _context.UserResourceReservations
+                        .Where(urr => urr.EventResourceID == er.ID)
+                        .Sum(urr => urr.Quantity)
                 })
+                .Where(r => r.availableQuantity > 0)
                 .ToListAsync();
 
             return Ok(resources);
