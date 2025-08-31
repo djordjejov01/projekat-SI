@@ -100,6 +100,7 @@
 },
   "aboutEvent": "O događaju",
       "price": "Cena",
+  "freeResources":"Resursi",
 "aboutScreen": {
   "heading": "O nama",
   "description": "SyncUp je vaš idealan saputnik za događaje. Pomažemo ljudima da pronađu, prisustvuju i budu informisani o događajima koje vole – od koncerata i IT okupljanja do radionica i umetničkih festivala.",
@@ -127,7 +128,8 @@
   "notLoggedIn": "Niste prijavljeni.",
   "success": "Uspeh",
   "passwordChanged": "Lozinka je uspešno promenjena.",
-  "changeFailed": "Promena lozinke nije uspela."
+  "changeFailed": "Promena lozinke nije uspela.",
+  "currentPasswordIncorrect":"Trenutna šifra je nepravilna"
 },
 "personalInfo": {
   "permissionDenied": "Pristup galeriji nije dozvoljen.",
@@ -209,6 +211,7 @@
   "purchase": "Kupi",
   "purchasing": "Kupovina...",
   "confirmTitle": "Potvrda kupovine",
+  "confirmTitle2": "Potvrda rezervacije",
   "confirmMessage": "Da li ste sigurni da želite da obavite kupovinu?",
   "cancel": "Otkaži",
   "successTitle": "Uspešno",
@@ -218,7 +221,10 @@
   "genericError": "Greška prilikom kupovine.",
   "fetchError": "Neuspešno učitavanje podataka.",
   "ok": "U redu",
-  "free": "Besplatno"
+  "free": "Besplatno",
+  "reserveBtn":"Rezerviši",
+  "confirmReserveMessage":"Da li ste sigurni da želite da rezervišete resurse?",
+  "resourceReservedMessage":"Resursi su uspešno rezervisani."
 }
 ,
   "auth": {

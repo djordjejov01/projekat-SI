@@ -49,7 +49,16 @@ namespace Backend.Controllers
             if (user == null)
                 return NotFound("User not found.");
 
-            
+            if (dtos == null || dtos.Count == 0)
+                return BadRequest(new { message = "At least one ticket must be selected." });
+
+            if (dtos.Any(d => d.TicketID <= 0))
+                return BadRequest(new { message = "Invalid ticket." });
+
+            if (dtos.Any(d => d.Quantity <= 0))
+                return BadRequest(new { message = "Quantity must be at least 1." });
+
+
             decimal ukupnaCena = 0;
             foreach (var dto in dtos)
             {
