@@ -24,6 +24,7 @@ namespace Backend.Models
         public DbSet<PinType> PinTypes { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<ResourceLog> ResourceLog { get; set; }
+        public DbSet<EmailVerificationToken> EmailVerificationTokens => Set<EmailVerificationToken>();
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -48,6 +49,17 @@ namespace Backend.Models
                     })
                     .ToArray()
             );
+            modelBuilder.Entity<EmailVerificationToken>()
+                .HasIndex(x => x.Id)
+                .IsUnique();
+
+            modelBuilder.Entity<EmailVerificationToken>()
+                .HasIndex(x => new { x.UserId, x.Purpose, x.ConsumedAtUtc });
+
+            modelBuilder.Entity<EmailVerificationToken>()
+                .HasOne(x => x.User)
+                .WithMany()
+                .HasForeignKey(x => x.UserId);
         }
     }
 }
