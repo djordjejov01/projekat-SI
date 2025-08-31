@@ -2,6 +2,7 @@ using Backend.Helpers;
 using Backend.Models;
 using Backend.Models.Dto;
 using Backend.Services;
+using Backend.Services.Email;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +49,7 @@ namespace Backend.Controllers
             try
             {
                 var user = await _userService.RegisterAsync(registerDto);
+
                 return Ok(user);
             }
             catch (System.Exception ex)
