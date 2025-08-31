@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { ConfirmationService, MessageService } from "primeng/api";
-
+import { TranslateService } from '@ngx-translate/core';
 @Injectable({
     providedIn: 'root'
 })
@@ -9,7 +9,8 @@ export class ConfirmationDialogService {
 
     confirmationService : ConfirmationService = inject(ConfirmationService);
     messageService : MessageService = inject(MessageService)
-
+    translate: TranslateService = inject(TranslateService);
+    
     confirm(message : string, header : string = 'Confirmation') : Promise<boolean>
     {
         return new Promise((resolve)=>{
@@ -33,7 +34,7 @@ export class ConfirmationDialogService {
                 resolve(true)
             },
             reject: () => {
-                this.messageService.add({ severity: 'info', summary: 'Cancelled', detail: 'Action canceled by user', life: 3000, });
+                this.messageService.add({ severity: 'info', summary: this.translate.instant('CANCELLED'), detail: this.translate.instant('ACTION_CANCELLED'), life: 3000, });
                 resolve(false)
             },
             });

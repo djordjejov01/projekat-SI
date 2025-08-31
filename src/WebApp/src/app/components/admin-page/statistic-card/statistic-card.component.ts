@@ -1,11 +1,12 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-statistic-card',
-  imports: [CommonModule],
+  imports: [CommonModule,TranslateModule],
   templateUrl: './statistic-card.component.html',
-  styleUrl: './statistic-card.component.css'
+  styleUrls: ['./statistic-card.component.css']
 })
 export class StatisticCard {
 
