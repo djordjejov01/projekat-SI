@@ -91,6 +91,10 @@ defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
           this.currOrganizer = response;
           this.previewUrl = this.currOrganizer.getImage();
           //console.log(response);
+              this.nameS = this.currOrganizer.getName();
+              this.username5S = this.currOrganizer.getUsername();
+              this.emailS = this.currOrganizer.getEmail();
+              this.phoneS = this.currOrganizer.getPhoneNumber();
         },
         error:(errorResponse) =>{
           this.messageService.add({
@@ -152,9 +156,29 @@ defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
             }
           })
   }
+  nameS : string;
+  username5S : string;
+  emailS : string;
+  phoneS : string;
 
+  check(){
+    let name = (document.getElementById('name') as HTMLInputElement).value;
+    let username5 = (document.getElementById('username5') as HTMLInputElement).value;
+    let email = (document.getElementById('email') as HTMLInputElement).value;
+    let phone = (document.getElementById('phone') as HTMLInputElement).value;
+    let dugme = document.getElementById('upp1') as HTMLButtonElement;
+    if(this.nameS != name || this.username5S != username5 || this.emailS != email || this.phoneS != phone)
+    {
+      dugme.disabled = false;
+      dugme.classList.remove("disBut");
+    }
+    else{
+      dugme.disabled = true;
+      dugme.classList.add("disBut");
+    }
+  }
   changePass : ChangePasswordDto;
-  regexIme: RegExp = /^[a-zA-Z]+$/;
+  regexIme: RegExp = /^[a-zA-Z]*$/;
   update() {
     const name = (document.getElementById('name') as HTMLInputElement).value;
     const username5 = (document.getElementById('username5') as HTMLInputElement).value;
@@ -173,6 +197,11 @@ defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
     //console.log(toUpdate)
     this.apiService.updateOrg(toUpdate).subscribe({
       next:(response : string) =>{
+        this.nameS = name;
+        this.username5S = username5;
+        this.emailS = email;
+        this.phoneS = phone;
+        this.check();
         this.messageService.add({
               severity: 'success',
               summary: 'Success',

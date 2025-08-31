@@ -23,14 +23,14 @@
 
             <div id="form">
                 <label for="name">Name</label>
-                <input id="name" type="text" [value]="currOrganizer?.getName()" class="form-control" />
+                <input id="name" type="text" [value]="currOrganizer?.getName()" class="form-control" (input) = "check()"/>
                 <label for="username5">Username</label>
-                <input id="username5" type="text" [value]="currOrganizer?.getUsername()" class="form-control" />
+                <input id="username5" type="text" [value]="currOrganizer?.getUsername()" class="form-control" (input) = "check()"/>
                 <label for="email">Email</label>
-                <input id="email" type="text" [value]="currOrganizer?.getEmail()" class="form-control" />
+                <input id="email" type="text" [value]="currOrganizer?.getEmail()" class="form-control" (input) = "check()"/>
                 <label for="phone">Phone Number</label>
-                <input id="phone" type="text" [value]="currOrganizer?.getPhoneNumber()" class="form-control" />
-                <button id="upp" (click)="update()">Update Profile</button>
+                <input id="phone" type="text" [value]="currOrganizer?.getPhoneNumber()" class="form-control" (input) = "check()" />
+                <button class="dBut disBut" id="upp1" (click)="update()" disabled >Update Profile</button>
 
                 <div id="pass">
                     <div id="onepass">
@@ -48,7 +48,7 @@
                     </div>
 
                 </div>
-                <button id="upp" (click)="updatePass()">Change Password</button>
+                <button id="upp" class="dBut" (click)="updatePass()">Change Password</button>
             </div>
         </div>
         <div id="rightside">

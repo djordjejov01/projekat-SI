@@ -26,30 +26,30 @@
                 <div id="row">
                     <div id="field">
                         <label for="name">Name</label>
-                        <input id="name" type="text" [value]="currSupplier?.getCompanyName()" class="form-control" />
+                        <input id="name" type="text" [value]="currSupplier?.getCompanyName()" class="form-control" (input)="check()"/>
                     </div>
                     <div id="field">
                         <label for="username1">Username</label>
-                        <input id="username1" type="text" [value]="currSupplier?.getUsername()" class="form-control" />
+                        <input id="username1" type="text" [value]="currSupplier?.getUsername()" class="form-control"  (input)="check()"/>
                     </div>
 
                 </div>
                 <div id="row">
                     <div id="field">
                         <label for="email">Email</label>
-                        <input id="email" type="text" [value]="currSupplier?.getEmail()" class="form-control" />
+                        <input id="email" type="text" [value]="currSupplier?.getEmail()" class="form-control"  (input)="check()"/>
                     </div>
                     <div id="field">
                         <label for="phone">Phone Number</label>
-                        <input id="phone" type="text" [value]="currSupplier?.getPhoneNumber()" class="form-control" />
+                        <input id="phone" type="text" [value]="currSupplier?.getPhoneNumber()" class="form-control" (input)="check()" />
                     </div>
 
                 </div>
                 <label for="bio">Bio</label>
-                <textarea name="bio" id="bio">{{currSupplier?.getCompanyBio()}}</textarea>
+                <textarea name="bio" id="bio" (input)="check()">{{currSupplier?.getCompanyBio()}}</textarea>
                 <label for="website">Website</label>
-                <input id="website" type="text" [value]="currSupplier?.getWebsite()" class="form-control" />
-                <button id="upp" (click)="update()">Update Profile</button>
+                <input id="website" type="text" [value]="currSupplier?.getWebsite()" class="form-control"  (input)="check()" />
+                <button id="upp1" class="dbut disBut" (click)="update()" disabled >Update Profile</button>
 
                 <div id="pass">
                     <div id="onepass">
@@ -67,7 +67,7 @@
                     </div>
 
                 </div>
-                <button id="upp" (click)="updatePass()">Change Password</button>
+                <button id="upp" class="dbut" (click)="updatePass()">Change Password</button>
             </div>
         </div>
         <div id="rightside">

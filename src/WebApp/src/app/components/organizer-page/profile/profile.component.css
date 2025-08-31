@@ -168,7 +168,7 @@ input{
     gap:10px;
 }
 
-#upp{
+.dBut{
     color:white;
     font-weight: bold;
     display: flex;
@@ -181,7 +181,7 @@ input{
     padding-right: 10px;
     border-radius: 5px;
 }
-#upp:hover{
+.dBut:hover{
     cursor: pointer;
 }
 #card{
@@ -282,4 +282,13 @@ input{
     padding-left: 5px;
     transition: 0.8s;
 }
+}
+
+.disBut{
+    background-color: rgb(141, 141, 141);
+    cursor: not-allowed;
+}
+
+.disBut:hover{
+    cursor: not-allowed;
 }

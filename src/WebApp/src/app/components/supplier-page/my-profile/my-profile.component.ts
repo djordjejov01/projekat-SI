@@ -112,13 +112,24 @@ export class MyProfileComponent implements OnInit {
   }
   currSupplier : SupplierDto;
   changePass: ChangePasswordDto;
+  nameS : string;
+  username1S : string;
+  emailS : string;
+  phoneS : string;
+  bioS : string;
+  websiteS : string;
   getSupplierCall(){
     this.apiService.getSupplier().subscribe({
 
         next:(response : SupplierDto) => {
           this.currSupplier = response;
-          this.previewUrl = this.currSupplier.getImage();
-          //console.log(response);
+            this.previewUrl = this.currSupplier.getImage();
+           this.nameS = this.currSupplier.getCompanyName();
+           this.username1S = this.currSupplier.getUsername();
+           this.emailS = this.currSupplier.getEmail();
+           this.phoneS = this.currSupplier.getPhoneNumber();
+           this.bioS = this.currSupplier.getCompanyBio();
+           this.websiteS = this.currSupplier.getWebsite();
         },
         error:(errorResponse) =>{
           this.messageService.add({
@@ -130,7 +141,28 @@ export class MyProfileComponent implements OnInit {
 
       })
   }
-  regexIme: RegExp = /^[a-zA-Z]+$/;
+
+  check(){
+    let name = (document.getElementById('name') as HTMLInputElement).value;
+    let username1 = (document.getElementById('username1') as HTMLInputElement).value;
+    let email = (document.getElementById('email') as HTMLInputElement).value;
+    let phone = (document.getElementById('phone') as HTMLInputElement).value;
+    let bio = (document.getElementById('bio') as HTMLInputElement).value;
+    let website = (document.getElementById('website') as HTMLInputElement).value;
+    let dugme = document.getElementById('upp1') as HTMLButtonElement;
+    if(this.nameS != name || this.username1S != username1 || this.emailS != email || this.phoneS != phone || this.bioS != bio || this.websiteS != website)
+    {
+      dugme.disabled = false;
+      dugme.classList.remove("disBut");
+    }
+    else{
+      dugme.disabled = true;
+      dugme.classList.add("disBut");
+    }
+  }
+
+
+  regexIme: RegExp = /^[a-zA-Z]*$/;
   update() {
     const name = (document.getElementById('name') as HTMLInputElement).value;
     const username1 = (document.getElementById('username1') as HTMLInputElement).value;
@@ -154,6 +186,13 @@ export class MyProfileComponent implements OnInit {
       next:(response : string) =>{
         this.getSupplierCall();
         this.sharedService.updateUsername(this.currSupplier.getUsername());
+        this.nameS = name;
+        this.username1S = username1;
+        this.emailS = email;
+        this.phoneS = phone;
+        this.bioS = bio;
+        this.websiteS = website;
+        this.check();
         this.messageService.add({
               severity: 'success',
               summary: 'Success',
