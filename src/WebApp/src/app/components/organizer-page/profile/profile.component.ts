@@ -154,13 +154,21 @@ defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
   }
 
   changePass : ChangePasswordDto;
-
+  regexIme: RegExp = /^[a-zA-Z]+$/;
   update() {
     const name = (document.getElementById('name') as HTMLInputElement).value;
     const username5 = (document.getElementById('username5') as HTMLInputElement).value;
     const email = (document.getElementById('email') as HTMLInputElement).value;
     const phone = (document.getElementById('phone') as HTMLInputElement).value;
-
+    if(this.regexIme.test(name) == false)
+    {
+      this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: "Name must contain only letters.",
+              life: 3000 });
+      return;
+    }
     const toUpdate = new OrganizerDto(this.authService.getUserId(),name,username5,email,phone,"");
     //console.log(toUpdate)
     this.apiService.updateOrg(toUpdate).subscribe({

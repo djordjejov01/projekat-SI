@@ -130,6 +130,7 @@ export class MyProfileComponent implements OnInit {
 
       })
   }
+  regexIme: RegExp = /^[a-zA-Z]+$/;
   update() {
     const name = (document.getElementById('name') as HTMLInputElement).value;
     const username1 = (document.getElementById('username1') as HTMLInputElement).value;
@@ -138,6 +139,15 @@ export class MyProfileComponent implements OnInit {
     const bio = (document.getElementById('bio') as HTMLInputElement).value;
     const website = (document.getElementById('website') as HTMLInputElement).value;
     const toUpdate = new UpdateSupplierDto(username1,name,email,phone,website,bio);
+    if(this.regexIme.test(name) == false)
+    {
+      this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: "Name must contain only letters.",
+              life: 3000 });
+      return;
+    }
     //console.log("SALJEM: ");
     //console.log(toUpdate);
     this.apiService.updateSupplier(toUpdate).subscribe({
