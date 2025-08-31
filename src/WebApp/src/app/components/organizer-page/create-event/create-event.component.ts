@@ -22,7 +22,7 @@ import { ConfirmationDialogService } from '../../../Services/confirmation-dialog
 import { CategoryService } from '../../../Services/EventCategoryService';
 import { FormValidationService } from '../../../Services/FormValidationService';
 import { AutoCompleteModule } from 'primeng/autocomplete';
-
+import { Event } from '../../../Models/Event';
 
 
 @Component({
@@ -301,8 +301,22 @@ submitForm(): void {
         validUntil: new FormControl({ value: '', disabled: true }, Validators.required)
       }, { validators: CustomValidators.startBeforeEndDates('validFrom', 'validUntil') }));
 
-      
-       this.router.navigate(["/organizer/overview"]);
+        this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe({
+              next: (response: Event[]) => {
+                let ider = response[response.length - 1].getEventId()
+                this.router.navigate([`/organizer/event-management/${ider}`]);
+              },
+              error: (errorResponse) => {
+                // this.messageService.add({
+                //   severity: 'error',
+                //   summary: 'Error',
+                //   detail: errorResponse.message,
+                //   life: 3000
+                // });
+              }
+        
+            })
+       
     },
     error: () => {
       this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to create event.' });
