@@ -32,6 +32,8 @@
   "invalidEmail": "Invalid email format",
   "invalidPassword": "Invalid password.",
   "loginError": "Login Error",
+  "mobileroleLogin":"Only mobile users are allowed access",
+  "accountNotVerified":"Account is not verified",
   "genericError": "Something went wrong",
   "noToken": "No token received from server.",
   "googleUserInfoFailed": "Failed to get user info",
@@ -46,7 +48,7 @@
   "alreadyHaveAccount": "Already have an account?",
   "allFieldsRequired": "All fields are required",
   "success": "Success",
-  "accountCreated": "Account created successfully!",
+  "accountCreated": "Account created successfully, verify it via email!",
   "passwordRequirements": "Password must meet all the listed requirements",
   "passwordMismatch": "Passwords do not match",
     "guest": {
