@@ -50,7 +50,11 @@ namespace Backend.Controllers
             {
                 var user = await _userService.RegisterAsync(registerDto);
 
-                return Ok(user);
+                return Ok(new{
+                    message = "Registration successful. Please check your email to verify your account.",
+                    user = user,
+                    requiresEmailVerification = true
+                });
             }
             catch (System.Exception ex)
             {
@@ -73,7 +77,11 @@ namespace Backend.Controllers
             try
             {
                 var user = await _userService.RegisterWebAsync(registerDto);
-                return Ok(user);
+                return Ok(new{
+                    message = "Registration successful. Please check your email to verify your account.",
+                    user = user,
+                    requiresEmailVerification = true
+                });
             }
             catch (Exception ex)
             {
@@ -87,6 +95,10 @@ namespace Backend.Controllers
             try
             {
                 var user = await _userService.LoginAsync(loginDto);
+                if (!user.IsEmailVerified)
+                {
+                    return BadRequest(new { message = "Email address not verified. Please check your email and verify your account." });
+                }
                 var claims = new[]
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),

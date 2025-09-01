@@ -104,7 +104,8 @@ namespace Backend.Services
                 LastName = user.LastName,
                 Email = user.Email,
                 Role = user.Role,
-                IsActive = user.IsActive
+                IsActive = user.IsActive,
+                IsEmailVerified = user.IsEmailVerified
             };
             return userDto;
         }
@@ -146,6 +147,7 @@ namespace Backend.Services
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+            await _emailVerificationService.SendVerificationAsync(user, CancellationToken.None);
 
             if (user.Role == UserRole.Organizer)
             {
@@ -187,7 +189,8 @@ namespace Backend.Services
                 LastName = user.LastName,
                 Email = user.Email,
                 Role = user.Role,
-                IsActive = user.IsActive
+                IsActive = user.IsActive,
+                IsEmailVerified = user.IsEmailVerified
             };
         }
 
@@ -203,6 +206,11 @@ namespace Backend.Services
             if (user.Password != hashedInputPassword)
             {
                 throw new Exception("Wrong password.");
+            }
+
+            if (!user.IsEmailVerified)
+            {
+                throw new Exception("Email address not verified. Please check your email and verify your account.");
             }
 
             if (user.Role == UserRole.Supplier && !user.IsActive)
@@ -225,7 +233,8 @@ namespace Backend.Services
                 Username = user.Username,
                 Email = user.Email,
                 Role = user.Role,
-                IsActive = user.IsActive
+                IsActive = user.IsActive,
+                IsEmailVerified = user.IsEmailVerified
             };
 
             return userDto;
