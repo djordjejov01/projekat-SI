@@ -603,13 +603,14 @@ const handleAction = async () => {
         onPress={() => {
           if (from === 'search') router.replace('/search');
           else if (from === 'favorites') router.replace('/favorites');
-          else if (from === 'ticketDetails') router.back();
+          else if (from === 'reservationDetails') router.back();
           else router.replace('/events');
         }}
         style={styles.backButton}
       >
         <Ionicons name="arrow-back" size={24} color="#333" />
       </TouchableOpacity>
+
 
       <Text style={styles.naslov}>{t('aboutEvent')}</Text>
 
