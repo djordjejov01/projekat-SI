@@ -356,11 +356,14 @@ useEffect(() => {
               value={startDate || new Date()}
               mode="date"
               display="default"
-              onChange={(_, date) => {
+              onChange={(event, date) => {
                 setShowStartPicker(false);
-                if (date) setStartDate(date);
+                if (date && event.type !== 'dismissed') {
+                  setStartDate(date);
+                }
               }}
             />
+
           )}
 
           <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.dateButton}>
@@ -370,15 +373,18 @@ useEffect(() => {
             </Text>
           </TouchableOpacity>
           {showEndPicker && (
-            <DateTimePicker
+           <DateTimePicker
               value={endDate || new Date()}
               mode="date"
               display="default"
-              onChange={(_, date) => {
+              onChange={(event, date) => {
                 setShowEndPicker(false);
-                if (date) setEndDate(date);
+                if (date && event.type !== 'dismissed') {
+                  setEndDate(date);
+                }
               }}
             />
+
           )}
         </View>
 
