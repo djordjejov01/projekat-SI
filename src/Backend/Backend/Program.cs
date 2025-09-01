@@ -1,5 +1,6 @@
-using Backend.Models;
+﻿using Backend.Models;
 using Backend.Services;
+using Backend.Services.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -92,9 +93,12 @@ builder.Services.AddHostedService<EventLifecycleHostedService>();
 
 
 builder.WebHost.UseUrls("http://0.0.0.0:11061");
+
+builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
+builder.Services.AddEmail(builder.Configuration);
+
 var app = builder.Build();
 
-// Run database migrations on startup
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -152,6 +156,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
 //app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
@@ -159,6 +164,46 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.MapPost("/auth/send-verification", async (
+    IEmailVerificationService svc,
+    AppDbContext db,
+    HttpContext http,
+    CancellationToken ct
+) =>
+{
+    // if you have JWT userId claim:
+    var userIdStr = http.User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type == "userId")?.Value;
+    if (string.IsNullOrEmpty(userIdStr)) return Results.Unauthorized();
+
+    if (!int.TryParse(userIdStr, out var userId)) return Results.Unauthorized();
+
+    var user = await db.Users.FindAsync([userId], ct);
+    if (user is null) return Results.NotFound();
+
+    // Optional: return 200 even if already verified (idempotent)
+    if (user.IsEmailVerified) return Results.Ok(new { sent = false, alreadyVerified = true });
+
+    await svc.SendVerificationAsync(user, ct);
+    return Results.Ok(new { sent = true });
+}).RequireAuthorization();
+
+app.MapGet("/auth/verify-email", async (
+    string token,
+    IEmailVerificationService svc,
+    IConfiguration cfg,
+    CancellationToken ct
+) =>
+{
+    var ok = Guid.TryParse(token, out var tokenId);
+    var successUrl = cfg["Auth:EmailVerification:RedirectUrlOnSuccess"] ?? "/";
+    var failUrl = cfg["Auth:EmailVerification:RedirectUrlOnFail"] ?? "/";
+
+    if (!ok) return Results.Redirect(failUrl);
+
+    var (verified, _) = await svc.VerifyAsync(tokenId, ct);
+    return Results.Redirect(verified ? successUrl : failUrl);
+});
 
 app.MapControllers();
 app.MapFallbackToFile("index.html");

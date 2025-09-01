@@ -20,7 +20,7 @@
         <p 
         [ngClass]="{
          'better' : (statPercent > 0 && cardTitle !== 'Dormant Accounts') || (statPercent < 0 && cardTitle === 'Dormant Accounts'),
-         'worse' : (statPercent < 0 && cardTitle !== 'Dormant Accounts') || (statPercent > 0 && cardTitle === 'Dormant Accounts')}">{{ statPercent }}% compared to previous period</p>
+         'worse' : (statPercent < 0 && cardTitle !== 'Dormant Accounts') || (statPercent > 0 && cardTitle === 'Dormant Accounts')}">{{ statPercent }}% {{ 'COMPARE_PREV_PERIOD' | translate }}</p>
     </div>
 
 </div>

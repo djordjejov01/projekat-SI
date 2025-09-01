@@ -1,6 +1,7 @@
 using Backend.Helpers;
 using Backend.Models;
 using Backend.Models.Dto;
+using Backend.Services.Email;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
@@ -14,10 +15,12 @@ namespace Backend.Services
     public class UserService : IUserService
     {
         private readonly AppDbContext _context;
+        private readonly IEmailVerificationService _emailVerificationService;
 
-        public UserService(AppDbContext context)
+        public UserService(AppDbContext context,IEmailVerificationService emailVerificationService)
         {
             _context = context;
+            _emailVerificationService = emailVerificationService;
         }
 
         public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
@@ -61,7 +64,7 @@ namespace Backend.Services
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-
+            await _emailVerificationService.SendVerificationAsync(user,CancellationToken.None);
             if (user.Role == UserRole.Organizer)
             {
                 Organizer o = new Organizer
