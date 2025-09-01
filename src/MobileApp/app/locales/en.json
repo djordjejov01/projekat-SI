@@ -81,7 +81,7 @@
 
   "profile": {
   "language": "Language",
-  "myResources": "Resources",
+  "myReservations": "Reservations",
   "notLoggedIn": "You're not logged in",
   "loginPrompt": "Please log in to view your profile.",
   "loginNow": "Log in now",
@@ -146,9 +146,9 @@
   "uploadFailed": "Failed to upload image.",
   "title": "Personal Information",
   "firstName": "First Name",
-  "firstNamePlaceholder": "John",
+  "firstNamePlaceholder": "First Name",
   "lastName": "Last Name",
-  "lastNamePlaceholder": "Doe",
+  "lastNamePlaceholder": "Last Name",
   "email": "Email",
   "emailPlaceholder": "example@email.com",
   "phone": "Phone Number",
@@ -341,8 +341,8 @@
     "Parking": "Parking",
     "LostAndFound": "Lost & Found",
     "Unknown": "Unknown category"
-  },
-
+  }
+},
   "category": {
     "music": "Music",
     "sports": "Sports",
@@ -364,7 +364,7 @@
   
 
   
-}
+
 
 }
 

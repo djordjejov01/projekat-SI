@@ -78,7 +78,7 @@
   },
   "profile": {
     "language": "Jezik",
-     "myResources": "Resursi",
+     "myReservations":  "Rezervacije",
   "notLoggedIn": "Niste ulogovani",
   "loginPrompt": "Molimo Vas da se ulogujete kako biste videli svoj profil.",
   "loginNow": "Uloguj se",
@@ -145,9 +145,9 @@
   "uploadFailed": "Otpremanje slike nije uspelo.",
   "title": "Lični podaci",
   "firstName": "Ime",
-  "firstNamePlaceholder": "Jovan",
+  "firstNamePlaceholder": "Ime",
   "lastName": "Prezime",
-  "lastNamePlaceholder": "Jović",
+  "lastNamePlaceholder": "Prezime",
   "email": "Email",
   "emailPlaceholder": "primer@email.com",
   "phone": "Broj telefona",
@@ -329,7 +329,7 @@
     "resource": "Resurs",
     "quantity": "Količina",
     "reservedOn": "Rezervisano",
-    "noReservations": "Još uvek nemate rezervacija."
+    "noReservations": "Još uvek nemate rezervacije."
   }
 
   
