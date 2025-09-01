@@ -31,7 +31,7 @@ type GroupedTicket = {
   price: number;
   quantity: number;
   eventID: number; 
-  purchasedAt: string;
+  purchasedAt: string[];
   ticketIDs: number[];
 };
 
@@ -73,17 +73,22 @@ export default function ProfileTickets() {
                 price: ticket.price,
                 quantity: 1,
                 eventID: ticket.eventID ?? 0,
-                purchasedAt: ticket.purchasedAt,
+                purchasedAt: [ticket.purchasedAt],
                 ticketIDs: [ticket.userTicketID],
               };
             } else {
               grouped[key].quantity += 1;
               grouped[key].ticketIDs.push(ticket.userTicketID);
+              grouped[key].purchasedAt.push(ticket.purchasedAt);
             }
           });
 
           const groupedArray = Object.values(grouped);
-          groupedArray.sort((a, b) => new Date(b.purchasedAt).getTime() - new Date(a.purchasedAt).getTime());
+          groupedArray.sort(
+              (a, b) => new Date(b.purchasedAt[b.purchasedAt.length - 1]).getTime()
+                      - new Date(a.purchasedAt[a.purchasedAt.length - 1]).getTime()
+            );
+
 
           setGroupedTickets(groupedArray);
 
@@ -119,7 +124,7 @@ export default function ProfileTickets() {
             eventName: item.eventName,
             ticketType: item.ticketType,
             eventID: item.eventID,
-            purchasedAt: item.purchasedAt,
+            purchasedAt: JSON.stringify(item.purchasedAt),
             price: item.price.toString(),
             from: 'myTickets', 
           },
@@ -128,7 +133,7 @@ export default function ProfileTickets() {
     >
       <Text style={styles.title}>{item.eventName}</Text>
       <View style={styles.row}>
-        <Text style={styles.label}>{t('profileTickets.ticketType')}:</Text>
+        <Text style={styles.label}>{t('profileTickets.ticketType') || 'Ticket Type'}:</Text>
         <Text style={styles.value}>{item.ticketType}</Text>
       </View>
       <View style={styles.row}>
@@ -142,7 +147,8 @@ export default function ProfileTickets() {
       <View style={styles.row}>
         <Text style={styles.label}>{t('profileTickets.purchasedOn')}:</Text>
         <Text style={styles.value}>
-          {new Date(item.purchasedAt).toLocaleString()}
+          {new Date(item.purchasedAt[item.purchasedAt.length - 1]).toLocaleString()
+}
         </Text>
       </View>
     </TouchableOpacity>
@@ -178,7 +184,7 @@ export default function ProfileTickets() {
         <Ionicons name="arrow-back" size={28} color='black' />
       </TouchableOpacity>
 
-        <Text style={styles.header}>{t('profileTickets.title')}</Text>
+        <Text style={styles.header}>{t('profileTickets.title')|| 'My Tickets'}</Text>
       </View>
 
       <FlatList
@@ -191,7 +197,7 @@ export default function ProfileTickets() {
         renderItem={renderItem}
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
         showsVerticalScrollIndicator={false}
-      />110
+      />
     </View>
   );
 }
