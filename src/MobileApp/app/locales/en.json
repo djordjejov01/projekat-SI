@@ -78,9 +78,10 @@
   "cancel": "Cancel",
   "failedToUpdateFavorite": "Failed to update favorite",
   "backToEvents": "Back to events",
+
   "profile": {
-      "language": "Language",
-        "myResources": "Resources",
+  "language": "Language",
+  "myResources": "Resources",
   "notLoggedIn": "You're not logged in",
   "loginPrompt": "Please log in to view your profile.",
   "loginNow": "Log in now",
@@ -351,7 +352,17 @@
     "business": "Business",
     "culture": "Culture",
     "other": "Other"
+  },
+  
+ "profileResources": {
+    "title": "My Reservations",
+    "resource": "Resource",
+    "quantity": "Quantity",
+    "reservedOn": "Reserved on",
+    "noReservations": "You have no reservations yet."
   }
+  
+
   
 }
 

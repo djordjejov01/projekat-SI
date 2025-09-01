@@ -61,8 +61,10 @@ export default function ProfileScreen() {
           headers: { Authorization: `Bearer ${token}` },
         });
 
+        const profileText = await res.text();
+
         if (res.ok) {
-          const data = await res.json();
+          const data = JSON.parse(profileText);
           setFirstName(data.firstName || '');
           setLastName(data.lastName || '');
           setEmail(data.email || '');
@@ -74,25 +76,35 @@ export default function ProfileScreen() {
           headers: { Authorization: `Bearer ${token}` },
         });
 
+        const ticketsText = await resTickets.text();
+
         if (resTickets.ok) {
-          const dataCount = await resTickets.json();
+          const dataCount = JSON.parse(ticketsText);
           setTicketsCount(dataCount.length);
         }
-        const resResources = await fetch(`${API_URL}/api/Resource/reservations`, {
+
+        const resResources = await fetch(`${API_URL}/api/MobileUser/reservations`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
+        const resourcesText = await resResources.text();
+        console.log('Resources status:', resResources.status);
+        console.log('Resources response:', resourcesText);
+
         if (resResources.ok) {
-          const data = await resResources.json();
+          const data = JSON.parse(resourcesText);
           const uniqueEvents = [...new Set(data.map((r: any) => r.eventName))];
           setResourcesCount(uniqueEvents.length);
         }
+
         const resCredits = await fetch(`${API_URL}/api/Credit`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
+        const creditsText = await resCredits.text();
+
         if (resCredits.ok) {
-          const data = await resCredits.json();
+          const data = JSON.parse(creditsText);
           setCredits(data.credits);
         }
       } catch (error) {
@@ -101,7 +113,6 @@ export default function ProfileScreen() {
         setIsLoading(false);
       }
     };
-
     fetchUserDataAndTickets();
   }, []);
     useEffect(() => {
@@ -192,10 +203,18 @@ export default function ProfileScreen() {
           <Text style={styles.statLabel}>{t('profile.tickets')}</Text>
         </TouchableOpacity>
 
-       <TouchableOpacity style={styles.statBox}>
-        <Text style={styles.statNumber}>{resourcesCount}</Text>
-        <Text style={styles.statLabel}>{t('profile.myResources')}</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.statBox}
+          onPress={() =>
+            router.push({
+              pathname: '../profile/myReservations',
+              params: { from: 'profile' }, 
+            })
+          }
+              >
+          <Text style={styles.statNumber}>{resourcesCount}</Text>
+          <Text style={styles.statLabel}>{t('profile.myResources')}</Text>
+        </TouchableOpacity>
 
 
 

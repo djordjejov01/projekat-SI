@@ -322,6 +322,14 @@
     "business": "Biznis",
     "culture": "Kultura",
     "other": "Ostalo"
+  },
+   
+  "profileResources": {
+    "title": "Moje rezervacije",
+    "resource": "Resurs",
+    "quantity": "Količina",
+    "reservedOn": "Rezervisano",
+    "noReservations": "Još uvek nemate rezervacija."
   }
 
   
