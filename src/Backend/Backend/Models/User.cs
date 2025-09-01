@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Backend.Models
@@ -35,5 +36,6 @@ namespace Backend.Models
         public string PhoneNumber { get; set; }
         public bool IsActive { get; set; }
         public decimal Credit { get; set; }
+        public bool IsEmailVerified { get; set; } = false;
     }
 }
