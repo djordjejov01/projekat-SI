@@ -79,6 +79,8 @@
   "failedToUpdateFavorite": "Failed to update favorite",
   "backToEvents": "Back to events",
   "profile": {
+      "language": "Language",
+        "myResources": "Resources",
   "notLoggedIn": "You're not logged in",
   "loginPrompt": "Please log in to view your profile.",
   "loginNow": "Log in now",

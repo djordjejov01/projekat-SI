@@ -77,6 +77,8 @@
     "guest_mode": "Gost režim"
   },
   "profile": {
+    "language": "Jezik",
+     "myResources": "Resursi",
   "notLoggedIn": "Niste ulogovani",
   "loginPrompt": "Molimo Vas da se ulogujete kako biste videli svoj profil.",
   "loginNow": "Uloguj se",

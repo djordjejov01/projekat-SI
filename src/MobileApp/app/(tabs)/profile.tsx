@@ -28,6 +28,8 @@ export default function ProfileScreen() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [ticketsCount, setTicketsCount] = useState(0);
+  const [resourcesCount, setResourcesCount] = useState(0);
+
   const [credits, setCredits] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
@@ -76,7 +78,15 @@ export default function ProfileScreen() {
           const dataCount = await resTickets.json();
           setTicketsCount(dataCount.length);
         }
+        const resResources = await fetch(`${API_URL}/api/Resource/reservations`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
+        if (resResources.ok) {
+          const data = await resResources.json();
+          const uniqueEvents = [...new Set(data.map((r: any) => r.eventName))];
+          setResourcesCount(uniqueEvents.length);
+        }
         const resCredits = await fetch(`${API_URL}/api/Credit`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -181,6 +191,12 @@ export default function ProfileScreen() {
           <Text style={styles.statNumber}>{ticketsCount}</Text>
           <Text style={styles.statLabel}>{t('profile.tickets')}</Text>
         </TouchableOpacity>
+
+       <TouchableOpacity style={styles.statBox}>
+        <Text style={styles.statNumber}>{resourcesCount}</Text>
+        <Text style={styles.statLabel}>{t('profile.myResources')}</Text>
+      </TouchableOpacity>
+
 
 
         <TouchableOpacity style={styles.statBox} onPress={() => router.push('/favorites')}>
@@ -302,19 +318,22 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 24, 
   },
-  statBox: {
-    backgroundColor: '#edeff1ff',
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 16, 
-    marginHorizontal: 6, 
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
-    elevation: 3,
-  },
+statBox: {
+  backgroundColor: '#edeff1ff',
+  flex: 1,
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingVertical: 16,
+  marginHorizontal: 6,
+  borderRadius: 16,
+  shadowColor: '#000',
+  shadowOpacity: 0.05,
+  shadowOffset: { width: 0, height: 4 },
+  shadowRadius: 10,
+  elevation: 3,
+  minHeight: 90, 
+},
+
   sectionTitle: {
     fontSize: 18,
     fontWeight: '900',
@@ -369,6 +388,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#6b7280',
     textAlign: 'center',
+    lineHeight: 16,
   },
   optionArrow: {
     fontSize: 20,
