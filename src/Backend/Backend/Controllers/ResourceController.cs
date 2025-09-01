@@ -160,7 +160,15 @@ namespace Backend.Controllers
                     IsEventFree = urr.EventResource.Event.isFree,
                     EventEndDate = urr.EventResource.Event.EndDate,
                     
-                    ResourceDescription = urr.EventResource.Resource.Description
+                    ResourceDescription = urr.EventResource.Resource.Description,
+                    UserTickets = _context.UserTickets
+                        .Where(ut => ut.UserID == userId && ut.Ticket.EventID == urr.EventResource.EventID)
+                        .Select(ut => new
+                        {
+                            UserTicketID = ut.UserTicketID,
+                            TicketType = ut.Ticket.TypeName
+                        })
+                        .ToList()
                 })
                 .OrderByDescending(urr => urr.ReservedAt)
                 .ToListAsync();
