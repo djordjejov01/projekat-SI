@@ -625,15 +625,19 @@ const handleAction = async () => {
       </View>
 
       <Text style={styles.title}>{event.title}</Text>
-    <Text style={styles.date}>
-  📅{' '}
-  {new Date(event.startDate).toLocaleDateString(i18n.language, {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })}
-</Text>
+   <Text style={styles.date}>
+      📅{' '}
+      {new Date(event.startDate).toLocaleDateString(
+        i18n.language === 'sr' ? 'sr-Latn' : i18n.language,
+        {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }
+      )}
+    </Text>
+
       <View style={styles.infoCard}>
         <Text style={styles.info}>
           🕒 {t('time')}: {new Date(event.startDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}h -{' '}
