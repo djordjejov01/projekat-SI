@@ -72,6 +72,9 @@ export class ResourceModalComponent implements OnInit, IDeactivate {
   }
 
 private applyConditionalValidators() {
+
+  const eventStartDate = this.eventBasicInfo.getStartDate();
+  const eventEndDate = this.eventBasicInfo.getEndDate();
   // Set required and min validators for quantity for both cases
   this.resourceForm.get('allocatedQuantity')?.setValidators([
     Validators.required,
@@ -88,8 +91,8 @@ private applyConditionalValidators() {
     this.resourceForm.get('endDateTimeBooked')?.clearValidators();
   } else {
     // For inexhaustible resources, date fields are required for booking.
-    this.resourceForm.get('startDateTimeBooked')?.setValidators(Validators.required);
-    this.resourceForm.get('endDateTimeBooked')?.setValidators(Validators.required);
+    this.resourceForm.get('startDateTimeBooked')?.setValidators([Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]);
+    this.resourceForm.get('endDateTimeBooked')?.setValidators([Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]);
   }
 
   // Update validation status for all form controls

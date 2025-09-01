@@ -76,6 +76,7 @@ export class FormValidationService {
       case 'whitespace': return 'cannot be empty or just spaces';
       case 'pastDate': return 'cannot be in the past';
       case 'startBeforeEnd': return 'start time must be before end time';
+      case 'dateOutOfRange': return 'is outside the valid event dates'; // ADD THIS LINE
       default: return errorKey;
     }
   }

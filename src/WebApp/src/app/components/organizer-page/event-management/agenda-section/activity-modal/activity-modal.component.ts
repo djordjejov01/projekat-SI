@@ -64,11 +64,16 @@ export class ActivityModalComponent implements OnInit, IDeactivate {
   }
 
   initializeForm() {
+
+    const eventStartDate = this.parentEventBasicInfo.getStartDate();
+    const eventEndDate = this.parentEventBasicInfo.getEndDate();
+
+
     this.activityForm = new FormGroup({
       title: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
       description: new FormControl('', [CustomValidators.noWhitespaceValidator, Validators.required]),
-      startTime: new FormControl('', Validators.required),
-      endTime: new FormControl('', Validators.required),
+      startTime: new FormControl('', [Validators.required, CustomValidators.dateWithinRange(eventStartDate, eventEndDate)]),
+      endTime: new FormControl('', [Validators.required, CustomValidators.dateWithinRange(eventStartDate, eventEndDate)]),
       category: new FormControl('', Validators.required)
     }, { validators: CustomValidators.startBeforeEndDates('startTime','endTime') });
   }

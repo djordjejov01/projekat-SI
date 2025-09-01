@@ -110,13 +110,16 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy, IDeact
 
   initializeForm(){
 
+    const eventStartDate = this.eventBasicInfo.getStartDate();
+    const eventEndDate = this.eventBasicInfo.getEndDate();
+
      this.ticketForm = new FormGroup({
       name: new FormControl('',[Validators.required, CustomValidators.noWhitespaceValidator]),
       price: new FormControl('', [Validators.required, Validators.min(1)]),
       description: new FormControl('', [CustomValidators.noWhitespaceValidator, Validators.required]),
       quota: new FormControl('',[Validators.required,Validators.min(1)]),
-      validFrom: new FormControl('', Validators.required),
-      validUntil: new FormControl('', Validators.required)
+      validFrom: new FormControl('', [Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]),
+      validUntil: new FormControl('', [Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)])
 
     }, {validators: CustomValidators.startBeforeEndDates('validFrom','validUntil')})
 

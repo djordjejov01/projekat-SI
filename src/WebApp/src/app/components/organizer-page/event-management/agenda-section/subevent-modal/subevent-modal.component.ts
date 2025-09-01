@@ -77,14 +77,17 @@ export class SubeventModalComponent implements OnInit,OnDestroy, OnChanges, IDea
     const isParentUnlimited = this.parentEventBasicInfo.getCapacity() === -1;
     const capacityValue = isParentUnlimited ? null : this.parentEventBasicInfo.getCapacity();
 
+    const eventStartDate = this.parentEventBasicInfo.getStartDate();
+    const eventEndDate = this.parentEventBasicInfo.getEndDate();
+
      this.subeventForm = new FormGroup({
       title: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
       description: new FormControl('', [CustomValidators.noWhitespaceValidator,Validators.required]),
       location: new FormControl(this.parentEventBasicInfo.getLocation(), [Validators.required, CustomValidators.noWhitespaceValidator]),
       isUnlimitedCapacity: new FormControl({ value: isParentUnlimited, disabled: !isParentUnlimited }),
       capacity: new FormControl({value : capacityValue, disabled: isParentUnlimited} ,[Validators.required, Validators.min(1)]),
-      startDateTime: new FormControl('', [Validators.required, CustomValidators.notInPast]),
-      endDateTime: new FormControl('', Validators.required),
+      startDateTime: new FormControl('', [Validators.required, CustomValidators.notInPast,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]),
+      endDateTime: new FormControl('', [Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]),
       category: new FormControl(this.parentEventBasicInfo.getCategory(), Validators.required),
     }, {
       validators: CustomValidators.startBeforeEndDates('startDateTime', 'endDateTime')

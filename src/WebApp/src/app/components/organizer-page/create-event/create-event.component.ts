@@ -106,8 +106,8 @@ export class CreateEventComponent implements OnInit,IDeactivate,OnDestroy{
           price: new FormControl('', [Validators.required, Validators.min(1)]),
           description: new FormControl('', [CustomValidators.noWhitespaceValidator,Validators.required]),
           quota: new FormControl('',[Validators.required,Validators.min(1)]),
-          validFrom: new FormControl({value: '', disabled: true}, Validators.required),
-          validUntil: new FormControl({value: '', disabled: true},Validators.required)
+          validFrom: new FormControl({value: '', disabled: true}, [Validators.required,CustomValidators.dateWithinRange(this.eventStart,this.eventEnd)]),
+          validUntil: new FormControl({value: '', disabled: true},[Validators.required,CustomValidators.dateWithinRange(this.eventStart,this.eventEnd)])
 
         }, {validators: CustomValidators.startBeforeEndDates('validFrom','validUntil')}),
       ]),
@@ -133,11 +133,13 @@ export class CreateEventComponent implements OnInit,IDeactivate,OnDestroy{
       this.subscriptions.add(this.eventForm.get('startDateTime')?.valueChanges.subscribe( value =>{
         this.eventStart = value;
         this.toggleTicketDateControls()
+        this.updateTicketDateValidators();
       }));
 
       this.subscriptions.add(this.eventForm.get('endDateTime')?.valueChanges.subscribe( value =>{
         this.eventEnd = value;
         this.toggleTicketDateControls()
+        this.updateTicketDateValidators();
       }));
 
       this.eventForm.get('isUnlimitedCapacity')?.updateValueAndValidity({onlySelf: true, emitEvent: true});
@@ -176,8 +178,8 @@ export class CreateEventComponent implements OnInit,IDeactivate,OnDestroy{
           price: new FormControl('', [Validators.required, Validators.min(0)]),
           description: new FormControl('', [CustomValidators.noWhitespaceValidator,Validators.required]),
           quota: new FormControl('',[Validators.required,Validators.min(1)]),
-          validFrom: new FormControl({value: '', disabled: !(this.eventStart && this.eventEnd)}, Validators.required),
-          validUntil: new FormControl({value: '', disabled: !(this.eventStart && this.eventEnd)},Validators.required)
+          validFrom: new FormControl({value: '', disabled: !(this.eventStart && this.eventEnd)}, [Validators.required,CustomValidators.dateWithinRange(this.eventStart,this.eventEnd)]),
+          validUntil: new FormControl({value: '', disabled: !(this.eventStart && this.eventEnd)},[Validators.required,CustomValidators.dateWithinRange(this.eventStart,this.eventEnd)])
 
         }, {validators: CustomValidators.startBeforeEndDates('validFrom','validUntil')})
     );
@@ -204,6 +206,20 @@ export class CreateEventComponent implements OnInit,IDeactivate,OnDestroy{
         formControl?.disable({emitEvent: false});
         untilControl?.disable({emitEvent: false});
       }
+    });
+  }
+
+  private updateTicketDateValidators() {
+    const tickets = this.eventForm.get('tickets') as FormArray;
+    tickets.controls.forEach(ticketGroup => {
+      const validFromControl = ticketGroup.get('validFrom');
+      const validUntilControl = ticketGroup.get('validUntil');
+
+      validFromControl?.setValidators([Validators.required, CustomValidators.dateWithinRange(this.eventStart, this.eventEnd)]);
+      validUntilControl?.setValidators([Validators.required, CustomValidators.dateWithinRange(this.eventStart, this.eventEnd)]);
+
+      validFromControl?.updateValueAndValidity();
+      validUntilControl?.updateValueAndValidity();
     });
   }
 
@@ -292,8 +308,8 @@ submitForm(): void {
         price: new FormControl('', [Validators.required, Validators.min(0)]),
         description: new FormControl('', [CustomValidators.noWhitespaceValidator,Validators.required]),
         quota: new FormControl('', [Validators.required, Validators.min(1)]),
-        validFrom: new FormControl({ value: '', disabled: true }, Validators.required),
-        validUntil: new FormControl({ value: '', disabled: true }, Validators.required)
+        validFrom: new FormControl({ value: '', disabled: true }, [Validators.required,CustomValidators.dateWithinRange(this.eventStart,this.eventEnd)]),
+        validUntil: new FormControl({ value: '', disabled: true }, [Validators.required,CustomValidators.dateWithinRange(this.eventStart,this.eventEnd)])
       }, { validators: CustomValidators.startBeforeEndDates('validFrom', 'validUntil') }));
 
       
