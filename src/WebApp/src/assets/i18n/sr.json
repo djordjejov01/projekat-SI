@@ -132,7 +132,155 @@
   },
 
    "CANCELLED": "Otkazano",
-   "ACTION_CANCELLED": "Akcija otkazana od strane korisnika"
+   "ACTION_CANCELLED": "Akcija otkazana od strane korisnika",
 
+   "CALENDAR_ACTIONS": "Akcije kalendara",
+   "CALENDAR_INSTRUCTIONS": "Izaberite dan ili period da kreirate novi događaj. Imajte u vidu da se prošli datumi ne mogu izabrati.",
+   "CREATE_EVENT_MSG": "Kreirati događaj od {{start}} do {{end}}?",
+   "CREATE_EVENT_TITLE": "Kreiraj događaj",
+   "UNKNOWN": "Nepoznat",
+
+   "EVENT": {
+    "CREATE_TITLE": "Kreiraj novi događaj",
+    "CREATE_SUBTITLE": "Popuni formular ispod da dodaš novi događaj.",
+
+    "TITLE": "Naslov događaja",
+    "TITLE_PLACEHOLDER": "Unesi naslov događaja",
+
+    "DESCRIPTION": "Opis događaja",
+    "DESCRIPTION_PLACEHOLDER": "Unesi opis događaja",
+
+    "LOCATION": "Lokacija",
+    "LOCATION_PLACEHOLDER": "Unesi ili pronađi lokaciju",
+
+    "CAPACITY": "Kapacitet",
+    "CAPACITY_PLACEHOLDER": "Unesi kapacitet događaja",
+    "UNLIMITED_CAPACITY": "Neograničen kapacitet",
+
+    "START_DATE": "Datum i vreme početka",
+    "START_DATE_PLACEHOLDER": "Izaberi datum i vreme početka",
+
+    "END_DATE": "Datum i vreme završetka",
+    "END_DATE_PLACEHOLDER": "Izaberi datum i vreme završetka",
+
+    "CATEGORY": "Kategorija",
+    "CATEGORY_PLACEHOLDER": "Izaberi kategoriju",
+
+    "TICKETS": "Ulaznice",
+
+    "TICKET_NAME": "Naziv ulaznice",
+    "TICKET_NAME_PLACEHOLDER": "Unesi naziv ulaznice",
+
+    "TICKET_PRICE": "Cena ulaznice",
+    "TICKET_PRICE_PLACEHOLDER": "Unesi cenu ulaznice",
+
+    "TICKET_VALID_FROM": "Važi od",
+    "TICKET_VALID_FROM_PLACEHOLDER": "Izaberi datum od kada važi ulaznica",
+
+    "TICKET_VALID_UNTIL": "Važi do",
+    "TICKET_VALID_UNTIL_PLACEHOLDER": "Izaberi datum do kada važi ulaznica",
+
+    "TICKET_QUOTA": "Broj ulaznica",
+    "TICKET_QUOTA_PLACEHOLDER": "Unesi broj ulaznica",
+
+    "TICKET_DESCRIPTION": "Opis ulaznice",
+    "TICKET_DESCRIPTION_PLACEHOLDER": "Unesi opis ulaznice",
+
+    "UPLOAD_IMAGE": "Dodaj sliku događaja",
+    "UPLOAD_IMAGE_BUTTON": "Izaberi sliku",
+
+    "CREATE_BUTTON": "Kreiraj događaj",
+
+      "CREATE_EVENT": "Kreiraj Novi Događaj",
+  "FILL_DETAILS": "Popunite detalje ispod kako biste postavili događaj.",
+  "EVENT_TITLE": "Naziv događaja",
+  "ENTER_EVENT_TITLE": "Unesite naziv događaja",
+  "DESCRIBE_EVENT": "Opišite vaš događaj",
+  "ENTER_EVENT_LOCATION": "Unesite lokaciju događaja (npr. Zoom, Konferencijska sala A)",
+  "ENTER_EVENT_CAPACITY": "Unesite kapacitet događaja",
+  "START_DATE_TIME": "Datum i vreme početka",
+  "END_DATE_TIME": "Datum i vreme kraja",
+  "SELECT_EVENT_CATEGORY": "Izaberite kategoriju događaja",
+  "ENTER_TICKET_NAME": "Unesite naziv ulaznice",
+  "ENTER_TICKET_PRICE": "Unesite cenu ulaznice",
+  "VALID_FROM": "Važi od",
+  "VALID_FROM_DATE_TIME": "Datum i vreme od kada važi",
+  "VALID_UNTIL": "Važi do",
+  "VALID_UNTIL_DATE_TIME": "Datum i vreme do kada važi",
+  "QUOTA": "Kvote",
+  "ENTER_TICKET_QUOTA": "Unesite kvotu ulaznica",
+  "DESCRIBE_TICKET": "Opišite ulaznicu",
+  "UPLOAD_EVENT_IMAGE": "Otpremite sliku događaja",
+  "CHOOSE_EVENT_IMAGE": "Izaberite sliku događaja",
+  "CREATE_EVENT_BTN": "Kreiraj događaj",
+  "UNSAVED_CHANGES_CONFIRM": "Imate sačuvane izmene. Da li ste sigurni da želite napustiti ovu stranicu?",
+  "UNSAVED_CHANGES_TITLE": "Nesačuvane izmene",
+  "EVENT_CREATED_SUCCESS": "Događaj je uspešno kreiran!",
+  "FAILED_CREATE_EVENT": "Kreiranje događaja nije uspelo."
+  },
+
+  "ERROR_404": "Greška",
+  "PAGE_NOT_FOUND": "Stranica nije pronađena",
+  "RETURN_HOME": "Povratak na početnu stranicu",
+
+  "EVENT_STATUS_DRAFT": "U pripremi",
+  "EVENT_STATUS_PUBLISHED": "Objavljeno",
+  "EVENT_STATUS_CANCELED": "Otkazano",
+
+  "MY_PROFILE": "Moj profil",
+  "ROLE_ORGANIZER": "Organizator događaja",
+  "CHOOSE_IMAGE": "Izaberi",
+  "NAME": "Ime",
+  "PHONE_NUMBER": "Broj telefona",
+  "UPDATE_PROFILE": "Ažuriraj profil",
+  "CURRENT_PASSWORD": "Trenutna lozinka",
+  "NEW_PASSWORD": "Nova lozinka",
+  "CONFIRM_NEW_PASSWORD": "Potvrdi novu lozinku",
+  "CHANGE_PASSWORD": "Promeni lozinku",
+  "EVENT_OVERVIEW": "Pregled događaja",
+  "EVENTS_ORGANIZED": "Organizovani događaji",
+  "TOTAL_ATTENDEES": "Ukupno učesnika",
+  "UPCOMING_EVENTS": "Predstojeći događaji",
+
+  "SUCCESS": "Uspeh",
+  "PASSWORDS_MISMATCH": "Lozinke se ne poklapaju.",
+  "EVENT_ORGANIZER": "Organizator događaja",
+  "CHOOSE": "Izaberi",
+  "YES": "Da",
+  "CANCEL": "Otkaži",
+  "CONFIRMATION": "Potvrda",
+
+  "EVENTS_DASHBOARD": "Kontrolna tabla događaja",
+  "TOTAL_EVENTS": "Ukupan broj događaja i pod-događaja",
+  "TOTAL_EVENTS_DESC": "Ukupan broj organizovanih događaja",
+  "TOTAL_EARNINGS": "Ukupan prihod",
+  "TOTAL_EARNINGS_DESC": "Ukupan prihod od svih događaja",
+  "TICKETS_SOLD": "Broj prodatih ulaznica",
+  "TICKETS_SOLD_DESC": "Ukupan broj prodatih ulaznica",
+  "UNIQUE_LOCATIONS": "Broj različitih lokacija",
+  "UNIQUE_LOCATIONS_DESC": "Ukupan broj različitih lokacija",
+  "ADD_EVENT": "Dodaj",
+  "KEYBOARD_SEARCH": "Pretraga tastaturom",
+  "PICTURE": "Slika",
+  "START_DATE": "Datum početka",
+  "END_DATE": "Datum završetka",
+  "CATEGORY": "Kategorija",
+  "LOCATION": "Lokacija",
+  "ACTIONS": "Akcije",
+  "EVENT_IMAGE": "Slika događaja",
+  "MANAGE_EVENT": "Upravljaj događajem",
+  "DELETE_EVENT": "Obriši događaj",
+  "NO_EVENTS_FOUND": "Nema pronađenih događaja",
+  "DELETE_CONFIRM": "Da li ste sigurni da želite da obrišete događaj?",
+  "DELETE_HEADER": "Obriši događaj",
+  "VISITORS": "Posetioci",
+  "REVENUE": "Prihod",
+  "LOCATIONS": "Broj različitih lokacija",
+  "LOCATIONS_DESC": "Ukupan broj različitih lokacija",
+  "ADD": "Dodaj",
+  "ALL":"Svi",
+  "DRAFT":"U pripremi",
+  "PUBLISHED":"Objavljeni",
+  "CANCELED":"Otkazani"
 
 }

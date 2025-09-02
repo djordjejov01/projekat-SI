@@ -131,7 +131,157 @@
   },
 
   "CANCELLED": "Cancelled",
-  "ACTION_CANCELLED": "Action canceled by user"
+  "ACTION_CANCELLED": "Action canceled by user",
+
+  "CALENDAR_ACTIONS": "Calendar Actions",
+  "CALENDAR_INSTRUCTIONS": "Select a day or date range to create a new event. Please note that past dates cannot be selected.",
+  "CREATE_EVENT_MSG": "Create an event from {{start}} to {{end}}?",
+  "CREATE_EVENT_TITLE": "Create Event",
+  "UNKNOWN": "Unknown",
+
+  "EVENT": {
+    "CREATE_TITLE": "Create a New Event",
+    "CREATE_SUBTITLE": "Fill in the form below to add a new event.",
+
+    "TITLE": "Event Title",
+    "TITLE_PLACEHOLDER": "Enter the event title",
+
+    "DESCRIPTION": "Event Description",
+    "DESCRIPTION_PLACEHOLDER": "Enter the event description",
+
+    "LOCATION": "Location",
+    "LOCATION_PLACEHOLDER": "Enter or search for a location",
+
+    "CAPACITY": "Capacity",
+    "CAPACITY_PLACEHOLDER": "Enter the event capacity",
+    "UNLIMITED_CAPACITY": "Unlimited capacity",
+
+    "START_DATE": "Start Date & Time",
+    "START_DATE_PLACEHOLDER": "Select start date and time",
+
+    "END_DATE": "End Date & Time",
+    "END_DATE_PLACEHOLDER": "Select end date and time",
+
+    "CATEGORY": "Category",
+    "CATEGORY_PLACEHOLDER": "Select a category",
+
+    "TICKETS": "Tickets",
+
+    "TICKET_NAME": "Ticket Name",
+    "TICKET_NAME_PLACEHOLDER": "Enter ticket name",
+
+    "TICKET_PRICE": "Ticket Price",
+    "TICKET_PRICE_PLACEHOLDER": "Enter ticket price",
+
+    "TICKET_VALID_FROM": "Valid From",
+    "TICKET_VALID_FROM_PLACEHOLDER": "Select ticket start validity",
+
+    "TICKET_VALID_UNTIL": "Valid Until",
+    "TICKET_VALID_UNTIL_PLACEHOLDER": "Select ticket end validity",
+
+    "TICKET_QUOTA": "Ticket Quota",
+    "TICKET_QUOTA_PLACEHOLDER": "Enter ticket quota",
+
+    "TICKET_DESCRIPTION": "Ticket Description",
+    "TICKET_DESCRIPTION_PLACEHOLDER": "Enter ticket description",
+
+    "UPLOAD_IMAGE": "Upload Event Image",
+    "UPLOAD_IMAGE_BUTTON": "Choose Image",
+
+    "CREATE_BUTTON": "Create Event",
+    "CREATE_EVENT": "Create New Event",
+  "FILL_DETAILS": "Fill in the details below to set up your event.",
+  "EVENT_TITLE": "Event Title",
+  "ENTER_EVENT_TITLE": "Enter Event Title",
+  "DESCRIBE_EVENT": "Describe Your Event",
+  "ENTER_EVENT_LOCATION": "Enter Event Location (e.g. Zoom, Conference Hall A)",
+  "ENTER_EVENT_CAPACITY": "Enter Event Capacity",
+  "START_DATE_TIME": "Start Date and Time",
+  "END_DATE_TIME": "End Date and Time",
+  "SELECT_EVENT_CATEGORY": "Select Event Category",
+  "ENTER_TICKET_NAME": "Enter Ticket Name",
+  "ENTER_TICKET_PRICE": "Enter Ticket Price",
+  "VALID_FROM": "Valid From",
+  "VALID_FROM_DATE_TIME": "Valid From Date and Time",
+  "VALID_UNTIL": "Valid Until",
+  "VALID_UNTIL_DATE_TIME": "Valid Until Date and Time",
+  "QUOTA": "Quota",
+  "ENTER_TICKET_QUOTA": "Enter Ticket Quota",
+  "DESCRIBE_TICKET": "Describe Your Ticket",
+  "UPLOAD_EVENT_IMAGE": "Upload Event Image",
+  "CHOOSE_EVENT_IMAGE": "Choose Event Image",
+  "CREATE_EVENT_BTN": "Create Event",
+  "UNSAVED_CHANGES_CONFIRM": "You have unsaved changes. Are you sure you want to leave this page?",
+  "UNSAVED_CHANGES_TITLE": "Unsaved Changes",
+  "EVENT_CREATED_SUCCESS": "Event created successfully!",
+  "FAILED_CREATE_EVENT": "Failed to create event."
+  },
+
+   "ERROR_404": "Error",
+  "PAGE_NOT_FOUND": "Page Not Found",
+  "RETURN_HOME": "Return to Home page",
+
+   "EVENT_STATUS_DRAFT": "Draft",
+  "EVENT_STATUS_PUBLISHED": "Published",
+  "EVENT_STATUS_CANCELED": "Canceled",
+
+  "MY_PROFILE": "My Profile",
+  "ROLE_ORGANIZER": "Event Organizer",
+  "CHOOSE_IMAGE": "Choose",
+  "NAME": "Name",
+  "PHONE_NUMBER": "Phone Number",
+  "UPDATE_PROFILE": "Update Profile",
+  "CURRENT_PASSWORD": "Current Password",
+  "NEW_PASSWORD": "New Password",
+  "CONFIRM_NEW_PASSWORD": "Confirm New Password",
+  "CHANGE_PASSWORD": "Change Password",
+  "EVENT_OVERVIEW": "Event Overview",
+  "EVENTS_ORGANIZED": "Events Organized",
+  "TOTAL_ATTENDEES": "Total Attendees",
+  "UPCOMING_EVENTS": "Upcoming Events",
+
+
+  "SUCCESS": "Success",
+  "PASSWORDS_MISMATCH": "Passwords don't match.",
+  "EVENT_ORGANIZER": "Event Organizer",
+  "CHOOSE": "Choose",
+  "YES": "Yes",
+  "CANCEL": "Cancel",
+  "CONFIRMATION": "Confirmation",
+
+  "EVENTS_DASHBOARD": "Events Dashboard",
+  "TOTAL_EVENTS": "Total number of events and subevents",
+  "TOTAL_EVENTS_DESC": "Total number of organized events",
+  "TOTAL_EARNINGS": "Total earnings",
+  "TOTAL_EARNINGS_DESC": "Total earnings from all events",
+  "TICKETS_SOLD": "Number of tickets sold",
+  "TICKETS_SOLD_DESC": "Total number of tickets sold",
+  "UNIQUE_LOCATIONS": "Number of different locations",
+  "UNIQUE_LOCATIONS_DESC": "Total number of different locations",
+  "ADD_EVENT": "Add",
+  "KEYBOARD_SEARCH": "Keyboard Search",
+  "PICTURE": "Picture",
+  "START_DATE": "Start Date",
+  "END_DATE": "End Date",
+  "CATEGORY": "Category",
+  "LOCATION": "Location",
+  "ACTIONS": "Actions",
+  "EVENT_IMAGE": "Event image",
+  "MANAGE_EVENT": "Manage Event",
+  "DELETE_EVENT": "Delete Event",
+  "NO_EVENTS_FOUND": "No events found",
+  "VISITORS": "Visitors",
+  "REVENUE": "Revenue",
+  "LOCATIONS": "Number of different locations",
+  "LOCATIONS_DESC": "Total number of different locations",
+  "ADD": "Add",
+  "ALL":"All",
+  "DRAFT":"Draft",
+  "PUBLISHED":"Published",
+  "CANCELED":"Canceled"
+
+
+ 
 
 
 }
