@@ -195,7 +195,7 @@ void main() {
   mainImage(color, gl_FragCoord.xy);
   gl_FragColor  = color;
 }`;
-
+  showVerificationMessage: boolean = false;
   ngOnInit() {
     this.observer = new IntersectionObserver(
       entries => {
@@ -209,6 +209,7 @@ void main() {
       },
       { threshold: 0.1 }
     );
+    this.showVerificationMessage = true; 
   }
 
   ngAfterViewInit() {
