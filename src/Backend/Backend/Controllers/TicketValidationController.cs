@@ -34,7 +34,7 @@ namespace Backend.Controllers
                 return NotFound(new TicketValidationDto
                 {
                     Status = "invalid",
-                    Message = _localizer["ticket_validation.not_found"]
+                    Message = _localizer["ticket_validation.not_found"].Value
                 });
             }
 
@@ -44,7 +44,7 @@ namespace Backend.Controllers
                 return BadRequest(new TicketValidationDto
                 {
                     Status = "invalid",
-                    Message = _localizer["ticket_validation.invalid_token"]
+                    Message = _localizer["ticket_validation.invalid_token"].Value
                 });
             }
 
@@ -54,7 +54,7 @@ namespace Backend.Controllers
                 return Ok(new TicketValidationDto
                 {
                     Status = "invalid",
-                    Message = string.Format(_localizer["ticket_validation.already_used"], userTicket.UsedAt?.ToString("HH:mm:ss")),
+                    Message = string.Format(_localizer["ticket_validation.already_used"].Value, userTicket.UsedAt?.ToString("HH:mm:ss")),
                     UsedAt = userTicket.UsedAt
                 });
             }
@@ -68,7 +68,7 @@ namespace Backend.Controllers
             return Ok(new TicketValidationDto
             {
                 Status = "valid",
-                Message = _localizer["ticket_validation.valid"]
+                Message = _localizer["ticket_validation.valid"].Value
             });
         }
     }

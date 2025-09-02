@@ -14,6 +14,8 @@
   <data name="user.email_not_verified"><value>Email adresa nije verifikovana. Proverite poštu i verifikujte nalog.</value></data>
   <data name="user.registration_success_verify"><value>Registracija uspešna. Proverite email i verifikujte nalog.</value></data>
   <data name="user.profile_picture_deleted"><value>Profilna slika obrisana.</value></data>
+  <data name="user.invalid_credentials"><value>Neispravan email ili lozinka.</value></data>
+  <data name="user.not_active"><value>Korisnik nije aktivan.</value></data>
 
   <data name="organizer.not_found"><value>Organizator sa tim ID-jem ne postoji.</value></data>
   <data name="organizer.user_not_found"><value>Korisnik nije pronađen.</value></data>
@@ -28,6 +30,7 @@
   <data name="organizer.no_access_event"><value>Nemate pristup ovom događaju.</value></data>
   <data name="organizer.edit_permission_denied"><value>Nemate dozvolu da uređujete ovaj događaj.</value></data>
   <data name="organizer.event_not_found_or_no_permission"><value>Događaj nije pronađen ili nemate dozvolu da ga koristite.</value></data>
+  <data name="organizer.no_events_found"><value>Nema događaja za ovog organizatora.</value></data>
 
   <data name="event.created"><value>Događaj je uspešno kreiran.</value></data>
   <data name="event.published"><value>Događaj je uspešno objavljen.</value></data>
@@ -40,6 +43,26 @@
   <data name="event.capacity_invalid"><value>Kapacitet mora biti -1 (neograničeno) ili pozitivan broj.</value></data>
   <data name="event.capacity_below_quota"><value>Nije moguće postaviti kapacitet ispod trenutne ukupne kvote karata ({0}).</value></data>
   <data name="events.not_found"><value>Događaj nije pronađen.</value></data>
+  <data name="event.not_found_or_permission"><value>Događaj nije pronađen ili nemate dozvolu da ga koristite.</value></data>
+  <data name="event.already_published"><value>Događaj je već objavljen.</value></data>
+  <data name="event.cannot_publish_canceled"><value>Nije moguće objaviti otkazan događaj.</value></data>
+  <data name="event.title_required"><value>Naslov događaja je obavezan.</value></data>
+  <data name="event.location_required"><value>Lokacija događaja je obavezna.</value></data>
+  <data name="event.start_date_required"><value>Datum početka događaja je obavezan.</value></data>
+  <data name="event.end_date_required"><value>Datum kraja događaja je obavezan.</value></data>
+  <data name="event.start_date_before_end_date"><value>Datum početka događaja mora biti pre datuma kraja.</value></data>
+  <data name="event.start_date_future"><value>Datum početka događaja mora biti u budućnosti.</value></data>
+  <data name="event.paid_event_tickets_required"><value>Plaćeni događaji moraju imati karte pre objave.</value></data>
+  <data name="event.end_date_past"><value>Datum kraja događaja ne može biti u prošlosti.</value></data>
+  <data name="event.delete_only_draft_canceled"><value>Događaj se može obrisati samo ako je u statusu Draft ili Canceled.</value></data>
+  <data name="event.already_canceled"><value>Događaj je već otkazan.</value></data>
+  <data name="event.draft_delete"><value>Događaji u statusu Draft treba da se obrišu, a ne otkažu.</value></data>
+  <data name="event.cannot_cancel_started"><value>Nije moguće otkazati događaj koji je već počeo.</value></data>
+
+  <data name="subevent.title_required"><value>Pod-događaj '{0}' mora imati naslov.</value></data>
+  <data name="subevent.location_required"><value>Pod-događaj '{0}' mora imati lokaciju.</value></data>
+  <data name="subevent.start_date_before_end_date"><value>Pod-događaj '{0}' datum početka mora biti pre datuma kraja.</value></data>
+  <data name="subevent.start_date_past"><value>Pod-događaj '{0}' datum početka ne može biti u prošlosti.</value></data>
 
   <data name="activity.not_found"><value>Aktivnost nije pronađena.</value></data>
   <data name="activity.own_events_only"><value>Možete uređivati samo aktivnosti sa sopstvenih događaja.</value></data>
@@ -99,12 +122,17 @@
   <data name="common.invalid_image_format"><value>Neispravan format slike. Dozvoljeni formati: JPG, JPEG, PNG.</value></data>
   <data name="common.image_too_large"><value>Slika je prevelika. Maksimalna veličina je 2MB.</value></data>
   <data name="user.profile_picture_updated"><value>Profilna slika uspešno ažurirana.</value></data>
+  <data name="common.model_cannot_be_null"><value>Model ne može biti null.</value></data>
+  <data name="common.invalid_id"><value>Neispravan ID.</value></data>
+  <data name="common.resource_release_error"><value>Greška pri oslobađanju resursa za događaj {0}.</value></data>
+  <data name="common.activity_cannot_be_null"><value>Aktivnost ne može biti null.</value></data>
 
   <data name="email_verification.token_not_found"><value>Token nije pronađen.</value></data>
   <data name="email_verification.token_used"><value>Token je već iskorišćen.</value></data>
   <data name="email_verification.token_expired"><value>Token je istekao.</value></data>
   <data name="email_verification.verified"><value>Email je verifikovan.</value></data>
   <data name="supplier.not_found"><value>Dobavljač nije pronađen.</value></data>
+  <data name="supplier.not_approved"><value>Dobavljač još nije odobren od strane administratora.</value></data>
   <data name="favorites.already_in"><value>Događaj je već u omiljenim.</value></data>
   <data name="events.unknown_category"><value>Nepoznata kategorija.</value></data>
   <data name="eventpin.saved"><value>Pin događaja sačuvan!</value></data>

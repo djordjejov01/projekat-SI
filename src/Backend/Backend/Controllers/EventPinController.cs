@@ -38,7 +38,7 @@ namespace Backend.Controllers
                 };
                 _context.EventPin.Add(eventPin);
                 await _context.SaveChangesAsync();
-                return Ok(_localizer["eventpin.saved"]);
+                return Ok(_localizer["eventpin.saved"].Value);
             }
             catch (Exception ex)
             {
@@ -53,7 +53,7 @@ namespace Backend.Controllers
             {
                 var eventPin = await _context.EventPin.FindAsync(pin.Id);
                 if (eventPin == null)
-                    return NotFound(new { message = _localizer["eventpin.not_found"] });
+                    return NotFound(new { message = _localizer["eventpin.not_found"].Value });
 
                 eventPin.Latitude = pin.Latitude;
                 eventPin.Longitude = pin.Longitude;
@@ -62,7 +62,7 @@ namespace Backend.Controllers
                 eventPin.PinCategory = pin.PinCategory;
 
                 await _context.SaveChangesAsync();
-                return Ok(_localizer["eventpin.updated"]);
+                return Ok(_localizer["eventpin.updated"].Value);
             }
             catch (Exception ex)
             {
@@ -77,11 +77,11 @@ namespace Backend.Controllers
             {
                 var eventPin = await _context.EventPin.FindAsync(id);
                 if (eventPin == null)
-                    return NotFound(new { message = _localizer["eventpin.not_found"] });
+                    return NotFound(new { message = _localizer["eventpin.not_found"].Value });
 
                 _context.EventPin.Remove(eventPin);
                 await _context.SaveChangesAsync();
-                return Ok(_localizer["eventpin.deleted"]);
+                return Ok(_localizer["eventpin.deleted"].Value);
             }
             catch (Exception ex)
             {

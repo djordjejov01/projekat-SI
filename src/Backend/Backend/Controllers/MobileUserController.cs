@@ -55,7 +55,7 @@ namespace Backend.Controllers
 
             var user =await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound(_localizer["user.not_found"]);
+                return NotFound(_localizer["user.not_found"].Value);
 
            return Ok(new {
                 email = user.Email,
@@ -78,13 +78,13 @@ namespace Backend.Controllers
                 return NotFound(new { message = _localizer["user.not_found"] });
 
             if (_context.Users.Any(u => u.Email == dto.Email && u.UserId != userId))
-                return BadRequest(new { message = _localizer["common.email_exists"] });
+                return BadRequest(new { message = _localizer["common.email_exists"].Value });
 
-            if (string.IsNullOrWhiteSpace(dto.Email) || !CommonHelpers.IsEmailInValidForm(dto.Email))
-                return BadRequest(new { message = _localizer["common.invalid_email"] });
+            if (string.IsNullOrWhiteSpace(dto.Email) || !CommonHelpers.IsPhoneNumberValid(dto.Email))
+                return BadRequest(new { message = _localizer["common.invalid_email"].Value });
 
             if (!string.IsNullOrWhiteSpace(dto.PhoneNumber) && !CommonHelpers.IsPhoneNumberValid(dto.PhoneNumber))
-                return BadRequest(new { message = _localizer["common.invalid_phone"] });
+                return BadRequest(new { message = _localizer["common.invalid_phone"].Value });
 
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
@@ -92,7 +92,7 @@ namespace Backend.Controllers
             user.PhoneNumber = dto.PhoneNumber;
             
             await _context.SaveChangesAsync();
-            return Ok(new { message = _localizer["organizer.updated"] });
+            return Ok(new { message = _localizer["organizer.updated"].Value });
         }
 
         [HttpGet("event/{eventId}")]
@@ -106,7 +106,7 @@ namespace Backend.Controllers
 
                 if (!eventExists)
                 {
-                    return NotFound(new { message = _localizer["events.not_found"] });
+                    return NotFound(new { message = _localizer["events.not_found"].Value });
                 }
 
                 var pins = await _context.EventPin
@@ -156,7 +156,7 @@ namespace Backend.Controllers
                     }
                     catch (Exception ex)
                     {
-                        return StatusCode(500, new { message = string.Format(_localizer["common.image_delete_error"], ex.Message) });
+                        return StatusCode(500, new { message = string.Format(_localizer["common.image_delete_error"].Value, ex.Message) });
                     }
                 }
 
@@ -164,7 +164,7 @@ namespace Backend.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return Ok(new { message = _localizer["user.profile_picture_deleted"] });
+            return Ok(new { message = _localizer["user.profile_picture_deleted"].Value });
         }
 
         [HttpPut("profile-image")]
@@ -177,21 +177,21 @@ namespace Backend.Controllers
 
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
                 if (user == null)
-                    return NotFound(new { message = _localizer["user.not_found"] });
+                    return NotFound(new { message = _localizer["user.not_found"].Value });
 
                 
                 if (model.Image == null || model.Image.Length == 0)
-                    return BadRequest(new { message = _localizer["common.image_not_found"] });
+                    return BadRequest(new { message = _localizer["common.image_not_found"].Value });
 
                 
                 var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
                 var fileExtension = Path.GetExtension(model.Image.FileName).ToLowerInvariant();
                 if (!allowedExtensions.Contains(fileExtension))
-                    return BadRequest(new { message = _localizer["common.invalid_image_format"] });
+                    return BadRequest(new { message = _localizer["common.invalid_image_format"].Value });
 
                 
                 if (model.Image.Length > 2 * 1024 * 1024)
-                    return BadRequest(new { message = _localizer["common.image_too_large"] });
+                    return BadRequest(new { message = _localizer["common.image_too_large"].Value });
 
                 
                 string imageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
@@ -209,7 +209,7 @@ namespace Backend.Controllers
 
                 return Ok(new
                 {
-                    message = _localizer["user.profile_picture_updated"],
+                    message = _localizer["user.profile_picture_updated"].Value,
                     imageUrl = imageName
                 });
             }

@@ -34,7 +34,7 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(s => s.Id == userId);
 
             if (supplier == null)
-                return NotFound(_localizer["supplier.not_found"]);
+                return NotFound(_localizer["supplier.not_found"].Value);
 
             var dto = new SupplierDto
             {
@@ -59,18 +59,18 @@ namespace Backend.Controllers
 
             var supplier = await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == userId);
             if (supplier == null)
-                return NotFound(new { message = _localizer["supplier.not_found"] });
+                return NotFound(new { message = _localizer["supplier.not_found"].Value });
 
             
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound(new { message = _localizer["user.not_found"] });
+                return NotFound(new { message = _localizer["user.not_found"].Value });
 
             
             if (!string.IsNullOrEmpty(model.Username) && model.Username != supplier.Username)
             {
                 if (await _context.Suppliers.AnyAsync(s => s.Username == model.Username && s.Id != userId))
-                    return BadRequest(new { message = _localizer["organizer.username_exists"] });
+                    return BadRequest(new { message = _localizer["organizer.username_exists"].Value });
 
                 supplier.Username = model.Username;
                 user.Username = model.Username;
@@ -80,9 +80,9 @@ namespace Backend.Controllers
             if (!string.IsNullOrEmpty(model.Email) && model.Email != supplier.Email)
             {
                 if (!CommonHelpers.IsEmailInValidForm(model.Email))
-                    return BadRequest(new { message = _localizer["common.invalid_email"] });
+                    return BadRequest(new { message = _localizer["common.invalid_email"].Value });
                 if (await _context.Suppliers.AnyAsync(s => s.Email == model.Email && s.Id != userId))
-                    return BadRequest(new { message = _localizer["common.email_exists"] });
+                    return BadRequest(new { message = _localizer["common.email_exists"].Value });
 
                 supplier.Email = model.Email;
                 user.Email = model.Email;
@@ -92,9 +92,9 @@ namespace Backend.Controllers
             if (!string.IsNullOrEmpty(model.PhoneNumber) && model.PhoneNumber != supplier.PhoneNumber)
             {
                 if (!CommonHelpers.IsPhoneNumberValid(model.PhoneNumber))
-                    return BadRequest(new { message = _localizer["common.invalid_phone"] });
+                    return BadRequest(new { message = _localizer["common.invalid_phone"].Value });
                 if (await _context.Suppliers.AnyAsync(s => s.PhoneNumber == model.PhoneNumber && s.Id != userId))
-                    return BadRequest(new { message = _localizer["common.phone_exists"] });
+                    return BadRequest(new { message = _localizer["common.phone_exists"].Value });
 
                 supplier.PhoneNumber = model.PhoneNumber;
                 user.PhoneNumber = model.PhoneNumber; // Sinhronizacija sa users tabelom
@@ -115,7 +115,7 @@ namespace Backend.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = _localizer["organizer.updated"] });
+            return Ok(new { message = _localizer["organizer.updated"].Value });
         }
 
         [HttpPost("change-supplier-picture")]
@@ -126,12 +126,12 @@ namespace Backend.Controllers
 
             var supplier = await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == userId);
             if (supplier == null)
-                return BadRequest(_localizer["supplier.not_found"]);
+                return BadRequest(_localizer["supplier.not_found"].Value);
 
             
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return BadRequest(_localizer["user.not_found"]);
+                return BadRequest(_localizer["user.not_found"].Value);
 
             
             string oldSupplierImage = supplier.Image;
@@ -222,7 +222,7 @@ namespace Backend.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(_localizer["resources.updated"]);
+            return Ok(_localizer["resources.updated"].Value);
         }
 
         [HttpDelete("resource/{id}")]
@@ -231,7 +231,7 @@ namespace Backend.Controllers
             var resource = await _context.Resources.FindAsync(id);
             if (resource == null) return NotFound();
             if (!resource.IsExhaustable && resource.IsAvailable == ResourceAvailability.Booked)
-                return BadRequest(_localizer["resources.cannot_delete_booked_inexhaustable"]);
+                return BadRequest(_localizer["resources.cannot_delete_booked_inexhaustable"].Value);
             ResourceLog resourceLog = new ResourceLog
             {
                 ResourceID = resource.ResourceID,
@@ -248,7 +248,7 @@ namespace Backend.Controllers
             _context.Resources.Remove(resource);
             await _context.SaveChangesAsync();
 
-            return Ok(_localizer["resources.deleted"]);
+            return Ok(_localizer["resources.deleted"].Value);
         }
 
         [HttpGet("supplier/{supplierId}/eventresources/pending")]
@@ -284,7 +284,7 @@ namespace Backend.Controllers
                 return NotFound();
 
             if (eventResource.Status != EventResourceStatus.Pending)
-                return BadRequest(_localizer["resources.only_update_pending"]);
+                return BadRequest(_localizer["resources.only_update_pending"].Value);
 
             // Logic for Approved status
             if (newStatus == EventResourceStatus.Approved)
@@ -296,7 +296,7 @@ namespace Backend.Controllers
                     if (eventResource.Resource.Quantity < eventResource.Quantity)
                     {
                         // This scenario could happen if another event approved the same resource first.
-                        return BadRequest(_localizer["resources.not_enough_quantity_maybe_other_event"]);
+                        return BadRequest(_localizer["resources.not_enough_quantity_maybe_other_event"].Value);
                     }
 
                     // Subtract the quantity from the supplier's resource.
@@ -329,7 +329,7 @@ namespace Backend.Controllers
             _context.EventResources.Update(eventResource);
             await _context.SaveChangesAsync();
 
-            return Ok(_localizer["resources.status_updated"]);
+            return Ok(_localizer["resources.status_updated"].Value);
         }
 
         [HttpGet("ReusableResources")]
@@ -342,7 +342,7 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(s => s.UserId == supplierId);
 
             if (supplier == null)
-                return NotFound(new { message = _localizer["supplier.not_found"] });
+                return NotFound(new { message = _localizer["supplier.not_found"].Value });
 
             
             var reusableResources = await _context.Resources

@@ -52,7 +52,7 @@ namespace Backend.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
             if (dto.Quantity <= 0)
-                return BadRequest(_localizer["resources.qty_positive"]);
+                return BadRequest(_localizer["resources.qty_positive"].Value);
 
             
             var eventResource =await _context.EventResources
@@ -60,13 +60,13 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(er => er.ID == dto.EventResourceID);
 
             if (eventResource == null)
-                return NotFound(_localizer["resources.not_exist"]);
+                return NotFound(_localizer["resources.not_exist"].Value);
 
             if (!eventResource.IsReservable)
-                return BadRequest(_localizer["resources.not_reservable"]);
+                return BadRequest(_localizer["resources.not_reservable"].Value);
 
             if (eventResource.Event.EndDate < DateTime.UtcNow)
-                return BadRequest(_localizer["resources.event_passed"]);
+                return BadRequest(_localizer["resources.event_passed"].Value);
 
             if (!eventResource.Event.isFree)
             {
@@ -74,7 +74,7 @@ namespace Backend.Controllers
                 var hasTicket = _context.UserTickets
                     .Any(ut => ut.UserID == userId && ut.Ticket.EventID == eventResource.EventID);
                 if (!hasTicket)
-                    return BadRequest(_localizer["resources.need_ticket"]);
+                    return BadRequest(_localizer["resources.need_ticket"].Value);
 
 
                 var userTicket = _context.UserTickets
@@ -82,11 +82,11 @@ namespace Backend.Controllers
                     .FirstOrDefault(ut => ut.UserTicketID == dto.UserTicketID && ut.UserID == userId);
 
                 if (userTicket == null)
-                    return BadRequest(_localizer["resources.ticket_missing"]);
+                    return BadRequest(_localizer["resources.ticket_missing"].Value);
 
 
                 if (userTicket.Ticket.EventID != eventResource.EventID)
-                    return BadRequest(_localizer["resources.ticket_wrong_event"]);
+                    return BadRequest(_localizer["resources.ticket_wrong_event"].Value);
 
             }
             
@@ -95,7 +95,7 @@ namespace Backend.Controllers
                 .Sum(r => r.Quantity);
 
             if (alreadyReserved + dto.Quantity > eventResource.Quantity)
-                return BadRequest(_localizer["resources.not_enough"]);
+                return BadRequest(_localizer["resources.not_enough"].Value);
 
             
 
@@ -111,7 +111,7 @@ namespace Backend.Controllers
             await _context.UserResourceReservations.AddAsync(reservation);
             await _context.SaveChangesAsync();
 
-            return Ok(_localizer["resources.reserved"]);
+            return Ok(_localizer["resources.reserved"].Value);
         }
         [HttpGet("resource-categories")]
         public IActionResult GetResourceCategories()

@@ -50,16 +50,16 @@ namespace Backend.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound(_localizer["user.not_found"]);
+                return NotFound(_localizer["user.not_found"].Value);
 
             if (dtos == null || dtos.Count == 0)
-                return BadRequest(new { message = _localizer["tickets.at_least_one"] });
+                return BadRequest(new { message = _localizer["tickets.at_least_one"].Value });
 
             if (dtos.Any(d => d.TicketID <= 0))
-                return BadRequest(new { message = _localizer["tickets.invalid"] });
+                return BadRequest(new { message = _localizer["tickets.invalid"].Value });
 
             if (dtos.Any(d => d.Quantity <= 0))
-                return BadRequest(new { message = _localizer["tickets.min_quantity"] });
+                return BadRequest(new { message = _localizer["tickets.min_quantity"].Value });
 
 
             decimal ukupnaCena = 0;
@@ -67,17 +67,17 @@ namespace Backend.Controllers
             {
                 var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.TicketID == dto.TicketID);
                 if (ticket == null)
-                    return NotFound(_localizer["tickets.not_exist", dto.TicketID]);
+                    return NotFound(_localizer["tickets.not_exist", dto.TicketID].Value);
 
                 var eventEntity = await _context.Events.FirstOrDefaultAsync(e => e.EventID == ticket.EventID);
                 if (eventEntity == null)
-                    return NotFound(_localizer["tickets.event_not_found", dto.TicketID]);
+                    return NotFound(_localizer["tickets.event_not_found", dto.TicketID].Value);
 
                 if (eventEntity.EndDate < DateTime.UtcNow)
-                    return BadRequest(_localizer["tickets.event_passed", eventEntity.Title]);
+                    return BadRequest(_localizer["tickets.event_passed", eventEntity.Title].Value);
 
                 if (eventEntity.isFree)
-                    return BadRequest(_localizer["tickets.free_event", eventEntity.Title]);
+                    return BadRequest(_localizer["tickets.free_event", eventEntity.Title].Value);
 
                 var userTicketsForEvent = await _context.UserTickets
                     .Include(ut => ut.Ticket)
@@ -85,19 +85,19 @@ namespace Backend.Controllers
                     .CountAsync();
 
                 if (userTicketsForEvent + dto.Quantity > 10)
-                    return BadRequest(_localizer["tickets.limit_exceeded", eventEntity.Title, userTicketsForEvent]);
+                    return BadRequest(_localizer["tickets.limit_exceeded", eventEntity.Title, userTicketsForEvent].Value);
 
 
                 int sold =await _context.UserTickets.CountAsync(ut => ut.TicketID == dto.TicketID);
                 if (sold + dto.Quantity > ticket.Quota)
-                    return BadRequest(_localizer["tickets.not_enough_quota", ticket.TypeName]);
+                    return BadRequest(_localizer["tickets.not_enough_quota", ticket.TypeName].Value);
 
                 ukupnaCena += ticket.Price * dto.Quantity;
             }
 
             
             if (user.Credit < ukupnaCena)
-                return BadRequest(_localizer["credit.insufficient"]);
+                return BadRequest(_localizer["credit.insufficient"].Value);
 
             
             using (var transaction =await _context.Database.BeginTransactionAsync())
