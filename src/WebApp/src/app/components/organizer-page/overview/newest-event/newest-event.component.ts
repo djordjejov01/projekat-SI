@@ -6,7 +6,7 @@ import { Event } from '../../../../Models/Event';
   selector: 'app-newest-event',
   imports: [TranslateModule],
   templateUrl: './newest-event.component.html',
-  styleUrl: './newest-event.component.css'
+  styleUrls: ['./newest-event.component.css']
 })
 export class NewestEventComponent {
   @Input() image : string;
