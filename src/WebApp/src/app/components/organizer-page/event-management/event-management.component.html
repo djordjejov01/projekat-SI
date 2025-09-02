@@ -13,7 +13,7 @@
       </app-event-management-header>
     </header>
 
-    <div class="basic-info-and-map">
+     <div class="basic-info-and-map">
 
       <app-event-basic-info 
         [eventBasicInfo]="eventBasicInfo" 
@@ -27,7 +27,7 @@
 
     </div>
 
-    <div class="agenda-section-and-tickets">
+    <!--<div class="agenda-section-and-tickets">
         <app-agenda-section
           [eventBasicInfo]="eventBasicInfo"
           [activities]="activities"
@@ -41,7 +41,7 @@
     <app-resource-allocation *ngIf="eventBasicInfo.getParentEventId() == 0 && eventBasicInfo.getStatusLabel()!='Canceled'"
       [eventBasicInfo]="eventBasicInfo"
     >
-    </app-resource-allocation>
+    </app-resource-allocation> -->
   </div>
 </ng-container>
 

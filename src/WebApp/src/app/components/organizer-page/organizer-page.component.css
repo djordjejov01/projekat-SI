@@ -65,8 +65,8 @@ flex-direction: column;
     flex-wrap: nowrap; 
 }
 #show{
-    padding: 2rem;
-    padding-left: 0.25rem;
+    /* padding: 2rem;
+    padding-left: 0.25rem; */
     max-width: 1500px;
     width: 100%;
     padding-top: 5rem;

@@ -1,5 +1,5 @@
 .content{
-    min-width: 1500px;
+    /*min-width: 1500px;*/
     padding-right: 3rem;
 }
 
@@ -7,7 +7,8 @@
     width: 100%;
     display: flex;
     gap: 1rem;
-    align-items: flex-start;
+    /* flex-wrap: wrap; */
+
 }
 
 .agenda-section-and-tickets{
@@ -15,4 +16,13 @@
     max-width: 1500px;
     display: flex;
     flex-direction: column;
+}
+
+@media screen and (width <= 1830px){
+
+    .basic-info-and-map{
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
 }

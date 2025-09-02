@@ -18,10 +18,11 @@ import { TicketDto } from '../../../../../Models/TicketDto';
 import { Ticket } from '../../../../../Models/Ticket';
 import { IDeactivate } from '../../../../../Interfaces/IDeactivate';
 import { ConfirmationDialogService } from '../../../../../Services/confirmation-dialog.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-ticket-modal',
-  imports: [ReactiveFormsModule,DialogModule,DatePickerModule,InputNumber,FloatLabelModule,InputTextModule,TextareaModule,ButtonModule],
+  imports: [ReactiveFormsModule,DialogModule,DatePickerModule,InputNumber,FloatLabelModule,InputTextModule,TextareaModule,ButtonModule,CommonModule],
   templateUrl: './ticket-modal.component.html',
   styleUrl: './ticket-modal.component.css'
 })
