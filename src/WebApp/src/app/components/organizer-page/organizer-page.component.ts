@@ -20,7 +20,7 @@ import { environment } from '../../../environments/environment';
   selector: 'app-organizer-page',
   imports: [MenuBarComponent, RouterModule, ConfirmDialogModule, ToastModule, TranslateModule, Toast],
   templateUrl: './organizer-page.component.html',
-  styleUrl: './organizer-page.component.css'
+  styleUrls: ['./organizer-page.component.css']
 })
 export class OrganizerPageComponent implements AfterContentInit, OnInit {
 
