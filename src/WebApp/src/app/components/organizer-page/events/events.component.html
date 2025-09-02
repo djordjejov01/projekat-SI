@@ -1,69 +1,68 @@
 <main>
 
-
     <div class="title">
-        <h1>Events Dashboard</h1>
+        <h1>{{ 'EVENTS_DASHBOARD' | translate }}</h1>
     </div>
 
     <div id="infocards">
         <div id="card">
-            <p id="cardTitle">Total number of events and subevents</p>
+            <p id="cardTitle">{{ 'TOTAL_EVENTS' | translate }}</p>
             <p id="cardNum">{{dashboardMetrics?.totalEvents}}</p>
-            <p id="cardDesc">Total number of organized events </p>
+            <p id="cardDesc">{{ 'TOTAL_EVENTS_DESC' | translate }}</p>
         </div>
         <div id="card">
-            <p id="cardTitle">Total earnings</p>
+            <p id="cardTitle">{{ 'TOTAL_EARNINGS' | translate }}</p>
             <p id="cardNum">{{dashboardMetrics?.totalRevenue}}</p>
-            <p id="cardDesc">Total earnings from all events</p>
+            <p id="cardDesc">{{ 'TOTAL_EARNINGS_DESC' | translate }}</p>
         </div>
         <div id="card">
-            <p id="cardTitle">Number of tickets sold</p>
+            <p id="cardTitle">{{ 'TICKETS_SOLD' | translate }}</p>
             <p id="cardNum">{{dashboardMetrics?.totalTicketsSold}}</p>
-            <p id="cardDesc">Total number of tickets sold</p>
+            <p id="cardDesc">{{ 'TICKETS_SOLD_DESC' | translate }}</p>
         </div>
         <div id="card">
-            <p id="cardTitle">Number of different locations</p>
+            <p id="cardTitle">{{ 'UNIQUE_LOCATIONS' | translate }}</p>
             <p id="cardNum">{{dashboardMetrics?.uniqueLocations}}</p>
-            <p id="cardDesc">Total number of different locations</p>
+            <p id="cardDesc">{{ 'UNIQUE_LOCATIONS_DESC' | translate }}</p>
         </div>
     </div>
 
     <div id="graphs">
         <div id="group">
             <div class="chart-box bar">
-                <p-chart *ngIf="data1" type="bar" [data]="data1" [options]="options1" class="bar" />
+                <p-chart *ngIf="data1" type="bar" [data]="data1" [options]="options1" class="bar"></p-chart>
             </div>
             <div class="chart-box pad">
-                <p-chart *ngIf="data2" type="pie" [data]="data2" [options]="options3" class="pad" />
+                <p-chart *ngIf="data2" type="pie" [data]="data2" [options]="options3" class="pad"></p-chart>
             </div>
         </div>
         <div id="group">
             <div class="chart-box bar">
-                <p-chart *ngIf="data4" type="line" [data]="data4" [options]="options1" class="bar" />
+                <p-chart *ngIf="data4" type="line" [data]="data4" [options]="options1" class="bar"></p-chart>
             </div>
             <div class="chart-box pad">
-                <p-chart  *ngIf="data3" type="doughnut" [data]="data3" [options]="options3" class="pad" />
+                <p-chart *ngIf="data3" type="doughnut" [data]="data3" [options]="options3" class="pad"></p-chart>
             </div>
         </div>
-
-
     </div>
 
     <div class="events-table">
 
-        <h1 id="ev">Events</h1>
+        <h1 id="ev">{{ 'EVENTS' | translate }}</h1>
 
         <hr class="custom-hr">
 
         <p-table #dt [value]="allEvents" [(selection)]="selectedEvents" dataKey="eventId" [rowHover]="true" [rows]="5"
             [showCurrentPageReport]="true" [rowsPerPageOptions]="[5 ,10, 25, 50]" [loading]="loading" [paginator]="true"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [filterDelay]="0"
+            currentPageReportTemplate="{{ 'SHOWING_ENTRIES' | translate:{first: '{first}', last: '{last}', total: '{totalRecords}'} }}"
+            [filterDelay]="0"
             [globalFilterFields]="['title', 'startDateTime', 'endDateTime', 'category', 'status' , 'location']">
+            
             <ng-template #caption>
                 <div class="flex justify-between">
                     <div style="display: flex; gap:20px;">
-                        <p-button [outlined]="true" icon="pi pi-filter-slash" label="Clear" (click)="clear(dt)" />
-                        <button id="ae" (click)="createEvent()"><i class="pi pi-plus"></i>Add</button>
+                        <p-button [outlined]="true" icon="pi pi-filter-slash" [label]="'CLEAR' | translate" (click)="clear(dt)"></p-button>
+                        <button id="ae" (click)="createEvent()"><i class="pi pi-plus"></i>{{ 'ADD_EVENT' | translate }}</button>
                     </div>
 
                     <p-iconField iconPosition="left">
@@ -72,151 +71,93 @@
                         </p-inputIcon>
                         <input pInputText type="text" [(ngModel)]="searchValue"
                             (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-                            placeholder="Keyboard Search" />
+                            [placeholder]="'KEYBOARD_SEARCH' | translate" />
                     </p-iconField>
                 </div>
             </ng-template>
+
             <ng-template #header>
                 <tr>
-                    <!-- <th style="width: 4rem">
-                        <p-tableHeaderCheckbox />
-                    </th> -->
-                    <th style="width: 4rem" style="max-width: 5rem">
-                        Picture
-                    </th>
+                    <th style="width: 4rem; max-width:5rem">{{ 'PICTURE' | translate }}</th>
                     <th pSortableColumn="title" style="min-width: 14rem">
                         <div class="flex justify-between items-center">
-                            Name
+                            {{ 'NAME' | translate }}
                             <p-sortIcon field="title" />
                             <p-columnFilter type="text" field="title" display="menu" class="ml-auto" />
                         </div>
                     </th>
                     <th pSortableColumn="startDateTime" style="min-width: 12rem">
                         <div class="flex justify-between items-center">
-                            Start Date
+                            {{ 'START_DATE' | translate }}
                             <p-sortIcon field="startDateTime" />
                             <p-columnFilter type="date" field="startDateTime" display="menu" class="ml-auto" />
                         </div>
                     </th>
                     <th pSortableColumn="endDateTime" style="min-width: 10rem">
                         <div class="flex justify-between items-center">
-                            End Date
+                            {{ 'END_DATE' | translate }}
                             <p-sortIcon field="endDateTime" />
                             <p-columnFilter type="date" field="endDateTime" display="menu" class="ml-auto" />
                         </div>
                     </th>
                     <th pSortableColumn="category" style="min-width: 14rem">
                         <div class="flex justify-between items-center">
-                            Category
+                            {{ 'CATEGORY' | translate }}
                             <p-sortIcon field="category" />
-                            <p-columnFilter field="category" matchMode="in" display="menu" 
-                            [showMatchModes]="false"
-                            [showOperator]="false" 
-                            [showAddButton]="false" class="ml-auto">
-                                <ng-template #filter let-value let-filter="filterCallback">
-                                    <p-multiselect [filter]="true" [ngModel]="selectedCategories"
-                                        (ngModelChange)="onRoleFilterChange($event, filter)" [options]="categories"
-                                        placeholder="Any" optionLabel="name" class="w-full">
-                                        <ng-template let-option #item>
-                                            <span> {{ option.name }}</span>
-                                        </ng-template>
-                                    </p-multiselect>
-                                </ng-template>
-                            </p-columnFilter>
                         </div>
                     </th>
                     <th pSortableColumn="status" style="max-width: 14rem">
                         <div class="flex justify-between items-center">
-                            Status
+                            {{ 'STATUS' | translate }}
                             <p-sortIcon field="status" />
-                            <p-columnFilter field="status" matchMode="in" display="menu" 
-                            [showMatchModes]="false"
-                            [showOperator]="false" 
-                            [showAddButton]="false" class="ml-auto">
-                                <ng-template #filter let-value let-filter="filterCallback">
-                                    <p-multiselect [filter]="true" [ngModel]="selectedStatus"
-                                        (ngModelChange)="onRoleFilterChange($event, filter)" [options]="statuses"
-                                        placeholder="Any" optionLabel="name" class="w-full">
-                                        <ng-template let-option #item>
-                                            <span> {{ option.name }}</span>
-                                        </ng-template>
-                                    </p-multiselect>
-                                </ng-template>
-                            </p-columnFilter>
                         </div>
                     </th>
                     <th pSortableColumn="location" style="min-width: 14rem">
                         <div class="flex justify-between items-center">
-                            Location
+                            {{ 'LOCATION' | translate }}
                             <p-sortIcon field="location" />
-                            <p-columnFilter type="text" field="location" display="menu" class="ml-auto" />
                         </div>
                     </th>
-
-                    <th style="width: 5rem">Actions</th>
+                    <th style="width: 5rem">{{ 'ACTIONS' | translate }}</th>
                 </tr>
             </ng-template>
+
             <ng-template #body let-event>
                 <tr class="p-selectable-row">
-                    <!-- <td>
-                        <p-tableCheckbox [value]="event" />
-                    </td> -->
-                    <td>
-                        <img [src]="event.getImage()" class="event-image" alt="Event image">
-                    </td>
-                    <td>
-                        {{ event.title }}
-                    </td>
-                    <td>
-                        {{ event.startDateTime | date: 'dd/MM/yyyy' }}
-                    </td>
-                    <td>
-                        {{ event.endDateTime | date: 'dd/MM/yyyy' }}
-                    </td>
-                    <td>
-                        {{ getCatName(event.category) }}
-                    </td>
-                    <td>
-                        {{ event.getStatusLabel() }}
-                    </td>
-                    <td>
-                        {{ event.location }}
-                    </td>
+                    <td><img [src]="event.getImage()" class="event-image" alt="{{ 'EVENT_IMAGE' | translate }}"></td>
+                    <td>{{ event.title }}</td>
+                    <td>{{ event.startDateTime | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ event.endDateTime | date: 'dd/MM/yyyy' }}</td>
+                    <td>{{ getCatName(event.category) }}</td>
+                    <td>{{ event.getStatusLabel() }}</td>
+                    <td>{{ event.location }}</td>
                     <td>
                         <div class="flex gap-2">
-                            <button
-                            pButton
-                            type="button"
-                            icon="pi pi-cog"
-                            class="p-button-rounded p-button-text p-button-sm"
-                            (click)="manageEvent(event.eventId)"
-                            pTooltip="Manage Event"
-                            tooltipPosition="top">
+                            <button pButton type="button" icon="pi pi-cog"
+                                class="p-button-rounded p-button-text p-button-sm"
+                                (click)="manageEvent(event.eventId)"
+                                [pTooltip]="'MANAGE_EVENT' | translate"
+                                tooltipPosition="top">
                             </button>
 
-                            <button
-                            pButton
-                            type="button"
-                            icon="pi pi-trash"
-                            class="p-button-rounded p-button-text p-button-sm p-button-danger"
-                            (click)="deleteEvent(event.eventId)"
-                            pTooltip="Delete Event"
-                            tooltipPosition="top">
+                            <button pButton type="button" icon="pi pi-trash"
+                                class="p-button-rounded p-button-text p-button-sm p-button-danger"
+                                (click)="deleteEvent(event.eventId)"
+                                [pTooltip]="'DELETE_EVENT' | translate"
+                                tooltipPosition="top">
                             </button>
                         </div>
-</td>
-
+                    </td>
                 </tr>
             </ng-template>
+
             <ng-template #emptymessage>
                 <tr>
-                    <td colspan="8">No events found.</td>
+                    <td colspan="8">{{ 'NO_EVENTS_FOUND' | translate }}</td>
                 </tr>
             </ng-template>
         </p-table>
 
     </div>
-
-
 
 </main>
