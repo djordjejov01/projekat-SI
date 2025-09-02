@@ -1,11 +1,10 @@
- <div class="calendarTitle">
-        <h3>Calendar Actions</h3>
-        <p>
-            Select a day or date range to create a new event. Please note that past dates cannot be selected.
-        </p>
-    </div>
-
-<div class="calendar">
-    <full-calendar [options]="calendarOptions" ></full-calendar>
+<div class="calendarTitle">
+    <h3>{{ "CALENDAR_ACTIONS" | translate }}</h3>
+    <p>
+        {{ "CALENDAR_INSTRUCTIONS" | translate }}
+    </p>
 </div>
 
+<div class="calendar">
+    <full-calendar [options]="calendarOptions"></full-calendar>
+</div>

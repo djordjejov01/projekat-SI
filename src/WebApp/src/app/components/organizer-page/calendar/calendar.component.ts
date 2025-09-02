@@ -12,13 +12,13 @@ import { ApiService } from '../../../Services/api.service';
 import { AuthService } from '../../../Services/auth.service';
 import { Event } from '../../../Models/Event';
 import { CategoryService } from '../../../Services/EventCategoryService';
-
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-calendar',
-  imports: [FullCalendarModule],
+  imports: [FullCalendarModule,TranslateModule],
   templateUrl: './calendar.component.html',
-  styleUrl: './calendar.component.css'
+  styleUrls: ['./calendar.component.css']
 })
 export class CalendarComponent implements OnInit{
 
@@ -28,7 +28,9 @@ export class CalendarComponent implements OnInit{
     private datePipe : DatePipe,
     private apiService : ApiService,
     private authService : AuthService,
-    private categoryService : CategoryService) {}
+    private categoryService : CategoryService,
+    private translate: TranslateService
+  ) {}
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin,timeGridPlugin,interactionPlugin,listPlugin],
@@ -60,9 +62,7 @@ export class CalendarComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    
     this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe((events: Event[]) => {
-      //console.log(events)
       const calendarEvents : EventInput[] = events.map( event => ({
         title: event.getTitle(),
         start: event.getStartDateTime().toISOString(),
@@ -71,13 +71,12 @@ export class CalendarComponent implements OnInit{
         extendedProps: {
           category: this.categoryService.getCategoryName(event.getCategoryId()),
           location: event.getLocation(),
-          organizer: event.getOrganizer()?.getUsername?.() || 'Unknown'
+          organizer: event.getOrganizer()?.getUsername?.() || this.translate.instant("UNKNOWN")
         }
       }));
 
       this.calendarOptions.events = calendarEvents
     });
-
   }
 
   private isAllDayEvent(start: Date, end: Date): boolean {
@@ -91,16 +90,15 @@ export class CalendarComponent implements OnInit{
   }
 
   async handleDateSelect(selectInfo: DateSelectArg){
-
     const { start, end } = selectInfo
     
     const startDateFormatted = this.datePipe.transform(start, 'MMM d, y, HH:mm:ss');
     const endDateFormatted = this.datePipe.transform(end,'MMM d, y, HH:mm:ss');
 
-    const confirmed = await this.confirmationDialogService.confirm(
-      `Create a event from ${startDateFormatted} to ${endDateFormatted}?`,
-      'Create Event'
-    );
+    const message = this.translate.instant("CREATE_EVENT_MSG", { start: startDateFormatted, end: endDateFormatted });
+    const title = this.translate.instant("CREATE_EVENT_TITLE");
+
+    const confirmed = await this.confirmationDialogService.confirm(message, title);
 
     if(confirmed){
       this.router.navigate(['/organizer/create-event'],{
@@ -109,7 +107,5 @@ export class CalendarComponent implements OnInit{
     }
 
     selectInfo.view.calendar.unselect();
-
   }
-
 }
