@@ -2,13 +2,13 @@
     <div id="fr">
         <div id="sit">
             <p id="status" [ngStyle]="{
-     'color': event.getStatusLabel() == 'Draft' ? '#2748B2' :
-              event.getStatusLabel() == 'Published' ? '#166534' :
-              event.getStatusLabel() == 'Canceled' ? '#9C2020' : 'black',
-              'background-color': event.getStatusLabel() === 'Draft' ? '#DBEAFE' :
-                         event.getStatusLabel() === 'Published' ? '#DCFCE7' :
-                         event.getStatusLabel() === 'Canceled' ? '#FEE2E2' : 'gray'
-   }">{{event.getStatusLabel()}}</p>
+                'color': event.getStatusLabel() == 'Draft' ? '#2748B2' :
+                         event.getStatusLabel() == 'Published' ? '#166534' :
+                         event.getStatusLabel() == 'Canceled' ? '#9C2020' : 'black',
+                'background-color': event.getStatusLabel() === 'Draft' ? '#DBEAFE' :
+                                    event.getStatusLabel() === 'Published' ? '#DCFCE7' :
+                                    event.getStatusLabel() === 'Canceled' ? '#FEE2E2' : 'gray'
+            }">{{ 'EVENT_STATUS_' + event.getStatusLabel().toUpperCase() | translate }}</p>
             <p id="time">{{event.getStartDateTime() | date: 'dd/MM/yyyy' }}</p>
         </div>
         <img [src]="event.getImage()" alt="" id="evPic">
@@ -23,7 +23,6 @@
             <i class="pi pi-building"></i>
             <p>{{event.getLocation()}}</p>
         </div>
-
     </div>
     <button (click)="manageEvent(event)" id="mngev">{{"MANAGE" | translate}} <i class="pi pi-arrow-right"></i></button>
 </div>
