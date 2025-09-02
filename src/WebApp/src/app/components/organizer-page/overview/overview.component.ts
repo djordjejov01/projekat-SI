@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
   selector: 'app-overview',
   imports: [NewestEventComponent, EventPreviewComponent, TranslateModule, CommonModule],
   templateUrl: './overview.component.html',
-  styleUrl: './overview.component.css'
+  styleUrls: ['./overview.component.css']
 })
 export class OverviewComponent implements OnInit {
 
