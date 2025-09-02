@@ -188,6 +188,7 @@ export class EventsComponent implements OnInit {
   data4Data: any[] = [];
   options3 = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'bottom',

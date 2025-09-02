@@ -1,31 +1,34 @@
 <main>
-
-
     <div class="title">
         <h1>Events Dashboard</h1>
     </div>
 
     <div id="infocards">
-        <div id="card">
-            <p id="cardTitle">Total number of events and subevents</p>
-            <p id="cardNum">{{dashboardMetrics?.totalEvents}}</p>
-            <p id="cardDesc">Total number of organized events </p>
+        <div id="ftwo">
+            <div id="card">
+                <p id="cardTitle">Total number of events and subevents</p>
+                <p id="cardNum">{{dashboardMetrics?.totalEvents}}</p>
+                <p id="cardDesc">Total number of organized events </p>
+            </div>
+            <div id="card">
+                <p id="cardTitle">Total earnings</p>
+                <p id="cardNum">{{dashboardMetrics?.totalRevenue}}</p>
+                <p id="cardDesc">Total earnings from all events</p>
+            </div>
         </div>
-        <div id="card">
-            <p id="cardTitle">Total earnings</p>
-            <p id="cardNum">{{dashboardMetrics?.totalRevenue}}</p>
-            <p id="cardDesc">Total earnings from all events</p>
+        <div id="ftwo">
+            <div id="card">
+                <p id="cardTitle">Number of tickets sold</p>
+                <p id="cardNum">{{dashboardMetrics?.totalTicketsSold}}</p>
+                <p id="cardDesc">Total number of tickets sold</p>
+            </div>
+            <div id="card">
+                <p id="cardTitle">Number of different locations</p>
+                <p id="cardNum">{{dashboardMetrics?.uniqueLocations}}</p>
+                <p id="cardDesc">Total number of different locations</p>
+            </div>
         </div>
-        <div id="card">
-            <p id="cardTitle">Number of tickets sold</p>
-            <p id="cardNum">{{dashboardMetrics?.totalTicketsSold}}</p>
-            <p id="cardDesc">Total number of tickets sold</p>
-        </div>
-        <div id="card">
-            <p id="cardTitle">Number of different locations</p>
-            <p id="cardNum">{{dashboardMetrics?.uniqueLocations}}</p>
-            <p id="cardDesc">Total number of different locations</p>
-        </div>
+
     </div>
 
     <div id="graphs">
@@ -34,6 +37,7 @@
                 <p-chart *ngIf="data1" type="bar" [data]="data1" [options]="options1" class="bar" />
             </div>
             <div class="chart-box pad">
+                <p>Categories</p>
                 <p-chart *ngIf="data2" type="pie" [data]="data2" [options]="options3" class="pad" />
             </div>
         </div>
@@ -42,7 +46,8 @@
                 <p-chart *ngIf="data4" type="line" [data]="data4" [options]="options1" class="bar" />
             </div>
             <div class="chart-box pad">
-                <p-chart  *ngIf="data3" type="doughnut" [data]="data3" [options]="options3" class="pad" />
+                <p>Status</p>
+                <p-chart *ngIf="data3" type="doughnut" [data]="data3" [options]="options3" class="pad" />
             </div>
         </div>
 
@@ -60,7 +65,7 @@
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [filterDelay]="0"
             [globalFilterFields]="['title', 'startDateTime', 'endDateTime', 'category', 'status' , 'location']">
             <ng-template #caption>
-                <div class="flex justify-between">
+                <div class="line">
                     <div style="display: flex; gap:20px;">
                         <p-button [outlined]="true" icon="pi pi-filter-slash" label="Clear" (click)="clear(dt)" />
                         <button id="ae" (click)="createEvent()"><i class="pi pi-plus"></i>Add</button>
@@ -109,10 +114,8 @@
                         <div class="flex justify-between items-center">
                             Category
                             <p-sortIcon field="category" />
-                            <p-columnFilter field="category" matchMode="in" display="menu" 
-                            [showMatchModes]="false"
-                            [showOperator]="false" 
-                            [showAddButton]="false" class="ml-auto">
+                            <p-columnFilter field="category" matchMode="in" display="menu" [showMatchModes]="false"
+                                [showOperator]="false" [showAddButton]="false" class="ml-auto">
                                 <ng-template #filter let-value let-filter="filterCallback">
                                     <p-multiselect [filter]="true" [ngModel]="selectedCategories"
                                         (ngModelChange)="onRoleFilterChange($event, filter)" [options]="categories"
@@ -129,10 +132,8 @@
                         <div class="flex justify-between items-center">
                             Status
                             <p-sortIcon field="status" />
-                            <p-columnFilter field="status" matchMode="in" display="menu" 
-                            [showMatchModes]="false"
-                            [showOperator]="false" 
-                            [showAddButton]="false" class="ml-auto">
+                            <p-columnFilter field="status" matchMode="in" display="menu" [showMatchModes]="false"
+                                [showOperator]="false" [showAddButton]="false" class="ml-auto">
                                 <ng-template #filter let-value let-filter="filterCallback">
                                     <p-multiselect [filter]="true" [ngModel]="selectedStatus"
                                         (ngModelChange)="onRoleFilterChange($event, filter)" [options]="statuses"
@@ -184,27 +185,17 @@
                     </td>
                     <td>
                         <div class="flex gap-2">
-                            <button
-                            pButton
-                            type="button"
-                            icon="pi pi-cog"
-                            class="p-button-rounded p-button-text p-button-sm"
-                            (click)="manageEvent(event.eventId)"
-                            pTooltip="Manage Event"
-                            tooltipPosition="top">
+                            <button pButton type="button" icon="pi pi-cog"
+                                class="p-button-rounded p-button-text p-button-sm" (click)="manageEvent(event.eventId)"
+                                pTooltip="Manage Event" tooltipPosition="top">
                             </button>
 
-                            <button
-                            pButton
-                            type="button"
-                            icon="pi pi-trash"
-                            class="p-button-rounded p-button-text p-button-sm p-button-danger"
-                            (click)="deleteEvent(event.eventId)"
-                            pTooltip="Delete Event"
-                            tooltipPosition="top">
+                            <button pButton type="button" icon="pi pi-trash"
+                                class="p-button-rounded p-button-text p-button-sm p-button-danger"
+                                (click)="deleteEvent(event.eventId)" pTooltip="Delete Event" tooltipPosition="top">
                             </button>
                         </div>
-</td>
+                    </td>
 
                 </tr>
             </ng-template>

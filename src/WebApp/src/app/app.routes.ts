@@ -17,6 +17,8 @@ import { MyProfileComponent } from './components/supplier-page/my-profile/my-pro
 import { SupplierCalendarComponent } from './components/supplier-page/supplier-calendar/supplier-calendar.component';
 import { GuestGuard } from './Guards/guest.guard';
 import { NotFoundComponent } from './components/not-found/not-found.component';
+import { SuccessComponent } from './components/success/success.component';
+import { FailComponent } from './components/fail/fail.component';
 
 
 export const routes: Routes = [
@@ -43,5 +45,7 @@ export const routes: Routes = [
       { path: 'calendar', component: SupplierCalendarComponent, canActivate: [AuthGuard], data : {roles: ['Supplier']} },
     ]
   },
+  {path: 'verify/success', component: SuccessComponent},
+  {path: 'verify/fail', component: FailComponent},
     {path: '**', component: NotFoundComponent}
 ];

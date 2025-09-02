@@ -2,7 +2,7 @@
 
     <div class="map-header">
         <h1>Location Map</h1>
-        <button *ngIf = "eventBasicInfo.getStatusLabel()!='Canceled'" icon="pi pi-plus" (click)="startPlacingPin()"><i class="pi pi-plus"></i>Add Pin</button>
+        <button id="addBtn" *ngIf = "eventBasicInfo.getStatusLabel()!='Canceled'" icon="pi pi-plus" (click)="startPlacingPin()"><i class="pi pi-plus"></i>Add Pin</button>
     </div>
 
         <hr class="custom-hr">

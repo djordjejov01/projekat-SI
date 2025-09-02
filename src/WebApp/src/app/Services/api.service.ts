@@ -787,7 +787,12 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
             catchError(this.handleError)
         )
     }
-
+    removePicture()
+    {
+        return this.http.delete<{ message: string }>(`${this.apiUrl}/User/delete-profile-picture` ).pipe(
+            catchError(this.handleError)
+        )
+    }
     getSupplier() : Observable<SupplierDto>{
         return this.http.get<SupplierDtoResponse>(`${this.apiUrl}/Supplier/profile`).pipe(
             map(data => {

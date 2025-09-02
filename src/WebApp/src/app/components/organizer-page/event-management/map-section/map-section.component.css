@@ -97,3 +97,7 @@
     opacity: 0;
   }
 }
+
+#addBtn{
+    cursor: pointer;
+}

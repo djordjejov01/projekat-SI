@@ -9,6 +9,7 @@ import { DashboardMetrics } from '../../../Interfaces/DashboardMetricsResponse';
 import { ViewChild } from '@angular/core';
 import { SharedService } from '../../../Services/shared.service';
 import { environment } from '../../../../environments/environment';
+import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
 @Component({
   selector: 'app-profile',
   imports: [FormsModule],
@@ -24,7 +25,9 @@ defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
   
 
 
-  constructor(private apiService : ApiService, private authService : AuthService, private messageService : MessageService, private sharedService : SharedService){}
+  constructor(private apiService : ApiService, private authService : AuthService, private messageService : MessageService, private sharedService : SharedService,
+    private confirmationDialogService : ConfirmationDialogService
+  ){}
   
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -56,7 +59,7 @@ defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
   const formData = new FormData();
   formData.append('Image', this.selectedFile);
   formData.append('Id', this.authService.getUserId().toString());
-
+  this.selectedFile = null;
   this.apiService.changeOrganizerPicture(formData).subscribe({
 
         next:(response : any) => {
@@ -88,6 +91,10 @@ defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
           this.currOrganizer = response;
           this.previewUrl = this.currOrganizer.getImage();
           //console.log(response);
+              this.nameS = this.currOrganizer.getName();
+              this.username5S = this.currOrganizer.getUsername();
+              this.emailS = this.currOrganizer.getEmail();
+              this.phoneS = this.currOrganizer.getPhoneNumber();
         },
         error:(errorResponse) =>{
           this.messageService.add({
@@ -149,19 +156,52 @@ defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
             }
           })
   }
+  nameS : string;
+  username5S : string;
+  emailS : string;
+  phoneS : string;
 
+  check(){
+    let name = (document.getElementById('name') as HTMLInputElement).value;
+    let username5 = (document.getElementById('username5') as HTMLInputElement).value;
+    let email = (document.getElementById('email') as HTMLInputElement).value;
+    let phone = (document.getElementById('phone') as HTMLInputElement).value;
+    let dugme = document.getElementById('upp1') as HTMLButtonElement;
+    if(this.nameS != name || this.username5S != username5 || this.emailS != email || this.phoneS != phone)
+    {
+      dugme.disabled = false;
+      dugme.classList.remove("disBut");
+    }
+    else{
+      dugme.disabled = true;
+      dugme.classList.add("disBut");
+    }
+  }
   changePass : ChangePasswordDto;
-
+  regexIme: RegExp = /^[a-zA-Z]*$/;
   update() {
     const name = (document.getElementById('name') as HTMLInputElement).value;
     const username5 = (document.getElementById('username5') as HTMLInputElement).value;
     const email = (document.getElementById('email') as HTMLInputElement).value;
     const phone = (document.getElementById('phone') as HTMLInputElement).value;
-
+    if(this.regexIme.test(name) == false)
+    {
+      this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: "Name must contain only letters.",
+              life: 3000 });
+      return;
+    }
     const toUpdate = new OrganizerDto(this.authService.getUserId(),name,username5,email,phone,"");
     //console.log(toUpdate)
     this.apiService.updateOrg(toUpdate).subscribe({
       next:(response : string) =>{
+        this.nameS = name;
+        this.username5S = username5;
+        this.emailS = email;
+        this.phoneS = phone;
+        this.check();
         this.messageService.add({
               severity: 'success',
               summary: 'Success',
@@ -216,5 +256,33 @@ defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
               detail: "Passwords don't match.",
               life: 3000 });
     }
+  }
+
+  async deletePic(){
+    const confirmed = await this.confirmationDialogService.confirm(
+      `Are you sure you want to remove the picture?`,
+      `Remove picture`
+    )
+    if(!confirmed) return;
+
+    this.apiService.removePicture().subscribe({
+      next:(response : any) =>{
+        this.previewUrl = this.currOrganizer.getImage();
+          this.getOrganizerCall();
+          this.sharedService.notifyProfileImageChanged();
+        this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: response.message,
+              life: 3000 });
+        },
+        error:(errorResponse) =>{
+          this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000 });
+      }
+    })
   }
 }
