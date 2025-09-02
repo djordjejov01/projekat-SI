@@ -2,209 +2,208 @@
     <form action="" class="eventForm" [formGroup]="eventForm">
 
         <div class="formTitle">
-            <h3>Create New Event</h3>
-            <p>Fill in the details below to set up your event.</p>
+            <h3>{{ 'EVENT.CREATE_TITLE' | translate }}</h3>
+            <p>{{ 'EVENT.CREATE_SUBTITLE' | translate }}</p>
         </div>
 
         <div class="form-inputs">
 
-            <div  class="input-wrapper">
-
-                <p>Event Title</p>
+            <div class="input-wrapper">
+                <p>{{ 'EVENT.TITLE' | translate }}</p>
                 <p-floatlabel class="w-full md:w-56" variant="on">
-                    <input  type="text"  pInputText  placeholder=" "  formControlName="title"  inputId="title"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-                <label for="title">Enter Event Title</label>
+                    <input type="text" pInputText placeholder=" " formControlName="title" inputId="title"
+                        class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 
+                        focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                    <label for="title">{{ 'EVENT.TITLE_PLACEHOLDER' | translate }}</label>
                 </p-floatlabel>
-
             </div>
 
-                <div  class="input-wrapper">
+            <div class="input-wrapper">
+                <p>{{ 'EVENT.DESCRIPTION' | translate }}</p>
+                <p-floatlabel class="w-full md:w-56" variant="on">
+                    <textarea pTextarea id="description" placeholder=" " formControlName="description"
+                        rows="5" cols="30" style="resize: none"
+                        class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 
+                        focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
+                    <label for="description">{{ 'EVENT.DESCRIPTION_PLACEHOLDER' | translate }}</label>
+                </p-floatlabel>
+            </div>
 
-                    <p>Description</p>
+            <div class="location-capacity">
+                <div class="input-wrapper">
+                    <p>{{ 'EVENT.LOCATION' | translate }}</p>
                     <p-floatlabel class="w-full md:w-56" variant="on">
-                        <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
-                    <label for="description">Describe Your Event</label>
+                        <p-autoComplete
+                            inputId="location"
+                            formControlName="location"
+                            [suggestions]="filteredLocations"
+                            (completeMethod)="searchLocations($event)"
+                            field="display_name"
+                            [minLength]="2"
+                            class="w-full md:w-56"
+                            (onSelect)="onLocationSelect($event)"
+                            [style]="{ width: '100%' }"
+                            inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 
+                            focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                        >
+                        </p-autoComplete>
+                        <label for="location">{{ 'EVENT.LOCATION_PLACEHOLDER' | translate }}</label>
                     </p-floatlabel>
-
                 </div>
 
-                <div class="location-capacity">
-
-                    <div  class="input-wrapper">
-
-                        <p>Location</p>
-                        <p-floatlabel class="w-full md:w-56" variant="on">
-
-                              <p-autoComplete
-                                inputId="location"
-                                formControlName="location"
-                                [suggestions]="filteredLocations"
-                                (completeMethod)="searchLocations($event)"
-                                field="display_name"
-                                [minLength]="2"
-                                class="w-full md:w-56"
-                                (onSelect)="onLocationSelect($event)"
-                                [style]="{ width: '100%' }"
-                                inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                                >
-                            </p-autoComplete>
-                        <label for="location">Enter Event Location (e.g. Zoom, Conference Hall A)</label>
-                        </p-floatlabel>
-
-                    </div>
-
-                    <div  class="input-wrapper">
-
-                        <p>Capacity</p>
-                        
-
-                        <p-floatlabel class="w-full md:w-56" variant="on">
+                <div class="input-wrapper">
+                    <p>{{ 'EVENT.CAPACITY' | translate }}</p>
+                    <p-floatlabel class="w-full md:w-56" variant="on">
                         <p-inputnumber
-                                formControlName="capacity"
-                                inputId="capacity"
-                                [min]="1"
-                                [useGrouping]="false"
-                                [showButtons]="false"
-                                [style]="{ width: '100%' }"
-                                inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                            ></p-inputnumber>
-                        <label for="capacity">Enter Event Capacity</label>
-                        </p-floatlabel>
-
-                        <div class="flex items-center gap-2">
-                            <p-checkbox formControlName="isUnlimitedCapacity" inputId="isUnlimitedCapacity" name="isUnlimitedCapacity" binary="true" size="large" />
-                            <label for="isUnlimitedCapacity" >Unlimited Capacity</label>
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="dates">
-
-                    <div  class="input-wrapper">
-                        <p>Start Date</p>
-                        <p-floatlabel class="w-full md:w-56"  variant="on">
-                            <p-datepicker inputId="startDateTime" placeholder=" " formControlName="startDateTime" [showTime]="true" hourFormat="24" [minDate]="minDate"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
-                            <label for="startDateTime">Start Date and Time</label>
-                        </p-floatlabel>
-                    </div>
-
-                    <div  class="input-wrapper">
-                        <p>End Date</p>
-                        <p-floatlabel class="w-full md:w-56"  variant="on">
-                            <p-datepicker inputId="endDateTime" placeholder=" " formControlName="endDateTime" [showTime]="true" hourFormat="24" [minDate]="minDate"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
-                            <label for="endDateTime">End Date and Time</label>
-                        </p-floatlabel>
-                    </div>
-
-                </div>
-
-                <div  class="input-wrapper">
-
-                    <p>Category</p>
-                    <p-floatlabel class="w-full" variant="on">
-                        <p-select  [options]="categories"  name="category"  formControlName="category"  placeholder=" "  inputId="category"  class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"/>
-                        <label for="category">Select Event Category</label>
+                            formControlName="capacity"
+                            inputId="capacity"
+                            [min]="1"
+                            [useGrouping]="false"
+                            [showButtons]="false"
+                            [style]="{ width: '100%' }"
+                            inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 
+                            focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+                        ></p-inputnumber>
+                        <label for="capacity">{{ 'EVENT.CAPACITY_PLACEHOLDER' | translate }}</label>
                     </p-floatlabel>
 
+                    <div class="flex items-center gap-2">
+                        <p-checkbox formControlName="isUnlimitedCapacity" inputId="isUnlimitedCapacity"
+                            name="isUnlimitedCapacity" binary="true" size="large" />
+                        <label for="isUnlimitedCapacity">{{ 'EVENT.UNLIMITED_CAPACITY' | translate }}</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dates">
+                <div class="input-wrapper">
+                    <p>{{ 'EVENT.START_DATE' | translate }}</p>
+                    <p-floatlabel class="w-full md:w-56" variant="on">
+                        <p-datepicker inputId="startDateTime" placeholder=" " formControlName="startDateTime"
+                            [showTime]="true" hourFormat="24" [minDate]="minDate" [style]="{ width: '100%' }"
+                            inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 
+                            focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                        <label for="startDateTime">{{ 'EVENT.START_DATE_PLACEHOLDER' | translate }}</label>
+                    </p-floatlabel>
                 </div>
 
-                <div class="tickets" formArrayName="tickets">
+                <div class="input-wrapper">
+                    <p>{{ 'EVENT.END_DATE' | translate }}</p>
+                    <p-floatlabel class="w-full md:w-56" variant="on">
+                        <p-datepicker inputId="endDateTime" placeholder=" " formControlName="endDateTime"
+                            [showTime]="true" hourFormat="24" [minDate]="minDate" [style]="{ width: '100%' }"
+                            inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 
+                            focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                        <label for="endDateTime">{{ 'EVENT.END_DATE_PLACEHOLDER' | translate }}</label>
+                    </p-floatlabel>
+                </div>
+            </div>
 
-                    <p>Tickets</p>
-                    
-                    <div class="ticket" *ngFor="let ticket of tickets.controls; let i = index" [formGroupName]="i">
+            <div class="input-wrapper">
+                <p>{{ 'EVENT.CATEGORY' | translate }}</p>
+                <p-floatlabel class="w-full" variant="on">
+                    <p-select [options]="categories" name="category" formControlName="category" placeholder=" "
+                        inputId="category"
+                        class="w-full h-10 border border-gray-300 rounded-md focus:outline-none 
+                        focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"/>
+                    <label for="category">{{ 'EVENT.CATEGORY_PLACEHOLDER' | translate }}</label>
+                </p-floatlabel>
+            </div>
 
-                        <div class="name-price">
+            <div class="tickets" formArrayName="tickets">
+                <p>{{ 'EVENT.TICKETS' | translate }}</p>
 
-                            <div  class="input-wrapper w-full ">
+                <div class="ticket" *ngFor="let ticket of tickets.controls; let i = index" [formGroupName]="i">
 
-                                <p>Ticket Name</p>
-                                <p-floatlabel class="w-full md:w-56" variant="on">
-                                    <input  type="text"  pInputText  placeholder=" "  formControlName="name"  [id]="'ticketName-' + i"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-                                <label [for]="'ticketName-' + i">Enter Ticket Name</label>
-                                </p-floatlabel>
-
-                            </div>
-
-                            <div  class="input-wrapper w-full ">
-
-                                <p>Ticket Price</p>
-                                <p-floatlabel class="w-full md:w-56" variant="on">
-                                    <p-inputnumber  placeholder=" " mode="currency" [currency]="currencyCode" [locale]="localeCode" formControlName="price" [style]="{ width: '100%' }" [inputStyleClass]="'ticket-price-' + i + ' w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500'"/>
-                                <label [for]="'ticket-price-' + i">Enter Ticket Price</label>
-                                </p-floatlabel>
-
-                            </div>
-
-                        </div>
-
-                        <div class="dates">
-
-                            <div  class="input-wrapper">
-                                <p>Valid From</p>
-                                <p-floatlabel class="w-full md:w-56"  variant="on">
-                                    <p-datepicker inputId="validFrom" placeholder=" " formControlName="validFrom" [showTime]="true" hourFormat="24" [minDate]="eventStart ?? null" [maxDate]="eventEnd ?? null"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
-                                    <label for="validFrom">Valid From Date and Time</label>
-                                </p-floatlabel>
-                            </div>
-
-                            <div  class="input-wrapper">
-                                <p>Valid Until</p>
-                                <p-floatlabel class="w-full md:w-56"  variant="on">
-                                    <p-datepicker inputId="validUntil" placeholder=" " formControlName="validUntil" [showTime]="true" hourFormat="24" [minDate]="eventStart ?? null" [maxDate]="eventEnd ?? null"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
-                                    <label for="validUntil">Valid Until Date and Time</label>
-                                </p-floatlabel>
-                            </div>
-
-                        </div>
-
-                        <div  class="input-wrapper">
-
-                            <p>Quota</p>
-                            
+                    <div class="name-price">
+                        <div class="input-wrapper w-full">
+                            <p>{{ 'EVENT.TICKET_NAME' | translate }}</p>
                             <p-floatlabel class="w-full md:w-56" variant="on">
-                            <p-inputnumber
-                                    formControlName="quota"
-                                    inputId="quota"
-                                    [min]="1"
-                                    [useGrouping]="false"
-                                    [showButtons]="false"
-                                    [style]="{ width: '100%' }"
-                                    inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                                ></p-inputnumber>
-                            <label for="quota">Enter Ticket Quota</label>
+                                <input type="text" pInputText placeholder=" " formControlName="name"
+                                    [id]="'ticketName-' + i"
+                                    class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 
+                                    focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+                                <label [for]="'ticketName-' + i">{{ 'EVENT.TICKET_NAME_PLACEHOLDER' | translate }}</label>
                             </p-floatlabel>
-
                         </div>
 
-                        <div  class="input-wrapper">
-
-                            <p>Ticket Description</p>
+                        <div class="input-wrapper w-full">
+                            <p>{{ 'EVENT.TICKET_PRICE' | translate }}</p>
                             <p-floatlabel class="w-full md:w-56" variant="on">
-                                <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
-                            <label for="description">Describe Your Ticket</label>
+                                <p-inputnumber placeholder=" " mode="currency" [currency]="currencyCode"
+                                    [locale]="localeCode" formControlName="price" [style]="{ width: '100%' }"
+                                    [inputStyleClass]="'ticket-price-' + i + 
+                                    ' w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 
+                                    focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500'"/>
+                                <label [for]="'ticket-price-' + i">{{ 'EVENT.TICKET_PRICE_PLACEHOLDER' | translate }}</label>
                             </p-floatlabel>
-
                         </div>
-
-                        <div class="delete-btn">
-                            <p-button icon="pi pi-times" [rounded]="true" [text]="true" [raised]="true" (onClick)="removeTicket(i)"/>
-                        </div>
-                        
                     </div>
 
-                    <div class="add-btn">
-                        <p-button icon="pi pi-plus" [rounded]="true" [text]="true" [raised]="true" (onClick)="addTicket()"/>
+                    <div class="dates">
+                        <div class="input-wrapper">
+                            <p>{{ 'EVENT.TICKET_VALID_FROM' | translate }}</p>
+                            <p-floatlabel class="w-full md:w-56" variant="on">
+                                <p-datepicker inputId="validFrom" placeholder=" " formControlName="validFrom"
+                                    [showTime]="true" hourFormat="24"
+                                    [minDate]="eventStart ?? null" [maxDate]="eventEnd ?? null" [style]="{ width: '100%' }"
+                                    inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 
+                                    focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                                <label for="validFrom">{{ 'EVENT.TICKET_VALID_FROM_PLACEHOLDER' | translate }}</label>
+                            </p-floatlabel>
+                        </div>
+
+                        <div class="input-wrapper">
+                            <p>{{ 'EVENT.TICKET_VALID_UNTIL' | translate }}</p>
+                            <p-floatlabel class="w-full md:w-56" variant="on">
+                                <p-datepicker inputId="validUntil" placeholder=" " formControlName="validUntil"
+                                    [showTime]="true" hourFormat="24"
+                                    [minDate]="eventStart ?? null" [maxDate]="eventEnd ?? null" [style]="{ width: '100%' }"
+                                    inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 
+                                    focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+                                <label for="validUntil">{{ 'EVENT.TICKET_VALID_UNTIL_PLACEHOLDER' | translate }}</label>
+                            </p-floatlabel>
+                        </div>
                     </div>
 
+                    <div class="input-wrapper">
+                        <p>{{ 'EVENT.TICKET_QUOTA' | translate }}</p>
+                        <p-floatlabel class="w-full md:w-56" variant="on">
+                            <p-inputnumber formControlName="quota" inputId="quota" [min]="1" [useGrouping]="false"
+                                [showButtons]="false" [style]="{ width: '100%' }"
+                                inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 
+                                focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500">
+                            </p-inputnumber>
+                            <label for="quota">{{ 'EVENT.TICKET_QUOTA_PLACEHOLDER' | translate }}</label>
+                        </p-floatlabel>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <p>{{ 'EVENT.TICKET_DESCRIPTION' | translate }}</p>
+                        <p-floatlabel class="w-full md:w-56" variant="on">
+                            <textarea pTextarea id="description" placeholder=" " formControlName="description"
+                                rows="5" cols="30" style="resize: none"
+                                class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 
+                                focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
+                            <label for="description">{{ 'EVENT.TICKET_DESCRIPTION_PLACEHOLDER' | translate }}</label>
+                        </p-floatlabel>
+                    </div>
+
+                    <div class="delete-btn">
+                        <p-button icon="pi pi-times" [rounded]="true" [text]="true" [raised]="true"
+                            (onClick)="removeTicket(i)" />
+                    </div>
                 </div>
 
-                <div  class="input-wrapper">
+                <div class="add-btn">
+                    <p-button icon="pi pi-plus" [rounded]="true" [text]="true" [raised]="true"
+                        (onClick)="addTicket()" />
+                </div>
+            </div>
 
-                    <p>Upload Event Image</p>
-                    <p-fileUpload
+            <div class="input-wrapper">
+                <p>{{ 'EVENT.UPLOAD_IMAGE' | translate }}</p>
+                <p-fileUpload
                     [customUpload]="true"
                     [auto]="false"
                     [showUploadButton]="false"
@@ -214,28 +213,20 @@
                     (onSelect)="onFileSelect($event)"
                     (onClear)="onFileClear()"
                     (onRemove)="onFileClear()"
-                    chooseLabel="Choose Event Image"
+                    chooseLabel="{{ 'EVENT.UPLOAD_IMAGE_BUTTON' | translate }}"
                     #fileUpload
-                    ></p-fileUpload>
+                ></p-fileUpload>
+            </div>
 
-                </div>
-
-                <div class="submit-btn">
-                    <p-button 
-                    label="Create Event"
+            <div class="submit-btn">
+                <p-button
+                    label="{{ 'EVENT.CREATE_BUTTON' | translate }}"
                     icon="pi pi-check"
                     [raised]="true"
                     severity="primary"
                     (onClick)="submitForm()"
-                    ></p-button>
-                </div>
-                
-
+                ></p-button>
+            </div>
         </div>
-
-
-
     </form>
 </div>
-
-
