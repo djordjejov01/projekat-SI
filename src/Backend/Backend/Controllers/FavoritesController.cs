@@ -3,6 +3,7 @@ using Backend.Models.Dto;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace Backend.Controllers
 {
@@ -11,10 +12,12 @@ namespace Backend.Controllers
     public class FavoritesController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public FavoritesController(AppDbContext context)
+        public FavoritesController(AppDbContext context, IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
+            _localizer = localizer;
         }
 
         [Authorize(Roles = "MobileUser")]
@@ -54,7 +57,7 @@ namespace Backend.Controllers
 
             var exists = await _context.FavoriteEvents.AnyAsync(f => f.UserId == userId && f.EventId == eventId);
             if (exists)
-                return BadRequest("Event is already in favorites.");
+                return BadRequest(_localizer["favorites.already_in"]);
 
             var favorite = new FavoriteEvent
             {

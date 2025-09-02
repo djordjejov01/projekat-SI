@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="user.password_mismatch"><value>Password and password confirmation do not match.</value></data>
+  <data name="user.role_not_allowed"><value>Role not allowed for public registration.</value></data>
+  <data name="user.not_found"><value>User not found.</value></data>
+  <data name="user.current_password_incorrect"><value>The current password is incorrect.</value></data>
+  <data name="user.password_policy_failed"><value>The new password must be at least 8 characters long and include an uppercase letter, a lowercase letter, and a number.</value></data>
+  <data name="user.password_changed"><value>Password changed successfully.</value></data>
+  <data name="user.email_not_verified"><value>Email address not verified. Please check your email and verify your account.</value></data>
+  <data name="user.registration_success_verify"><value>Registration successful. Please check your email to verify your account.</value></data>
+  <data name="user.profile_picture_deleted"><value>Profile picture deleted.</value></data>
+
+  <data name="organizer.not_found"><value>Organizer with that ID does not exist.</value></data>
+  <data name="organizer.user_not_found"><value>User not found.</value></data>
+  <data name="organizer.username_exists"><value>Username already exists.</value></data>
+  <data name="organizer.updated"><value>User data successfully changed!</value></data>
+  <data name="organizer.activity_created"><value>Activity created successfully.</value></data>
+  <data name="organizer.activity_updated"><value>Activity updated successfully.</value></data>
+  <data name="organizer.activity_deleted"><value>Activity deleted successfully.</value></data>
+  <data name="organizer.resource_request_ok"><value>Resource request submitted or updated successfully.</value></data>
+  <data name="organizer.event_resource_not_found"><value>Event resource allocation not found.</value></data>
+  <data name="organizer.resource_deallocated"><value>Resource deallocated successfully.</value></data>
+  <data name="organizer.no_access_event"><value>You do not have access to this event.</value></data>
+  <data name="organizer.edit_permission_denied"><value>You do not have permission to edit this event.</value></data>
+  <data name="organizer.event_not_found_or_no_permission"><value>Event not found or you do not have permission to use this event.</value></data>
+
+  <data name="event.created"><value>Event created successfully.</value></data>
+  <data name="event.published"><value>Event published successfully.</value></data>
+  <data name="event.published_error"><value>An error occurred while publishing the event.</value></data>
+  <data name="event.deleted"><value>Event deleted successfully.</value></data>
+  <data name="event.deleted_error"><value>An error occurred while deleting the event.</value></data>
+  <data name="event.canceled"><value>Event canceled successfully.</value></data>
+  <data name="event.canceled_error"><value>An error occurred while canceling the event.</value></data>
+  <data name="event.edit_forbidden"><value>You do not have permission to edit this event.</value></data>
+  <data name="event.capacity_invalid"><value>Capacity must be -1 (unlimited) or a positive number.</value></data>
+  <data name="event.capacity_below_quota"><value>Cannot set capacity below current total ticket quota ({0}).</value></data>
+  <data name="events.not_found"><value>Event not found.</value></data>
+
+  <data name="activity.not_found"><value>Activity not found.</value></data>
+  <data name="activity.own_events_only"><value>You can only edit activities from your own events.</value></data>
+  <data name="activity.time_order"><value>Start time must be before end time.</value></data>
+  <data name="activity.time_within_event"><value>Activity time must be within event dates.</value></data>
+
+  <data name="tickets.at_least_one"><value>At least one ticket must be selected.</value></data>
+  <data name="tickets.invalid"><value>Invalid ticket.</value></data>
+  <data name="tickets.min_quantity"><value>Quantity must be at least 1.</value></data>
+  <data name="tickets.not_exist"><value>Ticket with ID {0} does not exist.</value></data>
+  <data name="tickets.event_not_found"><value>Event for ticket {0} not found.</value></data>
+  <data name="tickets.event_passed"><value>It is not possible to purchase a ticket for the event {0} that has already passed.</value></data>
+  <data name="tickets.free_event"><value>It is not possible to purchase a ticket for a free event ({0}).</value></data>
+  <data name="tickets.limit_exceeded"><value>You cannot purchase more than 10 tickets for the event {0}. You already have {1} tickets.</value></data>
+  <data name="tickets.not_enough_quota"><value>Not enough available tickets for type {0}.</value></data>
+  <data name="credit.insufficient"><value>Insufficient credit for purchase.</value></data>
+  <data name="tickets.created"><value>Ticket created successfully.</value></data>
+  <data name="tickets.updated"><value>Ticket updated successfully.</value></data>
+  <data name="tickets.deleted"><value>Ticket deleted successfully.</value></data>
+  <data name="tickets.not_found_or_no_permission"><value>Ticket not found or you do not have permission to {0} it.</value></data>
+  <data name="tickets.invalid_id"><value>Invalid ticket ID.</value></data>
+  <data name="tickets.info_missing"><value>Ticket information was not provided.</value></data>
+  <data name="tickets.quota_gt_zero"><value>Ticket quota must be greater than 0.</value></data>
+  <data name="tickets.price_gt_zero"><value>The ticket must have a price greater than 0 EUR.</value></data>
+  <data name="tickets.valid_from_before_until"><value>Ticket validFrom must be before validUntil.</value></data>
+  <data name="tickets.validity_within_event"><value>Ticket validity must be within event dates.</value></data>
+  <data name="tickets.event_capacity_not_set"><value>Event capacity is not set.</value></data>
+  <data name="tickets.exceed_capacity"><value>Total tickets across all types would exceed event capacity ({0}).</value></data>
+  <data name="tickets.cannot_delete_with_purchases"><value>Cannot delete the ticket because there are purchased tickets.</value></data>
+
+  <data name="resources.qty_positive"><value>The quantity must be greater than zero.</value></data>
+  <data name="resources.not_exist"><value>Resource does not exist.</value></data>
+  <data name="resources.not_reservable"><value>This resource cannot be reserved.</value></data>
+  <data name="resources.event_passed"><value>It is not possible to reserve a resource for an event that has already passed.</value></data>
+  <data name="resources.need_ticket"><value>You must have a ticket for this event to reserve a resource.</value></data>
+  <data name="resources.ticket_missing"><value>You do not have a valid ticket for this event.</value></data>
+  <data name="resources.ticket_wrong_event"><value>The ticket is not for the same event as the resource you are trying to reserve.</value></data>
+  <data name="resources.not_enough"><value>Not enough available resources.</value></data>
+  <data name="resources.reserved"><value>Reservation successful.</value></data>
+  <data name="resources.not_found"><value>Resource not found.</value></data>
+  <data name="resources.not_enough_quantity_request"><value>Not enough quantity available to fulfill the new request.</value></data>
+  <data name="resources.not_enough_quantity_new"><value>Not enough quantity available for a new request.</value></data>
+  <data name="resources.updated"><value>Resource updated!</value></data>
+  <data name="resources.deleted"><value>Resource deleted!</value></data>
+  <data name="resources.cannot_delete_booked_inexhaustable"><value>Cannot delete booked inexhaustable resource.</value></data>
+  <data name="resources.only_update_pending"><value>Can only update pending requests.</value></data>
+  <data name="resources.not_enough_quantity_maybe_other_event"><value>Not enough quantity available. Another event may have booked it.</value></data>
+  <data name="resources.status_updated"><value>Status updated successfully.</value></data>
+
+  <data name="common.invalid_email"><value>Invalid email format.</value></data>
+  <data name="common.email_exists"><value>Email already exists.</value></data>
+  <data name="common.invalid_phone"><value>Invalid phone number format.</value></data>
+  <data name="common.phone_exists"><value>Phone number already exists.</value></data>
+  <data name="common.unexpected_error"><value>Something went wrong. Please try again later.</value></data>
+  <data name="common.image_delete_error"><value>Error deleting image: {0}</value></data>
+  <data name="common.image_not_found"><value>Image not found.</value></data>
+  <data name="common.invalid_image_format"><value>Invalid image format. Allowed formats: JPG, JPEG, PNG.</value></data>
+  <data name="common.image_too_large"><value>The image is too large. The maximum size is 2MB.</value></data>
+  <data name="user.profile_picture_updated"><value>Profile picture updated successfully.</value></data>
+
+  <data name="email_verification.token_not_found"><value>Token not found.</value></data>
+  <data name="email_verification.token_used"><value>Token already used.</value></data>
+  <data name="email_verification.token_expired"><value>Token expired.</value></data>
+  <data name="email_verification.verified"><value>Email verified.</value></data>
+  <data name="supplier.not_found"><value>Supplier not found.</value></data>
+  <data name="favorites.already_in"><value>Event is already in favorites.</value></data>
+  <data name="events.unknown_category"><value>Unknown category.</value></data>
+  <data name="eventpin.saved"><value>Event pin saved!</value></data>
+  <data name="eventpin.updated"><value>Event pin updated!</value></data>
+  <data name="eventpin.deleted"><value>Event pin deleted!</value></data>
+  <data name="eventpin.not_found"><value>Event pin not found.</value></data>
+  <data name="credit.exceeds_max"><value>Credit cannot exceed 1,000,000.</value></data>
+  <data name="ticket_validation.not_found"><value>Ticket not found.</value></data>
+  <data name="ticket_validation.invalid_token"><value>Invalid validation token.</value></data>
+  <data name="ticket_validation.already_used"><value>The ticket has already been used at {0}.</value></data>
+  <data name="ticket_validation.valid"><value>The ticket is valid. Welcome to the event!</value></data>
+</root>
+

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace Backend.Controllers
 {
@@ -12,10 +13,12 @@ namespace Backend.Controllers
     public class ResourceController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public ResourceController(AppDbContext context)
+        public ResourceController(AppDbContext context, IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
+            _localizer = localizer;
         }
 
         [Authorize(Roles = "MobileUser")]
@@ -49,7 +52,7 @@ namespace Backend.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
             if (dto.Quantity <= 0)
-                return BadRequest("The quantity must be greater than zero.");
+                return BadRequest(_localizer["resources.qty_positive"]);
 
             
             var eventResource =await _context.EventResources
@@ -57,13 +60,13 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(er => er.ID == dto.EventResourceID);
 
             if (eventResource == null)
-                return NotFound("Resource does not exist.");
+                return NotFound(_localizer["resources.not_exist"]);
 
             if (!eventResource.IsReservable)
-                return BadRequest("This resource cannot be reserved.");
+                return BadRequest(_localizer["resources.not_reservable"]);
 
             if (eventResource.Event.EndDate < DateTime.UtcNow)
-                return BadRequest("It is not possible to reserve a resource for an event that has already passed.");
+                return BadRequest(_localizer["resources.event_passed"]);
 
             if (!eventResource.Event.isFree)
             {
@@ -71,7 +74,7 @@ namespace Backend.Controllers
                 var hasTicket = _context.UserTickets
                     .Any(ut => ut.UserID == userId && ut.Ticket.EventID == eventResource.EventID);
                 if (!hasTicket)
-                    return BadRequest("You must have a ticket for this event to reserve a resource.");
+                    return BadRequest(_localizer["resources.need_ticket"]);
 
 
                 var userTicket = _context.UserTickets
@@ -79,11 +82,11 @@ namespace Backend.Controllers
                     .FirstOrDefault(ut => ut.UserTicketID == dto.UserTicketID && ut.UserID == userId);
 
                 if (userTicket == null)
-                    return BadRequest("You do not have a valid ticket for this event.");
+                    return BadRequest(_localizer["resources.ticket_missing"]);
 
 
                 if (userTicket.Ticket.EventID != eventResource.EventID)
-                    return BadRequest("The ticket is not for the same event as the resource you are trying to reserve.");
+                    return BadRequest(_localizer["resources.ticket_wrong_event"]);
 
             }
             
@@ -92,7 +95,7 @@ namespace Backend.Controllers
                 .Sum(r => r.Quantity);
 
             if (alreadyReserved + dto.Quantity > eventResource.Quantity)
-                return BadRequest("Not enough available resources.");
+                return BadRequest(_localizer["resources.not_enough"]);
 
             
 
@@ -108,7 +111,7 @@ namespace Backend.Controllers
             await _context.UserResourceReservations.AddAsync(reservation);
             await _context.SaveChangesAsync();
 
-            return Ok("Reservation successful.");
+            return Ok(_localizer["resources.reserved"]);
         }
         [HttpGet("resource-categories")]
         public IActionResult GetResourceCategories()

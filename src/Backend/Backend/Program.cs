@@ -1,6 +1,9 @@
 ﻿using Backend.Models;
 using Backend.Services;
 using Backend.Services.Email;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
+using System.Globalization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +11,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Backend;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -97,6 +101,27 @@ builder.WebHost.UseUrls("http://0.0.0.0:11061");
 builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
 builder.Services.AddEmail(builder.Configuration);
 
+// Localization services
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+var supportedCultures = new[] { "en", "sr" }
+    .Select(c => new CultureInfo(c))
+    .ToList();
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    
+    options.DefaultRequestCulture = new RequestCulture("en");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+
+    // Rely on Accept-Language (web) and default for others; no query or user.language
+    options.RequestCultureProviders = new IRequestCultureProvider[]
+    {
+        new AcceptLanguageHeaderRequestCultureProvider()
+    };
+});
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -164,6 +189,22 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+// Enable request localization middleware
+app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
+
+// Global exception handler returning localized generic message
+app.UseExceptionHandler(handlerApp =>
+{
+    handlerApp.Run(async context =>
+    {
+        var localizer = context.RequestServices.GetRequiredService<Microsoft.Extensions.Localization.IStringLocalizer<SharedResource>>();
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+        var msg = localizer["common.unexpected_error"].ToString();
+        await context.Response.WriteAsJsonAsync(new { message = msg });
+    });
+});
 
 app.MapPost("/auth/send-verification", async (
     IEmailVerificationService svc,
