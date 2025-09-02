@@ -82,20 +82,18 @@ export default function ProfileScreen() {
           const dataCount = JSON.parse(ticketsText);
           setTicketsCount(dataCount.length);
         }
-
-        const resResources = await fetch(`${API_URL}/api/MobileUser/reservations`, {
+        const resResources = await fetch(`${API_URL}/api/Resource/my-reservations`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const resourcesText = await resResources.text();
-        console.log('Resources status:', resResources.status);
-        console.log('Resources response:', resourcesText);
-
         if (resResources.ok) {
-          const data = JSON.parse(resourcesText);
-          const uniqueEvents = [...new Set(data.map((r: any) => r.eventName))];
-          setResourcesCount(uniqueEvents.length);
-        }
+          const data = await resResources.json();
+
+          // Pravimo Set od imena resursa
+          const uniqueResources = new Set(data.map((r: any) => r.ResourceName));
+
+          setResourcesCount(uniqueResources.size);
+}
 
         const resCredits = await fetch(`${API_URL}/api/Credit`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -213,7 +211,7 @@ export default function ProfileScreen() {
           }
               >
           <Text style={styles.statNumber}>{resourcesCount}</Text>
-          <Text style={styles.statLabel}>{t('profile.myResources')}</Text>
+          <Text style={styles.statLabel}>{t('profile.myReservations')}</Text>
         </TouchableOpacity>
 
 

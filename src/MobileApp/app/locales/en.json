@@ -356,7 +356,7 @@
     "other": "Other"
   },
   
- "profileResources": {
+ "myReservations": {
     "title": "My Reservations",
     "resource": "Resource",
     "quantity": "Quantity",
