@@ -41,9 +41,9 @@ namespace Backend.Controllers
                     Title = e.Title,
                     Location = e.Location,
                     StartDate = e.StartDate,
-                    EndDate=e.EndDate,
+                    EndDate = e.EndDate,
                     ImageUrl = e.ImageUrl,
-                    Category=e.Category,
+                    Category = e.Category,
                     AttendingCount = _context.UserTickets.Count(ut => ut.Ticket.EventID == e.EventID),
                     ParentEventId = e.ParentEventId
                 })
@@ -66,7 +66,7 @@ namespace Backend.Controllers
                     Title = e.Title,
                     Location = e.Location,
                     StartDate = e.StartDate,
-                    EndDate=e.EndDate,
+                    EndDate = e.EndDate,
                     ImageUrl = e.ImageUrl,
                     Category = e.Category,
                     AttendingCount = _context.UserTickets
@@ -83,7 +83,7 @@ namespace Backend.Controllers
         [HttpGet("Details")]
         public async Task<ActionResult<EventDetailsDto>> GetEventDetails(int id)
         {
-            
+
             var eventEntity = await _context.Events
                 .Include(e => e.Organizer)
                 .FirstOrDefaultAsync(e => e.EventID == id);
@@ -91,7 +91,7 @@ namespace Backend.Controllers
             if (eventEntity == null || eventEntity.Status != EventStatus.Published)
                 return NotFound();
 
-            
+
             var agenda = await _context.EventActivities
                 .Where(a => a.EventID == id)
                 .OrderBy(a => a.StartTime)
@@ -101,16 +101,16 @@ namespace Backend.Controllers
                     Description = a.Description,
                     StartTime = a.StartTime,
                     EndTime = a.EndTime,
-                    Category=a.Category,
+                    Category = a.Category,
                 })
                 .ToListAsync();
 
-            
+
             var attendingCount = await _context.UserTickets
                 .Include(ut => ut.Ticket)
                 .CountAsync(ut => ut.Ticket.EventID == id);
 
-            
+
             bool isFavorite = false;
             if (User.Identity.IsAuthenticated)
             {
@@ -142,7 +142,7 @@ namespace Backend.Controllers
                 IsFavorite = isFavorite,
                 Capacity = eventEntity.NumberOfPeople,
                 Agenda = agenda,
-                Category=eventEntity.Category,
+                Category = eventEntity.Category,
                 MinPrice = minPrice,
                 MaxPrice = maxPrice
 
@@ -154,12 +154,12 @@ namespace Backend.Controllers
         [HttpGet("subevents-activities/{eventId}")]
         public async Task<ActionResult<EventsSubeventsActivitiesDto>> GetSubeventsAndActivities(int eventId)
         {
-            
+
             var mainEvent = await _context.Events.AsNoTracking().FirstOrDefaultAsync(e => e.EventID == eventId);
             if (mainEvent == null || mainEvent.Status != EventStatus.Published)
                 return NotFound();
 
-            
+
             var subevents = await _context.Events
                 .AsNoTracking()
                 .Where(e => e.ParentEventId == eventId && e.Status == EventStatus.Published)
@@ -176,7 +176,7 @@ namespace Backend.Controllers
                 })
                 .ToListAsync();
 
-            
+
             var eventIds = subevents.Select(s => s.EventId).Append(eventId).ToList();
 
             var activities = await _context.EventActivities
@@ -215,14 +215,14 @@ namespace Backend.Controllers
             o.ImageUrl = ImageName;
             _context.Events.Update(o);
             _context.SaveChanges();
-            return Ok(new {imageUrl = ImageName});
+            return Ok(new { imageUrl = ImageName });
         }
 
         [AllowAnonymous]
         [HttpGet("search")]
         public async Task<ActionResult<List<EventListDto>>> SearchEvents([FromQuery] string? name, [FromQuery] string? category,
             [FromQuery] string? location, [FromQuery] bool? isFree,
-            [FromQuery] DateTime? startDate,[FromQuery] DateTime? endDate,
+            [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate,
             [FromQuery] bool? hasTickets, [FromQuery] string? sortOrder, [FromQuery] string? sortBy)
         {
             EventCategory? categoryEnum = null;
@@ -237,7 +237,7 @@ namespace Backend.Controllers
                     return BadRequest(_localizer["events.unknown_category"]);
                 }
             }
-            var events = await _eventService.SearchEventsAsync(name, categoryEnum,location,isFree,startDate,endDate,hasTickets,sortOrder,sortBy);
+            var events = await _eventService.SearchEventsAsync(name, categoryEnum, location, isFree, startDate, endDate, hasTickets, sortOrder, sortBy);
             return Ok(events);
 
         }
@@ -285,7 +285,7 @@ namespace Backend.Controllers
                 AttendingCount = attendingCount,
                 ImageUrl = eventEntity.ImageUrl,
                 status = eventEntity.Status,
-                ParentEventId=eventEntity.ParentEventId
+                ParentEventId = eventEntity.ParentEventId
             };
 
             return Ok(dto);
@@ -293,295 +293,3 @@ namespace Backend.Controllers
 
     }
 }
-
-            return Ok(dto);
-
-        }
-
-        [AllowAnonymous]
-
-        [HttpGet("subevents-activities/{eventId}")]
-
-        public async Task<ActionResult<EventsSubeventsActivitiesDto>> GetSubeventsAndActivities(int eventId)
-
-        {
-
-            
-
-            var mainEvent = await _context.Events.AsNoTracking().FirstOrDefaultAsync(e => e.EventID == eventId);
-
-            if (mainEvent == null || mainEvent.Status != EventStatus.Published)
-
-                return NotFound();
-
-
-
-            
-
-            var subevents = await _context.Events
-
-                .AsNoTracking()
-
-                .Where(e => e.ParentEventId == eventId && e.Status == EventStatus.Published)
-
-                .Select(e => new EventDto
-
-                {
-
-                    EventId = e.EventID,
-
-                    Title = e.Title,
-
-                    Location = e.Location,
-
-                    StartDate = e.StartDate,
-
-                    EndDate = e.EndDate,
-
-                    ImageUrl = e.ImageUrl,
-
-                    ParentEventId = e.ParentEventId,
-
-                    Description = e.Description
-
-                })
-
-                .ToListAsync();
-
-
-
-            
-
-            var eventIds = subevents.Select(s => s.EventId).Append(eventId).ToList();
-
-
-
-            var activities = await _context.EventActivities
-
-                .AsNoTracking()
-
-                .Where(a => eventIds.Contains(a.EventID))
-
-                .OrderBy(a => a.StartTime)
-
-                .Select(a => new ActivityDto
-
-                {
-
-                    ActivityId = a.ActivityID,
-
-                    EventId = a.EventID,
-
-                    Title = a.Title,
-
-                    StartDate = a.StartTime,
-
-                    EndDate = a.EndTime,
-
-                    Description = a.Description,
-
-                    Category = a.Category
-
-                })
-
-                .ToListAsync();
-
-
-
-            return Ok(new EventsSubeventsActivitiesDto
-
-            {
-
-                EventsAndSubevents = subevents,
-
-                Activities = activities
-
-            });
-
-        }
-
-
-
-
-
-        [HttpPost("change-event-picture")]
-
-        [Consumes("multipart/form-data")]
-
-        public async Task<IActionResult> UploadEventPhoto([FromForm] UploadImageDto model)
-
-        {
-
-            string ImageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
-
-            Event o = _context.Events.Where(o => o.EventID == model.Id).First();
-
-            if (o is null)
-
-                return BadRequest("ERROR!");
-
-            await CommonHelpers.RemovePhoto(o.ImageUrl, _env);
-
-            o.ImageUrl = ImageName;
-
-            _context.Events.Update(o);
-
-            _context.SaveChanges();
-
-            return Ok(new {imageUrl = ImageName});
-
-        }
-
-
-
-        [AllowAnonymous]
-
-        [HttpGet("search")]
-
-        public async Task<ActionResult<List<EventListDto>>> SearchEvents([FromQuery] string? name, [FromQuery] string? category,
-
-            [FromQuery] string? location, [FromQuery] bool? isFree,
-
-            [FromQuery] DateTime? startDate,[FromQuery] DateTime? endDate,
-
-            [FromQuery] bool? hasTickets, [FromQuery] string? sortOrder, [FromQuery] string? sortBy)
-
-        {
-
-            EventCategory? categoryEnum = null;
-
-            if (!string.IsNullOrWhiteSpace(category))
-
-            {
-
-                if (Enum.TryParse<EventCategory>(category, true, out var parsedCategory))
-
-                {
-
-                    categoryEnum = parsedCategory;
-
-                }
-
-                else
-
-                {
-
-                    return BadRequest("Unknown category.");
-
-                }
-
-            }
-
-            var events = await _eventService.SearchEventsAsync(name, categoryEnum,location,isFree,startDate,endDate,hasTickets,sortOrder,sortBy);
-
-            return Ok(events);
-
-
-
-        }
-
-        [AllowAnonymous]
-
-        [HttpGet("categories")]
-
-        public async Task<IActionResult> GetEventCategories()
-
-        {
-
-            var categories = await _context.EventCategories
-
-                .Select(c => new
-
-                {
-
-                    Id = c.CategoryID,
-
-                    Name = c.CategoryName.ToString(),
-
-                })
-
-                .ToListAsync();
-
-
-
-            return Ok(categories);
-
-        }
-
-
-
-        [Authorize]
-
-        [HttpGet("BasicInfo/{eventId}")]
-
-        public async Task<IActionResult> GetEventBasicInfo(int eventId)
-
-        {
-
-
-
-            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
-
-            var eventEntity = await _context.Events
-
-                .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == userId);
-
-
-
-            if (eventEntity == null)
-
-                return NotFound("You do not have access to this event.");
-
-
-
-            var attendingCount = await _context.UserTickets
-
-                .Include(ut => ut.Ticket)
-
-                .CountAsync(ut => ut.Ticket.EventID == eventId);
-
-
-
-            var dto = new EventBasicInfoDto
-
-            {
-
-                EventID = eventEntity.EventID,
-
-                Title = eventEntity.Title,
-
-                Description = eventEntity.Description,
-
-                Location = eventEntity.Location,
-
-                StartDate = eventEntity.StartDate,
-
-                EndDate = eventEntity.EndDate,
-
-                Category = eventEntity.Category,
-
-                Capacity = eventEntity.NumberOfPeople,
-
-                AttendingCount = attendingCount,
-
-                ImageUrl = eventEntity.ImageUrl,
-
-                status = eventEntity.Status,
-
-                ParentEventId=eventEntity.ParentEventId
-
-            };
-
-
-
-            return Ok(dto);
-
-        }
-
-
-
-    }
-
-}
-
-
