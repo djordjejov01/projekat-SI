@@ -24,7 +24,7 @@
         [showTargetControls]="false"
         [dragdrop]="true"
         [responsive]="true"
-        [style]="{height:'400px'}"
+        
         filterBy="name"
         sourceFilterPlaceholder="Search by name"
         targetFilterPlaceholder="Search by name"
@@ -36,10 +36,10 @@
         >
 
         <ng-template let-resource pTemplate="item">
-        <div class="flex justify-between items-center w-full">
+        <div class="flex justify-between items-center w-full flex-wrap">
             <span class="font-medium">{{ resource.name }}</span>
 
-            <div class="flex gap-2 items-center">
+            <div class="flex gap-2 items-center flex-wrap">
 
             <p-chip 
                 label="{{ getCategoryName(resource) }}" 

@@ -7,13 +7,20 @@
     width: 100%;
     display: flex;
     gap: 1rem;
+    align-items: stretch;
     /* flex-wrap: wrap; */
 
 }
 
+app-event-basic-info,
+app-map-section {
+    flex: 1 1 0;            /* grow and shrink equally */
+    min-width: 300px;       /* prevent too small on narrow screens */
+}
+
 .agenda-section-and-tickets{
     margin-top: 2rem;
-    max-width: 1500px;
+    width: 100%;
     display: flex;
     flex-direction: column;
 }
@@ -21,8 +28,23 @@
 @media screen and (width <= 1830px){
 
     .basic-info-and-map{
-        flex-wrap: wrap;
+        flex-direction: column;
         justify-content: center;
+        align-items: center;
     }
+
+    app-event-basic-info,
+    app-map-section {
+        width: 100%;           /* optional: take full width */
+        max-width: 700px;      /* optional: cap so it doesn’t stretch too much */
+    }
+    
+}
+
+@media screen and (width <= 1450px){
+
+   .agenda-section-and-tickets{
+    align-items: center;
+   } 
     
 }

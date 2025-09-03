@@ -50,7 +50,7 @@
 }
 
 /* Mobile / tablet behavior */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1030px) {
     /* show burger */
     .menu-toggle{
         display: block;
