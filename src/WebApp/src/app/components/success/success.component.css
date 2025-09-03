@@ -31,7 +31,7 @@ div{
 @keyframes in {
     0% {
         opacity: 0;
-        transform: translate(-50%, -90%);
+        transform: translate(-50%, -160%);
     }
     100% {
         opacity: 1;
@@ -47,4 +47,11 @@ body {
 
 ::ng-deep body {
   overflow: hidden;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
