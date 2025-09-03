@@ -957,5 +957,47 @@ namespace Backend.Controllers
 
             return Ok(dtos);
         }
+
+        [Authorize(Roles = "Organizer")]
+        [HttpGet("events/{eventId}/ticket-sales")]
+        public async Task<IActionResult> GetTicketSalesForEvent(int eventId)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var ev = await _context.Events
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.EventID == eventId);
+
+            if (ev == null)
+                return NotFound(_localizer["event.not_found"].Value);
+
+            if (ev.OrganizerID != userId)
+                return NotFound(_localizer["event.edit_forbidden"].Value);
+
+            var result = await _context.Tickets
+                .Where(t => t.EventID == eventId)
+                .Select(t => new TicketSalesDto
+                {
+                    TicketId = t.TicketID,
+                    TypeName = t.TypeName,
+                    Price = t.Price,
+                    Quota = t.Quota,
+                    Sold = _context.UserTickets.Count(ut => ut.TicketID == t.TicketID),
+                    Unsold = t.Quota - _context.UserTickets.Count(ut => ut.TicketID == t.TicketID),
+                    Revenue = _context.UserTickets.Count(ut => ut.TicketID == t.TicketID) * t.Price,
+                    Buyers = _context.UserTickets
+                        .Where(ut => ut.TicketID == t.TicketID)
+                        .Select(ut => new BuyerDto
+                        {
+                            Username = ut.User.Username,
+                            ProfilePicture = ut.User.ProfilePicture
+                        })
+                        .Distinct()
+                        .ToList()
+                })
+                .ToListAsync();
+
+            return Ok(result);
+        }
     }
 }

@@ -72,7 +72,6 @@ namespace Backend.Services
             {
                 throw new ArgumentException(_localizer["event.capacity_below_quota"].Value);
             }
-
             string imageName = null;
             if (model.ImageFile != null)
             {
