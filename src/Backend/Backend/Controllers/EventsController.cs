@@ -210,7 +210,7 @@ namespace Backend.Controllers
             string ImageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
             Event o = _context.Events.Where(o => o.EventID == model.Id).First();
             if (o is null)
-                return BadRequest(_localizer["common.unexpected_error"].Value);
+                return BadRequest(_localizer["common.unexpected_error"].ToString());
             await CommonHelpers.RemovePhoto(o.ImageUrl, _env);
             o.ImageUrl = ImageName;
             _context.Events.Update(o);
@@ -234,7 +234,7 @@ namespace Backend.Controllers
                 }
                 else
                 {
-                    return BadRequest(_localizer["events.unknown_category"].Value);
+                    return BadRequest(_localizer["events.unknown_category"].ToString());
                 }
             }
             var events = await _eventService.SearchEventsAsync(name, categoryEnum, location, isFree, startDate, endDate, hasTickets, sortOrder, sortBy);
@@ -266,7 +266,7 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == userId);
 
             if (eventEntity == null)
-                return NotFound(_localizer["organizer.no_access_event"].Value);
+                return NotFound(_localizer["organizer.no_access_event"].ToString());
 
             var attendingCount = await _context.UserTickets
                 .Include(ut => ut.Ticket)

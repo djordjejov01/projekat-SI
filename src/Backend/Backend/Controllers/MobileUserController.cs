@@ -55,7 +55,7 @@ namespace Backend.Controllers
 
             var user =await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound(_localizer["user.not_found"].Value);
+                return NotFound(_localizer["user.not_found"].ToString());
 
            return Ok(new {
                 email = user.Email,
@@ -75,16 +75,16 @@ namespace Backend.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound(new { message = _localizer["user.not_found"] });
+                return NotFound(new { message = _localizer["user.not_found"].ToString() });
 
             if (_context.Users.Any(u => u.Email == dto.Email && u.UserId != userId))
-                return BadRequest(new { message = _localizer["common.email_exists"].Value });
+                return BadRequest(new { message = _localizer["common.email_exists"].ToString() });
 
             if (string.IsNullOrWhiteSpace(dto.Email) || !CommonHelpers.IsPhoneNumberValid(dto.Email))
-                return BadRequest(new { message = _localizer["common.invalid_email"].Value });
+                return BadRequest(new { message = _localizer["common.invalid_email"].ToString() });
 
             if (!string.IsNullOrWhiteSpace(dto.PhoneNumber) && !CommonHelpers.IsPhoneNumberValid(dto.PhoneNumber))
-                return BadRequest(new { message = _localizer["common.invalid_phone"].Value });
+                return BadRequest(new { message = _localizer["common.invalid_phone"].ToString() });
 
             user.FirstName = dto.FirstName;
             user.LastName = dto.LastName;
@@ -92,7 +92,7 @@ namespace Backend.Controllers
             user.PhoneNumber = dto.PhoneNumber;
             
             await _context.SaveChangesAsync();
-            return Ok(new { message = _localizer["organizer.updated"].Value });
+            return Ok(new { message = _localizer["organizer.updated"].ToString() });
         }
 
         [HttpGet("event/{eventId}")]
@@ -106,7 +106,7 @@ namespace Backend.Controllers
 
                 if (!eventExists)
                 {
-                    return NotFound(new { message = _localizer["events.not_found"].Value });
+                    return NotFound(new { message = _localizer["events.not_found"].ToString() });
                 }
 
                 var pins = await _context.EventPin
@@ -140,7 +140,7 @@ namespace Backend.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
 
             if (user == null)
-                return NotFound(new { message = _localizer["user.not_found"] });
+                return NotFound(new { message = _localizer["user.not_found"].ToString() });
 
             if (!string.IsNullOrEmpty(user.ProfilePicture))
             {
@@ -156,7 +156,7 @@ namespace Backend.Controllers
                     }
                     catch (Exception ex)
                     {
-                        return StatusCode(500, new { message = string.Format(_localizer["common.image_delete_error"].Value, ex.Message) });
+                        return StatusCode(500, new { message = string.Format(_localizer["common.image_delete_error"].ToString(), ex.Message) });
                     }
                 }
 
@@ -164,7 +164,7 @@ namespace Backend.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            return Ok(new { message = _localizer["user.profile_picture_deleted"].Value });
+            return Ok(new { message = _localizer["user.profile_picture_deleted"].ToString() });
         }
 
         [HttpPut("profile-image")]
@@ -177,21 +177,21 @@ namespace Backend.Controllers
 
                 var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
                 if (user == null)
-                    return NotFound(new { message = _localizer["user.not_found"].Value });
+                    return NotFound(new { message = _localizer["user.not_found"].ToString() });
 
                 
                 if (model.Image == null || model.Image.Length == 0)
-                    return BadRequest(new { message = _localizer["common.image_not_found"].Value });
+                    return BadRequest(new { message = _localizer["common.image_not_found"].ToString() });
 
                 
                 var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
                 var fileExtension = Path.GetExtension(model.Image.FileName).ToLowerInvariant();
                 if (!allowedExtensions.Contains(fileExtension))
-                    return BadRequest(new { message = _localizer["common.invalid_image_format"].Value });
+                    return BadRequest(new { message = _localizer["common.invalid_image_format"].ToString() });
 
                 
                 if (model.Image.Length > 2 * 1024 * 1024)
-                    return BadRequest(new { message = _localizer["common.image_too_large"].Value });
+                    return BadRequest(new { message = _localizer["common.image_too_large"].ToString() });
 
                 
                 string imageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
@@ -209,7 +209,7 @@ namespace Backend.Controllers
 
                 return Ok(new
                 {
-                    message = _localizer["user.profile_picture_updated"].Value,
+                    message = _localizer["user.profile_picture_updated"].ToString(),
                     imageUrl = imageName
                 });
             }

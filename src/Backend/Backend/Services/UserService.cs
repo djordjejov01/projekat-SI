@@ -29,17 +29,17 @@ namespace Backend.Services
         public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
         {
             if (!CommonHelpers.IsPasswordStrong(registerDto.Password))
-                throw new Exception(_localizer["user.password_policy_failed"].Value);
+                throw new Exception(_localizer["user.password_policy_failed"].ToString());
 
             if (await _context.Users.AnyAsync(u => u.Email == registerDto.Email))
             {
-                throw new Exception(_localizer["common.email_exists"].Value);
+                throw new Exception(_localizer["common.email_exists"].ToString());
             }
 
 
             if (registerDto.Role != UserRole.Organizer && registerDto.Role != UserRole.Supplier && registerDto.Role!=UserRole.MobileUser)
             {
-                throw new Exception(_localizer["user.role_not_allowed"].Value);
+                throw new Exception(_localizer["user.role_not_allowed"].ToString());
             }
 
 
@@ -116,18 +116,18 @@ namespace Backend.Services
         public async Task<UserDto> RegisterWebAsync(RegisterWebDto registerWebDto)
         {
             if (!CommonHelpers.IsPasswordStrong(registerWebDto.Password))
-                throw new Exception(_localizer["user.password_policy_failed"].Value);
+                throw new Exception(_localizer["user.password_policy_failed"].ToString());
 
             if (await _context.Users.AnyAsync(u => u.Email == registerWebDto.Email))
-                throw new Exception(_localizer["common.email_exists"].Value);
+                throw new Exception(_localizer["common.email_exists"].ToString());
 
             if (registerWebDto.Role != UserRole.Organizer && registerWebDto.Role != UserRole.Supplier)
-                throw new Exception(_localizer["user.role_not_allowed"].Value);
+                throw new Exception(_localizer["user.role_not_allowed"].ToString());
 
             
 
             if (await _context.Users.AnyAsync(u => u.Username == registerWebDto.Username))
-                throw new Exception(_localizer["organizer.username_exists"].Value);
+                throw new Exception(_localizer["organizer.username_exists"].ToString());
 
             string hashedPassword = CommonHelpers.HashPassword(registerWebDto.Password);
 
@@ -202,28 +202,28 @@ namespace Backend.Services
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
             if (user == null)
             {
-                throw new Exception(_localizer["user.not_found"].Value);
+                throw new Exception(_localizer["user.not_found"].ToString());
             }
 
             string hashedInputPassword = CommonHelpers.HashPassword(loginDto.Password);
             if (user.Password != hashedInputPassword)
             {
-                throw new Exception(_localizer["user.invalid_credentials"].Value);
+                throw new Exception(_localizer["user.invalid_credentials"].ToString());
             }
 
             if (!user.IsEmailVerified)
             {
-                throw new Exception(_localizer["user.email_not_verified"].Value);
+                throw new Exception(_localizer["user.email_not_verified"].ToString());
             }
 
             if (user.Role == UserRole.Supplier && !user.IsActive)
             {
-                throw new Exception(_localizer["supplier.not_approved"].Value);
+                throw new Exception(_localizer["supplier.not_approved"].ToString());
             }
 
             if (!user.IsActive)
             {
-                throw new Exception(_localizer["user.not_active"].Value);
+                throw new Exception(_localizer["user.not_active"].ToString());
             }
 
             user.LastLoginTime = DateTime.UtcNow;

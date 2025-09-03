@@ -43,18 +43,18 @@ namespace Backend.Controllers
                 return BadRequest(ModelState);
 
             if (registerDto.Password != registerDto.ConfirmPassword)
-                return BadRequest(new { message = _localizer["user.password_mismatch"].Value });
+                return BadRequest(new { message = _localizer["user.password_mismatch"].ToString() });
 
             
             if (registerDto.Role != UserRole.Organizer && registerDto.Role != UserRole.Supplier && registerDto.Role != UserRole.MobileUser)
-                return BadRequest(new { message = _localizer["user.role_not_allowed"].Value });
+                return BadRequest(new { message = _localizer["user.role_not_allowed"].ToString() });
 
             try
             {
                 var user = await _userService.RegisterAsync(registerDto);
 
                 return Ok(new{
-                    message = _localizer["user.registration_success_verify"].Value,
+                    message = _localizer["user.registration_success_verify"].ToString(),
                     user = user,
                     requiresEmailVerification = true
                 });
@@ -72,16 +72,16 @@ namespace Backend.Controllers
                 return BadRequest(ModelState);
 
             if (registerDto.Password != registerDto.ConfirmPassword)
-                return BadRequest(new { message = _localizer["user.password_mismatch"].Value });
+                return BadRequest(new { message = _localizer["user.password_mismatch"].ToString() });
 
             if (registerDto.Role != UserRole.Organizer && registerDto.Role != UserRole.Supplier)
-                return BadRequest(new { message = _localizer["user.role_not_allowed"].Value });
+                return BadRequest(new { message = _localizer["user.role_not_allowed"].ToString() });
 
             try
             {
                 var user = await _userService.RegisterWebAsync(registerDto);
                 return Ok(new{
-                    message = _localizer["user.registration_success_verify"].Value,
+                    message = _localizer["user.registration_success_verify"].ToString(),
                     user = user,
                     requiresEmailVerification = true
                 });
@@ -100,7 +100,7 @@ namespace Backend.Controllers
                 var user = await _userService.LoginAsync(loginDto);
                 if (!user.IsEmailVerified)
                 {
-                    return BadRequest(new { message = _localizer["user.email_not_verified"].Value });
+                    return BadRequest(new { message = _localizer["user.email_not_verified"].ToString() });
                 }
                 var claims = new[]
                 {
@@ -157,23 +157,23 @@ namespace Backend.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var user =await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound(new { message = _localizer["user.not_found"].Value });
+                return NotFound(new { message = _localizer["user.not_found"].ToString() });
 
             
             if (CommonHelpers.HashPassword(dto.CurrentPassword) != user.Password)
-                return BadRequest(new { message = _localizer["user.current_password_incorrect"].Value });
+                return BadRequest(new { message = _localizer["user.current_password_incorrect"].ToString() });
 
             
             if (string.IsNullOrWhiteSpace(dto.NewPassword) || dto.NewPassword.Length < 8 ||
                 !dto.NewPassword.Any(char.IsUpper) ||
                 !dto.NewPassword.Any(char.IsLower) ||
                 !dto.NewPassword.Any(char.IsDigit))
-                return BadRequest(new { message = _localizer["user.password_policy_failed"].Value });
+                return BadRequest(new { message = _localizer["user.password_policy_failed"].ToString() });
 
             
             user.Password = CommonHelpers.HashPassword(dto.NewPassword);
             await _context.SaveChangesAsync();
-            return Ok(new { message = _localizer["user.password_changed"].Value });
+            return Ok(new { message = _localizer["user.password_changed"].ToString() });
         }
 
         [Authorize]
@@ -196,7 +196,7 @@ namespace Backend.Controllers
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
 
             if (user == null)
-                return NotFound(new { message = _localizer["user.not_found"].Value });
+                return NotFound(new { message = _localizer["user.not_found"].ToString() });
 
             if (!string.IsNullOrEmpty(user.ProfilePicture))
             {
@@ -212,7 +212,7 @@ namespace Backend.Controllers
                     }
                     catch (Exception ex)
                     {
-                        return StatusCode(500, new { message = string.Format(_localizer["common.image_delete_error"].Value, ex.Message) });
+                        return StatusCode(500, new { message = string.Format(_localizer["common.image_delete_error"].ToString(), ex.Message) });
                     }
                 }
 
@@ -221,7 +221,7 @@ namespace Backend.Controllers
             const string defaultImagePath = "images/default-pfp.png";
             user.ProfilePicture = defaultImagePath;
             await _context.SaveChangesAsync();
-            return Ok(new { message = _localizer["user.profile_picture_deleted"].Value,imageUrl=defaultImagePath });
+            return Ok(new { message = _localizer["user.profile_picture_deleted"].ToString(),imageUrl=defaultImagePath });
         }
 
     }

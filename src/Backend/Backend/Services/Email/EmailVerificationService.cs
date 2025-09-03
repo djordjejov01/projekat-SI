@@ -63,9 +63,9 @@
                 .Include(t => t.User)
                 .FirstOrDefaultAsync(t => t.Id == tokenId, ct);
 
-            if (token is null) return (false, localizer["email_verification.token_not_found"]);
-            if (token.ConsumedAtUtc is not null) return (false, localizer["email_verification.token_used"]);
-            if (DateTime.UtcNow > token.ExpiresAtUtc) return (false, localizer["email_verification.token_expired"]);
+            if (token is null) return (false, localizer["email_verification.token_not_found"].ToString());
+            if (token.ConsumedAtUtc is not null) return (false, localizer["email_verification.token_used"].ToString());
+            if (DateTime.UtcNow > token.ExpiresAtUtc) return (false, localizer["email_verification.token_expired"].ToString());
 
             // idempotent: if already verified, still consume and return ok
             token.User.IsEmailVerified = true;
@@ -78,7 +78,7 @@
             foreach (var o in others) o.ConsumedAtUtc = DateTime.UtcNow;
 
             await db.SaveChangesAsync(ct);
-            return (true, localizer["email_verification.verified"]);
+            return (true, localizer["email_verification.verified"].ToString());
         }
     }
 

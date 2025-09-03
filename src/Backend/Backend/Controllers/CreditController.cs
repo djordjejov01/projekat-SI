@@ -42,7 +42,7 @@ namespace Backend.Controllers
 
             if (user.Credit + amount > 1000000)
             {
-                return BadRequest(new { message = _localizer["credit.exceeds_max"].Value });
+                return BadRequest(new { message = _localizer["credit.exceeds_max"].ToString() });
             }
 
             user.Credit += amount;

@@ -57,7 +57,7 @@ namespace Backend.Controllers
 
             var exists = await _context.FavoriteEvents.AnyAsync(f => f.UserId == userId && f.EventId == eventId);
             if (exists)
-                return BadRequest(_localizer["favorites.already_in"].Value);
+                return BadRequest(_localizer["favorites.already_in"].ToString());
 
             var favorite = new FavoriteEvent
             {
