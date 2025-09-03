@@ -3,6 +3,7 @@ using Backend.Models.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace Backend.Controllers
 {
@@ -11,10 +12,12 @@ namespace Backend.Controllers
     public class TicketValidationController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public TicketValidationController(AppDbContext context)
+        public TicketValidationController(AppDbContext context, IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
+            _localizer = localizer;
         }
 
         [HttpGet("validate/{userTicketId}/{token}")]
@@ -31,7 +34,7 @@ namespace Backend.Controllers
                 return NotFound(new TicketValidationDto
                 {
                     Status = "invalid",
-                    Message = "Ticket not found."
+                    Message = _localizer["ticket_validation.not_found"].ToString()
                 });
             }
 
@@ -41,7 +44,7 @@ namespace Backend.Controllers
                 return BadRequest(new TicketValidationDto
                 {
                     Status = "invalid",
-                    Message = "Invalid validation token."
+                    Message = _localizer["ticket_validation.invalid_token"].ToString()
                 });
             }
 
@@ -51,7 +54,7 @@ namespace Backend.Controllers
                 return Ok(new TicketValidationDto
                 {
                     Status = "invalid",
-                    Message = $"The ticket has already been used at {userTicket.UsedAt:HH:mm:ss}.",
+                    Message = string.Format(_localizer["ticket_validation.already_used"].ToString(), userTicket.UsedAt?.ToString("HH:mm:ss")),
                     UsedAt = userTicket.UsedAt
                 });
             }
@@ -65,7 +68,7 @@ namespace Backend.Controllers
             return Ok(new TicketValidationDto
             {
                 Status = "valid",
-                Message = "The ticket is valid. Welcome to the event!"
+                Message = _localizer["ticket_validation.valid"].ToString()
             });
         }
     }
