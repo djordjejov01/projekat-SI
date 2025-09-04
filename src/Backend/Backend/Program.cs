@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Backend.Models.Dto;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +33,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IOrganizerService, OrganizerService>();
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -171,7 +174,35 @@ app.MapGet("/auth/verify-email", async (
     return Results.Redirect(verified ? successUrl : failUrl);
 });
 
+
+app.MapPost("/auth/forgot-password", async (
+    IPasswordResetService svc,
+    ForgotPasswordDto body,
+    CancellationToken ct) =>
+{
+    await svc.RequestAsync(body.Email, ct);
+    return Results.Ok(new { sent = true });
+});
+
+
+
+app.MapPost("/auth/reset-password", async (
+    IPasswordResetService svc,
+    ResetPasswordDto body,
+    CancellationToken ct) =>
+{
+    if (!Guid.TryParse(body.Token, out var tokenId))
+        return Results.BadRequest(new { ok = false, message = "Invalid token format." });
+
+    var (ok, msg) = await svc.ResetAsync(tokenId, body.NewPassword, ct);
+    return ok ? Results.Ok(new { ok = true }) : Results.BadRequest(new { ok = false, message = msg });
+});
+
+
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 app.Run();
+
+
+
