@@ -36,7 +36,6 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     ChartModule,
     TableModule,
     ButtonModule,
-    CommonModule,
     MultiSelectModule,
     InputTextModule,
     DropdownModule,
@@ -57,9 +56,9 @@ export class EventsComponent implements OnInit {
   categories: any[] = [];
   selectedStatus: any[] = [];
   statuses = [
-    { name: "Draft", value: 0 },
-    { name: "Published", value: 1 },
-    { name: "Canceled", value: 2 }
+    { name: 'DRAFT', value: 0 },
+    { name: 'PUBLISHED', value: 1 },
+    { name: 'CANCELED', value: 2 }
   ];
 
   loading: boolean = true;
@@ -88,9 +87,7 @@ export class EventsComponent implements OnInit {
     responsive: true,
     maintainAspectRatio: true,
     plugins: {
-      legend: {
-        labels: { color: '#495057' }
-      }
+      legend: { labels: { color: '#495057' } }
     },
     scales: {
       x: { ticks: { color: '#495057' }, grid: { color: '#ebedef' } },
@@ -99,12 +96,7 @@ export class EventsComponent implements OnInit {
   };
   options3 = {
     responsive: true,
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: { color: '#495057' }
-      }
-    }
+    plugins: { legend: { position: 'bottom', labels: { color: '#495057' } } }
   };
 
   constructor(
@@ -116,7 +108,7 @@ export class EventsComponent implements OnInit {
     private categoryService: CategoryService,
     private confirmationDialogService: ConfirmationDialogService,
     private translate: TranslateService
-  ) { }
+  ) {}
 
   onRoleFilterChange(selectedOptions: any[], filterFn: (val: any) => void) {
     this.selectedCategories = selectedOptions || [];
@@ -146,10 +138,7 @@ export class EventsComponent implements OnInit {
     this.apiService.deleteEvent(eventID).subscribe({
       next: (response: any) => {
         this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe({
-          next: (response: Event[]) => {
-            this.allEvents = response;
-            this.loading = false;
-          },
+          next: (response: Event[]) => { this.allEvents = response; this.loading = false; },
           error: (errorResponse) => {
             this.messageService.add({
               severity: 'error',
@@ -159,7 +148,6 @@ export class EventsComponent implements OnInit {
             });
           }
         });
-
         this.messageService.add({
           severity: 'success',
           summary: this.translate.instant('SUCCESS'),
@@ -191,7 +179,7 @@ export class EventsComponent implements OnInit {
 
     this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe({
       next: (response: Event[]) => { this.allEvents = response; this.loading = false; },
-      error: () => { }
+      error: () => {}
     });
 
     this.apiService.getDashboardMetrics().subscribe({
@@ -215,14 +203,13 @@ export class EventsComponent implements OnInit {
           this.data1Data.push(val.visitors);
           this.data4Data.push(val.revenue);
         });
-
         this.data1 = {
           labels: this.data1Labels,
-          datasets: [{ label: this.translate.instant('VISITORS'), backgroundColor: 'rgba(100,106,232, 0.2)', borderColor: 'rgb(139, 92, 246)', borderWidth: 1, data: this.data1Data }]
+          datasets: [{ label: this.translate.instant('VISITORS'), backgroundColor: 'rgba(100,106,232,0.2)', borderColor: 'rgb(139,92,246)', borderWidth: 1, data: this.data1Data }]
         };
         this.data4 = {
           labels: this.data4Labels,
-          datasets: [{ label: this.translate.instant('REVENUE'), backgroundColor: 'rgba(100,106,232, 0.2)', borderColor: 'rgb(139, 92, 246)', borderWidth: 1, data: this.data4Data }]
+          datasets: [{ label: this.translate.instant('REVENUE'), backgroundColor: 'rgba(100,106,232,0.2)', borderColor: 'rgb(139,92,246)', borderWidth: 1, data: this.data4Data }]
         };
       },
       error: (errorResponse) => {
@@ -239,7 +226,7 @@ export class EventsComponent implements OnInit {
       next: (response: StatusMetrics) => {
         this.statusMetrics = response;
         Object.entries(response).forEach(([key, value]) => {
-          this.data3Labels.push(key);
+          this.data3Labels.push(this.translate.instant(`EVENT_STATUS_${key.toUpperCase()}`));
           this.data3Data.push(value);
         });
         this.data3 = { labels: this.data3Labels, datasets: [{ data: this.data3Data }] };
@@ -257,7 +244,7 @@ export class EventsComponent implements OnInit {
     this.apiService.getCategoryMetrics().subscribe({
       next: (response: CategoryMetrics) => {
         Object.entries(response).forEach(([key, value]) => {
-          this.data2Labels.push(key);
+          this.data2Labels.push(this.translate.instant(`CATEGORYS.${key.toUpperCase()}`));
           this.data2Data.push(value);
         });
         this.data2 = { labels: this.data2Labels, datasets: [{ data: this.data2Data }] };
@@ -277,26 +264,14 @@ export class EventsComponent implements OnInit {
     this.router.navigate(["/organizer/create-event"], { queryParams: { showID: 3 } });
   }
 
-
-
   getSeverity(status: string) {
     switch (status) {
-      case 'unqualified':
-        return 'danger';
-
-      case 'qualified':
-        return 'success';
-
-      case 'new':
-        return 'info';
-
-      case 'negotiation':
-        return 'warn';
-
-      case 'renewal':
-        return null;
-      default:
-        return null;
+      case 'unqualified': return 'danger';
+      case 'qualified': return 'success';
+      case 'new': return 'info';
+      case 'negotiation': return 'warn';
+      case 'renewal': return null;
+      default: return null;
     }
   }
 }
