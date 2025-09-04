@@ -68,7 +68,7 @@
   "NO_ACCESS_ALLOWED": "This account is not allowed to access the web application.",
   "LOGIN_FAILED": "Login Failed",
   "SOMETHING_WRONG": "Something went wrong while processing your login.",
-  "ERROR": "Error",
+
   "UNSAVED_CHANGES_DETAIL": "You have unsaved changes. Are you sure you want to leave this page?",
   "UNSAVED_CHANGES_TITLE": "Unsaved Changes",
   "FORM_INVALID": "Form fields are not valid:",
@@ -214,7 +214,29 @@
   "UNSAVED_CHANGES_CONFIRM": "You have unsaved changes. Are you sure you want to leave this page?",
   "UNSAVED_CHANGES_TITLE": "Unsaved Changes",
   "EVENT_CREATED_SUCCESS": "Event created successfully!",
-  "FAILED_CREATE_EVENT": "Failed to create event."
+  "FAILED_CREATE_EVENT": "Failed to create event.",
+  "UNLIMITED": "Unlimited",
+    "ATTENDEES": "Attendees",
+    "CHANGE_PICTURE": "Change event picture",
+    "EDIT_TITLE": "Edit Event",
+    "EDIT_DESC": "Fill in the details below to edit your event.",
+    "ENTER_TITLE": "Enter Event Title",
+    "ENTER_DESCRIPTION": "Describe Your Event",
+    "ENTER_LOCATION": "Enter Event Location (e.g. Zoom, Conference Hall A)",
+    "ENTER_CAPACITY": "Enter Event Capacity",
+    "SELECT_CATEGORY": "Select Event Category",
+    "SAVE_CHANGES": "Save Changes",
+    "CANCEL": "Cancel",
+    "UPDATED": "Event updated successfully.",
+    "IMAGE_CHANGED": "Image changed successfully.",
+    "DELETE": "Delete Event",
+  "CANCELED": "Event is canceled",
+  "EDIT": "Edit Event",
+  "PUBLISH": "Publish Event",
+  "CONFIRM_CANCEL":"Confirm Cancel",
+  "CONFIRM_DELETE":"Confirm delete",
+  "CONFIRM_PUBLISH":"Confirm publish",
+  "EVENTS":"Events"
   },
 
    "ERROR_404": "Error",
@@ -224,6 +246,11 @@
    "EVENT_STATUS_DRAFT": "Draft",
   "EVENT_STATUS_PUBLISHED": "Published",
   "EVENT_STATUS_CANCELED": "Canceled",
+  "EVENT_STATUS_FINISHED": "Finished",
+  "EVENT_STATUS_Canceled": "Canceled",
+   "EVENT_STATUS_Draft": "Draft",
+  "EVENT_STATUS_Published": "Published",
+
 
   "MY_PROFILE": "My Profile",
   "ROLE_ORGANIZER": "Event Organizer",
@@ -241,7 +268,6 @@
   "UPCOMING_EVENTS": "Upcoming Events",
 
 
-  "SUCCESS": "Success",
   "PASSWORDS_MISMATCH": "Passwords don't match.",
   "EVENT_ORGANIZER": "Event Organizer",
   "CHOOSE": "Choose",
@@ -278,10 +304,247 @@
   "ALL":"All",
   "DRAFT":"Draft",
   "PUBLISHED":"Published",
-  "CANCELED":"Canceled"
+  "CANCELED":"Canceled",
+
+  "ACTIVITY": {
+    "CREATE_TITLE": "Create New Activity",
+    "CREATE_SUBTITLE": "Fill in the details below to set up your activity.",
+    "TITLE": "Activity Title",
+    "TITLE_PLACEHOLDER": "Enter Activity Title",
+    "CATEGORY": "Category",
+    "CATEGORY_PLACEHOLDER": "Select Event Category",
+    "DESCRIPTION": "Description",
+    "DESCRIPTION_PLACEHOLDER": "Describe Your Activity",
+    "START_TIME": "Start Time",
+    "START_TIME_PLACEHOLDER": "Select Start Time",
+    "END_TIME": "End Time",
+    "END_TIME_PLACEHOLDER": "Select End Time",
+    "CREATE_SUCCESS": "Activity created successfully!",
+    "UNSAVED_TITLE": "Unsaved Changes",
+    "UNSAVED_MESSAGE": "You have unsaved changes. Are you sure you want to close the modal?"
+  },
+  "COMMON": {
+    "SAVE": "Save Changes",
+    "CANCEL": "Cancel",
+    "CLOSE": "Close",
+    "SUCCESS": "Success",
+    "ERROR": "Error",
+    "SAVE_CHANGES": "Save Changes"
+  },
+
+  "CATEGORYS": {
+    "MUSIC": "Music",
+    "SPORTS": "Sports",
+    "ENTERTAINMENT": "Entertainment",
+    "PROTEST": "Protest",
+    "CHARITY": "Charity",
+    "BUSINESS": "Business",
+    "CULTURE": "Culture",
+    "OTHER": "Other"
+  },
+
+  "SUBEVENT": {
+    "CREATE_TITLE": "Create New Subevent",
+    "CREATE_DESC": "Fill in the details below to set up your subevent.",
+    "TITLE": "Subevent Title",
+    "TITLE_PLACEHOLDER": "Enter Subevent Title",
+    "DESCRIPTION": "Description",
+    "DESCRIPTION_PLACEHOLDER": "Describe Your Subevent",
+    "LOCATION": "Location",
+    "LOCATION_PLACEHOLDER": "Enter Event Location (e.g. Zoom, Conference Hall A)",
+    "CAPACITY": "Capacity",
+    "CAPACITY_PLACEHOLDER": "Enter Event Capacity",
+    "UNLIMITED_CAPACITY": "Unlimited Capacity",
+    "START": "Start Date and Time",
+    "START_PLACEHOLDER": "Start Date and Time",
+    "END": "End Date and Time",
+    "END_PLACEHOLDER": "End Date and Time",
+    "CATEGORY": "Category",
+    "CATEGORY_PLACEHOLDER": "Select Event Category"
+  },
+
+  "MESSAGES": {
+    "EVENT_CREATED": "Event created successfully!",
+    "EVENT_CREATE_FAILED": "Failed to create event.",
+    "UNSAVED_CHANGES_TITLE": "Unsaved Changes",
+    "UNSAVED_CHANGES_MSG": "You have unsaved changes. Are you sure you want to close the modal?"
+  },
+
+  "AGENDA": {
+    "TITLE": "Event Agenda",
+    "ADD_SUBEVENT": "Add Subevent",
+    "ADD_ACTIVITY": "Add Activity",
+    "MANAGE_SUBEVENT": "Manage Subevent",
+    "SCHEDULED_FOR": "Scheduled for",
+    "DESCRIPTION": "Description",
+    "NO_AGENDA": "No Agenda Added",
+    "NO_AGENDA_DESC": "Here you can add sub-events and activities that make up your event's program.",
+    "ACTIVITY_CREATED": "Activity created successfully!",
+    "SUBEVENT_CREATED": "Subevent created successfully!"
+  },
+
+  "PIN": {
+    "CREATE_NEW_PIN": "Create New Pin",
+    "FILL_DETAILS_BELOW": "Fill in the details below to set up your pin.",
+    "TITLE": "Pin Title",
+    "ENTER_TITLE": "Enter Pin Title",
+    "TYPE": "Type",
+    "SELECT_TYPE": "Select Pin Type",
+    "DESCRIBE_PIN": "Describe Your Pin",
+    "FORM": "Pin Form",
+    "CREATING_NEW_PIN": "Create New Pin",
+    "ENTER_DESCRIPTION": "Describe Your Pin",
+    "SAVE_CHANGES": "Save Changes",
+    "CANCEL": "Cancel",
+    "TYPES": {
+  "FOOD": "Food",
+  "DRINK": "Drink",
+  "ENTRANCE": "Entrance",
+  "STAGE": "Stage",
+  "RESTROOM": "Restroom",
+  "INFO": "Information",
+  "FIRSTAID": "First Aid",
+  "PARKING": "Parking",
+  "SECURITY": "Security",
+  "BOOTH": "Booth",
+  "LOSTANDFOUND": "Lost & Found",
+  "EXIT": "Exit"
+}
+},
+
+  "MAP": {
+    "LOCATION_MAP": "Location Map",
+    "ADD_PIN": "Add Pin",
+    "PIN_ACTIONS": "Pin Actions",
+    "PIN_LABEL": "Pin",
+    "CHOOSE_ACTION": "Choose an action:",
+    "EDIT_PIN": "Edit Pin",
+    "DELETE_PIN": "Delete Pin",
+    "EVENT_LOCATION": "Event Location",
+    "PIN": "Pin📌",
+    "TYPE": "Type",
+    "DESCRIPTION": "Description",
+    "NO_DESCRIPTION": "No description",
+    "CONFIRM_MOVE_PIN": "Confirm move pin \"{{pinLabel}}\" to new location?",
+    "CONFIRM_MOVE_HEADER": "Confirm Move",
+    "PIN_MOVED": "Pin Moved",
+    "PIN_MOVED_DETAIL": "Pin \"{{pinLabel}}\" moved successfully.",
+    "MOVE_FAILED": "Move Failed",
+    "UNKNOWN_ERROR": "Unknown error",
+    "ADD_PIN_MODE": "Add Pin Mode",
+    "CLICK_TO_PLACE_PIN": "Click on the map to place your pin.",
+    "CONFIRM_DELETE_PIN": "Are you sure you want to delete pin \"{{pinLabel}}\"?",
+    "CONFIRM_DELETE_HEADER": "Confirm Delete",
+    "PIN_DELETED": "Pin Deleted",
+    "PIN_DELETED_DETAIL": "Pin \"{{pinLabel}}\" deleted successfully.",
+    "DELETE_FAILED": "Delete Failed"
+  },
+
+  "RESOURCE": {
+    "ALLOCATE_TITLE": "Allocate {{name}} ({{type}}) for your event",
+    "EXHAUSTABLE": "Exhaustable",
+    "INEXHAUSTABLE": "Inexhaustable",
+    "ALLOCATE_DESCRIPTION": "Fill in the details below to allocate the resource.",
+    "RESERVABLE_INFO": "Mark the resources as reservable if you want attendees to be able to reserve it.",
+    "CLOSE": "Close",
+    "QUANTITY": "Quantity",
+    "ENTER_QUANTITY": "Enter Resource Quantity (max: {{max}})",
+    "NEEDED_FROM": "Needed From",
+    "NEEDED_FROM_DATETIME": "Needed From Date and Time",
+    "NEEDED_UNTIL": "Needed Until",
+    "NEEDED_UNTIL_DATETIME": "Needed Until Date and Time",
+    "RESERVABLE": "Reservable",
+    "SAVE_CHANGES": "Save Changes",
+    "CANCEL": "Cancel",
+    "FORM": "Resource Form",
+    "ALLOCATE_SUCCESS": "Resource Allocated",
+    "ALLOCATE_DETAIL": "The resource has been successfully allocated to the event.",
+    "ALLOCATE_FAILED": "Allocation Failed",
+    "ALLOCATE_FAILED_DETAIL": "An unexpected error occurred while allocating the resource.",
+    "UNSAVED_CHANGES": "You have unsaved changes. Are you sure you want to close the modal?",
+    "UNSAVED_CHANGES_TITLE": "Unsaved Changes"
+  },
+
+    "RESOURCE_ALLOCATION": {
+    "TITLE": "Resource Allocation",
+    "INFO_HEADER": "How Resource Allocation Works",
+    "INFO_TEXT": "When you request a resource, the quantity you enter is the total number you want for your event. If this is a new request, we'll check if the quantity is available. If you are updating an existing request, we will replace the old quantity with the new one and if the request was previously approved the status will change to pending again.",
+    "PICKLIST": {
+      "SOURCE_HEADER": "Available Resources",
+      "TARGET_HEADER": "Allocated to Event",
+      "SOURCE_FILTER": "Search by name",
+      "TARGET_FILTER": "Search by name"
+    },
+    "CHIPS": {
+      "QUANTITY_LEFT": "Qty left: {{quantity}}",
+      "QUANTITY_ALLOCATED": "Qty alloc: {{allocatedQuantity}}"
+    }
+  },
+
+  "CREATE_NEW_TICKET": "Create New Ticket",
+  "FILL_TICKET_DETAILS": "Fill in the details below to set up your ticket.",
+  "TICKET_NAME": "Ticket Name",
+  "ENTER_TICKET_NAME": "Enter Ticket Name",
+  "TICKET_PRICE": "Ticket Price",
+  "ENTER_TICKET_PRICE": "Enter Ticket Price",
+  "VALID_FROM": "Valid From",
+  "VALID_FROM_DATE": "Valid From Date and Time",
+  "VALID_UNTIL": "Valid Until",
+  "VALID_UNTIL_DATE": "Valid Until Date and Time",
+  "QUOTA": "Quota",
+  "ENTER_TICKET_QUOTA": "Enter Ticket Quota",
+  "TICKET_DESCRIPTION": "Ticket Description",
+  "DESCRIBE_YOUR_TICKET": "Describe Your Ticket",
+  "TICKET": "Ticket",
+  "SUCCESS": "Success",
+  "ERROR": "Error",
+  "UNSAVED_CHANGES_MESSAGE": "You have unsaved changes. Are you sure you want to close the modal?",
+
+   "EVENT_TICKETS": "Event Tickets",
+  "ADD_TICKET": "Add Ticket",
+  "TYPE_NAME": "Type Name",
+  "PRICE": "Price",
+  "DESCRIPTION": "Description",
+  "EDIT_TICKET": "Edit Ticket",
+  "DELETE_TICKET": "Delete Ticket",
+  "NO_TICKETS_ADDED": "No Tickets Added",
+  "ADD_TICKETS_DESCRIPTION": "Add tickets here to allow participants to register for your event.",
+  "CONFIRM_DELETE_TICKET": "Are you sure you want to delete the ticket \"{{name}}\"?",
+
+  "RESOURCE_ALLOCATION_TITLE":"Resource allocation",
+  "HOW_RESOURCE_ALLOCATION_WORKS": "How Resource Allocation Works",
+  "RESOURCE_ALLOCATION_DESC": "When you request a resource, the quantity you enter is the total number you want for your event. If this is a new request, we'll check if the quantity is available. If you are updating an existing request, we will replace the old quantity with the new one and if the request was previously approved the status will change to pending again.",
+  "AVAILABLE_RESOURCES": "Available Resources",
+  "ALLOCATED_TO_EVENT": "Allocated to Event",
+  "SEARCH_BY_NAME": "Search by name",
+  "QTY_LEFT": "Qty left",
+  "QTY_ALLOC": "Qty alloc",
+
+  "ERROR_FETCHING_RESOURCES": "Error fetching resources",
+  "PENDING": "Pending",
+  "APPROVED": "Approved",
+  "DECLINED": "Declined",
+  "CONFIRM_DEALLOCATE_RESOURCE": "Are you sure you want to deallocate the resource: {{resourceName}}?",
+  "DEALLOCATE_RESOURCE_TITLE": "Deallocate Resource",
+  "RESOURCES_DEALLOCATED_SUCCESS": "Resources deallocated successfully.",
+  "DEALLOCATION_FAILED": "Deallocation Failed",
+  "RESOURCE_ALLOCATION_REQUEST_SENT": "Resource allocation request sent.",
+
+  "KALENDAR": {
+    "TODAY": "Today",
+    "MONTH": "Month",
+    "WEEK": "Week",
+    "DAY": "Day",
+    "LIST": "List",
+    "CREATE_EVENT_MSG": "Do you want to create a new event from {{start}} to {{end}}?",
+    "CREATE_EVENT_TITLE": "Create Event",
+    "UNKNOWN": "Unknown",
+    "ALL_DAY":"all day"
+  }
+  
+  }
 
 
  
 
 
-}
