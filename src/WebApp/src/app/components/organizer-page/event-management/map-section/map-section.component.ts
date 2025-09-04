@@ -11,22 +11,21 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { CommonModule } from '@angular/common';
+import { TranslateModule,TranslateService } from '@ngx-translate/core';
 
-import * as Leaflet from 'leaflet'
+import * as Leaflet from 'leaflet';
 import { environment } from '../../../../../environments/environment';
-
-
 
 @Component({
   selector: 'app-map-section',
-  imports: [CommonModule,PinModalComponent,DialogModule,ButtonModule,TooltipModule],
+  imports: [TranslateModule,CommonModule, PinModalComponent, DialogModule, ButtonModule, TooltipModule],
   templateUrl: './map-section.component.html',
-  styleUrl: './map-section.component.css',
+  styleUrls: ['./map-section.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class MapSectionComponent implements AfterViewInit, OnChanges{
+export class MapSectionComponent implements AfterViewInit, OnChanges {
 
-  @Input() eventBasicInfo! : EventBasicInfo;
+  @Input() eventBasicInfo!: EventBasicInfo;
   @ViewChild('pinModal') pinModal!: PinModalComponent;
   private map!: Leaflet.Map;
   private mainEventMarker?: Leaflet.Marker;
@@ -38,44 +37,27 @@ export class MapSectionComponent implements AfterViewInit, OnChanges{
   @Input() pins: EventPinDto[] = [];
   @Output() pinSaved = new EventEmitter<void>();
 
-
-// private pinIcons: Record<number, L.Icon> = {
-//   0: this.createIcon('photo-booth.png'),
-//   1: this.createIcon('stage.png'),
-//   2: this.createIcon('door.png'),
-//   3: this.createIcon('exit.png'),
-//   4: this.createIcon('first-aid-kit.png'),
-//   5: this.createIcon('fast-food.png'),
-//   6: this.createIcon('soft-drink.png'),
-//   7: this.createIcon('toilet.png'),
-//   8: this.createIcon('information.png'),
-//   9: this.createIcon('guard.png'),
-//   10: this.createIcon('parking-car.png'),
-//   11: this.createIcon('lost-and-found.png'),
-
-//   12: this.createIcon('unknown.png')        // Unknown
-// };
-
-private createIcon(filename: string): Leaflet.Icon {
-  return Leaflet.icon({
-    iconUrl: `${environment.backendBaseUrl}/pins/${filename}`,
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
-  });
-}
+  private createIcon(filename: string): Leaflet.Icon {
+    return Leaflet.icon({
+      iconUrl: `${environment.backendBaseUrl}/pins/${filename}`,
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32],
+    });
+  }
 
   constructor(
-    private apiService : ApiService,
-    private messageService : MessageService,
-    private pinCategoryService : PinCategoryService,
-    private confirmationService : ConfirmationService){}
+    private apiService: ApiService,
+    private messageService: MessageService,
+    private pinCategoryService: PinCategoryService,
+    private confirmationService: ConfirmationService,
+    private translate: TranslateService
+  ) {}
 
   ngAfterViewInit(): void {
-
     this.initMap();
 
-    if(this.eventBasicInfo){
+    if (this.eventBasicInfo) {
       this.geocodeAddress().subscribe({
         complete: () => {
           this.pinCategoryService.loadCategoriesIfEmpty().subscribe({
@@ -87,79 +69,75 @@ private createIcon(filename: string): Leaflet.Icon {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes['eventBasicInfo'] && !changes['eventBasicInfo'].firstChange){
-      const newInfo = changes['eventBasicInfo'].currentValue as EventBasicInfo
-      if(newInfo) this.geocodeAddress().subscribe()
+    if (changes['eventBasicInfo'] && !changes['eventBasicInfo'].firstChange) {
+      const newInfo = changes['eventBasicInfo'].currentValue as EventBasicInfo;
+      if (newInfo) this.geocodeAddress().subscribe();
     }
 
-    if(changes['pins']){
+    if (changes['pins']) {
       this.renderPins();
     }
   }
 
-  private initMap(): void
-  {
+  private initMap(): void {
     this.map = Leaflet.map('map', {
-      center:[44.0165, 21.0059],
+      center: [44.0165, 21.0059],
       zoom: 7
     });
 
-    Leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-      attribution:  '© OpenStreetMap contributors'
+    Leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
     }).addTo(this.map);
   }
 
-private geocodeAddress(): Observable<void> {
-  const location = this.eventBasicInfo.getLocation();
+  private geocodeAddress(): Observable<void> {
+    const location = this.eventBasicInfo.getLocation();
 
-  return this.apiService.geocodeAddress(location).pipe(
-    tap((results) => {
-      if (results && results.length > 0) {
-        const result = results[0];
-        const lat = parseFloat(result.lat);
-        const lon = parseFloat(result.lon);
+    return this.apiService.geocodeAddress(location).pipe(
+      tap((results) => {
+        if (results && results.length > 0) {
+          const result = results[0];
+          const lat = parseFloat(result.lat);
+          const lon = parseFloat(result.lon);
 
-        this.map.setView([lat, lon], 17);
+          this.map.setView([lat, lon], 17);
 
-        if (this.mainEventMarker) {
-          this.map.removeLayer(this.mainEventMarker);
+          if (this.mainEventMarker) {
+            this.map.removeLayer(this.mainEventMarker);
+          }
+
+          this.mainEventMarker = Leaflet.marker([lat, lon], {
+            icon: Leaflet.divIcon({
+              className: 'pulse-marker',
+              iconSize: [36, 36],
+              iconAnchor: [18, 36],
+              popupAnchor: [0, -36],
+              html: `<div></div>`
+            }),
+          }).addTo(this.map)
+            .bindTooltip(
+              `<div style="min-width: 200px; max-width: 400px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
+                <strong>${this.translate.instant('MAP.EVENT_LOCATION')}</strong><br/>
+                ${location}
+              </div>`,
+              {
+                direction: 'top',
+                offset: [0, -20],
+                className: 'leaflet-tooltip-event'
+              }
+            );
         }
+      }),
+      catchError((err) => {
+        console.error('Geocoding error:', err);
+        return of(void 0);
+      }),
+      map(() => void 0)
+    );
+  }
 
-        this.mainEventMarker = Leaflet.marker([lat, lon], {
-          icon: Leaflet.divIcon({
-            className: 'pulse-marker',
-            iconSize: [36, 36],
-            iconAnchor: [18, 36],
-            popupAnchor: [0, -36],
-            html: `<div></div>`
-          }),
-        }).addTo(this.map)
-          .bindTooltip(
-            `<div style="min-width: 200px; max-width: 400px; word-wrap: break-word; overflow-wrap: break-word; white-space: normal;">
-              <strong>Event Location</strong><br/>
-              ${location}
-            </div>`,
-            {
-              direction: 'top',
-              offset: [0, -20],
-              className: 'leaflet-tooltip-event'
-            }
-  );
-
-      }
-    }),
-    catchError((err) => {
-      console.error('Geocoding error:', err);
-      return of(void 0);
-    }),
-    map(() => void 0)
-  );
-}
-
-
-
-  renderPins(){
-    if(!this.map) return;
+  renderPins() {
+    if (!this.map) return;
 
     this.pinMarkers.forEach(marker => this.map.removeLayer(marker));
     this.pinMarkers = [];
@@ -168,21 +146,18 @@ private geocodeAddress(): Observable<void> {
       const category = pin.getPinCategory();
       const filename = this.pinCategoryService.isValidCategory(category) ? `${category}.png` : 'unknown.png';
       const icon = this.createIcon(filename);
-      //console.log('Pin category type and value:', typeof category, category);
-
 
       const marker = Leaflet.marker([pin.getLatitude(), pin.getLongitude()], {
         draggable: true,
         icon,
       });
 
-
       marker.bindTooltip(`
         <div style="min-width: 200px; max-width: 400px; word-wrap: break-word; overflow-wrap: break-word;">
-          <h4 style="margin: 0 0 0.3rem 0;"><strong>Pin📌:</strong> ${pin.getLabel()}</h4>
-          <p style="margin: 0 0 0.3rem 0;"><strong>Type:</strong> ${this.pinCategoryService.getCategoryName(pin.getPinCategory())}</p>
+          <h4 style="margin: 0 0 0.3rem 0;"><strong>${this.translate.instant('MAP.PIN')}: </strong> ${pin.getLabel()}</h4>
+          <p style="margin: 0 0 0.3rem 0;"><strong>${this.translate.instant('MAP.TYPE')}: </strong> ${this.pinCategoryService.getCategoryName(pin.getPinCategory())}</p>
           <p style="margin: 0; white-space: normal; word-wrap: break-word; overflow-wrap: break-word;">
-            <strong>Description:</strong> ${pin.getDescription() || '<em>No description</em>'}
+            <strong>${this.translate.instant('MAP.DESCRIPTION')}:</strong> ${pin.getDescription() || `<em>${this.translate.instant('MAP.NO_DESCRIPTION')}</em>`}
           </p>
         </div>
       `, {
@@ -192,56 +167,48 @@ private geocodeAddress(): Observable<void> {
         interactive: false,
       });
 
-
-
       marker.on('click', (e: Leaflet.LeafletMouseEvent) => {
         this.selectedPin = pin;
         this.displayPinDialog = true;
       });
 
-       // Handle drag end event
-    marker.on('dragend', (e: Leaflet.LeafletEvent) => {
-      const newLatLng = (e.target as Leaflet.Marker).getLatLng();
+      marker.on('dragend', (e: Leaflet.LeafletEvent) => {
+        const newLatLng = (e.target as Leaflet.Marker).getLatLng();
 
-      this.confirmationService.confirm({
-        message: `Confirm move pin "${pin.getLabel()}" to new location?`,
-        header: 'Confirm Move',
-        icon: 'pi pi-exclamation-triangle',
-        accept: () => {
-          // Update pin coordinates in your DTO
-          pin.setLatitude(newLatLng.lat);
-          pin.setLongitude(newLatLng.lng);
+        this.confirmationService.confirm({
+          message: this.translate.instant('MAP.CONFIRM_MOVE_PIN', { pinLabel: pin.getLabel() }),
+          header: this.translate.instant('MAP.CONFIRM_MOVE_HEADER'),
+          icon: 'pi pi-exclamation-triangle',
+          accept: () => {
+            pin.setLatitude(newLatLng.lat);
+            pin.setLongitude(newLatLng.lng);
 
-          // Update backend
-          this.apiService.updateMapPin(pin).subscribe({
-            next: () => {
-              this.messageService.add({
-                severity: 'success',
-                summary: 'Pin Moved',
-                detail: `Pin "${pin.getLabel()}" moved successfully.`,
-                life: 3000,
-              });
-              this.pinSaved.emit(); // Notify to refresh pins
-            },
-            error: (err) => {
-              this.messageService.add({
-                severity: 'error',
-                summary: 'Move Failed',
-                detail: err.message || 'Unknown error',
-                life: 3000,
-              });
-              // Reset marker position on error
-              marker.setLatLng([pin.getLatitude(), pin.getLongitude()]);
-            }
-          });
-        },
-        reject: () => {
-          // Reset marker to original position if user cancels
-          marker.setLatLng([pin.getLatitude(), pin.getLongitude()]);
-        }
+            this.apiService.updateMapPin(pin).subscribe({
+              next: () => {
+                this.messageService.add({
+                  severity: 'success',
+                  summary: this.translate.instant('MAP.PIN_MOVED'),
+                  detail: this.translate.instant('MAP.PIN_MOVED_DETAIL', { pinLabel: pin.getLabel() }),
+                  life: 3000,
+                });
+                this.pinSaved.emit();
+              },
+              error: (err) => {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: this.translate.instant('MAP.MOVE_FAILED'),
+                  detail: err.message || this.translate.instant('MAP.UNKNOWN_ERROR'),
+                  life: 3000,
+                });
+                marker.setLatLng([pin.getLatitude(), pin.getLongitude()]);
+              }
+            });
+          },
+          reject: () => {
+            marker.setLatLng([pin.getLatitude(), pin.getLongitude()]);
+          }
+        });
       });
-    });
-
 
       marker.addTo(this.map);
       this.pinMarkers.push(marker);
@@ -254,8 +221,8 @@ private geocodeAddress(): Observable<void> {
 
     this.messageService.add({
       severity: 'info',
-      summary: 'Add Pin Mode',
-      detail: 'Click on the map to place your pin.',
+      summary: this.translate.instant('MAP.ADD_PIN_MODE'),
+      detail: this.translate.instant('MAP.CLICK_TO_PLACE_PIN'),
     });
 
     this.map.once('click', (e: Leaflet.LeafletMouseEvent) => {
@@ -265,62 +232,59 @@ private geocodeAddress(): Observable<void> {
       const lat = e.latlng.lat;
       const lon = e.latlng.lng;
 
-      //console.log(lat,lon);
-      this.openPinModal(lat,lon);
+      this.openPinModal(lat, lon);
     });
   }
 
-  openPinModal(lat: number, lon: number){
-    this.pinModal.open(lat,lon)
+  openPinModal(lat: number, lon: number) {
+    this.pinModal.open(lat, lon);
   }
 
-  openEditPinModal(pin: EventPinDto){
+  openEditPinModal(pin: EventPinDto) {
     if (!pin) return;
     this.displayPinDialog = false;
-    if(!this.pinModal) return;
+    if (!this.pinModal) return;
     this.pinModal.open(pin.getLatitude(), pin.getLongitude(), pin);
-
   }
 
-  deletePin(pin : EventPinDto){
+  deletePin(pin: EventPinDto) {
     if (!pin) return;
 
     this.displayPinDialog = false;
 
     this.confirmationService.confirm({
-      message: `Are you sure you want to delete pin "${this.selectedPin?.getLabel()}"?`,
-      header: 'Confirm Delete',
+      message: this.translate.instant('MAP.CONFIRM_DELETE_PIN', { pinLabel: this.selectedPin?.getLabel() }),
+      header: this.translate.instant('MAP.CONFIRM_DELETE_HEADER'),
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
         this.apiService.deleteMapPin(pin.getId()).subscribe({
-            next: () => {
+          next: () => {
             this.messageService.add({
               severity: 'success',
-              summary: 'Pin Deleted',
-              detail: `Pin "${pin.getLabel()}" deleted successfully.`,
+              summary: this.translate.instant('MAP.PIN_DELETED'),
+              detail: this.translate.instant('MAP.PIN_DELETED_DETAIL', { pinLabel: pin.getLabel() }),
               life: 3000,
             });
-            this.pinSaved.emit(); // Refresh pins
+            this.pinSaved.emit();
           },
           error: (err) => {
             this.messageService.add({
               severity: 'error',
-              summary: 'Delete Failed',
-              detail: err.message || 'Unknown error',
+              summary: this.translate.instant('MAP.DELETE_FAILED'),
+              detail: err.message || this.translate.instant('MAP.UNKNOWN_ERROR'),
               life: 3000,
             });
           }
-          });
-        }
+        });
+      }
     });
   }
 
-  onPinSaved(pinData : EventPinDto){
-      this.pinSaved.emit(); // Tell parent to refresh pins
+  onPinSaved(pinData: EventPinDto) {
+    this.pinSaved.emit();
   }
 
-  onPinDialogClose(){
+  onPinDialogClose() {
     this.selectedPin = null;
   }
-
 }
