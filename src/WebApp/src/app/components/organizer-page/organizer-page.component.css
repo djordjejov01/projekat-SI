@@ -97,40 +97,29 @@ select:hover, option:hover{
     cursor: pointer;
 }
 
-/* Responsive mobile styles */
 @media screen and (max-width: 768px) {
-    /* reduce logo size and spacing */
     #logo{
         max-width: 90px;
         margin-left: 12px;
     }
-    /* hide username text to save space (keep avatar) */
     #username{
         display: none;
     }
-    /* reduce right side spacing */
     #right{
         gap: 0.5rem;
         margin-right: 6px;
     }
-    /* content area should not keep large left padding (menu overlays instead) */
     #show{
         padding-left: 1rem;
         padding-right: 1rem;
         transition: 0.8s;
     }
-    /* adjust header height if needed */
     #head{
         padding-top: 8px;
         padding-bottom: 8px;
     }
 }
 
-@media screen and (width <= 1531px) {
-
-}
-
-/* Desktop adjustments already present */
 @media screen and (max-width: 1666px) {
     #show{
         padding-top: 55px;
