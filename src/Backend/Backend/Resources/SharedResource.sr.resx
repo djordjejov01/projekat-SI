@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+
+  <data name="user.password_mismatch"><value>Lozinka i potvrda lozinke se ne poklapaju.</value></data>
+  <data name="user.role_not_allowed"><value>Uloga nije dozvoljena za javnu registraciju.</value></data>
+  <data name="user.not_found"><value>Korisnik nije pronađen.</value></data>
+  <data name="user.current_password_incorrect"><value>Trenutna lozinka je netačna.</value></data>
+  <data name="user.password_policy_failed"><value>Nova lozinka mora imati najmanje 8 karaktera i sadržati veliko slovo, malo slovo i broj.</value></data>
+  <data name="user.password_changed"><value>Lozinka uspešno promenjena.</value></data>
+  <data name="user.email_not_verified"><value>Email adresa nije verifikovana. Proverite poštu i verifikujte nalog.</value></data>
+  <data name="user.registration_success_verify"><value>Registracija uspešna. Proverite email i verifikujte nalog.</value></data>
+  <data name="user.profile_picture_deleted"><value>Profilna slika obrisana.</value></data>
+  <data name="user.invalid_credentials"><value>Neispravan email ili lozinka.</value></data>
+  <data name="user.not_active"><value>Korisnik nije aktivan.</value></data>
+
+  <data name="organizer.not_found"><value>Organizator sa tim ID-jem ne postoji.</value></data>
+  <data name="organizer.user_not_found"><value>Korisnik nije pronađen.</value></data>
+  <data name="organizer.username_exists"><value>Korisničko ime već postoji.</value></data>
+  <data name="organizer.updated"><value>Podaci o korisniku su uspešno izmenjeni!</value></data>
+  <data name="organizer.activity_created"><value>Aktivnost je uspešno kreirana.</value></data>
+  <data name="organizer.activity_updated"><value>Aktivnost je uspešno izmenjena.</value></data>
+  <data name="organizer.activity_deleted"><value>Aktivnost je uspešno obrisana.</value></data>
+  <data name="organizer.resource_request_ok"><value>Zahtev za resurs je poslat ili izmenjen.</value></data>
+  <data name="organizer.event_resource_not_found"><value>Dodela resursa događaju nije pronađena.</value></data>
+  <data name="organizer.resource_deallocated"><value>Resurs je uspešno dealociran.</value></data>
+  <data name="organizer.no_access_event"><value>Nemate pristup ovom događaju.</value></data>
+  <data name="organizer.edit_permission_denied"><value>Nemate dozvolu da uređujete ovaj događaj.</value></data>
+  <data name="organizer.event_not_found_or_no_permission"><value>Događaj nije pronađen ili nemate dozvolu da ga koristite.</value></data>
+  <data name="organizer.no_events_found"><value>Nema događaja za ovog organizatora.</value></data>
+
+  <data name="event.created"><value>Događaj je uspešno kreiran.</value></data>
+  <data name="event.published"><value>Događaj je uspešno objavljen.</value></data>
+  <data name="event.published_error"><value>Došlo je do greške prilikom objave događaja.</value></data>
+  <data name="event.deleted"><value>Događaj je uspešno obrisan.</value></data>
+  <data name="event.deleted_error"><value>Došlo je do greške prilikom brisanja događaja.</value></data>
+  <data name="event.canceled"><value>Događaj je uspešno otkazan.</value></data>
+  <data name="event.canceled_error"><value>Došlo je do greške prilikom otkazivanja događaja.</value></data>
+  <data name="event.edit_forbidden"><value>Nemate dozvolu da uređujete ovaj događaj.</value></data>
+  <data name="event.capacity_invalid"><value>Kapacitet mora biti -1 (neograničeno) ili pozitivan broj.</value></data>
+  <data name="event.capacity_below_quota"><value>Nije moguće postaviti kapacitet ispod trenutne ukupne kvote karata ({0}).</value></data>
+  <data name="events.not_found"><value>Događaj nije pronađen.</value></data>
+  <data name="event.not_found_or_permission"><value>Događaj nije pronađen ili nemate dozvolu da ga koristite.</value></data>
+  <data name="event.already_published"><value>Događaj je već objavljen.</value></data>
+  <data name="event.cannot_publish_canceled"><value>Nije moguće objaviti otkazan događaj.</value></data>
+  <data name="event.title_required"><value>Naslov događaja je obavezan.</value></data>
+  <data name="event.location_required"><value>Lokacija događaja je obavezna.</value></data>
+  <data name="event.start_date_required"><value>Datum početka događaja je obavezan.</value></data>
+  <data name="event.end_date_required"><value>Datum kraja događaja je obavezan.</value></data>
+  <data name="event.start_date_before_end_date"><value>Datum početka događaja mora biti pre datuma kraja.</value></data>
+  <data name="event.start_date_future"><value>Datum početka događaja mora biti u budućnosti.</value></data>
+  <data name="event.paid_event_tickets_required"><value>Plaćeni događaji moraju imati karte pre objave.</value></data>
+  <data name="event.end_date_past"><value>Datum kraja događaja ne može biti u prošlosti.</value></data>
+  <data name="event.delete_only_draft_canceled"><value>Događaj se može obrisati samo ako je u statusu Draft ili Canceled.</value></data>
+  <data name="event.already_canceled"><value>Događaj je već otkazan.</value></data>
+  <data name="event.draft_delete"><value>Događaji u statusu Draft treba da se obrišu, a ne otkažu.</value></data>
+  <data name="event.cannot_cancel_started"><value>Nije moguće otkazati događaj koji je već počeo.</value></data>
+
+  <data name="subevent.title_required"><value>Pod-događaj '{0}' mora imati naslov.</value></data>
+  <data name="subevent.location_required"><value>Pod-događaj '{0}' mora imati lokaciju.</value></data>
+  <data name="subevent.start_date_before_end_date"><value>Pod-događaj '{0}' datum početka mora biti pre datuma kraja.</value></data>
+  <data name="subevent.start_date_past"><value>Pod-događaj '{0}' datum početka ne može biti u prošlosti.</value></data>
+
+  <data name="activity.not_found"><value>Aktivnost nije pronađena.</value></data>
+  <data name="activity.own_events_only"><value>Možete uređivati samo aktivnosti sa sopstvenih događaja.</value></data>
+  <data name="activity.time_order"><value>Početno vreme mora biti pre krajnjeg vremena.</value></data>
+  <data name="activity.time_within_event"><value>Vreme aktivnosti mora biti u okviru datuma događaja.</value></data>
+
+  <data name="tickets.at_least_one"><value>Morate odabrati bar jednu kartu.</value></data>
+  <data name="tickets.invalid"><value>Neispravna karta.</value></data>
+  <data name="tickets.min_quantity"><value>Količina mora biti najmanje 1.</value></data>
+  <data name="tickets.not_exist"><value>Karta sa ID-jem {0} ne postoji.</value></data>
+  <data name="tickets.event_not_found"><value>Događaj za kartu {0} nije pronađen.</value></data>
+  <data name="tickets.event_passed"><value>Nije moguće kupiti kartu za događaj {0} koji je već prošao.</value></data>
+  <data name="tickets.free_event"><value>Nije moguće kupiti kartu za besplatan događaj ({0}).</value></data>
+  <data name="tickets.limit_exceeded"><value>Ne možete kupiti više od 10 karata za događaj {0}. Već imate {1} karata.</value></data>
+  <data name="tickets.not_enough_quota"><value>Nema dovoljno dostupnih karata za tip {0}.</value></data>
+  <data name="credit.insufficient"><value>Nedovoljno kredita za kupovinu.</value></data>
+  <data name="tickets.created"><value>Karta je uspešno kreirana.</value></data>
+  <data name="tickets.updated"><value>Karta je uspešno izmenjena.</value></data>
+  <data name="tickets.deleted"><value>Karta je uspešno obrisana.</value></data>
+  <data name="tickets.not_found_or_no_permission"><value>Karta nije pronađena ili nemate dozvolu da je {0}.</value></data>
+  <data name="tickets.invalid_id"><value>Neispravan ID karte.</value></data>
+  <data name="tickets.info_missing"><value>Nisu dostavljeni podaci o karti.</value></data>
+  <data name="tickets.quota_gt_zero"><value>Kvota karata mora biti veća od 0.</value></data>
+  <data name="tickets.price_gt_zero"><value>Karta mora imati cenu veću od 0 EUR.</value></data>
+  <data name="tickets.valid_from_before_until"><value>Datum početka važenja mora biti pre datuma isteka.</value></data>
+  <data name="tickets.validity_within_event"><value>Važenje karte mora biti u okviru datuma događaja.</value></data>
+  <data name="tickets.event_capacity_not_set"><value>Kapacitet događaja nije podešen.</value></data>
+  <data name="tickets.exceed_capacity"><value>Ukupan broj karata svih tipova bi premašio kapacitet događaja ({0}).</value></data>
+  <data name="tickets.cannot_delete_with_purchases"><value>Nije moguće obrisati kartu jer postoje kupljene karte.</value></data>
+
+  <data name="resources.qty_positive"><value>Količina mora biti veća od nule.</value></data>
+  <data name="resources.not_exist"><value>Resurs ne postoji.</value></data>
+  <data name="resources.not_reservable"><value>Ovaj resurs nije moguće rezervisati.</value></data>
+  <data name="resources.event_passed"><value>Nije moguće rezervisati resurs za događaj koji je već prošao.</value></data>
+  <data name="resources.need_ticket"><value>Morate imati kartu za ovaj događaj da biste rezervisali resurs.</value></data>
+  <data name="resources.ticket_missing"><value>Nemate važeću kartu za ovaj događaj.</value></data>
+  <data name="resources.ticket_wrong_event"><value>Karta nije za isti događaj kao resurs koji pokušavate da rezervišete.</value></data>
+  <data name="resources.not_enough"><value>Nema dovoljno dostupnih resursa.</value></data>
+  <data name="resources.reserved"><value>Rezervacija uspešna.</value></data>
+  <data name="resources.not_found"><value>Resurs nije pronađen.</value></data>
+  <data name="resources.not_enough_quantity_request"><value>Nema dovoljno količine da bi se ispunio novi zahtev.</value></data>
+  <data name="resources.not_enough_quantity_new"><value>Nema dovoljno količine za novi zahtev.</value></data>
+  <data name="resources.updated"><value>Resurs je ažuriran!</value></data>
+  <data name="resources.deleted"><value>Resurs je obrisan!</value></data>
+  <data name="resources.cannot_delete_booked_inexhaustable"><value>Nije moguće obrisati rezervisan neiscrpiv resurs.</value></data>
+  <data name="resources.only_update_pending"><value>Moguće je ažurirati samo zahteve u statusu Pending.</value></data>
+  <data name="resources.not_enough_quantity_maybe_other_event"><value>Nema dovoljno količine. Drugi događaj je možda rezervisao.</value></data>
+  <data name="resources.status_updated"><value>Status je uspešno ažuriran.</value></data>
+
+  <data name="common.invalid_email"><value>Neispravan format email adrese.</value></data>
+  <data name="common.email_exists"><value>Email već postoji.</value></data>
+  <data name="common.invalid_phone"><value>Neispravan format broja telefona.</value></data>
+  <data name="common.phone_exists"><value>Broj telefona već postoji.</value></data>
+  <data name="common.unexpected_error"><value>Došlo je do greške. Pokušajte ponovo kasnije.</value></data>
+  <data name="common.image_delete_error"><value>Greška pri brisanju slike: {0}</value></data>
+  <data name="common.image_not_found"><value>Slika nije pronađena.</value></data>
+  <data name="common.invalid_image_format"><value>Neispravan format slike. Dozvoljeni formati: JPG, JPEG, PNG.</value></data>
+  <data name="common.image_too_large"><value>Slika je prevelika. Maksimalna veličina je 2MB.</value></data>
+  <data name="user.profile_picture_updated"><value>Profilna slika uspešno ažurirana.</value></data>
+  <data name="common.model_cannot_be_null"><value>Model ne može biti null.</value></data>
+  <data name="common.invalid_id"><value>Neispravan ID.</value></data>
+  <data name="common.resource_release_error"><value>Greška pri oslobađanju resursa za događaj {0}.</value></data>
+  <data name="common.activity_cannot_be_null"><value>Aktivnost ne može biti null.</value></data>
+
+  <data name="email_verification.token_not_found"><value>Token nije pronađen.</value></data>
+  <data name="email_verification.token_used"><value>Token je već iskorišćen.</value></data>
+  <data name="email_verification.token_expired"><value>Token je istekao.</value></data>
+  <data name="email_verification.verified"><value>Email je verifikovan.</value></data>
+  <data name="supplier.not_found"><value>Dobavljač nije pronađen.</value></data>
+  <data name="supplier.not_approved"><value>Dobavljač još nije odobren od strane administratora.</value></data>
+  <data name="favorites.already_in"><value>Događaj je već u omiljenim.</value></data>
+  <data name="events.unknown_category"><value>Nepoznata kategorija.</value></data>
+  <data name="eventpin.saved"><value>Pin događaja sačuvan!</value></data>
+  <data name="eventpin.updated"><value>Pin događaja ažuriran!</value></data>
+  <data name="eventpin.deleted"><value>Pin događaja obrisan!</value></data>
+  <data name="eventpin.not_found"><value>Pin događaja nije pronađen.</value></data>
+  <data name="credit.exceeds_max"><value>Kredit ne može preći 1.000.000.</value></data>
+  <data name="ticket_validation.not_found"><value>Karta nije pronađena.</value></data>
+  <data name="ticket_validation.invalid_token"><value>Neispravan verifikacioni token.</value></data>
+  <data name="ticket_validation.already_used"><value>Karta je već iskorišćena u {0}.</value></data>
+  <data name="ticket_validation.valid"><value>Karta je važeća. Dobro došli na događaj!</value></data>
+</root>
+

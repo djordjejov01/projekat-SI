@@ -1,20 +1,29 @@
-
 <header>
     <p-breadcrumb [model]="items"></p-breadcrumb>
     <div class="title-buttons">
         <h1 class="font-archivo">{{ eventTitle }}</h1>
         <div class="buttons">
-            <button *ngIf="currStatus != 'Published'" class="delete-btn font-inter" (click) = "deleteEvent()"><i class="pi pi-trash"></i>Delete Event</button>
-            <p *ngIf="currStatus == 'Canceled'" id="cancelText">Event is canceled</p>
-            <button *ngIf="currStatus == 'Published'  && eventInfo.getParentEventId() == 0" class="cancel-btn font-inter" (click) = "cancelEvent()"><i class="pi pi-times"></i>Cancel Event</button>
-            <button *ngIf="currStatus != 'Canceled'" class="edit-btn font-inter" id="cnclbtn" (click)="onEditClick()"><i class="pi pi-pen-to-square"></i>Edit Event</button>
-            <button *ngIf="currStatus == 'Draft'  && eventInfo.getParentEventId() == 0" class="publish-btn font-inter" (click) = "publishEvent()"><i class="pi pi-check-circle"></i>Publish Event</button>
-            
-            
+            <button *ngIf="currStatus != 'Published'" class="delete-btn font-inter" (click)="deleteEvent()">
+                <i class="pi pi-trash"></i> {{ 'EVENT.DELETE' | translate }}
+            </button>
+
+            <p *ngIf="currStatus == 'Canceled'" id="cancelText">
+                {{ 'EVENT.CANCELED' | translate }}
+            </p>
+
+            <button *ngIf="currStatus == 'Published' && eventInfo.getParentEventId() == 0" class="cancel-btn font-inter" (click)="cancelEvent()">
+                <i class="pi pi-times"></i> {{ 'EVENT.CANCEL' | translate }}
+            </button>
+
+            <button *ngIf="currStatus != 'Canceled'" class="edit-btn font-inter" id="cnclbtn" (click)="onEditClick()">
+                <i class="pi pi-pen-to-square"></i> {{ 'EVENT.EDIT' | translate }}
+            </button>
+
+            <button *ngIf="currStatus == 'Draft' && eventInfo.getParentEventId() == 0" class="publish-btn font-inter" (click)="publishEvent()">
+                <i class="pi pi-check-circle"></i> {{ 'EVENT.PUBLISH' | translate }}
+            </button>
         </div>
     </div> 
 
     <hr class="custom-hr">
 </header>
-
-

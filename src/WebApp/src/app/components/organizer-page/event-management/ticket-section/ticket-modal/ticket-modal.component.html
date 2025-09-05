@@ -10,14 +10,14 @@
   <ng-template pTemplate="header">
     <div class="flex justify-between items-start w-full">
       <div class="formTitle">
-        <h3>Create New Ticket</h3>
-        <p>Fill in the details below to set up your ticket.</p>
+        <h3>{{ 'CREATE_NEW_TICKET' | translate }}</h3>
+        <p>{{ 'FILL_TICKET_DETAILS' | translate }}</p>
       </div>
       <button
         type="button"
         class="p-dialog-header-icon p-link p-button-rounded p-button-text exit-button"
         (click)="onCancleClick()"
-        pTooltip="Close"
+        pTooltip="{{ 'CLOSE' | translate }}"
         tooltipPosition="left"
       >
         <i class="pi pi-times"></i>
@@ -25,102 +25,72 @@
     </div>
   </ng-template>
     
-    <form action="" [formGroup]="ticketForm" class="activityForm">
+  <form action="" [formGroup]="ticketForm" class="activityForm">
 
-        <div class="ticket">
+    <div class="ticket">
 
-            <div class="name-price">
+      <div class="name-price">
 
-                <div  class="input-wrapper w-full ">
-
-                    <p>Ticket Name</p>
-                    <p-floatlabel class="w-full md:w-56" variant="on">
-                    <input  type="text"  pInputText  placeholder=" "  formControlName="name"  id="ticketName"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-                    <label for="ticketName">Enter Ticket Name</label>
-                    </p-floatlabel>
-
-                </div>
-
-                <div  class="input-wrapper w-full ">
-
-                    <p>Ticket Price</p>
-                    <p-floatlabel class="w-full md:w-56" variant="on">
-                        <p-inputnumber  placeholder=" " mode="currency" [currency]="currencyCode" [locale]="localeCode" formControlName="price" [style]="{ width: '100%' }" inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
-                    <label for="ticket-price">Enter Ticket Price</label>
-                    </p-floatlabel>
-
-                </div>
-
-            </div>
-
-            <div class="dates">
-
-                <div  class="input-wrapper">
-                    <p>Valid From</p>
-                    <p-floatlabel class="w-full md:w-56"  variant="on">
-                        <p-datepicker inputId="validFrom" placeholder=" " formControlName="validFrom" [showTime]="true" hourFormat="24" [minDate]="eventBasicInfo.getStartDate() ?? null" [maxDate]="eventBasicInfo.getEndDate() ?? null"  [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
-                                    <label for="validFrom">Valid From Date and Time</label>
-                    </p-floatlabel>
-                </div>
-
-                <div  class="input-wrapper">
-                    <p>Valid Until</p>
-                    <p-floatlabel class="w-full md:w-56"  variant="on">
-                        <p-datepicker inputId="validUntil" placeholder=" " formControlName="validUntil" [showTime]="true" hourFormat="24" [minDate]="eventBasicInfo.getStartDate() ?? null" [maxDate]="eventBasicInfo.getEndDate() ?? null" [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
-                        <label for="validUntil">Valid Until Date and Time</label>
-                    </p-floatlabel>
-                </div>
-
-            </div>
-
-            <div  class="input-wrapper">
-
-                <p>Quota</p>
-                            
-                <p-floatlabel class="w-full md:w-56" variant="on">
-                <p-inputnumber
-                        formControlName="quota"
-                        inputId="quota"
-                        [min]="1"
-                        [useGrouping]="false"
-                        [showButtons]="false"
-                        [style]="{ width: '100%' }"
-                        inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                    ></p-inputnumber>
-                <label for="quota">Enter Ticket Quota</label>
-                </p-floatlabel>
-
-            </div>
-
-            <div  class="input-wrapper">
-
-                <p>Ticket Description</p>
-                <p-floatlabel class="w-full md:w-56" variant="on">
-                    <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
-                <label for="description">Describe Your Ticket</label>
-                </p-floatlabel>
-
-            </div>
-                        
+        <div class="input-wrapper w-full">
+          <p>{{ 'TICKET_NAME' | translate }}</p>
+          <p-floatlabel class="w-full md:w-56" variant="on">
+            <input type="text" pInputText placeholder=" " formControlName="name" id="ticketName" class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+            <label for="ticketName">{{ 'ENTER_TICKET_NAME' | translate }}</label>
+          </p-floatlabel>
         </div>
 
-        <div class="form-buttons">
-                <p-button 
-                label="Save Changes"
-                icon="pi pi-pen-to-square"
-                [raised]="true"
-                (onClick)="submitForm()"
-                severity="primary"
-                ></p-button>
-
-                <p-button 
-                    label="Cancel"
-                    icon="pi pi-times"
-                    [raised]="true"
-                    severity="secondary"
-                    type="button"
-                    (onClick)="hide()"
-                ></p-button>
+        <div class="input-wrapper w-full">
+          <p>{{ 'TICKET_PRICE' | translate }}</p>
+          <p-floatlabel class="w-full md:w-56" variant="on">
+            <p-inputnumber placeholder=" " mode="currency" [currency]="currencyCode" [locale]="localeCode" formControlName="price" [style]="{ width: '100%' }" inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+            <label for="ticket-price">{{ 'ENTER_TICKET_PRICE' | translate }}</label>
+          </p-floatlabel>
         </div>
-    </form>
+
+      </div>
+
+      <div class="dates">
+
+        <div class="input-wrapper">
+          <p>{{ 'VALID_FROM' | translate }}</p>
+          <p-floatlabel class="w-full md:w-56" variant="on">
+            <p-datepicker inputId="validFrom" placeholder=" " formControlName="validFrom" [showTime]="true" hourFormat="24" [minDate]="eventBasicInfo.getStartDate() ?? null" [maxDate]="eventBasicInfo.getEndDate() ?? null" [style]="{ width: '100%' }" inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+            <label for="validFrom">{{ 'VALID_FROM_DATE' | translate }}</label>
+          </p-floatlabel>
+        </div>
+
+        <div class="input-wrapper">
+          <p>{{ 'VALID_UNTIL' | translate }}</p>
+          <p-floatlabel class="w-full md:w-56" variant="on">
+            <p-datepicker inputId="validUntil" placeholder=" " formControlName="validUntil" [showTime]="true" hourFormat="24" [minDate]="eventBasicInfo.getStartDate() ?? null" [maxDate]="eventBasicInfo.getEndDate() ?? null" [style]="{ width: '100%' }" inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
+            <label for="validUntil">{{ 'VALID_UNTIL_DATE' | translate }}</label>
+          </p-floatlabel>
+        </div>
+
+      </div>
+
+      <div class="input-wrapper">
+        <p>{{ 'QUOTA' | translate }}</p>
+        <p-floatlabel class="w-full md:w-56" variant="on">
+          <p-inputnumber formControlName="quota" inputId="quota" [min]="1" [useGrouping]="false" [showButtons]="false" [style]="{ width: '100%' }" inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></p-inputnumber>
+          <label for="quota">{{ 'ENTER_TICKET_QUOTA' | translate }}</label>
+        </p-floatlabel>
+      </div>
+
+      <div class="input-wrapper">
+        <p>{{ 'TICKET_DESCRIPTION' | translate }}</p>
+        <p-floatlabel class="w-full md:w-56" variant="on">
+          <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
+          <label for="description">{{ 'DESCRIBE_YOUR_TICKET' | translate }}</label>
+        </p-floatlabel>
+      </div>
+
+    </div>
+
+    <div class="form-buttons">
+      <p-button label="{{ 'SAVE_CHANGES' | translate }}" icon="pi pi-pen-to-square" [raised]="true" (onClick)="submitForm()" severity="primary"></p-button>
+      <p-button label="{{ 'CANCEL' | translate }}" icon="pi pi-times" [raised]="true" severity="secondary" type="button" (onClick)="hide()"></p-button>
+    </div>
+
+  </form>
 </p-dialog>

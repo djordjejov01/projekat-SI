@@ -57,7 +57,7 @@ export default function LoginScreen() {
 
         let errorMessage: string = errorData.message || t('loginFailed');
 
-      if (errorMessage === "Nalog nije verifikovan.") {
+      if (errorMessage === "Email address not verified. Please check your email and verify your account.") {
         errorMessage = t('accountNotVerified');
       }
 
