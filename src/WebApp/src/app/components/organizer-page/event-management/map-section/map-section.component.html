@@ -1,50 +1,62 @@
 <div class="map-section">
 
     <div class="map-header">
-        <h1>Location Map</h1>
-        <button id="addBtn" *ngIf = "eventBasicInfo.getStatusLabel()!='Canceled'" icon="pi pi-plus" (click)="startPlacingPin()"><i class="pi pi-plus"></i>Add Pin</button>
+        <h1>{{ 'MAP.LOCATION_MAP' | translate }}</h1>
+        <button *ngIf="eventBasicInfo.getStatusLabel() != 'Canceled'" icon="pi pi-plus" (click)="startPlacingPin()">
+            <i class="pi pi-plus"></i> {{ 'MAP.ADD_PIN' | translate }}
+        </button>
     </div>
 
-        <hr class="custom-hr">
+    <hr class="custom-hr">
 
     <div id="map" class="map-container"></div>
 
-    <app-pin-modal #pinModal (pinSaved)="onPinSaved($event)" [eventId]="eventBasicInfo.getEventID()"></app-pin-modal>
+    <app-pin-modal #pinModal 
+        (pinSaved)="onPinSaved($event)" 
+        [eventId]="eventBasicInfo.getEventID()">
+    </app-pin-modal>
 
-   <p-dialog header="Pin Actions" [(visible)]="displayPinDialog" [modal]="true" [closable]="true" (onHide)="onPinDialogClose()">
-    <div>
-        <p><strong>Pin📌: {{ selectedPin?.getLabel() }}</strong></p>
+    <p-dialog header="{{ 'MAP.PIN_ACTIONS' | translate }}" 
+              [(visible)]="displayPinDialog" 
+              [modal]="true" 
+              [closable]="true" 
+              (onHide)="onPinDialogClose()">
         
-    </div>
-    <div class="action">
-        <p>Choose an action:</p>
-        <div class="action-buttons">
-            <!-- Edit Button -->
-            <button
-            pButton
-            type="button"
-            icon="pi pi-pencil"
-            class="p-button-rounded p-button-text p-button-sm"
-            (click)="openEditPinModal(selectedPin)"
-            pTooltip="Edit Pin"
-            tooltipPosition="top">
-            </button>
-
-            <!-- Delete Button -->
-            <button
-            pButton
-            type="button"
-            icon="pi pi-trash"
-            class="p-button-rounded p-button-text p-button-sm p-button-danger"
-            (click)="deletePin(selectedPin)"
-            pTooltip="Delete Pin"
-            tooltipPosition="top">
-            </button>
-
+        <div>
+            <p>
+                <strong>{{ 'MAP.PIN_LABEL' | translate }}: {{ selectedPin?.getLabel() }}</strong>
+            </p>
         </div>
-    </div>
-    
+
+        <div class="action">
+            <p>{{ 'MAP.CHOOSE_ACTION' | translate }}</p>
+            <div class="action-buttons">
+                
+                <!-- Edit Button -->
+                <button
+                    pButton
+                    type="button"
+                    icon="pi pi-pencil"
+                    class="p-button-rounded p-button-text p-button-sm"
+                    (click)="openEditPinModal(selectedPin)"
+                    pTooltip="{{ 'MAP.EDIT_PIN' | translate }}"
+                    tooltipPosition="top">
+                </button>
+
+                <!-- Delete Button -->
+                <button
+                    pButton
+                    type="button"
+                    icon="pi pi-trash"
+                    class="p-button-rounded p-button-text p-button-sm p-button-danger"
+                    (click)="deletePin(selectedPin)"
+                    pTooltip="{{ 'MAP.DELETE_PIN' | translate }}"
+                    tooltipPosition="top">
+                </button>
+
+            </div>
+        </div>
+
     </p-dialog>
 
 </div>
-

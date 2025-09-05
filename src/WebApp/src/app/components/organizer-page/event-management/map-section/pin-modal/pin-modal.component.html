@@ -10,104 +10,115 @@
   <ng-template pTemplate="header">
     <div class="flex justify-between items-start w-full">
       <div class="formTitle">
-        <h3>Create New Pin</h3>
-        <p>Fill in the details below to set up your pin.</p>
+        <h3>{{ 'PIN.CREATE_NEW_PIN' | translate }}</h3>
+        <p>{{ 'PIN.FILL_DETAILS_BELOW' | translate }}</p>
       </div>
       <button
         type="button"
         class="p-dialog-header-icon p-link p-button-rounded p-button-text exit-button"
         (click)="onCancleClick()"
-        pTooltip="Close"
+        pTooltip="{{ 'COMMON.CLOSE' | translate }}"
         tooltipPosition="left"
       >
         <i class="pi pi-times"></i>
       </button>
     </div>
   </ng-template>
-    
-    <form action="" [formGroup]="pinForm" class="pinForm">
 
-        <div class="form-inputs">
+  <form [formGroup]="pinForm" class="pinForm">
 
-            <div  class="input-wrapper">
+    <div class="form-inputs">
 
-                <p>Pin Title</p>
-                <p-floatlabel class="w-full md:w-56" variant="on">
-                    <input  type="text"  pInputText  placeholder=" "  formControlName="title"  inputId="title"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-                <label for="title">Enter Pin Title</label>
-                </p-floatlabel>
+      <!-- Pin Title -->
+      <div class="input-wrapper">
+        <p>{{ 'PIN.TITLE' | translate }}</p>
+        <p-floatlabel class="w-full md:w-56" variant="on">
+          <input
+            type="text"
+            pInputText
+            placeholder=" "
+            formControlName="title"
+            inputId="title"
+            [value]="pinForm.get('title')?.value | uppercase"
+            class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+          />
+          <label for="title">{{ 'PIN.ENTER_TITLE' | translate }}</label>
+        </p-floatlabel>
+      </div>
 
-            </div>
+      <!-- Pin Type -->
+      <div class="input-wrapper">
+        <p>{{ 'PIN.TYPE' | translate }}</p>
+        <p-floatlabel class="w-full" variant="on">
+          <p-dropdown
+            [options]="pinTypeOptions"
+            formControlName="type"
+            optionLabel="label"
+            optionValue="value"
+            placeholder=" "
+            inputId="type"
+            class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"
+          >
+            <!-- Dropdown Items -->
+            <ng-template let-option pTemplate="item">
+              <div class="flex items-center gap-2">
+                <img [src]="option.icon" alt="{{ option.label }}" class="w-5 h-5 object-contain" />
+                <span>{{ option.label | translate }}</span>
+              </div>
+            </ng-template>
 
-          <div class="input-wrapper">
-            <p>Type</p>
-            <p-floatlabel class="w-full" variant="on">
-              <p-dropdown
-                [options]="pinTypeOptions"
-                formControlName="type"
-                optionLabel="label"
-                optionValue="value"
-                placeholder=" "
-                inputId="type"
-                class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"
-              >
-                <!-- Dropdown items -->
-                <ng-template let-option pTemplate="item">
-                  <div class="flex items-center gap-2">
-                    <img [src]="option.icon" alt="{{ option.label }}" class="w-5 h-5 object-contain" />
-                    <span>{{ option.label }}</span>
-                  </div>
-                </ng-template>
+            <!-- Selected Item -->
+            <ng-template let-selected pTemplate="selectedItem">
+              <div class="flex items-center gap-2" *ngIf="selected">
+                <img [src]="selected.icon" alt="{{ selected.label }}" class="w-5 h-5 object-contain" />
+                <span>{{ selected.label | translate }}</span>
+              </div>
+              <span *ngIf="!selected">{{ 'PIN.SELECT_TYPE' | translate }}</span>
+            </ng-template>
+          </p-dropdown>
+          <label for="type">{{ 'PIN.SELECT_TYPE' | translate }}</label>
+        </p-floatlabel>
+      </div>
 
-                <!-- Selected item -->
-              <ng-template let-selected pTemplate="selectedItem">
-                <div class="flex items-center gap-2" *ngIf="selected">
-                  <img [src]="selected.icon" alt="Selected" class="w-5 h-5 object-contain" />
-                  <span>{{ selected.label }}</span>
-                </div>
-                <span *ngIf="!selected">Select Pin Type</span>
-              </ng-template>
+      <!-- Pin Description -->
+      <div class="input-wrapper">
+        <p>{{ 'PIN.DESCRIPTION' | translate }}</p>
+        <p-floatlabel class="w-full md:w-56" variant="on">
+          <textarea
+            pTextarea
+            id="description"
+            placeholder=" "
+            formControlName="description"
+            rows="5"
+            cols="30"
+            style="resize: none"
+            [ngClass]="{'p-inputtext-filled': pinForm.get('description')?.value}"
+            class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+          >{{ pinForm.get('description')?.value }}</textarea>
+          <label for="description">{{ 'PIN.DESCRIBE_PIN' | translate }}</label>
+        </p-floatlabel>
+      </div>
 
+      <!-- Form Buttons -->
+      <div class="form-buttons">
+        <p-button
+          label="{{ 'COMMON.SAVE_CHANGES' | translate }}"
+          icon="pi pi-pen-to-square"
+          [raised]="true"
+          (onClick)="savePin()"
+          severity="primary"
+        ></p-button>
 
-              </p-dropdown>
+        <p-button
+          label="{{ 'COMMON.CANCEL' | translate }}"
+          icon="pi pi-times"
+          [raised]="true"
+          severity="secondary"
+          type="button"
+          (onClick)="onCancleClick()"
+        ></p-button>
+      </div>
 
-              <label for="type">Select Pin Type</label>
-            </p-floatlabel>
-          </div>
-
-
-
-
-
-            <div  class="input-wrapper">
-
-                <p>Description</p>
-                <p-floatlabel class="w-full md:w-56" variant="on">
-                    <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" [ngClass]="{'p-inputtext-filled': pinForm?.get('description')?.value}"></textarea>
-                <label for="description">Describe Your Pin</label>
-                </p-floatlabel>
-
-            </div>
-
-
-            <div class="form-buttons">
-                <p-button 
-                label="Save Changes"
-                icon="pi pi-pen-to-square"
-                [raised]="true"
-                (onClick)="savePin()"
-                severity="primary"
-                ></p-button>
-
-                <p-button 
-                    label="Cancel"
-                    icon="pi pi-times"
-                    [raised]="true"
-                    severity="secondary"
-                    type="button"
-                    (onClick)="onCancleClick()"
-                ></p-button>
-            </div>
-        </div>
-    </form>
+    </div>
+  </form>
 </p-dialog>

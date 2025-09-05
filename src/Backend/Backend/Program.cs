@@ -1,11 +1,17 @@
-using Backend.Models;
+﻿using Backend.Models;
 using Backend.Services;
+using Backend.Services.Email;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
+using System.Globalization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Backend;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -91,9 +97,33 @@ builder.Services.AddHostedService<EventLifecycleHostedService>();
 
 
 builder.WebHost.UseUrls("http://0.0.0.0:11061");
+
+builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
+builder.Services.AddEmail(builder.Configuration);
+
+// Localization services
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+var supportedCultures = new[] { "en", "sr" }
+    .Select(c => new CultureInfo(c))
+    .ToList();
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    
+    options.DefaultRequestCulture = new RequestCulture("en");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+
+    // Rely on Accept-Language (web) and default for others; no query or user.language
+    options.RequestCultureProviders = new IRequestCultureProvider[]
+    {
+        new AcceptLanguageHeaderRequestCultureProvider()
+    };
+});
+
 var app = builder.Build();
 
-// Run database migrations on startup
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -105,6 +135,39 @@ using (var scope = app.Services.CreateScope())
 app.UseDefaultFiles();
 var provider = new FileExtensionContentTypeProvider();
 provider.Mappings[".apk"] = "application/vnd.android.package-archive";
+
+
+var allowedReferers = new[]
+{
+    "http://softeng.pmf.kg.ac.rs:11061",
+    "http://localhost:4200"
+};
+
+app.UseWhen(ctx => ctx.Request.Path.StartsWithSegments("/images"), branch =>
+{
+    branch.Use(async (context, next) =>
+    {
+        var referer = context.Request.Headers["Referer"].ToString();
+        var isAllowed = !string.IsNullOrEmpty(referer) &&
+                        allowedReferers.Any(origin => referer.StartsWith(origin, StringComparison.OrdinalIgnoreCase));
+
+        if (!isAllowed)
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            await context.Response.WriteAsync("Forbidden");
+            return;
+        }
+
+        await next();
+    });
+
+    branch.UseStaticFiles(new StaticFileOptions
+    {
+        RequestPath = "/images",
+        FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.WebRootPath, "images"))
+    });
+});
+
 
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -118,6 +181,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
 //app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
@@ -125,6 +189,62 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+// Enable request localization middleware
+app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
+
+// Global exception handler returning localized generic message
+app.UseExceptionHandler(handlerApp =>
+{
+    handlerApp.Run(async context =>
+    {
+        var localizer = context.RequestServices.GetRequiredService<Microsoft.Extensions.Localization.IStringLocalizer<SharedResource>>();
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+        var msg = localizer["common.unexpected_error"].ToString();
+        await context.Response.WriteAsJsonAsync(new { message = msg });
+    });
+});
+
+app.MapPost("/auth/send-verification", async (
+    IEmailVerificationService svc,
+    AppDbContext db,
+    HttpContext http,
+    CancellationToken ct
+) =>
+{
+    // if you have JWT userId claim:
+    var userIdStr = http.User.Claims.FirstOrDefault(c => c.Type == "sub" || c.Type == "userId")?.Value;
+    if (string.IsNullOrEmpty(userIdStr)) return Results.Unauthorized();
+
+    if (!int.TryParse(userIdStr, out var userId)) return Results.Unauthorized();
+
+    var user = await db.Users.FindAsync([userId], ct);
+    if (user is null) return Results.NotFound();
+
+    // Optional: return 200 even if already verified (idempotent)
+    if (user.IsEmailVerified) return Results.Ok(new { sent = false, alreadyVerified = true });
+
+    await svc.SendVerificationAsync(user, ct);
+    return Results.Ok(new { sent = true });
+}).RequireAuthorization();
+
+app.MapGet("/auth/verify-email", async (
+    string token,
+    IEmailVerificationService svc,
+    IConfiguration cfg,
+    CancellationToken ct
+) =>
+{
+    var ok = Guid.TryParse(token, out var tokenId);
+    var successUrl = cfg["Auth:EmailVerification:RedirectUrlOnSuccess"] ?? "/";
+    var failUrl = cfg["Auth:EmailVerification:RedirectUrlOnFail"] ?? "/";
+
+    if (!ok) return Results.Redirect(failUrl);
+
+    var (verified, _) = await svc.VerifyAsync(tokenId, ct);
+    return Results.Redirect(verified ? successUrl : failUrl);
+});
 
 app.MapControllers();
 app.MapFallbackToFile("index.html");

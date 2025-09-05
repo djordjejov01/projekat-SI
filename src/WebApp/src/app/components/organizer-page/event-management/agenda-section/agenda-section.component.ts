@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-// Angular core
-import { ViewChild } from '@angular/core'; // Only needed if used in agenda
+import { ViewChild } from '@angular/core'; 
 
 // Models & DTOs
 import { Activity, ApiService } from '../../../../Services/api.service';
@@ -18,42 +17,53 @@ import { SubeventModalComponent } from './subevent-modal/subevent-modal.componen
 import { Router } from '@angular/router';
 import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
 
+// i18n
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-agenda-section',
   imports: [
-  CommonModule,
-  AccordionModule,
-  TooltipModule,
-  ButtonModule,
-  ActivityModalComponent,
-  SubeventModalComponent
-],
-
+    CommonModule,
+    AccordionModule,
+    TooltipModule,
+    ButtonModule,
+    ActivityModalComponent,
+    SubeventModalComponent,
+    TranslateModule // dodato za translate pipe u HTML-u
+  ],
   templateUrl: './agenda-section.component.html',
-  styleUrl: './agenda-section.component.css'
+  styleUrls: ['./agenda-section.component.css']
 })
 export class AgendaSectionComponent {
 
-    @Input() subevents : Subevent[] = [];
-    @Input() activities : Activity[] = [];
-    @Output() agendaChanged = new EventEmitter<void>();
+  @Input() subevents: Subevent[] = [];
+  @Input() activities: Activity[] = [];
+  @Output() agendaChanged = new EventEmitter<void>();
 
-    @Input() eventBasicInfo! : EventBasicInfo;
+  @Input() eventBasicInfo!: EventBasicInfo;
 
-    constructor(private router : Router) {}
+  constructor(
+    private router: Router,
+    private translate: TranslateService // spremno za korišćenje prevoda
+  ) {}
 
-
-  goToSubeventManagement(subeventId : number){
-    this.router.navigate(['/organizer/event-management', subeventId])
+  goToSubeventManagement(subeventId: number) {
+    this.router.navigate(['/organizer/event-management', subeventId]);
   }
 
-  onActivityCreated(){
-      this.agendaChanged.emit()
+  onActivityCreated() {
+    this.agendaChanged.emit();
+
+    // Primer ako želiš notifikaciju sa prevodom
+    // const msg = this.translate.instant('AGENDA.ACTIVITY_CREATED');
+    // console.log(msg);
   }
 
-  onSubeventCreated(){
-    this.agendaChanged.emit()
-  }
+  onSubeventCreated() {
+    this.agendaChanged.emit();
 
+    // Primer ako želiš notifikaciju sa prevodom
+    // const msg = this.translate.instant('AGENDA.SUBEVENT_CREATED');
+    // console.log(msg);
+  }
 }

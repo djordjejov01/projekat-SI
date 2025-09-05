@@ -54,7 +54,14 @@ export default function LoginScreen() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || t('loginFailed'));
+
+        let errorMessage: string = errorData.message || t('loginFailed');
+
+      if (errorMessage === "Email address not verified. Please check your email and verify your account.") {
+        errorMessage = t('accountNotVerified');
+      }
+
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
@@ -76,15 +83,16 @@ export default function LoginScreen() {
         throw new Error('Greška pri proveri role');
       }
 
+      
       const roleData = await roleResponse.text(); // Vraca string "MobileUser" itd.
       
-
+      
       if (roleData !== '{"role":"MobileUser"}') {
-        Alert.alert('Pristup odbijen', 'Dozvoljen je samo pristup korisnicima mobilne aplikacije.');
+        Alert.alert(t('error'), t('mobileroleLogin'));
         return;
       }
+      
 
-      // ✅ Rola odgovara, sacuvaj token i nastavi
       await AsyncStorage.setItem('token', data.token);
       loadFavorites();
       router.replace('./(tabs)/events');

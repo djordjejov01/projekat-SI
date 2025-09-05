@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace Backend.Controllers
 {
@@ -12,25 +13,32 @@ namespace Backend.Controllers
     public class ResourceController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public ResourceController(AppDbContext context)
+        public ResourceController(AppDbContext context, IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
+            _localizer = localizer;
         }
 
-        [Authorize(Roles ="MobileUser")]
+        [Authorize(Roles = "MobileUser")]
         [HttpGet("{eventId}/resources")]
         public async Task<IActionResult> GetResourcesForEvent(int eventId)
         {
-            var resources =await _context.EventResources
+            var resources = await _context.EventResources
                 .Where(er => er.EventID == eventId && er.IsReservable && er.Event.EndDate > DateTime.UtcNow)
                 .Select(er => new {
-                    id = er.ID,                            
+                    id = er.ID,
                     supplierID = er.SupplierID,
                     eventID = er.EventID,
                     quantity = er.Quantity,
-                    name = er.Resource.Name
+                    name = er.Resource.Name,
+                    
+                    availableQuantity = er.Quantity - _context.UserResourceReservations
+                        .Where(urr => urr.EventResourceID == er.ID)
+                        .Sum(urr => urr.Quantity)
                 })
+                .Where(r => r.availableQuantity > 0)
                 .ToListAsync();
 
             return Ok(resources);
@@ -44,7 +52,7 @@ namespace Backend.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
             if (dto.Quantity <= 0)
-                return BadRequest("The quantity must be greater than zero.");
+                return BadRequest(_localizer["resources.qty_positive"].ToString());
 
             
             var eventResource =await _context.EventResources
@@ -52,13 +60,13 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(er => er.ID == dto.EventResourceID);
 
             if (eventResource == null)
-                return NotFound("Resource does not exist.");
+                return NotFound(_localizer["resources.not_exist"].ToString());
 
             if (!eventResource.IsReservable)
-                return BadRequest("This resource cannot be reserved.");
+                return BadRequest(_localizer["resources.not_reservable"].ToString());
 
             if (eventResource.Event.EndDate < DateTime.UtcNow)
-                return BadRequest("It is not possible to reserve a resource for an event that has already passed.");
+                return BadRequest(_localizer["resources.event_passed"].ToString());
 
             if (!eventResource.Event.isFree)
             {
@@ -66,7 +74,7 @@ namespace Backend.Controllers
                 var hasTicket = _context.UserTickets
                     .Any(ut => ut.UserID == userId && ut.Ticket.EventID == eventResource.EventID);
                 if (!hasTicket)
-                    return BadRequest("You must have a ticket for this event to reserve a resource.");
+                    return BadRequest(_localizer["resources.need_ticket"].ToString());
 
 
                 var userTicket = _context.UserTickets
@@ -74,11 +82,11 @@ namespace Backend.Controllers
                     .FirstOrDefault(ut => ut.UserTicketID == dto.UserTicketID && ut.UserID == userId);
 
                 if (userTicket == null)
-                    return BadRequest("You do not have a valid ticket for this event.");
+                    return BadRequest(_localizer["resources.ticket_missing"].ToString());
 
 
                 if (userTicket.Ticket.EventID != eventResource.EventID)
-                    return BadRequest("The ticket is not for the same event as the resource you are trying to reserve.");
+                    return BadRequest(_localizer["resources.ticket_wrong_event"].ToString());
 
             }
             
@@ -87,7 +95,7 @@ namespace Backend.Controllers
                 .Sum(r => r.Quantity);
 
             if (alreadyReserved + dto.Quantity > eventResource.Quantity)
-                return BadRequest("Not enough available resources.");
+                return BadRequest(_localizer["resources.not_enough"].ToString());
 
             
 
@@ -103,7 +111,7 @@ namespace Backend.Controllers
             await _context.UserResourceReservations.AddAsync(reservation);
             await _context.SaveChangesAsync();
 
-            return Ok("Reservation successful.");
+            return Ok(_localizer["resources.reserved"].ToString());
         }
         [HttpGet("resource-categories")]
         public IActionResult GetResourceCategories()
@@ -126,6 +134,49 @@ namespace Backend.Controllers
                     Name = a.ToString()
                 });
             return Ok(avs);
+        }
+
+        [Authorize(Roles = "MobileUser")]
+        [HttpGet("my-reservations")]
+        public async Task<IActionResult> GetMyResourceReservations()
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var myReservations = await _context.UserResourceReservations
+                .Where(urr => urr.UserID == userId)
+                .Include(urr => urr.EventResource)
+                    .ThenInclude(er => er.Resource)
+                .Include(urr => urr.EventResource)
+                    .ThenInclude(er => er.Event)
+                .Select(urr => new
+                {
+                    ReservationID = urr.Id,
+                    ResourceName = urr.EventResource.Resource.Name,
+                    ResourceCategory = urr.EventResource.Resource.Category.ToString(),
+                    EventTitle = urr.EventResource.Event.Title,
+                    EventDate = urr.EventResource.Event.StartDate,
+                    EventLocation = urr.EventResource.Event.Location,
+                    Quantity = urr.Quantity,
+                    ReservedAt = urr.ReservedAt,
+                    EventResourceID = urr.EventResourceID,
+                    EventID = urr.EventResource.EventID,
+                    IsEventFree = urr.EventResource.Event.isFree,
+                    EventEndDate = urr.EventResource.Event.EndDate,
+                    
+                    ResourceDescription = urr.EventResource.Resource.Description,
+                    UserTickets = _context.UserTickets
+                        .Where(ut => ut.UserID == userId && ut.Ticket.EventID == urr.EventResource.EventID)
+                        .Select(ut => new
+                        {
+                            UserTicketID = ut.UserTicketID,
+                            TicketType = ut.Ticket.TypeName
+                        })
+                        .ToList()
+                })
+                .OrderByDescending(urr => urr.ReservedAt)
+                .ToListAsync();
+
+            return Ok(myReservations);
         }
     }
 
