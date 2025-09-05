@@ -12,7 +12,7 @@ import { API_URL } from '../../config';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-
+import { apiCall } from '../../config';
 type PurchasedTicket = {
   ticketID: number;
   purchasedAt: string;
@@ -52,7 +52,7 @@ export default function ProfileTickets() {
       }
 
       try {
-        const res = await fetch(`${API_URL}/api/ticket/tickets/my`, {
+        const res = await apiCall(`${API_URL}/api/ticket/tickets/my`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

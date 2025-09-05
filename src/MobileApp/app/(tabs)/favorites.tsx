@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { API_URL } from '../../config';
+import { apiCall } from '../../config';
 import {
   View,
   Text,
@@ -38,7 +39,7 @@ export default function FavoritesScreen() {
       setIsGuest(false);
 
       try {
-        const response = await fetch(`${API_URL}/api/favorites`, {
+        const response = await apiCall(`${API_URL}/api/favorites`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

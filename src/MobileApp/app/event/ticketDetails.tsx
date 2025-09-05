@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
+import { apiCall } from '../../config';
 import {
   View,
   Text,
@@ -86,7 +87,7 @@ if (purchasedAt) {
           return;
         }
 
-        const res = await fetch(`${API_URL}/api/MobileUser/profile`, {
+        const res = await apiCall(`${API_URL}/api/MobileUser/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

@@ -12,6 +12,7 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_URL } from '../../config';
+import { apiCall } from '../../config';
 import { Ionicons } from '@expo/vector-icons';
 
 type Ticket = { id: number; name: string; price: number; };
@@ -49,10 +50,10 @@ export default function CartScreen() {
 
     const fetchTicketsAndResources = async () => {
       try {
-        const ticketRes = await fetch(`${API_URL}/api/Ticket/events/${eventId}/tickets`);
+        const ticketRes = await apiCall(`${API_URL}/api/Ticket/events/${eventId}/tickets`);
         const ticketsJson = ticketRes.ok ? await ticketRes.json() : [];
 
-        const resourceRes = await fetch(`${API_URL}/api/Resource/${eventId}/resources`, {
+        const resourceRes = await apiCall(`${API_URL}/api/Resource/${eventId}/resources`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
         const resourcesJson = resourceRes.ok ? await resourceRes.json() : [];
@@ -95,7 +96,7 @@ export default function CartScreen() {
                 if (!token) { Alert.alert(t('cart.errorTitle'), t('cart.loginRequired')); setLoading(false); return; }
 
                 for (const resId of selectedResources) {
-                  await fetch(`${API_URL}/api/Resource/reserve`, {
+                  await apiCall(`${API_URL}/api/Resource/reserve`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                     body: JSON.stringify({ EventResourceID: resId, Quantity: 1, UserTicketID: null }),
@@ -128,7 +129,7 @@ export default function CartScreen() {
             try {
               if (!token) { Alert.alert(t('cart.errorTitle'), t('cart.loginRequired')); setLoading(false); return; }
 
-              const myTicketsBeforeRes = await fetch(`${API_URL}/api/Ticket/tickets/my`, { headers: { Authorization: `Bearer ${token}` } });
+              const myTicketsBeforeRes = await apiCall(`${API_URL}/api/Ticket/tickets/my`, { headers: { Authorization: `Bearer ${token}` } });
                if (!myTicketsBeforeRes.ok) throw new Error(t('cart.fetchMyTicketsFailed'));
               const myTicketsBeforePurchase = await myTicketsBeforeRes.json();
               const existingTicketIDs = new Set(myTicketsBeforePurchase.map((t: any) => t.userTicketID));
@@ -138,7 +139,7 @@ export default function CartScreen() {
                   TicketID: ticket.id,
                   Quantity: ticket.quantity,
                 }));
-                const purchaseRes = await fetch(`${API_URL}/api/Ticket/purchase`, {
+                const purchaseRes = await apiCall(`${API_URL}/api/Ticket/purchase`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                   body: JSON.stringify(ticketRequestBody),
@@ -150,14 +151,14 @@ export default function CartScreen() {
               }
 
               for (const resId of selectedResources) {
-                await fetch(`${API_URL}/api/Resource/reserve`, {
+                await apiCall(`${API_URL}/api/Resource/reserve`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                   body: JSON.stringify({ EventResourceID: resId, Quantity: 1, UserTicketID: null }),
                 });
               }
 
-              const myTicketsAfterRes = await fetch(`${API_URL}/api/Ticket/tickets/my`, { headers: { Authorization: `Bearer ${token}` } });
+              const myTicketsAfterRes = await apiCall(`${API_URL}/api/Ticket/tickets/my`, { headers: { Authorization: `Bearer ${token}` } });
               if (!myTicketsAfterRes.ok) throw new Error(t('cart.fetchAfterPurchaseFailed'));
               const allMyTicketsAfterPurchase = await myTicketsAfterRes.json();
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../config';
-
+import { apiCall } from '../../config';
 import {
   View,
   Text,
@@ -99,7 +99,7 @@ const SearchScreen = () => {
   };
     const fetchLocations = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/api/Events`);
+      const response = await apiCall(`${BASE_URL}/api/Events`);
       const data: EventType[] = await response.json();
 
       const uniqueLocations = Array.from(new Set(data.map(ev => ev.location)))
@@ -114,7 +114,7 @@ const SearchScreen = () => {
 
   const fetchEventDetailsPrice = async (eventId: number) => {
     try {
-      const response = await fetch(`${DETAILS_API_URL}?id=${eventId}`);
+      const response = await apiCall(`${DETAILS_API_URL}?id=${eventId}`);
       if (!response.ok) throw new Error('Failed to fetch event details');
       const data = await response.json();
       setEventPrices(prev => ({
@@ -163,13 +163,13 @@ const fetchEvents = useCallback(async () => {
     }
     if (selectedCategory) params.append('category', selectedCategory);
 
-    const response = await fetch(`${SEARCH_API_URL}?${params.toString()}`);
+    const response = await apiCall(`${SEARCH_API_URL}?${params.toString()}`);
     let data: EventType[] = await response.json();
 
     // fetchuj cene za svaki event
     await Promise.all(
       data.map(async (event) => {
-        const resp = await fetch(`${DETAILS_API_URL}?id=${event.id}`);
+        const resp = await apiCall(`${DETAILS_API_URL}?id=${event.id}`);
         const details = await resp.json();
         setEventPrices((prev) => ({
           ...prev,

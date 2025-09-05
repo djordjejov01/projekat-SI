@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../../config';
+import { apiCall } from '../../config';
 import {
   View,
   Text,
@@ -46,7 +47,7 @@ export default function PersonalInfoScreen() {
         const token = await AsyncStorage.getItem('token');
         if (!token) return;
 
-        const res = await fetch(`${API_URL}/api/MobileUser/profile`, {
+        const res = await apiCall(`${API_URL}/api/MobileUser/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -121,7 +122,7 @@ export default function PersonalInfoScreen() {
         type: 'image/jpeg',
       });
 
-      const res = await fetch(`${API_URL}/api/MobileUser/profile-image`, {
+      const res = await apiCall(`${API_URL}/api/MobileUser/profile-image`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -143,7 +144,7 @@ export default function PersonalInfoScreen() {
     const token = await AsyncStorage.getItem('token');
     if (!token) throw new Error(t('personalInfo.notLoggedIn'));
 
-    const res = await fetch(`${API_URL}/api/MobileUser/delete-profile-picture`, {
+    const res = await apiCall(`${API_URL}/api/MobileUser/delete-profile-picture`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -173,7 +174,7 @@ export default function PersonalInfoScreen() {
         uploadedImageUrl = '';
       }
 
-      const res = await fetch(`${API_URL}/api/MobileUser/profileUpdate`, {
+      const res = await apiCall(`${API_URL}/api/MobileUser/profileUpdate`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
