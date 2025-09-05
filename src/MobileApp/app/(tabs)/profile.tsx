@@ -103,7 +103,8 @@ export default function ProfileScreen() {
 
         if (resCredits.ok) {
           const data = JSON.parse(creditsText);
-          setCredits(data.credits);
+          console.log('CR DEBUG:', data); 
+          setCredits(data.Credits);
         }
       } catch (error) {
         console.error('Failed to load user data or tickets:', error);
