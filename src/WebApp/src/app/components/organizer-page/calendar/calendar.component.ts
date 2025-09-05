@@ -26,7 +26,6 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./calendar.component.css']
 })
 export class CalendarComponent implements OnInit, OnDestroy {
-  calendarOptions: CalendarOptions;
   private langChangeSub: Subscription;
 
   constructor(
@@ -35,7 +34,8 @@ export class CalendarComponent implements OnInit, OnDestroy {
     private datePipe : DatePipe,
     private apiService : ApiService,
     private authService : AuthService,
-    private categoryService : CategoryService) {}
+    private categoryService : CategoryService,
+  private translate : TranslateService) {}
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin,timeGridPlugin,interactionPlugin,listPlugin],

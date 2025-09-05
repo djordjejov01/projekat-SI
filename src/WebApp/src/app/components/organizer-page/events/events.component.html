@@ -5,26 +5,29 @@
     </div>
 
     <div id="infocards">
-        <div id="card">
-            <p id="cardTitle">{{ 'TOTAL_EVENTS' | translate }}</p>
-            <p id="cardNum">{{dashboardMetrics?.totalEvents}}</p>
-            <p id="cardDesc">{{ 'TOTAL_EVENTS_DESC' | translate }}</p>
+        <div id="ftwo">
+            <div id="card">
+                <p id="cardTitle">{{ 'TOTAL_EVENTS' | translate }}</p>
+                <p id="cardNum">{{dashboardMetrics?.totalEvents}}</p>
+                <p id="cardDesc">{{ 'TOTAL_EVENTS_DESC' | translate }}</p>
+            </div>
+            <div id="card">
+                <p id="cardTitle">{{ 'TOTAL_EARNINGS' | translate }}</p>
+                <p id="cardNum">{{dashboardMetrics?.totalRevenue}}</p>
+                <p id="cardDesc">{{ 'TOTAL_EARNINGS_DESC' | translate }}</p>
+            </div>
+            <div id="card">
+                <p id="cardTitle">{{ 'TICKETS_SOLD' | translate }}</p>
+                <p id="cardNum">{{dashboardMetrics?.totalTicketsSold}}</p>
+                <p id="cardDesc">{{ 'TICKETS_SOLD_DESC' | translate }}</p>
+            </div>
+            <div id="card">
+                <p id="cardTitle">{{ 'UNIQUE_LOCATIONS' | translate }}</p>
+                <p id="cardNum">{{dashboardMetrics?.uniqueLocations}}</p>
+                <p id="cardDesc">{{ 'UNIQUE_LOCATIONS_DESC' | translate }}</p>
+            </div>
         </div>
-        <div id="card">
-            <p id="cardTitle">{{ 'TOTAL_EARNINGS' | translate }}</p>
-            <p id="cardNum">{{dashboardMetrics?.totalRevenue}}</p>
-            <p id="cardDesc">{{ 'TOTAL_EARNINGS_DESC' | translate }}</p>
-        </div>
-        <div id="card">
-            <p id="cardTitle">{{ 'TICKETS_SOLD' | translate }}</p>
-            <p id="cardNum">{{dashboardMetrics?.totalTicketsSold}}</p>
-            <p id="cardDesc">{{ 'TICKETS_SOLD_DESC' | translate }}</p>
-        </div>
-        <div id="card">
-            <p id="cardTitle">{{ 'UNIQUE_LOCATIONS' | translate }}</p>
-            <p id="cardNum">{{dashboardMetrics?.uniqueLocations}}</p>
-            <p id="cardDesc">{{ 'UNIQUE_LOCATIONS_DESC' | translate }}</p>
-        </div>
+
 
     </div>
 
@@ -60,12 +63,14 @@
             currentPageReportTemplate="{{ 'SHOWING_ENTRIES' | translate:{first: '{first}', last: '{last}', total: '{totalRecords}'} }}"
             [filterDelay]="0"
             [globalFilterFields]="['title', 'startDateTime', 'endDateTime', 'category', 'status' , 'location']">
-            
+
             <ng-template #caption>
                 <div class="line">
                     <div style="display: flex; gap:20px;">
-                        <p-button [outlined]="true" icon="pi pi-filter-slash" [label]="'CLEAR' | translate" (click)="clear(dt)"></p-button>
-                        <button id="ae" (click)="createEvent()"><i class="pi pi-plus"></i>{{ 'ADD_EVENT' | translate }}</button>
+                        <p-button [outlined]="true" icon="pi pi-filter-slash" [label]="'CLEAR' | translate"
+                            (click)="clear(dt)"></p-button>
+                        <button id="ae" (click)="createEvent()"><i class="pi pi-plus"></i>{{ 'ADD_EVENT' | translate
+                            }}</button>
                     </div>
 
                     <p-iconField iconPosition="left">
@@ -161,16 +166,13 @@
                     <td>
                         <div class="flex gap-2">
                             <button pButton type="button" icon="pi pi-cog"
-                                class="p-button-rounded p-button-text p-button-sm"
-                                (click)="manageEvent(event.eventId)"
-                                [pTooltip]="'MANAGE_EVENT' | translate"
-                                tooltipPosition="top">
+                                class="p-button-rounded p-button-text p-button-sm" (click)="manageEvent(event.eventId)"
+                                [pTooltip]="'MANAGE_EVENT' | translate" tooltipPosition="top">
                             </button>
 
                             <button pButton type="button" icon="pi pi-trash"
                                 class="p-button-rounded p-button-text p-button-sm p-button-danger"
-                                (click)="deleteEvent(event.eventId)"
-                                [pTooltip]="'DELETE_EVENT' | translate"
+                                (click)="deleteEvent(event.eventId)" [pTooltip]="'DELETE_EVENT' | translate"
                                 tooltipPosition="top">
                             </button>
                         </div>

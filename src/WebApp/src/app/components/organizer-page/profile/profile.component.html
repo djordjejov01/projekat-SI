@@ -22,18 +22,18 @@
 
             <div id="form">
                 <label for="name">{{ 'NAME' | translate }}</label>
-                <input id="name" type="text" [value]="currOrganizer?.getName()" class="form-control" />
+                <input id="name" type="text" [value]="currOrganizer?.getName()" class="form-control" (input) ="check()"/>
 
                 <label for="username5">{{ 'USERNAME' | translate }}</label>
-                <input id="username5" type="text" [value]="currOrganizer?.getUsername()" class="form-control" />
+                <input id="username5" type="text" [value]="currOrganizer?.getUsername()" class="form-control" (input) ="check()"/>
 
                 <label for="email">{{ 'EMAIL' | translate }}</label>
-                <input id="email" type="text" [value]="currOrganizer?.getEmail()" class="form-control" />
+                <input id="email" type="text" [value]="currOrganizer?.getEmail()" class="form-control" (input) ="check()"/>
 
                 <label for="phone">{{ 'PHONE_NUMBER' | translate }}</label>
-                <input id="phone" type="text" [value]="currOrganizer?.getPhoneNumber()" class="form-control" />
+                <input id="phone" type="text" [value]="currOrganizer?.getPhoneNumber()" class="form-control" (input) ="check()"/>
 
-                <button id="upp" (click)="update()">{{ 'UPDATE_PROFILE' | translate }}</button>
+                <button id="upp1" class="dBut disBut" (click)="update()">{{ 'UPDATE_PROFILE' | translate }}</button>
 
                 <div id="pass">
                     <div id="onepass">
@@ -50,7 +50,7 @@
                     </div>
                 </div>
 
-                <button id="upp" (click)="updatePass()">{{ 'CHANGE_PASSWORD' | translate }}</button>
+                <button id="upp" class ="dBut"(click)="updatePass()">{{ 'CHANGE_PASSWORD' | translate }}</button>
             </div>
         </div>
 
