@@ -296,28 +296,7 @@ export class CreateEventComponent implements OnInit, IDeactivate, OnDestroy {
           validUntil: new FormControl({ value: '', disabled: true }, Validators.required)
         }, { validators: CustomValidators.startBeforeEndDates('validFrom', 'validUntil') }));
 
-        this.router.navigate(["/organizer/overview"]);
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: this.translateService.instant('COMMON.ERROR'),
-          detail: this.translateService.instant('EVENT.ERROR')
-        });
-      }
-    });
-  }
-
-      ticketsArray.push(new FormGroup({
-        name: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
-        price: new FormControl('', [Validators.required, Validators.min(0)]),
-        description: new FormControl('', CustomValidators.noWhitespaceValidator),
-        quota: new FormControl('', [Validators.required, Validators.min(1)]),
-        validFrom: new FormControl({ value: '', disabled: true }, Validators.required),
-        validUntil: new FormControl({ value: '', disabled: true }, Validators.required)
-      }, { validators: CustomValidators.startBeforeEndDates('validFrom', 'validUntil') }));
-
-        this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe({
+                this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe({
               next: (response: Event[]) => {
                 let ider = response[response.length - 1].getEventId()
                 this.router.navigate([`/organizer/event-management/${ider}`]);
@@ -331,14 +310,18 @@ export class CreateEventComponent implements OnInit, IDeactivate, OnDestroy {
                 // });
               }
         
-            })
-       
-    },
-    error: () => {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to create event.' });
-    }
-  });
-}
+            });
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translateService.instant('COMMON.ERROR'),
+          detail: this.translateService.instant('EVENT.ERROR')
+        });
+      }
+    });
+  }
+
 
   canExit(): boolean | Observable<boolean> | Promise<boolean>{
 
