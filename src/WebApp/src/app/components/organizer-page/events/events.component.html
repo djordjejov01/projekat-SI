@@ -25,6 +25,7 @@
             <p id="cardNum">{{dashboardMetrics?.uniqueLocations}}</p>
             <p id="cardDesc">{{ 'UNIQUE_LOCATIONS_DESC' | translate }}</p>
         </div>
+
     </div>
 
     <div id="graphs">
@@ -33,7 +34,8 @@
                 <p-chart *ngIf="data1" type="bar" [data]="data1" [options]="options1" class="bar"></p-chart>
             </div>
             <div class="chart-box pad">
-                <p-chart *ngIf="data2" type="pie" [data]="data2" [options]="options3" class="pad"></p-chart>
+                <p>Categories</p>
+                <p-chart *ngIf="data2" type="pie" [data]="data2" [options]="options3" class="pad" />
             </div>
         </div>
         <div id="group">
@@ -41,7 +43,8 @@
                 <p-chart *ngIf="data4" type="line" [data]="data4" [options]="options1" class="bar"></p-chart>
             </div>
             <div class="chart-box pad">
-                <p-chart *ngIf="data3" type="doughnut" [data]="data3" [options]="options3" class="pad"></p-chart>
+                <p>Status</p>
+                <p-chart *ngIf="data3" type="doughnut" [data]="data3" [options]="options3" class="pad" />
             </div>
         </div>
     </div>
@@ -59,7 +62,7 @@
             [globalFilterFields]="['title', 'startDateTime', 'endDateTime', 'category', 'status' , 'location']">
             
             <ng-template #caption>
-                <div class="flex justify-between">
+                <div class="line">
                     <div style="display: flex; gap:20px;">
                         <p-button [outlined]="true" icon="pi pi-filter-slash" [label]="'CLEAR' | translate" (click)="clear(dt)"></p-button>
                         <button id="ae" (click)="createEvent()"><i class="pi pi-plus"></i>{{ 'ADD_EVENT' | translate }}</button>
@@ -104,12 +107,36 @@
                         <div class="flex justify-between items-center">
                             {{ 'CATEGORY' | translate }}
                             <p-sortIcon field="category" />
+                            <p-columnFilter field="category" matchMode="in" display="menu" [showMatchModes]="false"
+                                [showOperator]="false" [showAddButton]="false" class="ml-auto">
+                                <ng-template #filter let-value let-filter="filterCallback">
+                                    <p-multiselect [filter]="true" [ngModel]="selectedCategories"
+                                        (ngModelChange)="onRoleFilterChange($event, filter)" [options]="categories"
+                                        placeholder="Any" optionLabel="name" class="w-full">
+                                        <ng-template let-option #item>
+                                            <span> {{ option.name }}</span>
+                                        </ng-template>
+                                    </p-multiselect>
+                                </ng-template>
+                            </p-columnFilter>
                         </div>
                     </th>
                     <th pSortableColumn="status" style="max-width: 14rem">
                         <div class="flex justify-between items-center">
                             {{ 'STATUS' | translate }}
                             <p-sortIcon field="status" />
+                            <p-columnFilter field="status" matchMode="in" display="menu" [showMatchModes]="false"
+                                [showOperator]="false" [showAddButton]="false" class="ml-auto">
+                                <ng-template #filter let-value let-filter="filterCallback">
+                                    <p-multiselect [filter]="true" [ngModel]="selectedStatus"
+                                        (ngModelChange)="onRoleFilterChange($event, filter)" [options]="statuses"
+                                        placeholder="Any" optionLabel="name" class="w-full">
+                                        <ng-template let-option #item>
+                                            <span> {{ option.name }}</span>
+                                        </ng-template>
+                                    </p-multiselect>
+                                </ng-template>
+                            </p-columnFilter>
                         </div>
                     </th>
                     <th pSortableColumn="location" style="min-width: 14rem">

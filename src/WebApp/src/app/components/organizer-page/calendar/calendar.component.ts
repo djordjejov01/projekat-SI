@@ -30,14 +30,42 @@ export class CalendarComponent implements OnInit, OnDestroy {
   private langChangeSub: Subscription;
 
   constructor(
-    private confirmationDialogService: ConfirmationDialogService,
-    private router: Router,
-    private datePipe: DatePipe,
-    private apiService: ApiService,
-    private authService: AuthService,
-    private categoryService: CategoryService,
-    private translate: TranslateService
-  ) {}
+    private confirmationDialogService : ConfirmationDialogService,
+    private router : Router,
+    private datePipe : DatePipe,
+    private apiService : ApiService,
+    private authService : AuthService,
+    private categoryService : CategoryService) {}
+
+  calendarOptions: CalendarOptions = {
+    plugins: [dayGridPlugin,timeGridPlugin,interactionPlugin,listPlugin],
+    selectable: true,
+    selectAllow: (selectInfo) => {
+      const today = new Date();
+      today.setHours(0,0,0,0);
+      return selectInfo.start >= today
+    },
+    selectMirror: true,
+    select : this.handleDateSelect.bind(this),
+    initialView: 'dayGridMonth',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+    },
+    slotLabelFormat: {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    },
+    eventTimeFormat: {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    },
+    events: [],
+    eventClick: this.handleEventClick.bind(this) // Dodata nova opcija
+  }
 
   ngOnInit(): void {
     this.initCalendarOptions();
@@ -54,7 +82,8 @@ export class CalendarComponent implements OnInit, OnDestroy {
         title: event.getTitle(),
         start: event.getStartDateTime().toISOString(),
         end: event.getEndDateTime().toISOString(),
-        allDay: this.isAllDayEvent(event.getStartDateTime(), event.getEndDateTime()),
+        id: event.getEventId().toString(),
+        allDay: this.isAllDayEvent(event.getStartDateTime(),event.getEndDateTime()),
         extendedProps: {
           category: this.categoryService.getCategoryName(event.getCategoryId()),
           location: event.getLocation(),
@@ -158,5 +187,11 @@ export class CalendarComponent implements OnInit, OnDestroy {
     }
 
     selectInfo.view.calendar.unselect();
+  }
+  handleEventClick(clickInfo: any) {
+    const eventId = clickInfo.event.id; 
+    if (eventId) {
+        this.router.navigate(['/organizer/event-management/', eventId]); 
+    }
   }
 }

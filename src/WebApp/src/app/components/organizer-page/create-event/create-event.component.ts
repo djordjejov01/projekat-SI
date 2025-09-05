@@ -22,6 +22,8 @@ import { ConfirmationDialogService } from '../../../Services/confirmation-dialog
 import { CategoryService } from '../../../Services/EventCategoryService';
 import { FormValidationService } from '../../../Services/FormValidationService';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { Event } from '../../../Models/Event';
+
 
 @Component({
   selector: 'app-create-event',
@@ -179,7 +181,12 @@ export class CreateEventComponent implements OnInit, IDeactivate, OnDestroy {
     this.toggleTicketDateControls();
   }
 
-  removeTicket(index: number) {
+  async removeTicket(index: number){
+    const confirmed = await this.confirmationDialogService.confirm(
+      `Are you sure you want to remove the ticket?`,
+      `Remove ticket`
+    )
+    if(!confirmed) return;
     this.tickets.removeAt(index);
   }
 
@@ -301,8 +308,41 @@ export class CreateEventComponent implements OnInit, IDeactivate, OnDestroy {
     });
   }
 
-  canExit(): boolean | Observable<boolean> | Promise<boolean> {
-    if (this.authService.isLoggingOut()) return true;
+      ticketsArray.push(new FormGroup({
+        name: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
+        price: new FormControl('', [Validators.required, Validators.min(0)]),
+        description: new FormControl('', CustomValidators.noWhitespaceValidator),
+        quota: new FormControl('', [Validators.required, Validators.min(1)]),
+        validFrom: new FormControl({ value: '', disabled: true }, Validators.required),
+        validUntil: new FormControl({ value: '', disabled: true }, Validators.required)
+      }, { validators: CustomValidators.startBeforeEndDates('validFrom', 'validUntil') }));
+
+        this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe({
+              next: (response: Event[]) => {
+                let ider = response[response.length - 1].getEventId()
+                this.router.navigate([`/organizer/event-management/${ider}`]);
+              },
+              error: (errorResponse) => {
+                // this.messageService.add({
+                //   severity: 'error',
+                //   summary: 'Error',
+                //   detail: errorResponse.message,
+                //   life: 3000
+                // });
+              }
+        
+            })
+       
+    },
+    error: () => {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to create event.' });
+    }
+  });
+}
+
+  canExit(): boolean | Observable<boolean> | Promise<boolean>{
+
+    if(this.authService.isLoggingOut()) return true;
 
     const formDirty = this.eventForm?.dirty;
     const hasImage = !!this.selectedImageFile;

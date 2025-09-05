@@ -13,6 +13,7 @@ import { SupplierDto } from '../../../Models/SupplierDto';
 import { UpdateSupplierDto } from '../../../Models/UpdateSupplierDto';
 import { ResourceDto } from '../../../Models/ResourceDto';
 import { environment } from '../../../../environments/environment';
+import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
 
 @Component({
   selector: 'app-my-profile',
@@ -25,7 +26,9 @@ export class MyProfileComponent implements OnInit {
   defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
   previewUrl: string | ArrayBuffer | null = null;
   selectedFile?: File;
-  constructor(private apiService: ApiService, private authService: AuthService, private messageService: MessageService, private sharedService: SharedService) { }
+  constructor(private apiService: ApiService, private authService: AuthService, private messageService: MessageService, private sharedService: SharedService,
+    private confirmationDialogService : ConfirmationDialogService
+  ) { }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -57,7 +60,7 @@ export class MyProfileComponent implements OnInit {
     const formData = new FormData();
     formData.append('Image', this.selectedFile);
     formData.append('Id', this.authService.getUserId().toString());
-
+    this.selectedFile = null;
     this.apiService.changeSupplierPicture(formData).subscribe({
 
         next:(response : any) => {
@@ -109,13 +112,24 @@ export class MyProfileComponent implements OnInit {
   }
   currSupplier : SupplierDto;
   changePass: ChangePasswordDto;
+  nameS : string;
+  username1S : string;
+  emailS : string;
+  phoneS : string;
+  bioS : string;
+  websiteS : string;
   getSupplierCall(){
     this.apiService.getSupplier().subscribe({
 
         next:(response : SupplierDto) => {
           this.currSupplier = response;
-          this.previewUrl = this.currSupplier.getImage();
-          //console.log(response);
+            this.previewUrl = this.currSupplier.getImage();
+           this.nameS = this.currSupplier.getCompanyName();
+           this.username1S = this.currSupplier.getUsername();
+           this.emailS = this.currSupplier.getEmail();
+           this.phoneS = this.currSupplier.getPhoneNumber();
+           this.bioS = this.currSupplier.getCompanyBio();
+           this.websiteS = this.currSupplier.getWebsite();
         },
         error:(errorResponse) =>{
           this.messageService.add({
@@ -127,6 +141,28 @@ export class MyProfileComponent implements OnInit {
 
       })
   }
+
+  check(){
+    let name = (document.getElementById('name') as HTMLInputElement).value;
+    let username1 = (document.getElementById('username1') as HTMLInputElement).value;
+    let email = (document.getElementById('email') as HTMLInputElement).value;
+    let phone = (document.getElementById('phone') as HTMLInputElement).value;
+    let bio = (document.getElementById('bio') as HTMLInputElement).value;
+    let website = (document.getElementById('website') as HTMLInputElement).value;
+    let dugme = document.getElementById('upp1') as HTMLButtonElement;
+    if(this.nameS != name || this.username1S != username1 || this.emailS != email || this.phoneS != phone || this.bioS != bio || this.websiteS != website)
+    {
+      dugme.disabled = false;
+      dugme.classList.remove("disBut");
+    }
+    else{
+      dugme.disabled = true;
+      dugme.classList.add("disBut");
+    }
+  }
+
+
+  regexIme: RegExp = /^[a-zA-Z]*$/;
   update() {
     const name = (document.getElementById('name') as HTMLInputElement).value;
     const username1 = (document.getElementById('username1') as HTMLInputElement).value;
@@ -135,12 +171,28 @@ export class MyProfileComponent implements OnInit {
     const bio = (document.getElementById('bio') as HTMLInputElement).value;
     const website = (document.getElementById('website') as HTMLInputElement).value;
     const toUpdate = new UpdateSupplierDto(username1,name,email,phone,website,bio);
+    if(this.regexIme.test(name) == false)
+    {
+      this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: "Name must contain only letters.",
+              life: 3000 });
+      return;
+    }
     //console.log("SALJEM: ");
     //console.log(toUpdate);
     this.apiService.updateSupplier(toUpdate).subscribe({
       next:(response : string) =>{
         this.getSupplierCall();
         this.sharedService.updateUsername(this.currSupplier.getUsername());
+        this.nameS = name;
+        this.username1S = username1;
+        this.emailS = email;
+        this.phoneS = phone;
+        this.bioS = bio;
+        this.websiteS = website;
+        this.check();
         this.messageService.add({
               severity: 'success',
               summary: 'Success',
@@ -197,5 +249,33 @@ export class MyProfileComponent implements OnInit {
         life: 3000
       });
     }
+  }
+
+    async deletePic(){
+    const confirmed = await this.confirmationDialogService.confirm(
+      `Are you sure you want to remove the picture?`,
+      `Remove picture`
+    )
+    if(!confirmed) return;
+
+    this.apiService.removePicture().subscribe({
+      next:(response : any) =>{
+        this.previewUrl = this.currSupplier.getImage();
+          this.getSupplierCall();
+          this.sharedService.notifyProfileImageChanged();
+        this.messageService.add({
+              severity: 'success',
+              summary: 'Success',
+              detail: response.message,
+              life: 3000 });
+        },
+        error:(errorResponse) =>{
+          this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000 });
+      }
+    })
   }
 }

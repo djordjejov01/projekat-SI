@@ -151,10 +151,10 @@ namespace Backend.Controllers
             await _context.SaveChangesAsync();
 
             
-            if (!string.IsNullOrEmpty(oldSupplierImage))
+            if (!string.IsNullOrEmpty(oldSupplierImage) && oldSupplierImage != "images/default-pfp.png")
                 await CommonHelpers.RemovePhoto(oldSupplierImage, _env);
 
-            if (!string.IsNullOrEmpty(oldUserImage) && oldUserImage != oldSupplierImage)
+            if (!string.IsNullOrEmpty(oldUserImage) && oldUserImage != oldSupplierImage && oldUserImage != "images/default-pfp.png")
                 await CommonHelpers.RemovePhoto(oldUserImage, _env);
 
             return Ok();

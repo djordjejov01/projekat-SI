@@ -34,18 +34,21 @@
     display: flex;
     justify-content: space-between;
     gap: 550px;
+    transition: 0.8s;
 
 }
 
-@media screen and (width <=890px) {
+@media screen and (width <=1095px) {
     #fr {
         gap: 150px;
+        transition: 0.8s;
     }
 }
 
 @media screen and (width <=500px) {
     #fr {
         gap: 0px;
+        transition: 0.8s;
     }
 }
 

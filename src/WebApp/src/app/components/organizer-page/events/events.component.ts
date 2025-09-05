@@ -96,7 +96,24 @@ export class EventsComponent implements OnInit {
   };
   options3 = {
     responsive: true,
-    plugins: { legend: { position: 'bottom', labels: { color: '#495057' } } }
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          color: '#495057'
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: function (context: any) {
+            const label = context.label || '';
+            const value = context.parsed || 0;
+            return `${label}: ${value}`;
+          }
+        }
+      }
+    }
   };
 
   constructor(
