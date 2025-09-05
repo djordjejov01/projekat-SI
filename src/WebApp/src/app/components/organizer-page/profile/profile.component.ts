@@ -93,24 +93,6 @@ export class ProfileComponent implements OnInit {
 
   getOrganizerCall() {
     this.apiService.getOrganizer(this.authService.getUserId()).subscribe({
-      next: (response: OrganizerDto) => {
-        this.currOrganizer = response;
-        this.previewUrl = this.currOrganizer.getImage();
-      },
-      error: (errorResponse) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: this.translate.instant('ERROR'),
-          detail: errorResponse.message,
-          life: 3000
-        });
-      }
-    });
-  }
-
-
-  loadEvents() {
-    this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe({
       next:(response : OrganizerDto) => {
           this.currOrganizer = response;
           this.previewUrl = this.currOrganizer.getImage();
@@ -123,10 +105,27 @@ export class ProfileComponent implements OnInit {
         error:(errorResponse) =>{
           this.messageService.add({
               severity: 'error',
-              summary: 'Error',
+              summary: this.translate.instant('ERROR'),
               detail: errorResponse.message,
               life: 3000 });
         }
+    });
+  }
+
+
+  loadEvents() {
+    this.apiService.getOrganizerEvents(this.authService.getUserId()).subscribe({
+      next: (response: any) => {
+              this.allEvents = response;
+            },
+            error: (errorResponse) => {
+              /*this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: errorResponse.message,
+                life: 3000
+              });*/
+            }
     });
 
     this.apiService.getUpcomingOrganizerEvents(this.authService.getUserId()).subscribe({
