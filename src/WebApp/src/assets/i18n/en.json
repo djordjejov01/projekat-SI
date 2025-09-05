@@ -441,7 +441,7 @@
   },
 
   "RESOURCE": {
-    "ALLOCATE_TITLE": "Allocate {{name}} ({{type}}) for your event",
+    "ALLOCATE_TITLE": "Allocate {{name}} for your event",
     "EXHAUSTABLE": "Exhaustable",
     "INEXHAUSTABLE": "Inexhaustable",
     "ALLOCATE_DESCRIPTION": "Fill in the details below to allocate the resource.",

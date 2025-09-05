@@ -455,7 +455,7 @@
   },
 
   "RESOURCE": {
-    "ALLOCATE_TITLE": "Dodeli {{name}} ({{type}}) za vaš događaj",
+    "ALLOCATE_TITLE": "Dodeli {{name}} za vaš događaj",
     "EXHAUSTABLE": "Ograničen",
     "INEXHAUSTABLE": "Neograničen",
     "ALLOCATE_DESCRIPTION": "Popunite detalje ispod da biste dodelili resurs.",
