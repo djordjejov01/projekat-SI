@@ -16,3 +16,187 @@
     display: flex;
     flex-direction: column;
 }
+
+/* Glavni kontejner za sve redove */
+#tSales {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Veći razmak između redova za bolju preglednost */
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+/* Kontejner za jedan red kartica */
+#tRow {
+    display: flex;
+    flex-wrap: wrap; /* Omogućava da se kartice prelamaju u novi red */
+    gap: 1rem; /* Razmak između kartica */
+    align-items: stretch; /* Osigurava da su sve kartice u redu iste visine */
+    justify-content: center;
+    width: 100%;
+}
+
+/* Stil za svaku pojedinačnu karticu */
+#tData {
+    flex: 1 1 180px; /* Fleksibilnost: rastegnuti se ili skupiti, sa baznom širinom od 180px */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 1rem; /* Više paddinga za lepši izgled */
+    border: 1px solid #e0e0e0; /* Tanka, suptilna granica */
+    border-radius: 12px; /* Veći border radius */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Diskretna senka */
+    background-color: #fff; /* Bela pozadina */
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Glatke tranzicije */
+    text-align: center;
+    min-width: 150px;
+    min-height: 175px;
+    flex-wrap: wrap;
+}
+
+#tData:hover {
+    transform: translateY(-5px); /* Blagi efekat podizanja pri prelasku mišem */
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15); /* Jača senka */
+}
+
+/* Specifični stilovi za tekst unutar kartica */
+#tData h1 {
+    font-size: 1.25rem; /* Povećan font za naslove */
+    font-weight: 600;
+    color: #4a4a4a; /* Tamnija boja teksta za kontrast */
+    margin: 0 0 0.5rem; /* Uklanja gornju marginu, dodaje donju */
+}
+#tData p {
+    font-size: 1.75rem; /* Veći font za vrednosti */
+    font-weight: 700;
+    color: #333; /* Tamnija boja za glavne vrednosti */
+    margin: 0;
+}
+
+/* Posebna stilizacija za deo sa kupcima */
+#tData h1 + td, #tData h1 + td + td {
+    margin-top: 10px; /* Dodaje razmak iznad imena kupca i slike */
+}
+
+/* Stil za sliku profila unutar kartice */
+#tData img {
+    width: 40px; /* Malo veća širina */
+    height: 40px; /* Malo veća visina */
+    border-radius: 50%; /* Oblik kruga */
+    object-fit: cover; /* Sprečava deformaciju slike */
+    border: 2px solid #3b82f6; /* Plavi border oko slike */
+    margin-top: 5px;
+}
+
+/* Responzivnost */
+@media (max-width: 768px) {
+    #tRow {
+        flex-direction: column; /* Na manjim ekranima, kartice idu jedna ispod druge */
+        align-items: center;
+        gap: 1.2rem;
+    }
+
+    #tData {
+        width: 90%; /* Zauzimaju 90% širine ekrana */
+        max-width: 300px;
+        flex: none; /* Uklanja fleksibilnost da bi `width` radio */
+        padding: 1.2rem;
+    }
+
+    #tData h1 {
+        font-size: 1.1rem;
+    }
+
+    #tData p {
+        font-size: 1.5rem;
+    }
+}
+
+#tsh1{
+        font-size: 1.25rem;
+    font-weight: bold;
+    color: black;
+    margin-left: 15px;
+    margin-top:15px;
+}
+
+#tssec{
+    margin-top: 10px;
+    border: 1px solid #ebebeb;
+    border-radius: 8px;
+}
+
+#buyers{
+    max-height: 175px; 
+    overflow-y: scroll; 
+    justify-content: flex-start;
+    display: flex;
+    flex-direction: column;
+}
+
+#in{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: center;
+}
+#in p{
+    font-size: 16px;
+    margin: 0;
+    text-align: center;
+}
+
+#in img{
+    width: 20px;
+    height: 20px;
+    margin: 0;
+}
+
+
+/* Stilovi za pop-up prozor unutar Dialog komponente */
+/* Koristite ::ng-deep ako se stilovi nalaze unutar komponente */
+:host ::ng-deep .p-dialog .p-dialog-content {
+    padding: 1.5rem;
+}
+
+/* Stilovi za listu kupaca unutar modala */
+.buyer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: 400px;
+    overflow-y: auto; /* Omogućava skrolovanje ako ima mnogo kupaca */
+    padding-right: 10px;
+}
+
+/* Stil za pojedinačnog kupca u listi */
+.buyer-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.buyer-item:hover {
+    background-color: #f5f5f5; /* Blaga pozadina pri prelasku mišem */
+}
+
+/* Stil za profilnu sliku kupca */
+.buyer-pfp {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ddd;
+}
+
+/* Stil za korisničko ime */
+.buyer-username {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+}
