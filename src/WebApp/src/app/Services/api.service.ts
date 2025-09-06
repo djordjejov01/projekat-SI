@@ -44,6 +44,7 @@ import { EventResourceApiResponse } from "../Interfaces/EventResourceApiResponse
 import { PendingRequest } from "../Interfaces/PendingRequestApiResponse";
 import { EventResourceCalendarResponse } from "../Interfaces/EventResourceCalendarResponse";
 import { environment } from "../../environments/environment";
+import { TicketSales } from "../Models/TicketSales";
 
 // Match Backend.Models.Dto.EventDto
 export interface EventDto {
@@ -787,8 +788,11 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
 
     }
 
-
-
+    getTicketSales(eventId : number){
+        return this.http.get<TicketSales>(`${this.apiUrl}/Organizer/events/${eventId}/ticket-sales`).pipe(
+            catchError(this.handleError)
+        )
+    }
     updateOrg(data : OrganizerDto): Observable<string>{
         return this.http.post<SuccessfulMessageResponse>(`${this.apiUrl}/Organizer/update-organizer`,data).pipe(
             map(data => data.message),
