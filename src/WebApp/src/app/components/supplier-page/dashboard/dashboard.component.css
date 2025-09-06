@@ -74,6 +74,7 @@ header,.page-title{
     border: 1px solid #EBEBEAFF;
     border-radius: 12px;
     max-width: 1100px;
+    transition: max-width 0.8s ease-in-out;
 }
 
 
@@ -119,6 +120,7 @@ header,.page-title{
     display: flex;
     margin-top: 2rem;
     gap: 2rem;
+    flex-wrap: wrap;
 }
 
 #btn1:hover{
@@ -148,4 +150,51 @@ header,.page-title{
     flex-direction: column;
     align-items: center;
     justify-content: center;
+}
+
+@media screen and (width <= 1830px){
+
+    .resource-table{
+        max-width: 900px;
+    }
+
+    .table-and-sidecontent{
+        flex-direction: column;
+        align-items: center;
+    }
+    
+}
+
+@media screen and (width <= 1450px){
+
+    .resource-table{
+        max-width: 900px;
+    }
+
+    .stat-cards{
+        justify-content: space-around;
+    }
+    
+    
+}
+
+@media screen and (width <= 1220px){
+
+    .resource-table{
+        max-width: 650px;
+    }
+
+    .stat-cards{
+        justify-content: center;
+    }
+    
+}
+
+
+@media screen and (width <= 700px){
+
+    .resource-table{
+        max-width: 325px;
+    }
+    
 }

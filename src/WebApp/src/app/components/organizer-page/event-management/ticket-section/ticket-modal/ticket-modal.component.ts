@@ -18,20 +18,22 @@ import { TicketDto } from '../../../../../Models/TicketDto';
 import { Ticket } from '../../../../../Models/Ticket';
 import { IDeactivate } from '../../../../../Interfaces/IDeactivate';
 import { ConfirmationDialogService } from '../../../../../Services/confirmation-dialog.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-ticket-modal',
-  imports: [
-    ReactiveFormsModule,
-    DialogModule,
-    DatePickerModule,
-    InputNumberModule,
-    FloatLabelModule,
-    InputTextModule,
-    TextareaModule,
-    ButtonModule,
-    TranslateModule
-  ],
+imports: [
+  ReactiveFormsModule,
+  DialogModule,
+  DatePickerModule,
+  InputNumberModule,
+  FloatLabelModule,
+  InputTextModule,
+  TextareaModule,
+  ButtonModule,
+  TranslateModule,
+  CommonModule
+],
   templateUrl: './ticket-modal.component.html',
   styleUrls: ['./ticket-modal.component.css']
 })
@@ -114,15 +116,21 @@ export class TicketModalComponent implements OnInit, OnChanges, OnDestroy, IDeac
     this.visible = true;
   }
 
-  initializeForm() {
-    this.ticketForm = new FormGroup({
-      name: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
+  initializeForm(){
+
+    const eventStartDate = this.eventBasicInfo.getStartDate();
+    const eventEndDate = this.eventBasicInfo.getEndDate();
+
+     this.ticketForm = new FormGroup({
+      name: new FormControl('',[Validators.required, CustomValidators.noWhitespaceValidator]),
       price: new FormControl('', [Validators.required, Validators.min(1)]),
-      description: new FormControl('', CustomValidators.noWhitespaceValidator),
-      quota: new FormControl('', [Validators.required, Validators.min(1)]),
-      validFrom: new FormControl('', Validators.required),
-      validUntil: new FormControl('', Validators.required)
-    }, { validators: CustomValidators.startBeforeEndDates('validFrom', 'validUntil') });
+      description: new FormControl('', [CustomValidators.noWhitespaceValidator, Validators.required]),
+      quota: new FormControl('',[Validators.required,Validators.min(1)]),
+      validFrom: new FormControl('', [Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]),
+      validUntil: new FormControl('', [Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)])
+
+    }, {validators: CustomValidators.startBeforeEndDates('validFrom','validUntil')})
+
   }
 
   private setLocalFormLang(lang: string) {
@@ -160,22 +168,24 @@ export class TicketModalComponent implements OnInit, OnChanges, OnDestroy, IDeac
       ticketDto.setTicketId(this.ticketToEdit.getTicketID());
 
       this.apiService.updateTicket(ticketDto).subscribe({
-        next: (msg) => {
-          this.messageService.add({
-            severity: 'success',
-            summary: this.translateService.instant('SUCCESS'),
-            detail: msg
-          });
-          this.ticketCreated.emit();
-          this.hide();
-        },
-        error: (err) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: this.translateService.instant('ERROR'),
-            detail: err.message
-          });
-        }
+      next: (msg) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translateService.instant('SUCCESS'),
+          detail: msg,
+          life: 3000
+        });
+        this.ticketCreated.emit();
+        this.hide();
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translateService.instant('ERROR'),
+          detail: err.message,
+          life: 3000
+        });
+      }
       });
     } else {
       this.apiService.createTicket(ticketDto).subscribe({
@@ -183,7 +193,8 @@ export class TicketModalComponent implements OnInit, OnChanges, OnDestroy, IDeac
           this.messageService.add({
             severity: 'success',
             summary: this.translateService.instant('SUCCESS'),
-            detail: msg
+            detail: msg,
+            life: 3000
           });
           this.ticketCreated.emit();
           this.hide();
@@ -192,7 +203,8 @@ export class TicketModalComponent implements OnInit, OnChanges, OnDestroy, IDeac
           this.messageService.add({
             severity: 'error',
             summary: this.translateService.instant('ERROR'),
-            detail: err.message
+            detail: err.message,
+            life: 3000
           });
         }
       });

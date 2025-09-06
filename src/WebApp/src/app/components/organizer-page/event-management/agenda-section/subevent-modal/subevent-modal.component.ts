@@ -94,14 +94,17 @@ export class SubeventModalComponent implements OnInit, OnDestroy, OnChanges, IDe
     const isParentUnlimited = this.parentEventBasicInfo.getCapacity() === -1;
     const capacityValue = isParentUnlimited ? null : this.parentEventBasicInfo.getCapacity();
 
-    this.subeventForm = new FormGroup({
+    const eventStartDate = this.parentEventBasicInfo.getStartDate();
+    const eventEndDate = this.parentEventBasicInfo.getEndDate();
+
+     this.subeventForm = new FormGroup({
       title: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
-      description: new FormControl('', CustomValidators.noWhitespaceValidator),
+      description: new FormControl('', [CustomValidators.noWhitespaceValidator,Validators.required]),
       location: new FormControl(this.parentEventBasicInfo.getLocation(), [Validators.required, CustomValidators.noWhitespaceValidator]),
       isUnlimitedCapacity: new FormControl({ value: isParentUnlimited, disabled: !isParentUnlimited }),
-      capacity: new FormControl({ value: capacityValue, disabled: isParentUnlimited }, [Validators.required, Validators.min(1)]),
-      startDateTime: new FormControl('', [Validators.required, CustomValidators.notInPast]),
-      endDateTime: new FormControl('', Validators.required),
+      capacity: new FormControl({value : capacityValue, disabled: isParentUnlimited} ,[Validators.required, Validators.min(1)]),
+      startDateTime: new FormControl('', [Validators.required, CustomValidators.notInPast,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]),
+      endDateTime: new FormControl('', [Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]),
       category: new FormControl(this.parentEventBasicInfo.getCategory(), Validators.required),
     }, {
       validators: CustomValidators.startBeforeEndDates('startDateTime', 'endDateTime')
@@ -164,47 +167,49 @@ export class SubeventModalComponent implements OnInit, OnDestroy, OnChanges, IDe
   }
 
   submitForm() {
-    if (this.subeventForm.invalid) {
-      this.formValidationService.showValidationErrors(this.subeventForm, 'Subevent Form');
-      return;
-    }
-
-    const formValues = this.subeventForm.getRawValue();
-    const capacity = formValues.isUnlimitedCapacity ? -1 : formValues.capacity;
-
-    const formData = new FormData();
-    formData.append('Title', formValues.title);
-    formData.append('Description', formValues.description);
-    formData.append('Location', formValues.location);
-    formData.append('StartDateTime', new Date(formValues.startDateTime).toISOString());
-    formData.append('EndDateTime', new Date(formValues.endDateTime).toISOString());
-    formData.append('Capacity', capacity.toString());
-    formData.append('Category', formValues.category.toString());
-    formData.append('ParentEventId', this.parentEventBasicInfo.getEventID().toString());
-
-    const organizerId = this.authService.getUserId();
-
-    this.apiService.createEvent(formData, organizerId).subscribe({
-      next: (response) => {
-        const message = response.headers?.get('Location') || this.translate.instant('MESSAGES.EVENT_CREATED');
-        this.messageService.add({
-          severity: 'success',
-          summary: this.translate.instant('COMMON.SUCCESS'),
-          detail: message
-        });
-        this.subeventForm.reset();
-        this.hide();
-        this.subeventCreated.emit();
-      },
-      error: () => {
-        this.messageService.add({
-          severity: 'error',
-          summary: this.translate.instant('COMMON.ERROR'),
-          detail: this.translate.instant('MESSAGES.EVENT_CREATE_FAILED')
-        });
-      }
-    });
+  if (this.subeventForm.invalid) {
+    this.formValidationService.showValidationErrors(this.subeventForm, 'Subevent Form');
+    return;
   }
+
+  const formValues = this.subeventForm.getRawValue();
+  const capacity = formValues.isUnlimitedCapacity ? -1 : formValues.capacity;
+
+  const formData = new FormData();
+  formData.append('Title', formValues.title);
+  formData.append('Description', formValues.description);
+  formData.append('Location', formValues.location);
+  formData.append('StartDateTime', new Date(formValues.startDateTime).toISOString());
+  formData.append('EndDateTime', new Date(formValues.endDateTime).toISOString());
+  formData.append('Capacity', capacity.toString());
+  formData.append('Category', formValues.category.toString());
+  formData.append('ParentEventId', this.parentEventBasicInfo.getEventID().toString());
+
+  const organizerId = this.authService.getUserId();
+
+  this.apiService.createEvent(formData, organizerId).subscribe({
+    next: (response) => {
+      const message = response.headers?.get('Location') || this.translate.instant('MESSAGES.EVENT_CREATED');
+      this.messageService.add({
+        severity: 'success',
+        summary: this.translate.instant('COMMON.SUCCESS'),
+        detail: message,
+        life: 3000
+      });
+      this.subeventForm.reset();
+      this.hide();
+      this.subeventCreated.emit();
+    },
+    error: () => {
+      this.messageService.add({
+        severity: 'error',
+        summary: this.translate.instant('COMMON.ERROR'),
+        detail: this.translate.instant('MESSAGES.EVENT_CREATE_FAILED'),
+        life: 3000
+      });
+    }
+  });
+}
 
   canExit(): boolean | Observable<boolean> | Promise<boolean> {
     return (this.subeventForm.dirty || this.subeventForm.touched)

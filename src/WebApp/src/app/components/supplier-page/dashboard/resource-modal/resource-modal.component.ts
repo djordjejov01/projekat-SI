@@ -79,7 +79,7 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
       category: new FormControl('',Validators.required),
       type: new FormControl('', Validators.required),
       quantity: new FormControl(null,[ Validators.required,Validators.min(0)]),
-      description: new FormControl('',CustomValidators.noWhitespaceValidator)
+      description: new FormControl('',[CustomValidators.noWhitespaceValidator,Validators.required])
 
     })
 
@@ -153,7 +153,7 @@ openModal(resourceToEdit?: ResourceDto) {
       this.apiService.editResource(resource).subscribe({
         next: (msg) => 
         {
-          this.messageService.add({ severity: 'success', summary: 'Edited', detail: msg});
+          this.messageService.add({ severity: 'success', summary: 'Edited', detail: msg, life: 3000});
           this.resourceSaved.emit(null);
           this.closeModal()
         },
@@ -170,7 +170,7 @@ openModal(resourceToEdit?: ResourceDto) {
       this.apiService.addResource(resource).subscribe({
         next: (addedResource : ResourceDto) => 
         {
-          this.messageService.add({ severity: 'success', summary: 'Added', detail: 'Resource Added Successfully!' });
+          this.messageService.add({ severity: 'success', summary: 'Added', detail: 'Resource Added Successfully!',life: 3000});
           this.resourceSaved.emit(addedResource)
           this.closeModal()
         },

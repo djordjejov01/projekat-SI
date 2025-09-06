@@ -1,7 +1,7 @@
 <p-dialog
   [modal]="true"
   [(visible)]="visible"
-  [style]="{ width: '50rem', height: '55rem' }"
+  [style]="{ 'max-height': '70rem', 'overflow-y': 'auto' }"
   (onHide)="onCancleClick()"
   [closable]="false"
   [dismissableMask]="false"
@@ -10,8 +10,8 @@
   <ng-template pTemplate="header">
     <div class="flex justify-between items-start w-full">
       <div class="formTitle">
-        <h3>{{ 'ACTIVITY.CREATE_TITLE' | translate }}</h3>
-        <p>{{ 'ACTIVITY.CREATE_SUBTITLE' | translate }}</p>
+        <h3>{{ _editMode ? ('ACTIVITY.EDIT_TITLE' | translate) : ('ACTIVITY.CREATE_TITLE' | translate) }}</h3>
+        <p>{{ _editMode ? ('ACTIVITY.EDIT_SUBTITLE' | translate) : ('ACTIVITY.CREATE_SUBTITLE' | translate) }}</p>
       </div>
       <button
         type="button"
@@ -24,8 +24,8 @@
       </button>
     </div>
   </ng-template>
-    
-  <form action="" [formGroup]="activityForm" class="activityForm">
+
+  <form [formGroup]="activityForm" class="activityForm">
     <div class="form-inputs">
 
       <div class="input-wrapper">
@@ -87,7 +87,7 @@
               hourFormat="24"
               [minDate]="parentEventBasicInfo.getStartDate()"
               [maxDate]="parentEventBasicInfo.getEndDate()"
-              [style]="{ width: '100%' }"
+              [style]="{ 'width': '100%' }"
               inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
             />
             <label for="startTime">{{ 'ACTIVITY.START_TIME_PLACEHOLDER' | translate }}</label>
@@ -105,7 +105,7 @@
               hourFormat="24"
               [minDate]="parentEventBasicInfo.getStartDate()"
               [maxDate]="parentEventBasicInfo.getEndDate()"
-              [style]="{ width: '100%' }"
+              [style]="{ 'width': '100%' }"
               inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
             />
             <label for="endTime">{{ 'ACTIVITY.END_TIME_PLACEHOLDER' | translate }}</label>
@@ -115,8 +115,8 @@
 
       <div class="form-buttons">
         <p-button
-          label="{{ 'COMMON.SAVE' | translate }}"
-          icon="pi pi-pen-to-square"
+          [label]="_editMode ? ('ACTIVITY.UPDATE_BUTTON' | translate) : ('ACTIVITY.CREATE_BUTTON' | translate)"
+          [icon]="_editMode ? 'pi pi-save' : 'pi pi-plus'"
           [raised]="true"
           (onClick)="submitForm()"
           severity="primary"
@@ -131,6 +131,7 @@
           (onClick)="onCancleClick()"
         ></p-button>
       </div>
+
     </div>
   </form>
 </p-dialog>

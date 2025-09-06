@@ -1,8 +1,8 @@
 <p-dialog
   [modal]="true"
   [(visible)]="visible"
-  [style]="{ width: '30rem', height: selectedResource?.isExhaustable ? '30rem' : '50rem' }"
-  (onHide)="onDialogHide()"
+  [style]="{ 'max-height': '70rem', 'overflow-y': 'auto' ,'max-width': '30rem'}"
+  (onHide)="onDialogHide()" 
   [closable]="false"
   [dismissableMask]="false"
   [closeOnEscape]="false"

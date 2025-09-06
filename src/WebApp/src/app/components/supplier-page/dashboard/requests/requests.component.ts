@@ -71,7 +71,7 @@ export class RequestsComponent implements OnChanges {
       },
       error: (error) => {
         console.error('Error fetching pending requests:', error);
-        this.messageService.add({severity: 'error', summary: 'Error', detail: 'Could not load pending requests.'});
+        this.messageService.add({severity: 'error', summary: 'Error', detail: 'Could not load pending requests.',life: 3000});
         this.loading = false;
       }
     });
@@ -93,13 +93,13 @@ export class RequestsComponent implements OnChanges {
     this.apiService.updateEventResourceStatus(request.id, EventResourceStatus.Approved)
       .subscribe({
         next: (response) => {
-          this.messageService.add({severity: 'success', summary: 'Success', detail: 'Request approved!'});
+          this.messageService.add({severity: 'success', summary: 'Success', detail: 'Request approved!',life: 3000});
           // After success, re-fetch the pending requests to update the table
           this.fetchPendingRequests();
           this.requestProcessed.emit();
         },
         error: (err) => {
-          this.messageService.add({severity: 'error', summary: 'Error', detail: err.error || 'Failed to approve request.'});
+          this.messageService.add({severity: 'error', summary: 'Error', detail: err.error || 'Failed to approve request.',life: 3000});
           this.loading = false;
         }
       });
@@ -111,13 +111,13 @@ export class RequestsComponent implements OnChanges {
     this.apiService.updateEventResourceStatus(request.id, EventResourceStatus.Declined)
       .subscribe({
         next: (response) => {
-          this.messageService.add({severity: 'success', summary: 'Success', detail: 'Request declined!'});
+          this.messageService.add({severity: 'success', summary: 'Success', detail: 'Request declined!',life: 3000});
           // After success, re-fetch the pending requests to update the table
           this.fetchPendingRequests();
           this.requestProcessed.emit();
         },
         error: (err) => {
-          this.messageService.add({severity: 'error', summary: 'Error', detail: err.error || 'Failed to decline request.'});
+          this.messageService.add({severity: 'error', summary: 'Error', detail: err.error || 'Failed to decline request.',life: 3000});
           this.loading = false;
         }
       });
