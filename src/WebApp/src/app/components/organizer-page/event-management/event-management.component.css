@@ -25,6 +25,13 @@ app-map-section {
     flex-direction: column;
 }
 
+.custom-hr {
+    height: 2px;
+    background-color: #EBEBEA;
+    border: none;
+    width: 100%;
+}
+
 @media screen and (width <= 1830px){
 
     .basic-info-and-map{
