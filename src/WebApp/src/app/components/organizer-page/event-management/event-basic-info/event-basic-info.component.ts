@@ -22,10 +22,11 @@ import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
 import { ActivatedRoute } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
 import { AutoComplete } from 'primeng/autocomplete';
-import { TranslateModule,TranslateService } from '@ngx-translate/core'; // dodato
+import { TranslateModule,TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-event-basic-info',
+  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -47,14 +48,14 @@ import { TranslateModule,TranslateService } from '@ngx-translate/core'; // dodat
 })
 export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy {
 
-  @Input() eventBasicInfo: EventBasicInfo;
+  @Input() eventBasicInfo!: EventBasicInfo;
   @Input() editMode!: boolean;
   @Output() cancelEdit = new EventEmitter<void>();
   @Output() eventUpdated = new EventEmitter<EventBasicInfo>();
   @ViewChild('fileUploader') fileUploader: any;
 
-  eventForm: FormGroup;
-  minDate: Date;
+  eventForm!: FormGroup;
+  minDate!: Date;
   categories: { label: string, value: number }[] = [];
   filteredLocations: any[] = [];
 
@@ -66,12 +67,12 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy {
     private apiService: ApiService,
     private formValidationService: FormValidationService,
     private route: ActivatedRoute,
-    private translate: TranslateService // dodato
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
     this.minDate = new Date();
-
+    
     this.categoryService.loadCategoriesIfEmpty()
       .pipe(take(1))
       .subscribe(categories => {
@@ -81,7 +82,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy {
         }));
       });
 
-    this.initFormWithEvent()
+    this.initFormWithEvent();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -94,14 +95,17 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy {
     this.unlimitedCapacitySub?.unsubscribe();
   }
 
-  initFormWithEvent() {
+  initFormWithEvent(){
+    const isParentUnlimited = this.eventBasicInfo.getCapacity() === -1;
+    const capacityValue = isParentUnlimited ? null : this.eventBasicInfo.getCapacity();
+
     this.eventForm = new FormGroup({
       title: new FormControl(this.eventBasicInfo.getTitle(), [Validators.required, CustomValidators.noWhitespaceValidator]),
-      description: new FormControl(this.eventBasicInfo.getDescription(), CustomValidators.noWhitespaceValidator),
+      description: new FormControl(this.eventBasicInfo.getDescription(), [CustomValidators.noWhitespaceValidator,Validators.required]),
       location: new FormControl(this.eventBasicInfo.getLocation(), [Validators.required, CustomValidators.noWhitespaceValidator]),
-      isUnlimitedCapacity: new FormControl(this.eventBasicInfo.getCapacity() === -1),
+      isUnlimitedCapacity: new FormControl(isParentUnlimited),
       capacity: new FormControl(
-        this.eventBasicInfo.getCapacity() === -1 ? null : this.eventBasicInfo.getCapacity(),
+        capacityValue,
         [Validators.required, Validators.min(1)]
       ),
       startDateTime: new FormControl(this.eventBasicInfo.getStartDate(), [Validators.required, CustomValidators.notInPast]),
@@ -109,7 +113,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy {
       category: new FormControl(this.eventBasicInfo.getCategory(), Validators.required),
     }, { validators: CustomValidators.startBeforeEndDates('startDateTime', 'endDateTime') });
 
-    if (this.unlimitedCapacitySub) this.unlimitedCapacitySub.unsubscribe();
+    if(this.unlimitedCapacitySub) this.unlimitedCapacitySub.unsubscribe();
 
     this.unlimitedCapacitySub = this.eventForm.get('isUnlimitedCapacity')?.valueChanges.subscribe((unlimited) => {
       const capacityControl = this.eventForm.get('capacity');
@@ -124,8 +128,6 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy {
       }
       capacityControl?.updateValueAndValidity();
     });
-
-    this.eventForm.get('isUnlimitedCapacity')?.updateValueAndValidity({ onlySelf: true, emitEvent: true });
   }
 
   searchLocations(event: any) {
@@ -133,8 +135,8 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy {
     if (!query) return;
 
     this.apiService.searchLocations(query).subscribe((results) => {
-      this.filteredLocations = results
-    })
+      this.filteredLocations = results;
+    });
   }
 
   onLocationSelect(event: any) {
@@ -175,7 +177,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy {
           data.imageUrl,
           data.status,
           data.parentEventId
-        )
+        );
         this.eventUpdated.emit(this.eventBasicInfo);
         this.onCancel();
 

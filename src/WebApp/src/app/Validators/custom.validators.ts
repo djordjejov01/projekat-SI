@@ -43,4 +43,25 @@ export class CustomValidators{
     return selectedDate < now ? { pastDate: true } : null;
     }
 
+     static dateWithinRange(minDate: Date, maxDate: Date): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const selectedDate = control.value;
+
+            // Don't validate if the control is empty
+            if (!selectedDate) {
+                return null;
+            }
+
+            const date = new Date(selectedDate);
+            const min = new Date(minDate);
+            const max = new Date(maxDate);
+
+            // A null min or max date means there's no limit on that side
+            const isBeforeMin = min && date < min;
+            const isAfterMax = max && date > max;
+
+            return (isBeforeMin || isAfterMax) ? { dateOutOfRange: true } : null;
+        };
+    }
+
 }

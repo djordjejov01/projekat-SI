@@ -10,8 +10,8 @@
   <ng-template pTemplate="header">
     <div class="flex justify-between items-start w-full">
       <div class="formTitle">
-        <h3>{{ 'PIN.CREATE_NEW_PIN' | translate }}</h3>
-        <p>{{ 'PIN.FILL_DETAILS_BELOW' | translate }}</p>
+        <h3>{{ editingPin ? ('PIN.EDIT_PIN' | translate) : ('PIN.CREATE_NEW_PIN' | translate) }}</h3>
+        <p>{{ editingPin ? ('PIN.UPDATE_DETAILS_BELOW' | translate) : ('PIN.FILL_DETAILS_BELOW' | translate) }}</p>
       </div>
       <button
         type="button"
@@ -26,10 +26,7 @@
   </ng-template>
 
   <form [formGroup]="pinForm" class="pinForm">
-
     <div class="form-inputs">
-
-      <!-- Pin Title -->
       <div class="input-wrapper">
         <p>{{ 'PIN.TITLE' | translate }}</p>
         <p-floatlabel class="w-full md:w-56" variant="on">
@@ -46,7 +43,6 @@
         </p-floatlabel>
       </div>
 
-      <!-- Pin Type -->
       <div class="input-wrapper">
         <p>{{ 'PIN.TYPE' | translate }}</p>
         <p-floatlabel class="w-full" variant="on">
@@ -59,7 +55,6 @@
             inputId="type"
             class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"
           >
-            <!-- Dropdown Items -->
             <ng-template let-option pTemplate="item">
               <div class="flex items-center gap-2">
                 <img [src]="option.icon" alt="{{ option.label }}" class="w-5 h-5 object-contain" />
@@ -67,7 +62,6 @@
               </div>
             </ng-template>
 
-            <!-- Selected Item -->
             <ng-template let-selected pTemplate="selectedItem">
               <div class="flex items-center gap-2" *ngIf="selected">
                 <img [src]="selected.icon" alt="{{ selected.label }}" class="w-5 h-5 object-contain" />
@@ -80,7 +74,6 @@
         </p-floatlabel>
       </div>
 
-      <!-- Pin Description -->
       <div class="input-wrapper">
         <p>{{ 'PIN.DESCRIPTION' | translate }}</p>
         <p-floatlabel class="w-full md:w-56" variant="on">
@@ -94,16 +87,15 @@
             style="resize: none"
             [ngClass]="{'p-inputtext-filled': pinForm.get('description')?.value}"
             class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-          >{{ pinForm.get('description')?.value }}</textarea>
+          ></textarea>
           <label for="description">{{ 'PIN.DESCRIBE_PIN' | translate }}</label>
         </p-floatlabel>
       </div>
 
-      <!-- Form Buttons -->
       <div class="form-buttons">
         <p-button
-          label="{{ 'COMMON.SAVE_CHANGES' | translate }}"
-          icon="pi pi-pen-to-square"
+          [label]="editingPin ? ('COMMON.SAVE_CHANGES' | translate) : ('PIN.CREATE_NEW_PIN' | translate)"
+          [icon]="editingPin ? 'pi pi-save' : 'pi pi-plus'"
           [raised]="true"
           (onClick)="savePin()"
           severity="primary"
@@ -118,7 +110,6 @@
           (onClick)="onCancleClick()"
         ></p-button>
       </div>
-
     </div>
   </form>
 </p-dialog>

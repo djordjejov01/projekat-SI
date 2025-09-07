@@ -321,7 +321,10 @@
     "END_TIME_PLACEHOLDER": "Select End Time",
     "CREATE_SUCCESS": "Activity created successfully!",
     "UNSAVED_TITLE": "Unsaved Changes",
-    "UNSAVED_MESSAGE": "You have unsaved changes. Are you sure you want to close the modal?"
+    "UNSAVED_MESSAGE": "You have unsaved changes. Are you sure you want to close the modal?",
+    "UPDATE_BUTTON": "Update Activity",
+    "CREATE_BUTTON": "Create Activity",
+    "UPDATE_SUCCESS": "Activity updated successfully!"
   },
   "COMMON": {
     "SAVE": "Save Changes",

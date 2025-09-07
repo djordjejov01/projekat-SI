@@ -220,9 +220,10 @@ export class MapSectionComponent implements AfterViewInit, OnChanges {
     this.map.getContainer().style.cursor = 'crosshair';
 
     this.messageService.add({
-      severity: 'info',
-      summary: this.translate.instant('MAP.ADD_PIN_MODE'),
-      detail: this.translate.instant('MAP.CLICK_TO_PLACE_PIN'),
+    severity: 'info',
+    summary: this.translate.instant('MAP.ADD_PIN_MODE'),
+    detail: this.translate.instant('MAP.CLICK_TO_PLACE_PIN'),
+    life: 3000
     });
 
     this.map.once('click', (e: Leaflet.LeafletMouseEvent) => {

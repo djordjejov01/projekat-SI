@@ -21,7 +21,7 @@
             [showTargetControls]="false"
             [dragdrop]="true"
             [responsive]="true"
-            [style]="{height:'400px'}"
+            
             filterBy="name"
             [sourceTrackBy]="'resourceID'" 
             [targetTrackBy]="'resourceID'"
@@ -34,22 +34,22 @@
             (onMoveToSource)="handleMoveToSource($event)"
         >
             <ng-template let-resource pTemplate="item">
-                <div class="flex justify-between items-center w-full">
+                <div class="flex justify-between items-center w-full flex-wrap">
                     <span class="font-medium">{{ resource.name }}</span>
 
-                    <div class="flex gap-2 items-center">
+                    <div class="flex gap-2 items-center flex-wrap">
 
                         <p-chip 
                             label="{{ getCategoryName(resource) }}" 
                             [ngStyle]="getCategoryStyle(resource)"
                             class="px-3 py-1 text-sm h-6 rounded-full font-medium">
                         </p-chip>
-
+                        
                         <p-chip 
                             *ngIf="resource.status === undefined"
                             label="{{ 'QTY_LEFT' | translate }}: {{ resource.quantity }}"
                             styleClass="px-3 py-1 text-sm h-6 bg-quantity"
-                        ></p-chip>
+                        />
 
                         <p-chip 
                             *ngIf="resource.status !== undefined"

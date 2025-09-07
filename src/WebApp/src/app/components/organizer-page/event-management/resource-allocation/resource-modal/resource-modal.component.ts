@@ -88,21 +88,30 @@ export class ResourceModalComponent implements OnInit, IDeactivate {
     this.updateResourceTitle();
   }
 
-  private applyConditionalValidators() {
-    this.resourceForm.get('allocatedQuantity')?.setValidators([Validators.required, Validators.min(1)]);
+private applyConditionalValidators() {
 
-    if (this.selectedResource.isExhaustable) {
-      this.resourceForm.get('startDateTimeBooked')?.clearValidators();
-      this.resourceForm.get('endDateTimeBooked')?.clearValidators();
-    } else {
-      this.resourceForm.get('startDateTimeBooked')?.setValidators(Validators.required);
-      this.resourceForm.get('endDateTimeBooked')?.setValidators(Validators.required);
-    }
-
-    this.resourceForm.get('allocatedQuantity')?.updateValueAndValidity();
-    this.resourceForm.get('startDateTimeBooked')?.updateValueAndValidity();
-    this.resourceForm.get('endDateTimeBooked')?.updateValueAndValidity();
+  const eventStartDate = this.eventBasicInfo.getStartDate();
+  const eventEndDate = this.eventBasicInfo.getEndDate();
+  // Set required and min validators for quantity for both cases
+  this.resourceForm.get('allocatedQuantity')?.setValidators([
+    Validators.required,
+    Validators.min(1),
+    // Apply the max validator to ALL resources.
+    // The `selectedResource.quantity` should reflect the true maximum available,
+    // which for "single-use" inexhaustible resources will be 1 (from backend filtering).
+   // Validators.max(this.selectedResource.quantity)
+  ]);
+  
+  if (this.selectedResource.isExhaustable) {
+    // For exhaustible resources, date fields are not required.
+    this.resourceForm.get('startDateTimeBooked')?.clearValidators();
+    this.resourceForm.get('endDateTimeBooked')?.clearValidators();
+  } else {
+    // For inexhaustible resources, date fields are required for booking.
+    this.resourceForm.get('startDateTimeBooked')?.setValidators([Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]);
+    this.resourceForm.get('endDateTimeBooked')?.setValidators([Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]);
   }
+}
 
   private updateResourceTitle(): void {
     if (!this.selectedResource) {

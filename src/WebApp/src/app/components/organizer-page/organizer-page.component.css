@@ -62,11 +62,11 @@ flex-direction: column;
 #page{
     display: flex;
     justify-content: space-between;
-    flex-wrap: nowrap; 
+    flex-wrap: wrap; 
 }
 #show{
-    padding: 2rem;
-    padding-left: 0.25rem;
+    /* padding: 2rem;
+    padding-left: 0.25rem; */
     max-width: 1500px;
     width: 100%;
     padding-top: 5rem;
@@ -120,7 +120,13 @@ select:hover, option:hover{
     }
 }
 
-@media screen and (max-width: 1666px) {
+@media screen and (width <= 1531px) {
+
+}
+
+/* Desktop adjustments already present */
+@media screen and (max-width: 1830px) {
+
     #show{
         padding-top: 55px;
         padding-left:320px;
@@ -129,7 +135,7 @@ select:hover, option:hover{
     }
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 1030px) {
     #show{
         padding-left:50px;
         padding-right: 0px;

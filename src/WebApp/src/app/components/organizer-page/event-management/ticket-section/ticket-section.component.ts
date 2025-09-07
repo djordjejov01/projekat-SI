@@ -102,15 +102,17 @@ export class TicketSectionComponent implements OnInit {
             this.messageService.add({
               severity: 'success',
               summary: this.translateService.instant('DELETED'),
-              detail: msg
+              detail: msg,
+              life: 3000
             });
-            this.loadTickets();
+            this.loadTickets(); // Refresh ticket list
           },
           error: (err) => {
             this.messageService.add({
               severity: 'error',
               summary: this.translateService.instant('ERROR'),
-              detail: err.message
+              detail: err.message,
+              life: 3000
             });
           }
         });
