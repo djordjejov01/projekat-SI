@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import i18n from '../i18n';
+import { apiCall } from '../../config';
 import { API_URL } from '../../config';
 import {
   View,
@@ -57,7 +58,7 @@ export default function ProfileScreen() {
       setIsLoggedIn(true);
       setIsLoading(true);
       try {
-        const res = await fetch(`${API_URL}/api/MobileUser/profile`, {
+        const res = await apiCall(`${API_URL}/api/MobileUser/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -72,7 +73,7 @@ export default function ProfileScreen() {
           setProfilePicture(imageUrl);
         }
 
-        const resTickets = await fetch(`${API_URL}/api/ticket/tickets/my`, {
+        const resTickets = await apiCall(`${API_URL}/api/ticket/tickets/my`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -82,32 +83,40 @@ export default function ProfileScreen() {
           const dataCount = JSON.parse(ticketsText);
           setTicketsCount(dataCount.length);
         }
-        const resResources = await fetch(`${API_URL}/api/Resource/my-reservations`, {
+        const resResources = await apiCall(`${API_URL}/api/Resource/my-reservations`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+         const text = await resResources.text();
+        // console.log('Raw response:', text);
 
         if (resResources.ok) {
           const data = await resResources.json();
+          // console.log('Parsed data:', data);
 
           // Pravimo Set od imena resursa
           const uniqueResources = new Set(data.map((r: any) => r.ResourceName));
-
+          // console.log('Unique resources:', uniqueResources);
           setResourcesCount(uniqueResources.size);
 }
 
-        const resCredits = await fetch(`${API_URL}/api/Credit`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const resCredits = await apiCall(`${API_URL}/api/Credit`, {
+  headers: { Authorization: `Bearer ${token}` },
+});
 
-        const creditsText = await resCredits.text();
-
-        if (resCredits.ok) {
-          const data = JSON.parse(creditsText);
-          console.log('CR DEBUG:', data); 
+      if (resCredits.ok) {
+        const data = await resCredits.json(); // direktno parsiramo JSON
+        console.log('CR DEBUG:', data); // ovo treba da bude { Credits: 100 } npr.
+        if (data && typeof data.Credits === 'number') {
           setCredits(data.Credits);
+        } else {
+          console.warn('Credits field is missing in API response', data);
+          setCredits(0); // fallback
         }
-      } catch (error) {
-        console.error('Failed to load user data or tickets:', error);
+      } else {
+        console.error('Failed to fetch credits', resCredits.status);
+      }
+
       } finally {
         setIsLoading(false);
       }

@@ -4,11 +4,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { API_URL } from '../../config';
 import { useTranslation } from 'react-i18next';
-
+import { apiCall } from '../../config';
 type Ticket = {
-  id: number;
-  token: string;
-  typeName: string;
+  UserTicketID: number;
+  TicketID: number;
+  TicketType: string;
+  ValidationToken: string;
 };
 
 type ResourceReservation = {
@@ -32,30 +33,41 @@ export default function ReservationDetails() {
         const token = await AsyncStorage.getItem('token');
         if (!token) return;
 
-        const res = await fetch(`${API_URL}/api/Resource/my-reservations`, {
+        // 1️⃣ Fetch resurse
+        const resRes = await apiCall(`${API_URL}/api/Resource/my-reservations`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        const data = await res.json();
+        const resData = await resRes.json();
+        const eventResources = resData.filter((r: any) => r.EventID == eventID);
+        if (!eventResources.length) return;
 
-        const eventData = data.filter((r: any) => r.EventID == eventID);
-        if (!eventData.length) return;
+        setEventTitle(eventResources[0].EventTitle);
 
-        setEventTitle(eventData[0].EventTitle);
-
-        // Grupisanje po resursima
+        // Grupisanje resursa
         const grouped: Record<string, ResourceReservation> = {};
-        eventData.forEach((r: any) => {
+        eventResources.forEach((r: any) => {
           if (!grouped[r.ResourceName]) {
             grouped[r.ResourceName] = {
               ResourceName: r.ResourceName,
               Quantity: r.Quantity,
               ReservedAt: r.ReservedAt,
-              Tickets: r.UserTickets ?? [],
+              Tickets: [],
             };
           } else {
             grouped[r.ResourceName].Quantity += r.Quantity;
-            grouped[r.ResourceName].Tickets.push(...(r.UserTickets ?? []));
           }
+        });
+
+        // 2️⃣ Fetch karte korisnika
+        const ticketsRes = await apiCall(`${API_URL}/api/Ticket/tickets/my`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const ticketsData = await ticketsRes.json();
+        const eventTickets: Ticket[] = ticketsData.filter((t: any) => t.EventID == eventID);
+
+        // 3️⃣ Dodavanje karata po resursima (ako je TicketID jednak ResourceName, prilagodi po potrebi)
+        Object.values(grouped).forEach(res => {
+          res.Tickets = eventTickets; 
         });
 
         setResources(Object.values(grouped));
@@ -99,15 +111,15 @@ export default function ReservationDetails() {
                   onPress={() => router.push({
                     pathname: '../tickets/ticketDetails',
                     params: {
-                      ticketIDs: JSON.stringify([ticket.id]),
-                      validationTokens: JSON.stringify([ticket.token]),
+                      ticketIDs: JSON.stringify([ticket.TicketID]),
+                      validationTokens: JSON.stringify([ticket.ValidationToken]),
                       eventID: eventID,
                       eventName: eventTitle,
                       from: 'reservationDetails',
                     }
                   })}
                 >
-                  <Text style={styles.ticketLink}>→ {ticket.typeName}</Text>
+                  <Text style={styles.ticketLink}>→ {ticket.TicketType}</Text>
                 </TouchableOpacity>
               ))}
             </View>
