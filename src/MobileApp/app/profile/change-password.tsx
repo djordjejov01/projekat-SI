@@ -232,6 +232,7 @@ const styles = StyleSheet.create({
   passwordInput: {
     flex: 1,
     fontSize: 16,
+    color: '#111827', 
   },
   saveButton: {
     backgroundColor: '#2563EB',
