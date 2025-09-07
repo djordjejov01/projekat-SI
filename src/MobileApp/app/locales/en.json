@@ -363,7 +363,15 @@
     "reservedOn": "Reserved on",
     "noReservations": "You have no reservations yet."
   }
-  
+  ,
+  "forgotPasswordTitle": "Forgot Password",
+  "forgotPasswordSubtitle": "Enter your email to receive a password reset link.",
+  "sendResetLink": "Send Reset Link",
+  "resetLinkSent": "Password reset link has been sent to your email."
+ 
+
+
+
 
   
 

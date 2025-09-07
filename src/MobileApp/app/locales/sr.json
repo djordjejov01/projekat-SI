@@ -333,6 +333,14 @@
     "reservedOn": "Rezervisano",
     "noReservations": "Još uvek nemate rezervacije."
   }
+  ,
+  "forgotPasswordTitle": "Zaboravljena lozinka",
+  "forgotPasswordSubtitle": "Unesite svoj email da biste dobili link za resetovanje lozinke.",
+  "sendResetLink": "Pošalji link",
+  "resetLinkSent": "Link za resetovanje lozinke je poslat na vaš email."
+
+
+
 
   
 
