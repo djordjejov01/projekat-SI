@@ -2,25 +2,17 @@
   <div class="content">
 
     <header>
-      <app-event-management-header 
-        [eventTitle]="eventBasicInfo.getTitle()" 
-        [editMode]="editMode" 
-        (editModeChange)="onToggleEditMode($event)"
-        [parentEventId]="eventBasicInfo.getParentEventId()"
-        [eventID] = "eventBasicInfo.getEventID()"
-        [eventInfo] = "eventBasicInfo"
-        (eventAction) = "loadEvent(eventBasicInfo.getEventID())">
+      <app-event-management-header [eventTitle]="eventBasicInfo.getTitle()" [editMode]="editMode"
+        (editModeChange)="onToggleEditMode($event)" [parentEventId]="eventBasicInfo.getParentEventId()"
+        [eventID]="eventBasicInfo.getEventID()" [eventInfo]="eventBasicInfo"
+        (eventAction)="loadEvent(eventBasicInfo.getEventID())">
       </app-event-management-header>
     </header>
 
      <div class="basic-info-and-map">
 
-      <app-event-basic-info 
-        [eventBasicInfo]="eventBasicInfo" 
-        [editMode]="editMode"
-        (cancelEdit)="onToggleEditMode(false)"
-        (eventUpdated)="onEventUpdated($event)"
-        >
+      <app-event-basic-info [eventBasicInfo]="eventBasicInfo" [editMode]="editMode"
+        (cancelEdit)="onToggleEditMode(false)" (eventUpdated)="onEventUpdated($event)">
       </app-event-basic-info>
 
       <app-map-section [eventBasicInfo]="eventBasicInfo" [pins]="pins" (pinSaved)="onPinSaved()"></app-map-section>
@@ -28,23 +20,58 @@
     </div>
 
     <div class="agenda-section-and-tickets">
-        <app-agenda-section
-          [eventBasicInfo]="eventBasicInfo"
-          [activities]="activities"
-          [subevents]="subevents"
-          (agendaChanged)="onAgendaChanged()">
-        </app-agenda-section>
+      <app-agenda-section [eventBasicInfo]="eventBasicInfo" [activities]="activities" [subevents]="subevents"
+        (agendaChanged)="onAgendaChanged()">
+      </app-agenda-section>
 
-        <app-ticket-section [eventBasicInfo]="eventBasicInfo" *ngIf="eventBasicInfo.getParentEventId() == 0"></app-ticket-section>
+      <app-ticket-section [eventBasicInfo]="eventBasicInfo"
+        *ngIf="eventBasicInfo.getParentEventId() == 0"></app-ticket-section>
     </div>
 
-    <app-resource-allocation *ngIf="eventBasicInfo.getParentEventId() == 0 && eventBasicInfo.getStatusLabel()!='Canceled'"
-      [eventBasicInfo]="eventBasicInfo"
-    >
+    <app-resource-allocation
+      *ngIf="eventBasicInfo.getParentEventId() == 0 && eventBasicInfo.getStatusLabel()!='Canceled'"
+      [eventBasicInfo]="eventBasicInfo">
     </app-resource-allocation>
+    <div id="tssec">
+      <h1 id="tsh1">Ticket Sales</h1>
+      <div id="tSales" *ngFor="let ticket of ticketSales">
+        <div id="tRow">
+          <div id="tData">
+            <h1>{{ ticket.typeName }}</h1>
+            <p>{{ ticket.price }}</p>
+          </div>
+          <div id="tData">
+            <h1>Sold</h1>
+            <p>{{ ticket.sold }}</p>
+          </div>
+          <div id="tData">
+            <h1>Unsold</h1>
+            <p>{{ ticket.unsold }}</p>
+          </div>
+          <div id="tData">
+            <h1>Revenue</h1>
+            <p>{{ ticket.revenue }}</p>
+          </div>
+          <div id="tData" class="buyers-card" >
+            <h1>Buyers</h1>
+            <p style="cursor: pointer; font-size: 20px; color: #636AE8;" (click)="openBuyersModal(ticket)">Click to see details</p>
+          </div>
+        </div>
+      </div>
+
+      <p-dialog header="Buyers for {{ selectedTicket?.typeName }} Ticket" [(visible)]="showBuyersModal"
+        (onHide)="closeBuyersModal()" [modal]="true" [style]="{width: '50vw'}" [appendTo]="'body'"> <ng-container
+          *ngIf="selectedTicket?.buyers && selectedTicket.buyers.length > 0">
+          <div class="buyer-list">
+            <div *ngFor="let buyer of selectedTicket.buyers" class="buyer-item">
+              <img [src]="backendBaseUrl + '/' + buyer.profilePicture" alt="" class="buyer-pfp">
+              <span class="buyer-username">{{ buyer.username }}</span>
+            </div>
+          </div>
+        </ng-container>
+      </p-dialog>
+      <p style="margin-left: 15px;" *ngIf="!ticketSales || ticketSales.length === 0">No tickets sold yet.</p>
+    </div>
+
   </div>
 </ng-container>
-
-
-
-
