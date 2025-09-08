@@ -5,10 +5,10 @@
         <a href="http://softeng.pmf.kg.ac.rs:11061/SyncUp.apk" id="daa">Get Android App</a>
     </div>
     <div id="rightside">
-        <select (change)="changeLanguage($event)">
-            <option value="sr">Srpski</option>
-            <option value="en">English</option>
-        </select>
+            <select [(ngModel)]="currentLanguage" (change)="changeLanguage($event)">
+                <option value="sr" >Srpski</option>
+                <option value="en">English</option>
+            </select>
         <p>|</p>
         <p id="dashboard" *ngIf="isLoggedIn" [routerLink]="dashboardRoute"> Dashboard </p>
         <ng-container  *ngIf="!isLoggedIn">

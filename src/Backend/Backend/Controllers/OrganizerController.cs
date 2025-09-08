@@ -376,7 +376,7 @@ namespace Backend.Controllers
             try
             {
                 await _organizerService.CreateActivity(dto);
-                return Created(_localizer["organizer.activity_created"].ToString(), null);
+                return Ok(new { message = _localizer["organizer.activity_created"].ToString() });
             }
             catch (Exception ex)
             {
