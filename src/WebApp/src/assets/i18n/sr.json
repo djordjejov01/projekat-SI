@@ -669,5 +669,18 @@
   "RCALENDAR": {
     "TITLE": "Kalendar resursa",
     "DESCRIPTION": "Ovaj kalendar pruža pregled svih vaših odobrenih rezervacija i dostupnosti resursa."
+  },
+
+  "FORM_ERRORS": {
+    "SUMMARY": "Polja u formi nisu validna:",
+    "FORM": "Forma",
+    "TICKET": "Karta",
+    "REQUIRED": "je obavezno",
+    "MIN": "mora biti najmanje {{value}}",
+    "MAX": "mora biti najviše {{value}}",
+    "WHITESPACE": "ne može biti prazno ili samo razmaci",
+    "PAST_DATE": "ne može biti u prošlosti",
+    "START_BEFORE_END": "vreme početka mora biti pre vremena završetka",
+    "DATE_OUT_OF_RANGE": "je van dozvoljenog opsega datuma događaja"
   }
 }

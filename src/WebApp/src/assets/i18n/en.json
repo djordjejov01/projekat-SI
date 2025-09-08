@@ -655,6 +655,19 @@
   "RCALENDAR": {
     "TITLE": "Resource Calendar",
     "DESCRIPTION": "This calendar provides an overview of all your approved bookings and resource availability."
+  },
+
+    "FORM_ERRORS": {
+    "SUMMARY": "Form fields are not valid:",
+    "FORM": "Form",
+    "TICKET": "Ticket",
+    "REQUIRED": "is required",
+    "MIN": "must be at least {{value}}",
+    "MAX": "must be at most {{value}}",
+    "WHITESPACE": "cannot be empty or just spaces",
+    "PAST_DATE": "cannot be in the past",
+    "START_BEFORE_END": "start time must be before end time",
+    "DATE_OUT_OF_RANGE": "is outside the valid event dates"
   }
   
   }
