@@ -169,7 +169,7 @@ namespace Backend.Controllers
             try
             {
                 await _organizerService.CreateEventForOrganizer(model, organizerID);
-                return Created(_localizer["event.created"].ToString(), null);
+                return Ok(new { message = _localizer["event.created"].ToString() });
             }
             catch (Exception ex)
             {
