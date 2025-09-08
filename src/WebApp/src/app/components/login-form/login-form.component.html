@@ -46,6 +46,9 @@
       <p class="text-[#636AE8] noacc" routerLink="/register">
         {{"NOACC" | translate}}
       </p>
+      <p class="text-[#636AE8] noacc" (click)="forgotPassword.show()">
+        Forgot Password?
+      </p>
 
     </form>
             <select [(ngModel)]="currentLanguage" (change)="changeLanguage($event)">
@@ -55,3 +58,4 @@
   </div>
 
 </section>
+<app-forgot-password-modal #forgotPassword></app-forgot-password-modal>

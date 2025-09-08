@@ -23,6 +23,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { HostListener } from '@angular/core';
 import { LanguageService } from '../../Services/LanguageService';
 import { RegResponseDto } from '../../Models/RegResponseDto';
+
 @Component({
   selector: 'app-register-form',
   imports: [
@@ -91,7 +92,7 @@ changeLanguage(event: Event) {
       password: new FormControl('', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/)]),
       confirm: new FormControl('', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/)])
 
-    }, CustomValidators.passwordsMatch)
+    }, CustomValidators.passwordsMatch('password', 'confirm'))
 
   }
 

@@ -10,9 +10,10 @@ import { SharedService } from '../../../Services/shared.service';
 import { environment } from '../../../../environments/environment';
 import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { ForgotPasswordModalComponent } from '../../login-form/forgot-password-modal/forgot-password-modal.component';
 @Component({
   selector: 'app-profile',
-  imports: [TranslateModule,FormsModule],
+  imports: [TranslateModule,FormsModule,ForgotPasswordModalComponent],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })

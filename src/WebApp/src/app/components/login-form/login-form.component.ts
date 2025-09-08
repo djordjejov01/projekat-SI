@@ -20,9 +20,10 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { HostListener } from '@angular/core';
 import { LanguageService } from '../../Services/LanguageService';
 import { FormsModule } from '@angular/forms';
+import { ForgotPasswordModalComponent } from './forgot-password-modal/forgot-password-modal.component';
 @Component({
   selector: 'app-login-form',
-  imports: [ReactiveFormsModule,FloatLabelModule,InputTextModule,CommonModule,PasswordModule,DividerModule,ToastModule,ConfirmDialog,RouterLink, TranslateModule,FormsModule],
+  imports: [ReactiveFormsModule,FloatLabelModule,InputTextModule,CommonModule,PasswordModule,DividerModule,ToastModule,ConfirmDialog,RouterLink, TranslateModule,FormsModule,ForgotPasswordModalComponent],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.css'
 })
