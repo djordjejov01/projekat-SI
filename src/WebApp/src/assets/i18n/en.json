@@ -30,6 +30,7 @@
   "CALENDAR": "Calendar",
   "CREATE": "Create Event",
   "MYPROFILE": "My profile",
+  "NO_EVENTS": "No events found.",
   "UPEV": "Upcoming Events",
   "ADDEV": "Add Event",
   "TE": "Total Upcoming Events",
