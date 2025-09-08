@@ -21,6 +21,7 @@ import { ApiService } from '../../Services/api.service';
 import { UserDto } from '../../Models/UserDto';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { HostListener } from '@angular/core';
+import { LanguageService } from '../../Services/LanguageService';
 @Component({
   selector: 'app-register-form',
   imports: [
@@ -42,25 +43,38 @@ import { HostListener } from '@angular/core';
 })
 export class RegisterForm implements OnInit, IDeactivate {
 
+  public currentLanguage : string;
+
   constructor(
     private messageService: MessageService,
     private confirmationDialogService: ConfirmationDialogService,
     private apiService: ApiService,
     private translate: TranslateService,
-    private router : Router) { }
+    private router : Router,
+    private languageService : LanguageService) { }
 
   roles: Object[];
   userToRegister: RegisterDto | undefined;
 
   registerForm: FormGroup;
 
-  changeLanguage(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const lang = selectElement.value;
-    this.translate.use(lang);
-  }
+changeLanguage(event: Event) {
+  const selectElement = event.target as HTMLSelectElement;
+  const lang = selectElement.value;
+
+   // Update the currentLanguage property
+    this.currentLanguage = lang;
+
+  // 1. Tell the LanguageService to save the new language to localStorage
+  this.languageService.setLanguage(lang);
+
+  // 2. Tell the frontend translation service to switch languages for the UI
+  this.translate.use(lang);
+}
 
   ngOnInit(): void {
+    const savedLang = this.languageService.language();
+    this.currentLanguage = savedLang || 'en';
 
     this.setTranslatedRoles();
 

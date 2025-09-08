@@ -9,7 +9,6 @@ import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { IDeactivate } from '../../../../Interfaces/IDeactivate';
 import { Observable, take } from 'rxjs';
-import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ConfirmationDialogService } from '../../../../Services/confirmation-dialog.service';
 import { RESOURCE_CATEGORIES, ResourceAvailability, ResourceMeasure, ResourceType } from '../../../../MockData/MockResources';
 import { InputText } from 'primeng/inputtext';
@@ -20,12 +19,13 @@ import { ResourceDto } from '../../../../Models/ResourceDto';
 import { ApiService } from '../../../../Services/api.service';
 import { AuthService } from '../../../../Services/auth.service';
 import { MessageService } from 'primeng/api';
+import { TranslateModule,TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-resource-modal',
-  imports: [ReactiveFormsModule,DialogModule,FloatLabelModule,InputNumberModule,SelectModule,ButtonModule,InputText,TextareaModule],
+  imports: [TranslateModule,ReactiveFormsModule,DialogModule,FloatLabelModule,InputNumberModule,SelectModule,ButtonModule,InputText,TextareaModule],
   templateUrl: './resource-modal.component.html',
-  styleUrl: './resource-modal.component.css'
+  styleUrls: ['./resource-modal.component.css']
 })
 export class ResourceModalComponent implements OnInit, IDeactivate{
 
@@ -37,11 +37,9 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
   resourceToEdit : ResourceDto | null = null;
 
   resourceTypeOptions = [
-  { label: 'Exhaustible', value: true },
-  { label: 'Inexhaustible', value: false }
-];
-
-
+    { label: 'Exhaustible', value: true },
+    { label: 'Inexhaustible', value: false }
+  ];
 
   constructor(
     private formValidationService : FormValidationService,
@@ -50,69 +48,63 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
     private resourceCategoryService : ResourceCategoryService,
     private apiService : ApiService,
     private authService : AuthService,
-    private messageService : MessageService
-    ) {}
+    private messageService : MessageService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
 
     this.resourceAvailabilityService.loadAvailabilitiesIfEmpty()
-    .pipe(take(1))
-    .subscribe(availabilities => {
-      this.resourceAvailabilityOptions = availabilities.map(availability => ({
-        label: availability.name,
-        value: availability.id
-      }));
-    });
+      .pipe(take(1))
+      .subscribe(availabilities => {
+        this.resourceAvailabilityOptions = availabilities.map(availability => ({
+          label: availability.name,
+          value: availability.id
+        }));
+      });
 
     this.resourceCategoryService.loadCategoriesIfEmpty()
-    .pipe(take(1))
-    .subscribe(categories => {
-      this.resourceCategoryOptions = categories.map(category => ({
-        label: category.name,
-        value: category.id
-      }));
-    });
-    
-    
+      .pipe(take(1))
+      .subscribe(categories => {
+        this.resourceCategoryOptions = categories.map(category => ({
+          label: category.name,
+          value: category.id
+        }));
+      });
+
     this.resourceForm = new FormGroup({
       name: new FormControl('',[Validators.required, CustomValidators.noWhitespaceValidator]),
       category: new FormControl('',Validators.required),
       type: new FormControl('', Validators.required),
       quantity: new FormControl(null,[ Validators.required,Validators.min(0)]),
-      description: new FormControl('',CustomValidators.noWhitespaceValidator)
-
-    })
-
-  }
-
-
-openModal(resourceToEdit?: ResourceDto) {
-  this.visible = true;
-
-  if (resourceToEdit) {
-    // Editing mode
-    this.resourceForm.patchValue({
-      name: resourceToEdit.getName(),
-      category: resourceToEdit.getCategory(),
-      type: resourceToEdit.getIsExhaustable(),
-      description: resourceToEdit.getDescription(),
-      quantity: resourceToEdit.getQuantity(),
+      description: new FormControl('',[CustomValidators.noWhitespaceValidator,Validators.required])
     });
-
-    // Disable exhaustible field
-    this.resourceForm.get('type')?.disable();
-
-    this.resourceToEdit = resourceToEdit;
-  } else {
-    // Adding mode
-    this.resourceForm.reset();
-    this.resourceForm.get('type')?.enable(); // make sure it’s enabled
-    this.resourceToEdit = null;
   }
-}
 
-  closeModal()
-  {
+  openModal(resourceToEdit?: ResourceDto) {
+    this.visible = true;
+
+    if (resourceToEdit) {
+      // Editing mode
+      this.resourceForm.patchValue({
+        name: resourceToEdit.getName(),
+        category: resourceToEdit.getCategory(),
+        type: resourceToEdit.getIsExhaustable(),
+        description: resourceToEdit.getDescription(),
+        quantity: resourceToEdit.getQuantity(),
+      });
+
+      this.resourceForm.get('type')?.disable();
+      this.resourceToEdit = resourceToEdit;
+    } else {
+      // Adding mode
+      this.resourceForm.reset();
+      this.resourceForm.get('type')?.enable();
+      this.resourceToEdit = null;
+    }
+  }
+
+  closeModal() {
     this.visible = false;
     this.resourceForm.reset();
   }
@@ -124,16 +116,17 @@ openModal(resourceToEdit?: ResourceDto) {
     }
   }
 
-  submitForm()
-  {
-    if(!this.resourceForm.valid)
-    {
-      this.formValidationService.showValidationErrors(this.resourceForm, 'Resource Form');
+  submitForm() {
+    if(!this.resourceForm.valid) {
+      this.formValidationService.showValidationErrors(
+        this.resourceForm, 
+        this.translate.instant('RESOURCE.FORM')
+      );
       return;
     }
 
     const formValue = this.resourceForm.getRawValue(); 
-    const availability = formValue.type ? (formValue.quantity > 0 ? ResourceAvailability.Available : ResourceAvailability.Unavailable) : ResourceAvailability.Available
+    const availability = formValue.type ? (formValue.quantity > 0 ? ResourceAvailability.Available : ResourceAvailability.Unavailable) : ResourceAvailability.Available;
 
     const resource = new ResourceDto(
       this.resourceToEdit ? this.resourceToEdit.getResourceID() : 0,
@@ -144,57 +137,61 @@ openModal(resourceToEdit?: ResourceDto) {
       formValue.description,
       this.authService.getUserId(),
       formValue.quantity
-      )
+    );
 
-
-    if(this.resourceToEdit)
-    {
-
+    if(this.resourceToEdit) {
       this.apiService.editResource(resource).subscribe({
-        next: (msg) => 
-        {
-          this.messageService.add({ severity: 'success', summary: 'Edited', detail: msg});
+        next: (msg) => {
+          this.messageService.add({ 
+            severity: 'success', 
+            summary: this.translate.instant('SUCCESS'), 
+            detail: msg, 
+            life: 3000
+          });
           this.resourceSaved.emit(null);
-          this.closeModal()
-        },
-         error: (errorResponse) => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: errorResponse.message,
-              life: 3000 });
-          }
-      });
-
-    }else{
-      this.apiService.addResource(resource).subscribe({
-        next: (addedResource : ResourceDto) => 
-        {
-          this.messageService.add({ severity: 'success', summary: 'Added', detail: 'Resource Added Successfully!' });
-          this.resourceSaved.emit(addedResource)
-          this.closeModal()
+          this.closeModal();
         },
         error: (errorResponse) => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: errorResponse.message,
-              life: 3000 });
-          }
+          this.messageService.add({
+            severity: 'error',
+            summary: this.translate.instant('ERROR'),
+            detail: errorResponse.message,
+            life: 3000 
+          });
+        }
+      });
+
+    } else {
+      this.apiService.addResource(resource).subscribe({
+        next: (addedResource : ResourceDto) => {
+          this.messageService.add({ 
+            severity: 'success', 
+            summary: this.translate.instant('SUCCESS'), 
+            detail: this.translate.instant('RESOURCE.ADDED_SUCCESS'), 
+            life: 3000
+          });
+          this.resourceSaved.emit(addedResource);
+          this.closeModal();
+        },
+        error: (errorResponse) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: this.translate.instant('ERROR'),
+            detail: errorResponse.message,
+            life: 3000 
+          });
+        }
       });
     }
-
-
   }
 
-      canExit () : boolean | Observable<boolean> | Promise<boolean>{
-    
-        return (this.resourceForm.dirty || this.resourceForm.touched) ? this.confirmationDialogService.confirm(
-            'You have unsaved changes. Are you sure you want to close the modal?',
-            'Unsaved Changes'
-          )
-        : true;
-    
-      }
+  canExit(): boolean | Observable<boolean> | Promise<boolean> {
+    return (this.resourceForm.dirty || this.resourceForm.touched) 
+      ? this.confirmationDialogService.confirm(
+          this.translate.instant('RESOURCE.UNSAVED_CHANGES'),
+          this.translate.instant('RESOURCE.UNSAVED_CHANGES_TITLE')
+        )
+      : true;
+  }
 
 }

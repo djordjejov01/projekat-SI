@@ -173,7 +173,7 @@ export default function ProfileTickets() {
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <TouchableOpacity
-          onPress={() => router.back()}
+          onPress={() => router.push('/(tabs)/profile')}
           style={styles.backButton}
           activeOpacity={0.7}
         >

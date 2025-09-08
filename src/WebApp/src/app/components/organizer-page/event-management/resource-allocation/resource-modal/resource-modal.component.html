@@ -1,7 +1,7 @@
 <p-dialog
   [modal]="true"
   [(visible)]="visible"
-  [style]="{ width: '30rem', height: selectedResource?.isExhaustable? '30rem' : '50rem' }"
+  [style]="{ 'max-height': '70rem', 'overflow-y': 'auto' ,'max-width': '30rem'}"
   (onHide)="onDialogHide()" 
   [closable]="false"
   [dismissableMask]="false"
@@ -10,88 +10,113 @@
   <ng-template pTemplate="header">
     <div class="flex justify-between items-start w-full">
       <div class="formTitle">
-        <h3>Allocate {{ selectedResource.name }} ({{ selectedResource?.isExhaustable? "Exhaustable" : "Inexhaustable"}}) for your event</h3>
-        <p>Fill in the details below to allocate the resource.</p>
-        <p>Mark the resources as reservable if you want atendees to be able to reserve it.</p>
+        <h3>{{ resourceTitle }}</h3>
+        <p>{{ 'RESOURCE.ALLOCATE_DESCRIPTION' | translate }}</p>
+        <p>{{ 'RESOURCE.RESERVABLE_INFO' | translate }}</p>
       </div>
       <button
         type="button"
         class="p-dialog-header-icon p-link p-button-rounded p-button-text exit-button"
         (click)="onCancelClick()"
-        pTooltip="Close"
+        pTooltip="{{ 'RESOURCE.CLOSE' | translate }}"
         tooltipPosition="left"
       >
         <i class="pi pi-times"></i>
       </button>
     </div>
   </ng-template>
-    
-    <form action="" *ngIf="resourceForm" [formGroup]="resourceForm" class="resource-form">
 
-<div class="form-inputs">
+  <form *ngIf="resourceForm" [formGroup]="resourceForm" class="resource-form">
+    <div class="form-inputs">
+      <!-- Quantity -->
+      <div class="input-wrapper">
+        <p>{{ 'RESOURCE.QUANTITY' | translate }}</p>
+        <p-floatlabel class="w-full md:w-56" variant="on">
+          <input
+            type="text"
+            pInputText
+            placeholder=" "
+            formControlName="allocatedQuantity"
+            inputId="allocatedQuantity"
+            class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+          />
+          <label for="allocatedQuantity">
+            {{ 'RESOURCE.ENTER_QUANTITY' | translate:{ max: selectedResource?.quantity } }}
+          </label>
+        </p-floatlabel>
+      </div>
 
-        <!-- Always show Quantity -->
+      <!-- Dates for inexhaustable resources -->
+      <div class="dates" *ngIf="!selectedResource?.isExhaustable">
         <div class="input-wrapper">
-            <p>Quantity</p>
-            <p-floatlabel class="w-full md:w-56" variant="on">
-                <input type="text" pInputText placeholder=" " formControlName="allocatedQuantity" inputId="allocatedQuantity"
-                    class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-                <label for="allocatedQuantity">Enter Resource Quantity (max: {{ selectedResource?.quantity }})</label>
-            </p-floatlabel>
+          <p>{{ 'RESOURCE.NEEDED_FROM' | translate }}</p>
+          <p-floatlabel class="w-full md:w-56" variant="on">
+            <p-datepicker
+              inputId="startDateTimeBooked"
+              placeholder=" "
+              formControlName="startDateTimeBooked"
+              [showTime]="true"
+              hourFormat="24"
+              [minDate]="eventBasicInfo.getStartDate()"
+              [maxDate]="eventBasicInfo.getEndDate()"
+              [style]="{ width: '100%' }"
+              inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+            />
+            <label for="startDateTimeBooked">{{ 'RESOURCE.NEEDED_FROM_DATETIME' | translate }}</label>
+          </p-floatlabel>
         </div>
 
-        <!-- Show Dates only if inexhaustable -->
-        <div class="dates" *ngIf="!selectedResource?.isExhaustable">
-            <div class="input-wrapper">
-                <p>Needed From</p>
-                <p-floatlabel class="w-full md:w-56" variant="on">
-                    <p-datepicker inputId="startDateTimeBooked" placeholder=" " formControlName="startDateTimeBooked"
-                        [showTime]="true" hourFormat="24" [minDate]="eventBasicInfo.getStartDate()"
-                        [maxDate]="eventBasicInfo.getEndDate()" [style]="{ width: '100%' }"
-                        inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-                    <label for="startDateTimeBooked">Needed From Date and Time</label>
-                </p-floatlabel>
-            </div>
-
-            <div class="input-wrapper">
-                <p>Needed Until</p>
-                <p-floatlabel class="w-full md:w-56" variant="on">
-                    <p-datepicker inputId="endDateTimeBooked" placeholder=" " formControlName="endDateTimeBooked"
-                        [showTime]="true" hourFormat="24" [minDate]="eventBasicInfo.getStartDate()"
-                        [maxDate]="eventBasicInfo.getEndDate()" [style]="{ width: '100%' }"
-                        inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-                    <label for="endDateTimeBooked">Needed Until Date and Time</label>
-                </p-floatlabel>
-            </div>
-        </div>
-
-        <!-- Reservable checkbox -->
         <div class="input-wrapper">
-            <div class="flex items-center gap-2">
-                <p-checkbox formControlName="isReservable" inputId="isReservable" name="isReservable" binary="true" size="large" />
-                <label for="isReservable">Reservable</label>
-            </div>
+          <p>{{ 'RESOURCE.NEEDED_UNTIL' | translate }}</p>
+          <p-floatlabel class="w-full md:w-56" variant="on">
+            <p-datepicker
+              inputId="endDateTimeBooked"
+              placeholder=" "
+              formControlName="endDateTimeBooked"
+              [showTime]="true"
+              hourFormat="24"
+              [minDate]="eventBasicInfo.getStartDate()"
+              [maxDate]="eventBasicInfo.getEndDate()"
+              [style]="{ width: '100%' }"
+              inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+            />
+            <label for="endDateTimeBooked">{{ 'RESOURCE.NEEDED_UNTIL_DATETIME' | translate }}</label>
+          </p-floatlabel>
         </div>
+      </div>
+
+      <!-- Reservable checkbox -->
+      <div class="input-wrapper">
+        <div class="flex items-center gap-2">
+          <p-checkbox
+            formControlName="isReservable"
+            inputId="isReservable"
+            name="isReservable"
+            binary="true"
+            size="large"
+          />
+          <label for="isReservable">{{ 'RESOURCE.RESERVABLE' | translate }}</label>
+        </div>
+      </div>
     </div>
 
+    <div class="form-buttons">
+      <p-button
+        label="{{ 'RESOURCE.SAVE_CHANGES' | translate }}"
+        icon="pi pi-pen-to-square"
+        [raised]="true"
+        (onClick)="onSaveClick()"
+        severity="primary"
+      ></p-button>
 
-            <div class="form-buttons">
-                <p-button 
-                label="Save Changes"
-                icon="pi pi-pen-to-square"
-                [raised]="true"
-                (onClick)="onSaveClick()"
-                severity="primary"
-                ></p-button>
-
-                <p-button 
-                    label="Cancel"
-                    icon="pi pi-times"
-                    [raised]="true"
-                    severity="secondary"
-                    type="button"
-                    (onClick)="onCancelClick()"
-                ></p-button>
-            </div>
-    </form>
+      <p-button
+        label="{{ 'RESOURCE.CANCEL' | translate }}"
+        icon="pi pi-times"
+        [raised]="true"
+        severity="secondary"
+        type="button"
+        (onClick)="onCancelClick()"
+      ></p-button>
+    </div>
+  </form>
 </p-dialog>

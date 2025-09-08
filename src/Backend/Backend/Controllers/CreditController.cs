@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace Backend.Controllers
 {
@@ -10,10 +11,12 @@ namespace Backend.Controllers
     public class CreditController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public CreditController(AppDbContext context)
+        public CreditController(AppDbContext context, IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
+            _localizer = localizer;
         }
 
         [Authorize]
@@ -39,7 +42,7 @@ namespace Backend.Controllers
 
             if (user.Credit + amount > 1000000)
             {
-                return BadRequest(new { message = "Credit cannot exceed 1,000,000." });
+                return BadRequest(new { message = _localizer["credit.exceeds_max"].ToString() });
             }
 
             user.Credit += amount;

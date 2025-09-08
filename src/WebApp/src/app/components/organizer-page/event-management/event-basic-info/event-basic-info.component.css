@@ -39,7 +39,7 @@ main{
     display: flex;
   justify-content: center;
   align-items: center;
-    min-width: 737px;
+    /*min-width: 737px;*/
     max-width: 737px;
     max-height: 250px;
     overflow: hidden;
@@ -55,6 +55,7 @@ main{
 .title-tag,.date-time{
     display: flex;
     justify-content: space-between;
+    gap: 1rem;
 }
 
 .title-tag h1{
@@ -114,11 +115,12 @@ main{
   border-radius: 9999px;
   font-size: 0.875rem;
   padding: 0rem 1rem;
+  max-height: 36px;
 }
 
 .form-container{
-  min-width: 737px;
-  width: 100%;
+ /* min-width: 737px;*/
+  width: 737px;
 }
 
 .eventForm{
@@ -200,4 +202,33 @@ main{
 
 button:hover{
     cursor: pointer;
+}
+
+@media screen and (width <= 900px){
+    
+    .form-container{
+        width: 100%;
+    }
+
+    .location-capacity, .dates{
+        flex-direction: column;
+    }
+    
+} 
+
+@media screen and (width <= 620px){
+
+    .custom-status-tag{
+        width: 66px;
+        height: 36px;
+    }
+
+    .title-tag{
+        flex-direction: column;
+    }
+
+    .date-time{
+        flex-direction: column;
+
+    }
 }

@@ -18,14 +18,17 @@ import { AuthService } from '../../Services/auth.service';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { HostListener } from '@angular/core';
+import { LanguageService } from '../../Services/LanguageService';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-login-form',
-  imports: [ReactiveFormsModule,FloatLabelModule,InputTextModule,CommonModule,PasswordModule,DividerModule,ToastModule,ConfirmDialog,RouterLink, TranslateModule],
+  imports: [ReactiveFormsModule,FloatLabelModule,InputTextModule,CommonModule,PasswordModule,DividerModule,ToastModule,ConfirmDialog,RouterLink, TranslateModule,FormsModule],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.css'
 })
 export class LoginForm implements OnInit,IDeactivate{
 
+  public currentLanguage : string;
 
   constructor(
     private messageService: MessageService,
@@ -33,24 +36,35 @@ export class LoginForm implements OnInit,IDeactivate{
     private apiService : ApiService,
     private authService : AuthService,
     private router : Router,
-    private translate : TranslateService) {}
+    private translate : TranslateService,
+    private languageService : LanguageService) {}
 
   userToLogin : LoginDto | undefined;
   loginForm : FormGroup;
 
 
   ngOnInit(): void {
+        const savedLang = this.languageService.language();
+    this.currentLanguage = savedLang || 'en';
     this.loginForm = new FormGroup({
       email: new FormControl('', [Validators.required]),
       password: new FormControl('', Validators.required),
     })
   }
 
-  changeLanguage(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const lang = selectElement.value;
-    this.translate.use(lang);
-  }
+changeLanguage(event: Event) {
+  const selectElement = event.target as HTMLSelectElement;
+  const lang = selectElement.value;
+
+   // Update the currentLanguage property
+    this.currentLanguage = lang;
+
+  // 1. Tell the LanguageService to save the new language to localStorage
+  this.languageService.setLanguage(lang);
+
+  // 2. Tell the frontend translation service to switch languages for the UI
+  this.translate.use(lang);
+}
 
 
   submitForm()
@@ -82,11 +96,11 @@ export class LoginForm implements OnInit,IDeactivate{
                   this.authService.logout() 
                   this.router.navigate(['/login'])
                   this.messageService.add({
-                    severity: 'error',
-                    summary: 'Login Error',
-                    detail: 'Invalid role detected.',
-                    life: 3000
-                  });
+                  severity: 'error',
+                  summary: this.translate.instant('LOGIN_ERROR'),
+                  detail: this.translate.instant('INVALID_ROLE'),
+                  life: 3000
+                });
                   return
               }
 
@@ -96,17 +110,19 @@ export class LoginForm implements OnInit,IDeactivate{
             {
               this.messageService.add({
               severity: 'error',
-              summary: 'Access Denied',
-              detail: 'This account is not allowed to access the web application.',
-              life: 3000 });
+              summary: this.translate.instant('ACCESS_DENIED'),
+              detail: this.translate.instant('NO_ACCESS_ALLOWED'),
+              life: 3000
+            });
             }
             else
             {
               this.messageService.add({
               severity: 'error',
-              summary: 'Login Failed',
-              detail: 'Something went wrong while processing your login.',
-              life: 3000 });
+              summary: this.translate.instant('LOGIN_ERROR'),
+              detail: this.translate.instant('SOMETHING_ELSE'),
+              life: 3000
+            });
             }
 
 
@@ -134,12 +150,16 @@ export class LoginForm implements OnInit,IDeactivate{
               {
                 case this.loginForm.controls['email']:
                 {
-                  if (this.loginForm.controls['email'].errors?.['required']) warningString += "  * Email is required\n";
+                 if (this.loginForm.controls['email'].errors?.['required']) {
+                  warningString += "  * " + this.translate.instant('EMAIL_REQUIRED') + "\n";
+                }
                 } break;
 
                 case this.loginForm.controls['password']:
                 {
-                  if (this.loginForm.controls['password'].errors?.['required']) warningString += " * Password is required\n";
+                  if (this.loginForm.controls['password'].errors?.['required']) {
+                    warningString += "  * " + this.translate.instant('PASSWORD_REQUIRED') + "\n";
+                  }
                 } break;
 
                 default: warningString += "  * Somthing went wrong\n";
@@ -155,11 +175,13 @@ export class LoginForm implements OnInit,IDeactivate{
 
   canExit () : boolean | Observable<boolean> | Promise<boolean>{
 
-    return (this.loginForm.dirty || this.loginForm.touched) ? this.confirmationDialogService.confirm(
-        'You have unsaved changes. Are you sure you want to leave this page?',
-        'Unsaved Changes'
-      )
-    : true;
+    return (this.loginForm.dirty || this.loginForm.touched) 
+  ? this.confirmationDialogService.confirm(
+      this.translate.instant('UNSAVED_CHANGES_DETAIL'),
+      this.translate.instant('UNSAVED_CHANGES_TITLE')
+    )
+  : true;
+
 
   }
  @HostListener('document:keydown.enter', ['$event'])

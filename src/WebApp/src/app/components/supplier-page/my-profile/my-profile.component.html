@@ -2,93 +2,92 @@
     <div id="main">
         <div id="leftside">
             <div id="info">
-                <p id="title">My Profile</p>
-                <p id="role">Supplier</p>
+                <p id="title">{{ 'PROFILE.MY_PROFILE' | translate }}</p>
+                <p id="role">{{ 'PROFILE.SUPPLIER' | translate }}</p>
             </div>
 
             <div class="profile-container">
                 
                 <label for="fileUpload" class="upload-label">
-                    <img [src]="previewUrl || defaultImage" class="profile-img" alt="Profile" />
+                    <img [src]="previewUrl || defaultImage" class="profile-img" alt="{{ 'PROFILE.PROFILE' | translate }}" />
                     <input type="file" id="fileUpload" (change)="onFileSelected($event)" accept="image/*" hidden />
                 </label>
                 <p id="user">{{currSupplier?.getUsername()}}</p>
                 <button id="upbut" (click)="triggerFileUpload()">
-                    <i class="pi pi-upload"></i>Choose
+                    <i class="pi pi-upload"></i>{{ 'PROFILE.CHOOSE' | translate }}
+                </button>
+                <button class="del" (click)="deletePic()">
+                    <i class="pi pi-times"></i>{{ 'PROFILE.REMOVE_PICTURE' | translate }}
                 </button>
             </div>
-
 
             <div id="form">
                 <div id="row">
                     <div id="field">
-                        <label for="name">Name</label>
-                        <input id="name" type="text" [value]="currSupplier?.getCompanyName()" class="form-control" />
+                        <label for="name">{{ 'PROFILE.NAME' | translate }}</label>
+                        <input id="name" type="text" [value]="currSupplier?.getCompanyName()" class="form-control" (input)="check()"/>
                     </div>
                     <div id="field">
-                        <label for="username1">Username</label>
-                        <input id="username1" type="text" [value]="currSupplier?.getUsername()" class="form-control" />
+                        <label for="username1">{{ 'PROFILE.USERNAME' | translate }}</label>
+                        <input id="username1" type="text" [value]="currSupplier?.getUsername()" class="form-control"  (input)="check()"/>
                     </div>
-
                 </div>
                 <div id="row">
                     <div id="field">
-                        <label for="email">Email</label>
-                        <input id="email" type="text" [value]="currSupplier?.getEmail()" class="form-control" />
+                        <label for="email">{{ 'PROFILE.EMAIL' | translate }}</label>
+                        <input id="email" type="text" [value]="currSupplier?.getEmail()" class="form-control"  (input)="check()"/>
                     </div>
                     <div id="field">
-                        <label for="phone">Phone Number</label>
-                        <input id="phone" type="text" [value]="currSupplier?.getPhoneNumber()" class="form-control" />
+                        <label for="phone">{{ 'PROFILE.PHONE_NUMBER' | translate }}</label>
+                        <input id="phone" type="text" [value]="currSupplier?.getPhoneNumber()" class="form-control" (input)="check()" />
                     </div>
-
                 </div>
-                <label for="bio">Bio</label>
-                <textarea name="bio" id="bio">{{currSupplier?.getCompanyBio()}}</textarea>
-                <label for="website">Website</label>
-                <input id="website" type="text" [value]="currSupplier?.getWebsite()" class="form-control" />
-                <button id="upp" (click)="update()">Update Profile</button>
+                <label for="bio">{{ 'PROFILE.BIO' | translate }}</label>
+                <textarea name="bio" id="bio" (input)="check()">{{currSupplier?.getCompanyBio()}}</textarea>
+                <label for="website">{{ 'PROFILE.WEBSITE' | translate }}</label>
+                <input id="website" type="text" [value]="currSupplier?.getWebsite()" class="form-control"  (input)="check()" />
+                <button id="upp1" class="dbut disBut" (click)="update()" disabled >{{ 'PROFILE.UPDATE_PROFILE' | translate }}</button>
 
                 <div id="pass">
                     <div id="onepass">
-                        <label for="cpass">Current Password</label>
+                        <label for="cpass">{{ 'PROFILE.CURRENT_PASSWORD' | translate }}</label>
                         <input id="cpass" type="password" class="form-control" />
                     </div>
                     <div id="onepass">
-                        <label for="npass">New Password</label>
+                        <label for="npass">{{ 'PROFILE.NEW_PASSWORD' | translate }}</label>
                         <input id="npass" type="password" class="form-control" />
                     </div>
-
                     <div id="onepass">
-                        <label for="cnpass">Confirm New Password</label>
+                        <label for="cnpass">{{ 'PROFILE.CONFIRM_NEW_PASSWORD' | translate }}</label>
                         <input id="cnpass" type="password" class="form-control" />
                     </div>
-
                 </div>
-                <button id="upp" (click)="updatePass()">Change Password</button>
+                <button id="upp" class="dbut" (click)="updatePass()">{{ 'PROFILE.CHANGE_PASSWORD' | translate }}</button>
             </div>
         </div>
+
         <div id="rightside">
-            <h1>Resource Overview</h1>
+            <h1>{{ 'PROFILE.RESOURCE_OVERVIEW' | translate }}</h1>
 
             <div id="card">
                 <i class="pi pi-calendar-clock"></i>
                 <div id="addinfo">
                     <p id="amount">{{resources?.length}}</p>
-                    <p id="type">Resources</p>
+                    <p id="type">{{ 'PROFILE.RESOURCES' | translate }}</p>
                 </div>
             </div>
             <div id="card">
                 <i class="pi pi-users"></i>
                 <div id="addinfo">
                     <p id="amount">{{bookedResources?.length}}</p>
-                    <p id="type">Unavailable Resources</p>
+                    <p id="type">{{ 'PROFILE.UNAVAILABLE_RESOURCES' | translate }}</p>
                 </div>
             </div>
             <div id="card">
                 <i class="pi pi-calendar"></i>
                 <div id="addinfo">
                     <p id="amount">{{freeResources?.length}}</p>
-                    <p id="type">Available Resources</p>
+                    <p id="type">{{ 'PROFILE.AVAILABLE_RESOURCES' | translate }}</p>
                 </div>
             </div>
         </div>

@@ -6,9 +6,9 @@ import { MessageService } from 'primeng/api';
 import { FormValidationService } from '../../../../../Services/FormValidationService';
 import { DialogModule } from 'primeng/dialog';
 import { DatePickerModule } from 'primeng/datepicker';
-import { InputNumber } from 'primeng/inputnumber';
-import { FloatLabelModule } from "primeng/floatlabel"
-import { TranslateService } from '@ngx-translate/core';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { FloatLabelModule } from "primeng/floatlabel";
+import { TranslateModule,TranslateService } from '@ngx-translate/core';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
@@ -18,60 +18,69 @@ import { TicketDto } from '../../../../../Models/TicketDto';
 import { Ticket } from '../../../../../Models/Ticket';
 import { IDeactivate } from '../../../../../Interfaces/IDeactivate';
 import { ConfirmationDialogService } from '../../../../../Services/confirmation-dialog.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-ticket-modal',
-  imports: [ReactiveFormsModule,DialogModule,DatePickerModule,InputNumber,FloatLabelModule,InputTextModule,TextareaModule,ButtonModule],
+imports: [
+  ReactiveFormsModule,
+  DialogModule,
+  DatePickerModule,
+  InputNumberModule,
+  FloatLabelModule,
+  InputTextModule,
+  TextareaModule,
+  ButtonModule,
+  TranslateModule,
+  CommonModule
+],
   templateUrl: './ticket-modal.component.html',
-  styleUrl: './ticket-modal.component.css'
+  styleUrls: ['./ticket-modal.component.css']
 })
-export class TicketModalComponent implements OnInit,OnChanges, OnDestroy, IDeactivate{
+export class TicketModalComponent implements OnInit, OnChanges, OnDestroy, IDeactivate {
 
-
-  @Input() eventBasicInfo : EventBasicInfo;
+  @Input() eventBasicInfo: EventBasicInfo;
   @Input() ticketToEdit?: Ticket;
-  ticketForm : FormGroup;
-  visible : boolean = false;
+  ticketForm: FormGroup;
+  visible: boolean = false;
   isEditMode = false;
   @Output() ticketCreated = new EventEmitter<void>();
 
-  currencyCode : string;
-  localeCode : string;
+  currencyCode: string;
+  localeCode: string;
   private langChangeSub: Subscription | undefined;
 
   constructor(
-    private messageService : MessageService,
-    private formValidationService : FormValidationService,
-    private translateService : TranslateService,
-    private apiService : ApiService,
-    private confirmationDialogService : ConfirmationDialogService) {}
+    private messageService: MessageService,
+    private formValidationService: FormValidationService,
+    private translateService: TranslateService,
+    private apiService: ApiService,
+    private confirmationDialogService: ConfirmationDialogService
+  ) {}
 
   ngOnInit(): void {
-
-    this.initializeForm()
+    this.initializeForm();
 
     const currentLang = this.translateService.currentLang || 'en';
     this.setLocalFormLang(currentLang);
 
-       this.langChangeSub = this.translateService.onLangChange.subscribe(lang => {
-        this.setLocalFormLang(lang.lang)
+    this.langChangeSub = this.translateService.onLangChange.subscribe(lang => {
+      this.setLocalFormLang(lang.lang);
     });
-
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes['eventBasicInfo' ] && this.eventBasicInfo && this.ticketForm){
-      this.ticketForm.reset()
+    if (changes['eventBasicInfo'] && this.eventBasicInfo && this.ticketForm) {
+      this.ticketForm.reset();
       this.isEditMode = false;
     }
-
   }
 
   ngOnDestroy(): void {
     this.langChangeSub?.unsubscribe();
   }
 
-  show(){
+  show() {
     this.visible = true;
   }
 
@@ -82,60 +91,64 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy, IDeact
     this.isEditMode = false;
   }
 
-    async onCancleClick(){
+  async onCancleClick() {
     const canLeave = await this.canExit();
-    if(canLeave){
-      this.hide()
+    if (canLeave) {
+      this.hide();
     }
   }
 
-  showForEdit(ticket : Ticket){
-
-    if(!ticket) return;
+  showForEdit(ticket: Ticket) {
+    if (!ticket) return;
 
     this.ticketToEdit = ticket;
     this.isEditMode = true;
 
     this.ticketForm.patchValue({
-        name: this.ticketToEdit.getTypeName(),
-        price: this.ticketToEdit.getPrice(),
-        description: this.ticketToEdit.getDescription(),
-        quota: this.ticketToEdit.getQuota(),
-        validFrom: new Date(this.ticketToEdit.getValidFrom()),
-        validUntil: new Date(this.ticketToEdit.getValidUntil()),
-      });
+      name: this.ticketToEdit.getTypeName(),
+      price: this.ticketToEdit.getPrice(),
+      description: this.ticketToEdit.getDescription(),
+      quota: this.ticketToEdit.getQuota(),
+      validFrom: new Date(this.ticketToEdit.getValidFrom()),
+      validUntil: new Date(this.ticketToEdit.getValidUntil()),
+    });
 
     this.visible = true;
   }
 
   initializeForm(){
 
+    const eventStartDate = this.eventBasicInfo.getStartDate();
+    const eventEndDate = this.eventBasicInfo.getEndDate();
+
      this.ticketForm = new FormGroup({
       name: new FormControl('',[Validators.required, CustomValidators.noWhitespaceValidator]),
       price: new FormControl('', [Validators.required, Validators.min(1)]),
-      description: new FormControl('', CustomValidators.noWhitespaceValidator),
+      description: new FormControl('', [CustomValidators.noWhitespaceValidator, Validators.required]),
       quota: new FormControl('',[Validators.required,Validators.min(1)]),
-      validFrom: new FormControl('', Validators.required),
-      validUntil: new FormControl('', Validators.required)
+      validFrom: new FormControl('', [Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]),
+      validUntil: new FormControl('', [Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)])
 
     }, {validators: CustomValidators.startBeforeEndDates('validFrom','validUntil')})
 
   }
 
-  private setLocalFormLang(lang : string){
-      if (lang === 'sr') {
-        this.currencyCode = 'RSD';
-        this.localeCode = 'sr-RS';
-      } else {
-        this.currencyCode = 'EUR';
-        this.localeCode = 'en-US';
-      }
+  private setLocalFormLang(lang: string) {
+    if (lang === 'sr') {
+      this.currencyCode = 'RSD';
+      this.localeCode = 'sr-RS';
+    } else {
+      this.currencyCode = 'EUR';
+      this.localeCode = 'en-US';
+    }
   }
 
-
-  submitForm(){
-    if(this.ticketForm.invalid){
-      this.formValidationService.showValidationErrors(this.ticketForm,'Ticket');
+  submitForm() {
+    if (this.ticketForm.invalid) {
+      this.formValidationService.showValidationErrors(
+        this.ticketForm,
+        this.translateService.instant('TICKET')
+      );
       return;
     }
 
@@ -149,47 +162,61 @@ export class TicketModalComponent implements OnInit,OnChanges, OnDestroy, IDeact
       formValue.validFrom,
       formValue.validUntil,
       this.eventBasicInfo.getEventID()
-    )
+    );
 
-    if(this.isEditMode && this.ticketToEdit){
+    if (this.isEditMode && this.ticketToEdit) {
       ticketDto.setTicketId(this.ticketToEdit.getTicketID());
 
       this.apiService.updateTicket(ticketDto).subscribe({
-        next: (msg) => {
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: msg });
-          this.ticketCreated.emit();
-          this.hide();
-        },
-        error: (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
-        }
+      next: (msg) => {
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translateService.instant('SUCCESS'),
+          detail: msg,
+          life: 3000
+        });
+        this.ticketCreated.emit();
+        this.hide();
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translateService.instant('ERROR'),
+          detail: err.message,
+          life: 3000
+        });
+      }
       });
-    }
-    else{
-
+    } else {
       this.apiService.createTicket(ticketDto).subscribe({
-        next: (msg) =>{
-          this.messageService.add({ severity: 'success', summary: 'Success', detail: msg });
+        next: (msg) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translateService.instant('SUCCESS'),
+            detail: msg,
+            life: 3000
+          });
           this.ticketCreated.emit();
           this.hide();
         },
         error: (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
+          this.messageService.add({
+            severity: 'error',
+            summary: this.translateService.instant('ERROR'),
+            detail: err.message,
+            life: 3000
+          });
         }
       });
-
     }
-
   }
 
-  canExit () : boolean | Observable<boolean> | Promise<boolean>{
-    
-    return (this.ticketForm.dirty || this.ticketForm.touched) ? this.confirmationDialogService.confirm(
-        'You have unsaved changes. Are you sure you want to close the modal?',
-        'Unsaved Changes'
-      )
-    : true;
-    
+  canExit(): boolean | Observable<boolean> | Promise<boolean> {
+    return (this.ticketForm.dirty || this.ticketForm.touched)
+      ? this.confirmationDialogService.confirm(
+          this.translateService.instant('UNSAVED_CHANGES_MESSAGE'),
+          this.translateService.instant('UNSAVED_CHANGES_TITLE')
+        )
+      : true;
   }
-
 }

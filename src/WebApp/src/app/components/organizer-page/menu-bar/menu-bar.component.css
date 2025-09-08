@@ -11,6 +11,7 @@
     z-index: 10;
     background-color: white;
     height: 95%;
+    transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 #menu{
@@ -25,9 +26,102 @@
     height: 100%;
 }
 
-@media screen and (width <= 1531px) {
+/* Hamburger toggle (hidden on desktop) */
+.menu-toggle{
+    display: none;
+}
+.menu-burger{
+    display: none;
+    position: fixed;
+    top: 14px; /* aligns under header */
+    left: 12px;
+    width: 36px;
+    height: 28px;
+    z-index: 25;
+    cursor: pointer;
+}
+.menu-burger span{
+    display: block;
+    height: 3px;
+    background: black;
+    margin: 6px 0;
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+/* Mobile / tablet behavior */
+@media screen and (max-width: 1030px) {
+    /* show burger */
+    .menu-toggle{
+        display: block;
+        position: fixed;
+        top: 12px;
+        width: 36px;
+        height: 36px;
+        opacity: 0;
+        z-index: 30;
+    }
+    .menu-burger{
+        display: block;
+        position: fixed;
+        top: 60px;
+        border-radius: 5px;
+        margin-left: -5px;
+    }
+
+    /* hide the full bar by sliding it left; we'll slide it in when toggled */
+    #bar{
+        transform: translateX(-110%);
+        width: 80%;
+        max-width: 320px;
+        height: calc(100vh - 53px);
+        margin-top: 53px;
+        border-right: 1px solid rgba(0,0,0,0.08);
+        border-bottom-right-radius: 0;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+        position: fixed;
+        top: 2px;
+        padding-top: 50px;
+        left: 0;
+        background-color: #fff;
+        opacity: 0.98;
+        transition: transform 0.3s ease;
+    }
+
+    /* when toggle is checked, slide menu in */
+    .menu-toggle:checked ~ #bar{
+        transform: translateX(0);
+    }
+
+    /* animate burger to X when open */
+    .menu-toggle:checked + .menu-burger span:nth-child(1){
+        transform: translateY(9px) rotate(45deg);
+    }
+    .menu-toggle:checked + .menu-burger span:nth-child(2){
+        opacity: 0;
+    }
+    .menu-toggle:checked + .menu-burger span:nth-child(3){
+        transform: translateY(-9px) rotate(-45deg);
+    }
+
+    /* Optional: clickable overlay area to close menu (visual only) */
+    /* We can't create a separate overlay element easily without extra markup, but we ensure menu overlays content */
+}
+
+/* keep previous media rule corrected (if needed) */
+@media screen and (max-width: 1531px) {
 #bar{
     border-left: 2px solid rgb(232, 232, 232);
     border-bottom-left-radius: 10px;
+}
+}
+
+@media screen and (max-width: 328px) {
+.menu-burger{
+
+        top: 85px;
+    }
+#bar{
+    top:27px;
 }
 }
