@@ -3,6 +3,7 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { TranslateService, TranslateModule, TranslatePipe, TranslateDirective } from '@ngx-translate/core';
 import { OrganizerPageComponent } from './components/organizer-page/organizer-page.component';
 import { filter } from 'rxjs';
+import { LanguageService } from './Services/LanguageService';
 
 @Component({
   selector: 'app-root',
@@ -14,10 +15,15 @@ export class AppComponent implements OnInit{
 
   title = 'WebApp';
 
-    constructor(private translate: TranslateService,private router: Router) {
+    constructor(private translate: TranslateService,private router: Router, private languageService : LanguageService) {
+    const storedLang = this.languageService.language();
     translate.addLangs(['sr', 'en']);
-    translate.setDefaultLang('sr');
-    translate.use('sr');
+
+    const langToUse = storedLang || 'sr';
+    this.translate.setDefaultLang(langToUse);
+    this.translate.use(langToUse);
+
+    this.languageService.setLanguage(langToUse);
   }
 
   ngOnInit() {

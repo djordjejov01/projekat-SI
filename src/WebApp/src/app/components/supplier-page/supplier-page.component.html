@@ -4,8 +4,8 @@
     <div id="head">
         <img src="./assets/logo91.png" alt="" id="logo" routerLink="/home">
         <div id="right">
-            <select (change)="changeLanguage($event)">
-                <option value="sr">Srpski</option>
+            <select [(ngModel)]="currentLanguage" (change)="changeLanguage($event)">
+                <option value="sr" >Srpski</option>
                 <option value="en">English</option>
             </select>
             <button (click)="onLogoutClick()" id="lgbtn">{{ 'LOGOUT' | translate }}</button>
