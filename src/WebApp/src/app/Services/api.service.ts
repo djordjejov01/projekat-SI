@@ -45,6 +45,8 @@ import { PendingRequest } from "../Interfaces/PendingRequestApiResponse";
 import { EventResourceCalendarResponse } from "../Interfaces/EventResourceCalendarResponse";
 import { environment } from "../../environments/environment";
 import { TicketSales } from "../Models/TicketSales";
+import { RegResponse } from "../Interfaces/RegResponse";
+import { RegResponseDto } from "../Models/RegResponseDto";
 
 // Match Backend.Models.Dto.EventDto
 export interface EventDto {
@@ -746,18 +748,21 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
         )
     }
 
-    register(data : RegisterDto): Observable<UserDto>{
+    register(data : RegisterDto): Observable<RegResponseDto>{
 
-        return this.http.post<UserDtoResponse>(`${this.apiUrl}/User/register-web`, data).pipe(
+        return this.http.post<RegResponse>(`${this.apiUrl}/User/register-web`, data).pipe(
 
             map(data => {
-                //console.log('Raw backend response Register:', data);
-                return new UserDto(
-                data.userId,
-                data.username,
-                data.email,
-                data.role,
-                data.isActive
+                return new RegResponseDto(
+                data.message,
+                new UserDto(
+                    data.user.userId,
+                    data.user.username,
+                    data.user.email,
+                    data.user.role,
+                    data.user.isActive,
+                ),
+                data.requiresEmailVerification
             );
         }),
             
@@ -814,7 +819,7 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
 
     changeUserPass(data : ChangePasswordDto)
     {
-        return this.http.put(`${this.apiUrl}/User/change-password`, data, { responseType: 'text' as const }).pipe(
+        return this.http.put<SuccessfulMessageResponse>(`${this.apiUrl}/User/change-password`, data).pipe(
   catchError(this.handleError)
 );
 

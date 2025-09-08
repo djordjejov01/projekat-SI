@@ -22,6 +22,7 @@ import { UserDto } from '../../Models/UserDto';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { HostListener } from '@angular/core';
 import { LanguageService } from '../../Services/LanguageService';
+import { RegResponseDto } from '../../Models/RegResponseDto';
 @Component({
   selector: 'app-register-form',
   imports: [
@@ -51,7 +52,8 @@ export class RegisterForm implements OnInit, IDeactivate {
     private apiService: ApiService,
     private translate: TranslateService,
     private router : Router,
-    private languageService : LanguageService) { }
+    private languageService : LanguageService,
+    private translateService : TranslateService) { }
 
   roles: Object[];
   userToRegister: RegisterDto | undefined;
@@ -118,16 +120,19 @@ handleEnter(event: KeyboardEvent) {
 
       //API LOGIC HERE
       this.apiService.register(this.userToRegister).subscribe({
-        next: (response: UserDto) => {
+        next: (response: RegResponseDto) => {
           this.messageService.add({
             severity: 'success',
-            summary: 'Success',
-            detail: `User ${response.getUsername()} Successfully Registered`,
+            summary: this.translateService.instant('COMMON.SUCCESS'),
+            detail: response.getMessage(),
             life: 3000
           });
 
           this.registerForm.reset()
-          this.router.navigate(['login']);
+          setTimeout(() => {
+            this.router.navigate(['login']);
+          }, 3000);
+          
         },
 
         error: (errorResponse) => {
@@ -192,6 +197,7 @@ handleEnter(event: KeyboardEvent) {
 
   }
 
+  
 
   canExit(): boolean | Observable<boolean> | Promise<boolean> {
     return (this.registerForm.dirty || this.registerForm.touched) ? this.confirmationDialogService.confirm(

@@ -18,6 +18,7 @@ import {
   Mesh
 } from 'ogl';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 // Tipovi i pomoćne funkcije
 export type RaysOrigin =
   | 'top-center'
@@ -211,11 +212,14 @@ void main() {
     );
     this.showVerificationMessage = true; 
   }
-
+  constructor(private router : Router) {}
   ngAfterViewInit() {
     if (this.containerRef) {
       this.observer.observe(this.containerRef.nativeElement);
     }
+    setTimeout(() => {
+            this.router.navigate(['login']);
+          }, 4000);
   }
 
   ngOnDestroy() {

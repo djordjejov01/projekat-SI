@@ -227,7 +227,7 @@ export class MyProfileComponent implements OnInit {
           this.messageService.add({
             severity: 'success',
             summary: this.translate.instant('SUCCESS'),
-            detail: response,
+            detail: response.message,
             life: 3000
           });
         },
