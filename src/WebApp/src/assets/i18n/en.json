@@ -306,7 +306,7 @@
   "DRAFT":"Draft",
   "PUBLISHED":"Published",
   "CANCELED":"Canceled",
-
+  "CATEGORIES": "Categories",
   "ACTIVITY": {
     "CREATE_TITLE": "Create New Activity",
     "CREATE_SUBTITLE": "Fill in the details below to set up your activity.",

@@ -134,13 +134,13 @@
 
    "CANCELLED": "Otkazano",
    "ACTION_CANCELLED": "Akcija otkazana od strane korisnika",
-
+  "CATEGORIES": "Kategorije",
    "CALENDAR_ACTIONS": "Akcije kalendara",
    "CALENDAR_INSTRUCTIONS": "Izaberite dan ili period da kreirate novi događaj. Imajte u vidu da se prošli datumi ne mogu izabrati.",
    "CREATE_EVENT_MSG": "Kreirati događaj od {{start}} do {{end}}?",
    "CREATE_EVENT_TITLE": "Kreiraj događaj",
    "UNKNOWN": "Nepoznat",
-
+  
    "EVENT": {
     "CREATE_TITLE": "Kreiraj novi događaj",
     "CREATE_SUBTITLE": "Popuni formular ispod da dodaš novi događaj.",
