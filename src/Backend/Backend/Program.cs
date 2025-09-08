@@ -119,11 +119,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
 
 
 //app.UseHttpsRedirection();
@@ -197,7 +193,11 @@ app.MapPost("/auth/reset-password", async (
     var (ok, msg) = await svc.ResetAsync(tokenId, body.NewPassword, ct);
     return ok ? Results.Ok(new { ok = true }) : Results.BadRequest(new { ok = false, message = msg });
 });
-
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.MapControllers();
 app.MapFallbackToFile("index.html");

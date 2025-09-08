@@ -39,11 +39,11 @@
             var verifyUrl = $"{baseUrl}/auth/verify-email?token={token.Id:N}";
 
             var html = $@"
-<h2>Verify your email</h2>
-<p>Hi {(user.Username ?? "there")}, click the button below to verify your email address.</p>
-<p><a href=""{verifyUrl}"" style=""display:inline-block;padding:10px 16px;text-decoration:none;border-radius:6px;border:1px solid #ccc"">Verify Email</a></p>
-<p>If you didn’t request this, you can ignore this email.</p>
-";
+                        <h2>Verify your email</h2>
+                        <p>Hi {(user.Username ?? "there")}, click the button below to verify your email address.</p>
+                        <p><a href=""{verifyUrl}"" style=""display:inline-block;padding:10px 16px;text-decoration:none;border-radius:6px;border:1px solid #ccc"">Verify Email</a></p>
+                        <p>If you didn’t request this, you can ignore this email.</p>
+                        ";
 
             await email.SendAsync(new EmailMessage
             {

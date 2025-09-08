@@ -47,10 +47,10 @@ namespace Backend.Services.Email
                 var resetUrl = frontendUrlTemplate.Replace("{token}", token.Id.ToString("N"));
 
                 var html = $@"
-<h2>Reset your password</h2>
-<p>Hello {(user.Username ?? "there")}, click the button below to reset your password.</p>
-<p><a href=""{resetUrl}"" style=""display:inline-block;padding:10px 16px;border:1px solid #ccc;border-radius:6px;text-decoration:none"">Reset Password</a></p>
-<p>If you didn’t request this, you can ignore this email.</p>";
+                    <h2>Reset your password</h2>
+                    <p>Hello {(user.Username ?? "there")}, click the button below to reset your password.</p>
+                    <p><a href=""{resetUrl}"" style=""display:inline-block;padding:10px 16px;border:1px solid #ccc;border-radius:6px;text-decoration:none"">Reset Password</a></p>
+                    <p>If you didn’t request this, you can ignore this email.</p>";
 
                 await emailSender.SendAsync(new EmailMessage
                 {
