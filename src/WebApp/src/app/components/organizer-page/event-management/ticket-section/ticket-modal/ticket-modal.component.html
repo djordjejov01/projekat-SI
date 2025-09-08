@@ -10,8 +10,8 @@
   <ng-template pTemplate="header">
     <div class="flex justify-between items-start w-full">
       <div class="formTitle">
-      <h3>{{ isEditMode ? ('TICKET.EDIT_TICKET' | translate) : ('TICKET.CREATE_NEW_TICKET' | translate) }}</h3>
-      <p>{{ isEditMode ? ('TICKET.UPDATE_DETAILS_BELOW' | translate) : ('TICKET.FILL_DETAILS_BELOW' | translate) }}</p>
+      <h3>{{ isEditMode ? ('TICKETS.EDIT_TICKET' | translate) : ('TICKETS.CREATE_NEW_TICKET' | translate) }}</h3>
+      <p>{{ isEditMode ? ('TICKETS.UPDATE_DETAILS_BELOW' | translate) : ('TICKETS.FILL_DETAILS_BELOW' | translate) }}</p>
       </div>
       <button
         type="button"
@@ -32,18 +32,18 @@
       <div class="name-price">
 
         <div class="input-wrapper w-full">
-          <p>{{ 'TICKET.TICKET_NAME' | translate }}</p>
+          <p>{{ 'TICKETS.TICKET_NAME' | translate }}</p>
           <p-floatlabel class="w-full md:w-56" variant="on">
             <input type="text" pInputText placeholder=" " formControlName="name" id="ticketName" class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-            <label for="ticketName">{{ 'TICKET.ENTER_TICKET_NAME' | translate }}</label>
+            <label for="ticketName">{{ 'TICKETS.ENTER_TICKET_NAME' | translate }}</label>
           </p-floatlabel>
         </div>
 
         <div class="input-wrapper w-full">
-          <p>{{ 'TICKET.TICKET_PRICE' | translate }}</p>
+          <p>{{ 'TICKETS.TICKET_PRICE' | translate }}</p>
           <p-floatlabel class="w-full md:w-56" variant="on">
             <p-inputnumber placeholder=" " mode="currency" [currency]="currencyCode" [locale]="localeCode" formControlName="price" [style]="{ width: '100%' }" inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-            <label for="ticket-price">{{ 'TICKET.ENTER_TICKET_PRICE' | translate }}</label>
+            <label for="ticket-price">{{ 'TICKETS.ENTER_TICKET_PRICE' | translate }}</label>
           </p-floatlabel>
         </div>
 
@@ -52,36 +52,36 @@
       <div class="dates">
 
         <div class="input-wrapper">
-          <p>{{ 'TICKET.VALID_FROM' | translate }}</p>
+          <p>{{ 'TICKETS.VALID_FROM' | translate }}</p>
           <p-floatlabel class="w-full md:w-56" variant="on">
             <p-datepicker inputId="validFrom" placeholder=" " formControlName="validFrom" [showTime]="true" hourFormat="24" [minDate]="eventBasicInfo.getStartDate() ?? null" [maxDate]="eventBasicInfo.getEndDate() ?? null" [style]="{ width: '100%' }" inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
-            <label for="validFrom">{{ 'TICKET.VALID_FROM_DATE' | translate }}</label>
+            <label for="validFrom">{{ 'TICKETS.VALID_FROM_DATE' | translate }}</label>
           </p-floatlabel>
         </div>
 
         <div class="input-wrapper">
-          <p>{{ 'TICKET.VALID_UNTIL' | translate }}</p>
+          <p>{{ 'TICKETS.VALID_UNTIL' | translate }}</p>
           <p-floatlabel class="w-full md:w-56" variant="on">
             <p-datepicker inputId="validUntil" placeholder=" " formControlName="validUntil" [showTime]="true" hourFormat="24" [minDate]="eventBasicInfo.getStartDate() ?? null" [maxDate]="eventBasicInfo.getEndDate() ?? null" [style]="{ width: '100%' }" inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
-            <label for="validUntil">{{ 'TICKET.VALID_UNTIL_DATE' | translate }}</label>
+            <label for="validUntil">{{ 'TICKETS.VALID_UNTIL_DATE' | translate }}</label>
           </p-floatlabel>
         </div>
 
       </div>
 
       <div class="input-wrapper">
-        <p>{{ 'TICKET.QUOTA' | translate }}</p>
+        <p>{{ 'TICKETS.QUOTA' | translate }}</p>
         <p-floatlabel class="w-full md:w-56" variant="on">
           <p-inputnumber formControlName="quota" inputId="quota" [min]="1" [useGrouping]="false" [showButtons]="false" [style]="{ width: '100%' }" inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></p-inputnumber>
-          <label for="quota">{{ 'TICKET.ENTER_TICKET_QUOTA' | translate }}</label>
+          <label for="quota">{{ 'TICKETS.ENTER_TICKET_QUOTA' | translate }}</label>
         </p-floatlabel>
       </div>
 
       <div class="input-wrapper">
-        <p>{{ 'TICKET.TICKET_DESCRIPTION' | translate }}</p>
+        <p>{{ 'TICKETS.TICKET_DESCRIPTION' | translate }}</p>
         <p-floatlabel class="w-full md:w-56" variant="on">
           <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
-          <label for="description">{{ 'TICKET.DESCRIBE_YOUR_TICKET' | translate }}</label>
+          <label for="description">{{ 'TICKETS.DESCRIBE_YOUR_TICKET' | translate }}</label>
         </p-floatlabel>
       </div>
 
@@ -89,7 +89,7 @@
 
     <div class="form-buttons">
       <p-button 
-      [label]="isEditMode ? ('COMMON.SAVE_CHANGES' | translate) : ('TICKET.CREATE_TICKET' | translate)"
+      [label]="isEditMode ? ('COMMON.SAVE_CHANGES' | translate) : ('TICKETS.CREATE_TICKET' | translate)"
       [icon]="isEditMode ? 'pi pi-save' : 'pi pi-plus'"
       [raised]="true"
       (onClick)="submitForm()"
