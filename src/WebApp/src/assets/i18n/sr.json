@@ -242,6 +242,16 @@
     "EVENTS": "Događaji"
   },
 
+  "RESOURCE_CATEGORIES": {
+    "1": "Osoblje",
+    "2": "Oprema",
+    "3": "Hrana i Piće",
+    "4": "Nameštaj",
+    "5": "Sanitarije",
+    "6": "Bezbednost",
+    "7": "Medicinski"
+  }
+,
 
   "ERROR_404": "Greška",
   "PAGE_NOT_FOUND": "Stranica nije pronađena",

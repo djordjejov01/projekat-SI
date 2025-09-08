@@ -306,6 +306,7 @@
   "PUBLISHED":"Published",
   "CANCELED":"Canceled",
   "CATEGORIES": "Categories",
+
   "ACTIVITY": {
     "CREATE_TITLE": "Create New Activity",
     "CREATE_SUBTITLE": "Fill in the details below to set up your activity.",
@@ -349,7 +350,18 @@
     "CULTURE": "Culture",
     "OTHER": "Other"
   },
+  
+  "RESOURCE_CATEGORIES": {
+    "1": "Staff",
+    "2": "Equipment",
+    "3": "Food & Beverage",
+    "4": "Furniture",
+    "5": "Sanitation",
+    "6": "Security",
+    "7": "Medical"
+  }
 
+,
   "SUBEVENT": {
     "CREATE_TITLE": "Create New Subevent",
     "CREATE_DESC": "Fill in the details below to set up your subevent.",
