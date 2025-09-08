@@ -339,7 +339,10 @@
     "CLOSE": "Zatvori",
     "SUCCESS": "Uspeh",
     "ERROR": "Greška",
-    "SAVE_CHANGES": "Sačuvaj izmene"
+    "SAVE_CHANGES": "Sačuvaj izmene",
+    "NA": "N/A",
+    "APPROVE": "Odobri",
+    "DECLINE": "Odbij"
   },
 
   "CATEGORYS": {
@@ -467,7 +470,7 @@
     "RESERVABLE_INFO": "Označite resurse kao rezervabilne ako želite da posetioci mogu da ih rezervišu.",
     "CLOSE": "Zatvori",
     "QUANTITY": "Količina",
-    "ENTER_QUANTITY": "Unesite količinu resursa (maks: {{max}})",
+    "ENTER_QUANTITY": "Unesite količinu resursa",
     "NEEDED_FROM": "Potrebno od",
     "NEEDED_FROM_DATETIME": "Datum i vreme početka",
     "NEEDED_UNTIL": "Potrebno do",
@@ -481,7 +484,23 @@
     "ALLOCATE_FAILED": "Dodela nije uspela",
     "ALLOCATE_FAILED_DETAIL": "Došlo je do neočekivane greške prilikom dodele resursa.",
     "UNSAVED_CHANGES": "Imate nespremljene izmene. Da li ste sigurni da želite da zatvorite modal?",
-    "UNSAVED_CHANGES_TITLE": "Nespremljene izmene"
+    "UNSAVED_CHANGES_TITLE": "Nespremljene izmene",
+     "ADD_TITLE": "Dodaj novi resurs",
+    "EDIT_TITLE": "Izmeni resurs",
+    "ADD_SUBTITLE": "Popunite detalje ispod da biste dodali novi resurs.",
+    "EDIT_SUBTITLE": "Ažurirajte detalje ispod.",
+    "NAME": "Naziv resursa",
+    "ENTER_NAME": "Unesite naziv resursa",
+    "CATEGORY": "Kategorija",
+    "SELECT_CATEGORY": "Izaberite kategoriju resursa",
+    "TYPE": "Tip resursa",
+    "SELECT_TYPE": "Izaberite tip resursa",
+    "DESCRIPTION": "Opis",
+    "ENTER_DESCRIPTION": "Opišite svoj resurs",
+    "ADD": "Dodaj resurs",
+    "RESOURCE_NAME": "Naziv resursa",
+    "RESOURCE_TYPE": "Tip resursa",
+    "ADD_RESOURCE": "Dodaj resurs"
   },
 
   "RESOURCE_ALLOCATION": {
@@ -559,5 +578,96 @@
     "CREATE_EVENT_TITLE": "Kreiraj događaj",
     "UNKNOWN": "Nepoznato",
     "ALL_DAY":"ceo dan"
+  },
+
+  "REQUESTS": {
+    "TITLE": "Pregledaj svoje zahteve.",
+    "SUBTITLE": "Pregledaj svoje zahteve i dozvoli organizatorima da alociraju tvoje resurse.",
+    "TABLE": {
+      "RESOURCE": "Naziv resursa",
+      "QUANTITY": "Količina",
+      "EVENT": "Naziv događaja",
+      "ORGANIZER": "Organizator",
+      "DATES": "Zahtevani datumi",
+      "ACTIONS": "Akcije",
+       "ERROR_FETCH": "Nije moguće učitati zahteve.",
+    "APPROVED": "Zahtev je odobren!",
+    "DECLINED": "Zahtev je odbijen!",
+    "APPROVE_FAILED": "Odobravanje zahteva nije uspelo.",
+    "DECLINE_FAILED": "Odbijanje zahteva nije uspelo."
+    },
+    "EMPTY": {
+      "TITLE": "Nema zahteva na čekanju",
+      "DESCRIPTION": "Trenutno nemaš nijedan zahtev za alokaciju resursa na čekanju."
+    }
+  },
+  "TABLE": {
+    "SHOWING": "Prikazano {{first}} do {{last}} od ukupno {{totalRecords}} unosa"
+  },
+
+  "RESOURCE_DASHBOARD": {
+    "TITLE": "Resursni Dashboard",
+    "DESCRIPTION": "Upravljajte dostupnim resursima i pregledajte dolazne zahteve.",
+    "TOTAL_RESOURCES": "Ukupno resursa",
+    "AVAILABLE_TODAY": "Dostupno danas",
+    "BOOKED": "Rezervisano",
+    "PENDING_REQUESTS": "Na čekanju",
+    "VIEW": "Pregled",
+    "RESOURCE_TABLE": "Tabela resursa",
+    "ADD_RESOURCE": "Dodaj resurs",
+    "CLEAR": "Očisti",
+    "KEYBOARD_SEARCH": "Pretraga preko tastature",
+    "NAME": "Naziv",
+    "CATEGORY": "Kategorija",
+    "TYPE": "Tip",
+    "AVAILABILITY": "Dostupnost",
+    "QUANTITY": "Količina",
+    "ACTIONS": "Akcije",
+    "EDIT_RESOURCE": "Izmeni resurs",
+    "DELETE_RESOURCE": "Obriši resurs",
+    "NO_RESOURCES": "Nema dodatih resursa",
+    "NO_RESOURCES_DESC": "Dodajte resurse kako bi organizatori mogli da ih koriste za svoje događaje.",
+    "CONFIRM_DELETE": "Da li ste sigurni da želite da obrišete resurs \"{{resourceName}}\"?",
+    "DELETED": "Obrisano",
+    "ERROR": "Greška",
+    "RESOURCE_CATEGORY_DISTRIBUTION": "Raspodela kategorija resursa",
+    "EXHAUSTIBLE": "Iscrpljiv",
+    "INEXHAUSTIBLE": "Neiscrpljiv",
+    "AVAILABLE": "Dostupno",
+    "UNAVAILABLE": "Nedostupno",
+    "BOOKED_STATUS": "Rezervisano"
+  },
+
+  "PROFILE": {
+    "MY_PROFILE": "Moj Profil",
+    "SUPPLIER": "Dobavljač",
+    "CHOOSE": "Izaberi",
+    "REMOVE_PICTURE": "Ukloni Sliku",
+    "NAME": "Ime",
+    "USERNAME": "Korisničko ime",
+    "EMAIL": "Email",
+    "PHONE_NUMBER": "Broj telefona",
+    "BIO": "Biografija",
+    "WEBSITE": "Web sajt",
+    "UPDATE_PROFILE": "Ažuriraj Profil",
+    "CURRENT_PASSWORD": "Trenutna lozinka",
+    "NEW_PASSWORD": "Nova lozinka",
+    "CONFIRM_NEW_PASSWORD": "Potvrdi novu lozinku",
+    "CHANGE_PASSWORD": "Promeni lozinku",
+    "RESOURCE_OVERVIEW": "Pregled Resursa",
+    "RESOURCES": "Resursi",
+    "UNAVAILABLE_RESOURCES": "Nedostupni resursi",
+    "AVAILABLE_RESOURCES": "Dostupni resursi",
+    "SUCCESS_PICTURE_CHANGE": "Uspešno promenjena slika profila",
+    "SUCCESS_UPDATE_PROFILE": "Profil uspešno ažuriran",
+    "ERROR_NAME_ONLY_LETTERS": "Ime mora sadržati samo slova.",
+    "ERROR_PASSWORD_MISMATCH": "Šifre se ne poklapaju",
+    "CONFIRM_REMOVE_PICTURE": "Da li ste sigurni da želite da uklonite sliku?",
+    "REMOVE_PICTURE_TITLE": "Ukloni sliku"
+  },
+
+  "RCALENDAR": {
+    "TITLE": "Kalendar resursa",
+    "DESCRIPTION": "Ovaj kalendar pruža pregled svih vaših odobrenih rezervacija i dostupnosti resursa."
   }
 }

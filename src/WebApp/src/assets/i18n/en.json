@@ -332,7 +332,10 @@
     "CLOSE": "Close",
     "SUCCESS": "Success",
     "ERROR": "Error",
-    "SAVE_CHANGES": "Save Changes"
+    "SAVE_CHANGES": "Save Changes",
+    "NA": "N/A",
+    "APPROVE": "Approve",
+    "DECLINE": "Decline"
   },
 
   "CATEGORYS": {
@@ -465,7 +468,24 @@
     "ALLOCATE_FAILED": "Allocation Failed",
     "ALLOCATE_FAILED_DETAIL": "An unexpected error occurred while allocating the resource.",
     "UNSAVED_CHANGES": "You have unsaved changes. Are you sure you want to close the modal?",
-    "UNSAVED_CHANGES_TITLE": "Unsaved Changes"
+    "UNSAVED_CHANGES_TITLE": "Unsaved Changes",
+     "ADD_TITLE": "Add New Resource",
+    "EDIT_TITLE": "Edit Resource",
+    "ADD_SUBTITLE": "Fill in the details below to add your new resource.",
+    "EDIT_SUBTITLE": "Update the details below.",
+    "NAME": "Resource Name",
+    "ENTER_NAME": "Enter Resource Name",
+    "CATEGORY": "Category",
+    "SELECT_CATEGORY": "Select Resource Category",
+    "TYPE": "Resource Type",
+    "SELECT_TYPE": "Select Resource Type",
+    "DESCRIPTION": "Description",
+    "ENTER_DESCRIPTION": "Describe Your Resource",
+    "ADD": "Add Resource",
+    "ADDED_SUCCESS": "Resource added successfully!",
+    "RESOURCE_NAME": "Resource Name",
+    "RESOURCE_TYPE": "Resource Type",
+    "ADD_RESOURCE": "Add Resource"
   },
 
     "RESOURCE_ALLOCATION": {
@@ -543,6 +563,98 @@
     "CREATE_EVENT_TITLE": "Create Event",
     "UNKNOWN": "Unknown",
     "ALL_DAY":"all day"
+  },
+
+  "REQUESTS": {
+    "TITLE": "Review your requests.",
+    "SUBTITLE": "Review your requests and allow organizers to allocate your resources.",
+    "TABLE": {
+      "RESOURCE": "Resource Name",
+      "QUANTITY": "Quantity",
+      "EVENT": "Event Title",
+      "ORGANIZER": "Organizer",
+      "DATES": "Requested Dates",
+      "ACTIONS": "Actions",
+        "ERROR_FETCH": "Could not load pending requests.",
+    "APPROVED": "Request approved!",
+    "DECLINED": "Request declined!",
+    "APPROVE_FAILED": "Failed to approve request.",
+    "DECLINE_FAILED": "Failed to decline request."
+    },
+    "EMPTY": {
+      "TITLE": "No Pending Requests",
+      "DESCRIPTION": "You currently have no pending resource allocation requests to review."
+    }
+  },
+  "TABLE": {
+    "SHOWING": "Showing {{first}} to {{last}} of {{totalRecords}} entries"
+  },
+
+  "RESOURCE_DASHBOARD": {
+    "TITLE": "Resource Dashboard",
+    "DESCRIPTION": "Manage your available resources and view incoming requests.",
+    "TOTAL_RESOURCES": "Total Resources",
+    "AVAILABLE_TODAY": "Available Today",
+    "BOOKED": "Booked",
+    "PENDING_REQUESTS": "Pending Requests",
+    "VIEW": "View",
+    "RESOURCE_TABLE": "Resource Table",
+    "ADD_RESOURCE": "Add Resource",
+    "CLEAR": "Clear",
+    "KEYBOARD_SEARCH": "Keyboard Search",
+    "NAME": "Name",
+    "CATEGORY": "Category",
+    "TYPE": "Type",
+    "AVAILABILITY": "Availability",
+    "QUANTITY": "Quantity",
+    "ACTIONS": "Actions",
+    "EDIT_RESOURCE": "Edit Resource",
+    "DELETE_RESOURCE": "Delete Resource",
+    "NO_RESOURCES": "No Resources Added",
+    "NO_RESOURCES_DESC": "Add resources for organizers to allocate for their events.",
+    "CONFIRM_DELETE": "Are you sure you want to delete the resource \"{{resourceName}}\"?",
+    "DELETED": "Deleted",
+    "ERROR": "Error",
+    "RESOURCE_CATEGORY_DISTRIBUTION": "Resource Category Distribution",
+    "EXHAUSTIBLE": "Exhaustible",
+    "INEXHAUSTIBLE": "Inexhaustible",
+    "AVAILABLE": "Available",
+    "UNAVAILABLE": "Unavailable",
+    "BOOKED_STATUS": "Booked"
+  },
+
+  "PROFILE": {
+    "MY_PROFILE": "My Profile",
+    "SUPPLIER": "Supplier",
+    "CHOOSE": "Choose",
+    "REMOVE_PICTURE": "Remove Picture",
+    "NAME": "Name",
+    "USERNAME": "Username",
+    "EMAIL": "Email",
+    "PHONE_NUMBER": "Phone Number",
+    "BIO": "Bio",
+    "WEBSITE": "Website",
+    "UPDATE_PROFILE": "Update Profile",
+    "CURRENT_PASSWORD": "Current Password",
+    "NEW_PASSWORD": "New Password",
+    "CONFIRM_NEW_PASSWORD": "Confirm New Password",
+    "CHANGE_PASSWORD": "Change Password",
+    "RESOURCE_OVERVIEW": "Resource Overview",
+    "RESOURCES": "Resources",
+    "UNAVAILABLE_RESOURCES": "Unavailable Resources",
+    "AVAILABLE_RESOURCES": "Available Resources",
+    "SUCCESS_PICTURE_CHANGE": "Profile picture changed successfully",
+    "SUCCESS_UPDATE_PROFILE": "Profile updated successfully",
+    "ERROR_NAME_ONLY_LETTERS": "Name must contain only letters.",
+    "ERROR_PASSWORD_MISMATCH": "Passwords do not match",
+    "CONFIRM_REMOVE_PICTURE": "Are you sure you want to remove the picture?",
+    "REMOVE_PICTURE_TITLE": "Remove picture",
+    "PROFILE": "Profile"
+  },
+
+  "RCALENDAR": {
+    "TITLE": "Resource Calendar",
+    "DESCRIPTION": "This calendar provides an overview of all your approved bookings and resource availability."
   }
   
   }
