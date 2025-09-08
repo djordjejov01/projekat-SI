@@ -29,7 +29,7 @@ namespace Backend.Services.Email
             var last = db.EmailVerificationTokens
                 .Where(t => t.UserId == user.UserId && t.Purpose == TokenPurposes.PasswordReset && t.ConsumedAtUtc == null)
                 .OrderByDescending(t => t.CreatedAtUtc)
-                .FirstOrDefaultAsync(ct);
+                .FirstOrDefaultAsync(ct).Result;
 
             if (last is null) // || (DateTime.UtcNow - last.) > TimeSpan.FromMinutes(cooldownMin)
             {
