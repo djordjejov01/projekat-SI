@@ -109,10 +109,10 @@
         <p class="text-[#636AE8]" routerLink="/login">
           {{"YESACC" | translate}}
         </p>
-        <select (change)="changeLanguage($event)">
-      <option value="sr">Srpski</option>
-      <option value="en">English</option>
-    </select>
+            <select [(ngModel)]="currentLanguage" (change)="changeLanguage($event)">
+                <option value="sr" >Srpski</option>
+                <option value="en">English</option>
+            </select>
       </div>
       
     </form>

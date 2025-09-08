@@ -18,14 +18,17 @@ import { AuthService } from '../../Services/auth.service';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { HostListener } from '@angular/core';
+import { LanguageService } from '../../Services/LanguageService';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-login-form',
-  imports: [ReactiveFormsModule,FloatLabelModule,InputTextModule,CommonModule,PasswordModule,DividerModule,ToastModule,ConfirmDialog,RouterLink, TranslateModule],
+  imports: [ReactiveFormsModule,FloatLabelModule,InputTextModule,CommonModule,PasswordModule,DividerModule,ToastModule,ConfirmDialog,RouterLink, TranslateModule,FormsModule],
   templateUrl: './login-form.component.html',
   styleUrl: './login-form.component.css'
 })
 export class LoginForm implements OnInit,IDeactivate{
 
+  public currentLanguage : string;
 
   constructor(
     private messageService: MessageService,
@@ -33,24 +36,35 @@ export class LoginForm implements OnInit,IDeactivate{
     private apiService : ApiService,
     private authService : AuthService,
     private router : Router,
-    private translate : TranslateService) {}
+    private translate : TranslateService,
+    private languageService : LanguageService) {}
 
   userToLogin : LoginDto | undefined;
   loginForm : FormGroup;
 
 
   ngOnInit(): void {
+        const savedLang = this.languageService.language();
+    this.currentLanguage = savedLang || 'en';
     this.loginForm = new FormGroup({
       email: new FormControl('', [Validators.required]),
       password: new FormControl('', Validators.required),
     })
   }
 
-  changeLanguage(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const lang = selectElement.value;
-    this.translate.use(lang);
-  }
+changeLanguage(event: Event) {
+  const selectElement = event.target as HTMLSelectElement;
+  const lang = selectElement.value;
+
+   // Update the currentLanguage property
+    this.currentLanguage = lang;
+
+  // 1. Tell the LanguageService to save the new language to localStorage
+  this.languageService.setLanguage(lang);
+
+  // 2. Tell the frontend translation service to switch languages for the UI
+  this.translate.use(lang);
+}
 
 
   submitForm()
