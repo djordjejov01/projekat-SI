@@ -15,10 +15,11 @@ import { ResourceDto } from '../../../Models/ResourceDto';
 import { environment } from '../../../../environments/environment';
 import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
 import { TranslateModule,TranslateService } from '@ngx-translate/core';
+import { ForgotPasswordModalComponent } from '../../login-form/forgot-password-modal/forgot-password-modal.component';
 
 @Component({
   selector: 'app-my-profile',
-  imports: [TranslateModule,FormsModule],
+  imports: [TranslateModule,FormsModule,ForgotPasswordModalComponent],
   templateUrl: './my-profile.component.html',
   styleUrls: ['./my-profile.component.css']
 })
