@@ -39,7 +39,9 @@ namespace Backend.Services
         {
             var now = DateTime.Now;
             var events = _context.Events
-                .Where(e => e.OrganizerID == id && e.ParentEventId == 0).ToList();
+                .Where(e => e.OrganizerID == id && e.ParentEventId == 0)
+                .OrderBy(e => e.EventID)
+                .ToList();
             if (events == null || !events.Any())
             {
                 throw new Exception(_localizer["organizer.no_events_found"].ToString());
