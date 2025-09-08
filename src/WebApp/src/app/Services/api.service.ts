@@ -47,6 +47,7 @@ import { environment } from "../../environments/environment";
 import { TicketSales } from "../Models/TicketSales";
 import { RegResponse } from "../Interfaces/RegResponse";
 import { RegResponseDto } from "../Models/RegResponseDto";
+import { ResetPasswordDto } from "../Models/ResetPasswordDto";
 
 // Match Backend.Models.Dto.EventDto
 export interface EventDto {
@@ -158,8 +159,23 @@ export interface GeocodingResult {
 export class ApiService{
     
     private apiUrl = environment.apiUrl;
+    private baseApiUrl = environment.backendBaseUrl
 
     constructor(private http: HttpClient) {}
+
+
+  resetPassword(data: ResetPasswordDto): Observable<any> {
+    return this.http.post(`${this.baseApiUrl}/auth/reset-password`, data).pipe(
+        catchError(this.handleError)
+    );
+  }
+
+  forgotPassword(email: string): Observable<any> {
+    const body = { email: email };
+    return this.http.post(`${this.baseApiUrl}/auth/forgot-password`, body).pipe(
+        catchError(this.handleError)
+    );
+  }
 
 // services/api.service.ts
 

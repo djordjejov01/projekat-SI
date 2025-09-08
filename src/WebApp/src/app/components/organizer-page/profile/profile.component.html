@@ -52,6 +52,9 @@
 
                 <button id="upp" class ="dBut"(click)="updatePass()">{{ 'CHANGE_PASSWORD' | translate }}</button>
             </div>
+            <p class="text-[#636AE8] noacc" (click)="forgotPassword.show()">
+                Forgot Password?
+            </p>
         </div>
 
         <div id="rightside">
@@ -81,3 +84,5 @@
         </div>
     </div>
 </div>
+
+<app-forgot-password-modal #forgotPassword></app-forgot-password-modal>
