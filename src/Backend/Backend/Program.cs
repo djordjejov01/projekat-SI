@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
 using Backend.Models.Dto;
+using Backend;
 
 
 var builder = WebApplication.CreateBuilder(args);
