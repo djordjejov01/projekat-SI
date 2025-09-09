@@ -793,7 +793,7 @@ namespace Backend.Controllers
         public async Task<IActionResult> GetSupplierResources(int supplierId, int eventId)
         {
             var resources = await _context.Resources
-                .Where(r => r.SupplierID == supplierId && r.IsAvailable == ResourceAvailability.Available)
+                .Where(r => r.SupplierID == supplierId && (r.IsExhaustable || r.IsAvailable == ResourceAvailability.Available))
                 .ToListAsync();
 
             var ourEvent = await _context.Events
