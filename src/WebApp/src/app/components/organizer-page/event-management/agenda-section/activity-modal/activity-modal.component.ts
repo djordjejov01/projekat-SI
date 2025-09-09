@@ -140,24 +140,24 @@ export class ActivityModalComponent implements OnInit, OnChanges, IDeactivate {
     if (this._editMode && activityToSave.getActivityId()) {
       this.apiService.updateActivity(activityToSave.getActivityId()!, activityToSave).subscribe({
         next: (response) => {
-          this.messageService.add({ severity: 'success', summary: this.translate.instant('COMMON.SUCCESS'), detail: this.translate.instant('ACTIVITY.UPDATE_SUCCESS'), life: 3000 });
+          this.messageService.add({ severity: 'success', summary: this.translate.instant('SUCCESS'), detail: this.translate.instant('ACTIVITY.UPDATE_SUCCESS'), life: 3000 });
           this.hide();
           this.activityUpdated.emit();
         },
         error: (err) => {
-          this.messageService.add({ severity: 'error', summary: this.translate.instant('COMMON.ERROR'), detail: err.message || this.translate.instant('ACTIVITY.UPDATE_ERROR'), life: 3000 });
+          this.messageService.add({ severity: 'error', summary: this.translate.instant('ERROR'), detail: err.message || this.translate.instant('ACTIVITY.UPDATE_ERROR'), life: 3000 });
         }
       });
     } else {
       this.apiService.createActivity(activityToSave).subscribe({
         next: (response) => {
           const message = response.headers?.get('Location') || this.translate.instant('ACTIVITY.CREATE_SUCCESS');
-          this.messageService.add({ severity: 'success', summary: this.translate.instant('COMMON.SUCCESS'), detail: message, life: 3000 });
+          this.messageService.add({ severity: 'success', summary: this.translate.instant('SUCCESS'), detail: message, life: 3000 });
           this.hide();
           this.activityCreated.emit();
         },
         error: (err) => {
-          this.messageService.add({ severity: 'error', summary: this.translate.instant('COMMON.ERROR'), detail: err.message || this.translate.instant('ACTIVITY.CREATE_ERROR'), life: 3000 });
+          this.messageService.add({ severity: 'error', summary: this.translate.instant('ERROR'), detail: err.message || this.translate.instant('ACTIVITY.CREATE_ERROR'), life: 3000 });
         }
       });
     }

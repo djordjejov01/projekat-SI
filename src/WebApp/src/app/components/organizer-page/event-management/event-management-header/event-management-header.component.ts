@@ -171,7 +171,7 @@ export class EventManagementHeaderComponent implements OnInit, OnChanges {
         this.router.navigate(['/organizer']);
         this.messageService.add({
           severity: 'success',
-          summary: this.translate.instant('EVENT.SUCCESS'),
+          summary: this.translate.instant('SUCCESS'),
           detail: response.message,
           life: 3000
         });
@@ -179,7 +179,7 @@ export class EventManagementHeaderComponent implements OnInit, OnChanges {
       error: (errorResponse) => {
         this.messageService.add({
           severity: 'error',
-          summary: this.translate.instant('EVENT.ERROR'),
+          summary: this.translate.instant('ERROR'),
           detail: errorResponse.message,
           life: 3000
         });

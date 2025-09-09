@@ -183,15 +183,16 @@ ngOnInit(): void {
     this.toggleTicketDateControls();
   }
 
-  async removeTicket(index: number){
-    const confirmed = await this.confirmationDialogService.confirm(
-      `Are you sure you want to remove the ticket?`,
-      `Remove ticket`
-    )
-    if(!confirmed) return;
-    this.tickets.removeAt(index);
-  }
+  async removeTicket(index: number) {
+  const confirmed = await this.confirmationDialogService.confirm(
+    this.translateService.instant('CONFIRM_REMOVE_MESSAGE'),
+    this.translateService.instant('CONFIRM_REMOVE_TITLE')
+  );
 
+  if (!confirmed) return;
+
+  this.tickets.removeAt(index);
+}
   toggleTicketDateControls(): void {
     const tickets = this.eventForm.get('tickets') as FormArray;
     const enable = this.eventStart !== null && this.eventEnd !== null;

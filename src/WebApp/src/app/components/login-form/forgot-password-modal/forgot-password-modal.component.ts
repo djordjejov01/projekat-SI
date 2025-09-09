@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../Validators/custom.validators'; 
 import { DialogModule } from 'primeng/dialog';
-import { FloatLabelModule } from "primeng/floatlabel"
+import { FloatLabelModule } from "primeng/floatlabel";
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { DatePickerModule } from 'primeng/datepicker';
-import { Observable} from 'rxjs';
+import { Observable } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { ApiService } from '../../../Services/api.service'; 
@@ -20,15 +20,26 @@ import { ToastModule } from 'primeng/toast';
 @Component({
   selector: 'app-forgot-password-modal',
   standalone: true,
-imports: [TranslateModule,ReactiveFormsModule, DialogModule, FloatLabelModule, InputTextModule, TextareaModule, DatePickerModule, SelectModule, ButtonModule, TooltipModule,ToastModule],
+  imports: [
+    TranslateModule,
+    ReactiveFormsModule,
+    DialogModule,
+    FloatLabelModule,
+    InputTextModule,
+    TextareaModule,
+    DatePickerModule,
+    SelectModule,
+    ButtonModule,
+    TooltipModule,
+    ToastModule
+  ],
   templateUrl: './forgot-password-modal.component.html',
-  styleUrl: './forgot-password-modal.component.css',
+  styleUrls: ['./forgot-password-modal.component.css'],
   providers: [MessageService] 
 })
-export class ForgotPasswordModalComponent implements OnInit, IDeactivate{
-emailForm: FormGroup;
+export class ForgotPasswordModalComponent implements OnInit, IDeactivate {
+  emailForm: FormGroup;
   visible: boolean = false;
-
 
   constructor(
     private apiService: ApiService,
@@ -41,11 +52,13 @@ emailForm: FormGroup;
     this.initializeForm();
   }
 
-
   initializeForm() {
-
     this.emailForm = new FormGroup({
-      email: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator,Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]),
+      email: new FormControl('', [
+        Validators.required,
+        CustomValidators.noWhitespaceValidator,
+        Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+      ]),
     });
   }
 
@@ -58,49 +71,46 @@ emailForm: FormGroup;
     this.emailForm.reset();
   }
 
-  async onCancleClick(){
+  async onCancleClick() {
     const canLeave = await this.canExit();
-    if(canLeave){
+    if (canLeave) {
       this.hide();
     }
   }
 
-submitForm() {
-  if (this.emailForm.invalid) {
-    this.messageService.add({
-      severity: 'error',
-      summary: "Error",
-      detail: "Email not valid",
-      life: 3000
-    });
-    return;
-  }
-
-  const email = this.emailForm.get('email')?.value;
-
-  this.apiService.forgotPassword(email).subscribe({
-    next: (response) => {
-      // Handle a successful response
-      this.messageService.add({
-        severity: 'success',
-        summary: "Success",
-        detail: "Password reset link sent to your email!",
-        life: 3000
-      });
-      this.hide();
-    },
-    error: (error) => {
-      // Handle an error response
+  submitForm() {
+    if (this.emailForm.invalid) {
       this.messageService.add({
         severity: 'error',
-        summary: "Error",
-        detail: "Could not send password reset link. Please try again.",
+        summary: this.translate.instant('ERROR'),
+        detail: this.translate.instant('FORGOT_PASS.EMAIL_NOT_VALID'),
         life: 3000
       });
-      //console.error('Forgot password error:', error);
+      return;
     }
-  });
-}
+
+    const email = this.emailForm.get('email')?.value;
+
+    this.apiService.forgotPassword(email).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translate.instant('SUCCESS'),
+          detail: this.translate.instant('FORGOT_PASS.LINK_SENT'),
+          life: 3000
+        });
+        this.hide();
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.instant('ERROR'),
+          detail: this.translate.instant('FORGOT_PASS.LINK_FAILED'),
+          life: 3000
+        });
+      }
+    });
+  }
 
   canExit(): boolean | Observable<boolean> | Promise<boolean> {
     return (this.emailForm.dirty || this.emailForm.touched)
@@ -110,5 +120,4 @@ submitForm() {
         )
       : true;
   }
-
 }
