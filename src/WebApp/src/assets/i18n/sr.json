@@ -101,6 +101,7 @@
   "ACTIVE": "Aktivan",
   "INACTIVE": "Neaktivan",
   "DEACTIVATE": "Deaktiviraj",
+  "CONFIRM_REMOVE_TICKET": "Da li ste sigurni da želite da obrišete kartu?",
   "ACTIVATE": "Aktiviraj",
   "NO_USERS_FOUND": "Nije pronađen nijedan korisnik.",
   "LOGOUT_CONFIRM_MSG": "Da li ste sigurni da želite da se odjavite?",
@@ -113,7 +114,7 @@
   },
   "welcome": {
     "title": "Dobrodošli",
-    "back": "Dobrodošao nazad, {{name}}!"
+    "back": "Dobrodošao nazad"
   },
   "charts": {
     "userCount": "Broj korisnika",
@@ -346,7 +347,9 @@
     "NA": "N/A",
     "APPROVE": "Odobri",
     "DECLINE": "Odbij",
-    "DELETED":"Obrisano"
+    "DELETED":"Obrisano",
+    "UNSAVED_CHANGES_TITLE": "Nesačuvane izmene",
+    "UNSAVED_CHANGES_DETAIL": "Imate nesačuvane izmene. Da li ste sigurni da želite da napustite?"
   },
 
   "CATEGORYS": {
@@ -487,7 +490,7 @@
     "RESERVABLE_INFO": "Označite resurse kao rezervabilne ako želite da posetioci mogu da ih rezervišu.",
     "CLOSE": "Zatvori",
     "QUANTITY": "Količina",
-    "ENTER_QUANTITY": "Unesite količinu resursa (max: {{max}})",
+    "ENTER_QUANTITY": "Unesite količinu resursa",
     "NEEDED_FROM": "Potrebno od",
     "NEEDED_FROM_DATETIME": "Datum i vreme početka",
     "NEEDED_UNTIL": "Potrebno do",
@@ -517,7 +520,8 @@
     "ADD": "Dodaj resurs",
     "RESOURCE_NAME": "Naziv resursa",
     "RESOURCE_TYPE": "Tip resursa",
-    "ADD_RESOURCE": "Dodaj resurs"
+    "ADD_RESOURCE": "Dodaj resurs",
+    "ADDED_SUCCESS":"Resurs uspešno dodat"
   },
 
   "RESOURCE_CATEGORIES": {
@@ -778,6 +782,42 @@
     "DESCRIPTION": "Unesite svoj email da biste resetovali lozinku.",
     "EMAIL_LABEL": "Email",
     "EMAIL_PLACEHOLDER": "Unesite svoj email",
-    "SEND_EMAIL": "Pošalji email"
+    "SEND_EMAIL": "Pošalji email",
+    "EMAIL_NOT_VALID": "Email nije validan",
+    "LINK_SENT": "Link za resetovanje lozinke je poslat na Vaš email!",
+    "LINK_FAILED": "Nije moguće poslati link za resetovanje lozinke. Pokušajte ponovo."
+  },
+
+  "CONFIRM_REMOVE_MESSAGE": "Da li ste sigurni da želite da uklonite kartu?",
+  "CONFIRM_REMOVE_TITLE": "Ukloni kartu",
+
+  "LOGING": {
+    "ERROR": "Greška pri prijavi",
+    "INVALID_ROLE": "Neispravna korisnička uloga.",
+    "ACCESS_DENIED": "Pristup odbijen",
+    "NO_ACCESS_ALLOWED": "Nemate dozvolu za pristup ovom resursu.",
+    "SOMETHING_ELSE": "Došlo je do greške. Pokušajte ponovo.",
+    "FORM_INVALID": "Polja forme nisu validna:",
+    "EMAIL_REQUIRED": "Email je obavezan",
+    "PASSWORD_REQUIRED": "Lozinka je obavezna"
+  },
+
+  "ROLES": {
+    "ORGANIZER": "Organizator",
+    "SUPPLIER": "Dobavljač"
+  },
+  "REGISTERR": {
+    "SUCCESS": "Registracija je uspešna",
+    "FORM_INVALID": "Polja forme nisu validna:",
+    "ROLE_REQUIRED": "Uloga je obavezna",
+    "NAME_REQUIRED": "Ime je obavezno",
+    "EMAIL_REQUIRED": "Email je obavezan",
+    "EMAIL_INVALID": "Email nije validan",
+    "PASSWORD_REQUIRED": "Lozinka je obavezna",
+    "PASSWORD_PATTERN": "Lozinka mora imati najmanje 8 karaktera, uključujući veliko, malo slovo i broj",
+    "CONFIRM_REQUIRED": "Potvrda lozinke je obavezna",
+    "CONFIRM_PATTERN": "Potvrda mora odgovarati šablonu lozinke",
+    "PASSWORDS_MUST_MATCH": "Lozinka i potvrda moraju biti iste",
+    "UNKNOWN_ERROR": "Došlo je do greške"
   }
 }
