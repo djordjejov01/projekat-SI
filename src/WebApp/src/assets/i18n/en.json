@@ -720,9 +720,33 @@
     "PAST_DATE": "cannot be in the past",
     "START_BEFORE_END": "start time must be before end time",
     "DATE_OUT_OF_RANGE": "is outside the valid event dates"
+  },
+
+    "FORM_FIELDS": {
+    "title": "Title",
+    "description": "Description",
+    "location": "Location",
+    "isUnlimitedCapacity": "Unlimited Capacity",
+    "capacity": "Capacity",
+    "startDateTime": "Start Date",
+    "endDateTime": "End Date",
+    "category": "Category",
+    "tickets": "Tickets",
+    "name": "Name",
+    "price": "Price",
+    "quota": "Quota",
+    "validFrom": "Valid From",
+    "validUntil": "Valid Until",
+    "type": "Type",
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "allocatedQuantity": "Allocated Quantity",
+    "startDateTimeBooked": "Booked From",
+    "endDateTimeBooked": "Booked To",
+    "isReservable": "Reservable",
+    "quantity": "Quantity"
   }
-  
-  }
+}
 
 
  
