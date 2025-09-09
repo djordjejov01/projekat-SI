@@ -694,7 +694,8 @@
     "INEXHAUSTIBLE": "Neiscrpljiv",
     "AVAILABLE": "Dostupno",
     "UNAVAILABLE": "Nedostupno",
-    "BOOKED_STATUS": "Rezervisano"
+    "BOOKED_STATUS": "Rezervisano",
+    "ANY":"Bilo koji"
   },
 
   "PROFILE": {
