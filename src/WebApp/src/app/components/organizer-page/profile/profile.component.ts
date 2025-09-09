@@ -162,19 +162,19 @@ export class ProfileComponent implements OnInit {
       dugme.classList.add("disBut");
     }
   }
-  regexIme: RegExp = /^[a-zA-Z]*$/;
+  regexIme: RegExp = /^[a-zA-Z\s-]*$/;
   update() {
     const name = (document.getElementById('name') as HTMLInputElement).value;
     const username5 = (document.getElementById('username5') as HTMLInputElement).value;
     const email = (document.getElementById('email') as HTMLInputElement).value;
     const phone = (document.getElementById('phone') as HTMLInputElement).value;
-    if(this.regexIme.test(name) == false)
-    {
+    if (!this.regexIme.test(name)) {
       this.messageService.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: "Name must contain only letters.",
-              life: 3000 });
+        severity: 'error',
+        summary: this.translate.instant('ERROR'),
+        detail: this.translate.instant('PROFILE.ERROR_NAME_ONLY_LETTERS'),
+        life: 3000
+      });
       return;
     }
     const toUpdate = new OrganizerDto(this.authService.getUserId(),name,username5,email,phone,"");

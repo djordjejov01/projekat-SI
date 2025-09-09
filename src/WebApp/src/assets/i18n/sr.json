@@ -487,7 +487,7 @@
     "RESERVABLE_INFO": "Označite resurse kao rezervabilne ako želite da posetioci mogu da ih rezervišu.",
     "CLOSE": "Zatvori",
     "QUANTITY": "Količina",
-    "ENTER_QUANTITY": "Unesite količinu resursa",
+    "ENTER_QUANTITY": "Unesite količinu resursa (max: {{max}})",
     "NEEDED_FROM": "Potrebno od",
     "NEEDED_FROM_DATETIME": "Datum i vreme početka",
     "NEEDED_UNTIL": "Potrebno do",

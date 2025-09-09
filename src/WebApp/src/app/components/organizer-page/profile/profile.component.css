@@ -292,3 +292,8 @@ input{
 .disBut:hover{
     cursor: not-allowed;
 }
+
+#fpass:hover{
+    cursor: pointer;
+    text-decoration: underline;
+}

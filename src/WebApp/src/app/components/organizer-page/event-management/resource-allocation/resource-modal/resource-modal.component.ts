@@ -68,16 +68,14 @@ export class ResourceModalComponent implements OnInit, IDeactivate {
   }
 
   initForm() {
-    this.resourceForm = this.fb.group(
-      {
-        allocatedQuantity: [null],
-        startDateTimeBooked: [null],
-        endDateTimeBooked: [null],
-        isReservable: [false]
-      },
-      { validators: [CustomValidators.startBeforeEndDates('startDateTimeBooked', 'endDateTimeBooked')] }
-    );
+    this.resourceForm = this.fb.group({
+      allocatedQuantity: [null],
+      startDateTimeBooked: [null],
+      endDateTimeBooked: [null],
+      isReservable: [false]
+    }, { validators: [CustomValidators.startBeforeEndDates('startDateTimeBooked', 'endDateTimeBooked')] });
   }
+
 
   openModal(resource: PicklistItem, supplier: SupplierDto) {
     this.selectedResource = resource;
@@ -99,7 +97,7 @@ private applyConditionalValidators() {
     // Apply the max validator to ALL resources.
     // The `selectedResource.quantity` should reflect the true maximum available,
     // which for "single-use" inexhaustible resources will be 1 (from backend filtering).
-   // Validators.max(this.selectedResource.quantity)
+    Validators.max(this.selectedResource.quantity)
   ]);
   
   if (this.selectedResource.isExhaustable) {
@@ -111,7 +109,13 @@ private applyConditionalValidators() {
     this.resourceForm.get('startDateTimeBooked')?.setValidators([Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]);
     this.resourceForm.get('endDateTimeBooked')?.setValidators([Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]);
   }
+
+  // Update validation status for all form controls
+  this.resourceForm.get('allocatedQuantity')?.updateValueAndValidity();
+  this.resourceForm.get('startDateTimeBooked')?.updateValueAndValidity();
+  this.resourceForm.get('endDateTimeBooked')?.updateValueAndValidity();
 }
+
 
   private updateResourceTitle(): void {
     if (!this.selectedResource) {
@@ -139,26 +143,28 @@ private applyConditionalValidators() {
 
     const formValue = this.resourceForm.value;
 
+ // Create the DTO instance to send to the backend.
     const newEventResource = new EventResourceDto(
-      0,
-      this.selectedResource.supplierID,
-      this.eventBasicInfo.getEventID(),
-      this.selectedResource.resourceID,
-      formValue.allocatedQuantity,
-      !!formValue.isReservable,
-      0,
-      formValue.startDateTimeBooked,
-      formValue.endDateTimeBooked
+        0, 
+        this.selectedResource.supplierID,
+        this.eventBasicInfo.getEventID(),
+        this.selectedResource.resourceID,
+        formValue.allocatedQuantity, 
+        !!formValue.isReservable, 
+        0, // Status is always Pending for new requests
+        formValue.startDateTimeBooked,
+        formValue.endDateTimeBooked
     );
+
 
     this.apiService.requestResource(newEventResource).subscribe({
       next: () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: this.translate.instant('RESOURCE.ALLOCATE_SUCCESS'),
-          detail: this.translate.instant('RESOURCE.ALLOCATE_DETAIL'),
-          life: 3000
-        });
+        // this.messageService.add({
+        //   severity: 'success',
+        //   summary: this.translate.instant('RESOURCE.ALLOCATE_SUCCESS'),
+        //   detail: this.translate.instant('RESOURCE.ALLOCATE_DETAIL'),
+        //   life: 3000
+        // });
         this.save.emit(this.selectedResource);
         this.visible = false;
       },
@@ -180,6 +186,7 @@ private applyConditionalValidators() {
     this.resourceForm.reset();
     this.visible = false;
   }
+
 
   onDialogHide() {
     this.onHide.emit();

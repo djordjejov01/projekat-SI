@@ -128,6 +128,8 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy {
       }
       capacityControl?.updateValueAndValidity();
     });
+
+    this.eventForm.get('isUnlimitedCapacity')?.updateValueAndValidity({onlySelf: true, emitEvent: true});
   }
 
   searchLocations(event: any) {
