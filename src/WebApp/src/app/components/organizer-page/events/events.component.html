@@ -37,7 +37,7 @@
                 <p-chart *ngIf="data1" type="bar" [data]="data1" [options]="options1" class="bar"></p-chart>
             </div>
             <div class="chart-box pad">
-                <p>{{ 'CATEGORY' | translate }}</p>
+                <p>{{ 'CATEGORIES' | translate }}</p>
                 <p-chart *ngIf="data2" type="pie" [data]="data2" [options]="options3" class="pad" />
             </div>
         </div>
@@ -46,7 +46,7 @@
                 <p-chart *ngIf="data4" type="line" [data]="data4" [options]="options1" class="bar"></p-chart>
             </div>
             <div class="chart-box pad">
-                <p>Status</p>
+                <p>{{ 'STATUS' | translate }}</p>
                 <p-chart *ngIf="data3" type="doughnut" [data]="data3" [options]="options3" class="pad" />
             </div>
         </div>

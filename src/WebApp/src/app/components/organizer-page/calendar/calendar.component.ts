@@ -132,7 +132,8 @@ export class CalendarComponent implements OnInit, OnDestroy {
       },
       allDayText: this.translate.instant('CALENDAR.ALL_DAY'),
       events: [],
-      buttonText: {}
+      buttonText: {},
+      eventClick: this.handleEventClick.bind(this)
     };
 
     this.updateButtonText();
@@ -190,6 +191,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
   }
   handleEventClick(clickInfo: any) {
     const eventId = clickInfo.event.id; 
+    alert("TEST");
     if (eventId) {
         this.router.navigate(['/organizer/event-management/', eventId]); 
     }
