@@ -49,82 +49,95 @@ export default function ProfileScreen() {
   };
 
 
-
-  useEffect(() => {
-    const fetchUserDataAndTickets = async () => {
+useEffect(() => {
+    const fetchUserDataAndStats = async () => {
       const token = await AsyncStorage.getItem('token');
-      if (!token) return;
+      if (!token) {
+        setIsLoggedIn(false);
+        return;
+      }
 
       setIsLoggedIn(true);
       setIsLoading(true);
+
       try {
-        const res = await apiCall(`${API_URL}/api/MobileUser/profile`, {
+        // Fetch profile data
+        const resProfile = await apiCall(`${API_URL}/api/MobileUser/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const profileText = await res.text();
-
-        if (res.ok) {
-          const data = JSON.parse(profileText);
+        if (resProfile.ok) {
+          const data = await resProfile.json();
           setFirstName(data.firstName || '');
           setLastName(data.lastName || '');
           setEmail(data.email || '');
           const imageUrl = normalizeImageUrl(data.profilePicture || null);
           setProfilePicture(imageUrl);
+        } else {
+          console.error('Failed to fetch profile data:', resProfile.status);
         }
 
+        // Fetch tickets count
         const resTickets = await apiCall(`${API_URL}/api/ticket/tickets/my`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const ticketsText = await resTickets.text();
-
         if (resTickets.ok) {
-          const dataCount = JSON.parse(ticketsText);
-          setTicketsCount(dataCount.length);
+          const data = await resTickets.json();
+          setTicketsCount(data.length);
+        } else {
+          console.error('Failed to fetch tickets:', resTickets.status);
         }
+
+        // Fetch resources count
         const resResources = await apiCall(`${API_URL}/api/Resource/my-reservations`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-         const text = await resResources.text();
-        // console.log('Raw response:', text);
-
         if (resResources.ok) {
           const data = await resResources.json();
-          // console.log('Parsed data:', data);
-
-          // Pravimo Set od imena resursa
-          const uniqueResources = new Set(data.map((r: any) => r.ResourceName));
-          // console.log('Unique resources:', uniqueResources);
+          const uniqueResources = new Set(data.map((r: { ResourceName: string }) => r.ResourceName));
           setResourcesCount(uniqueResources.size);
-}
-
-        const resCredits = await apiCall(`${API_URL}/api/Credit`, {
-  headers: { Authorization: `Bearer ${token}` },
-});
-
-      if (resCredits.ok) {
-        const data = await resCredits.json(); // direktno parsiramo JSON
-        console.log('CR DEBUG:', data); // ovo treba da bude { Credits: 100 } npr.
-        if (data && typeof data.Credits === 'number') {
-          setCredits(data.Credits);
         } else {
-          console.warn('Credits field is missing in API response', data);
-          setCredits(0); // fallback
+          console.error('Failed to fetch resources:', resResources.status);
         }
-      } else {
-        console.error('Failed to fetch credits', resCredits.status);
-      }
 
+        // Fetch credits
+        const resCredits = await apiCall(`${API_URL}/api/Credit`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (resCredits.ok) {
+          const data = await resCredits.json();
+          
+          if (data && typeof data.credits === 'number') {
+            setCredits(data.credits);
+          } else {
+            console.warn('Credits field is missing or not a number:', data);
+            setCredits(0);
+          }
+        } else {
+          console.error('Failed to fetch credits. Status:', resCredits.status);
+          const errorText = await resCredits.text();
+          console.error('Response text:', errorText);
+          setCredits(0);
+        }
+
+      } catch (err) {
+        console.error('An unexpected error occurred during API calls:', err);
+        // U slučaju bilo kakve greške, postavi kredite na 0 i prikaži grešku
+        setCredits(0); 
       } finally {
         setIsLoading(false);
       }
     };
-    fetchUserDataAndTickets();
-  }, []);
-    useEffect(() => {
-    setSelectedLang(i18n.language === 'sr' ? 'sr' : 'en');
+
+    const fetchLanguage = async () => {
+      setSelectedLang(i18n.language === 'sr' ? 'sr' : 'en');
+    };
+
+    fetchUserDataAndStats();
+    fetchLanguage();
   }, []);
 
   const handleLanguageSwitch = async (lang: 'en' | 'sr') => {
