@@ -94,13 +94,24 @@ useEffect(() => {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (resResources.ok) {
-          const data = await resResources.json();
-          const uniqueResources = new Set(data.map((r: { ResourceName: string }) => r.ResourceName));
-          setResourcesCount(uniqueResources.size);
-        } else {
-          console.error('Failed to fetch resources:', resResources.status);
-        }
+ if (resResources.ok) {
+  const data = await resResources.json();
+
+  const uniqueReservations = new Set<string>();
+
+  data.forEach((res: any) => {
+    if (res.eventID && res.eventResourceID) {
+      uniqueReservations.add(`${res.eventID}-${res.eventResourceID}`);
+    }
+  });
+
+  console.log('Grouped reservations:', data);
+  console.log('Unique reservations count:', uniqueReservations.size);
+
+  setResourcesCount(uniqueReservations.size);
+} else {
+  console.error('Failed to fetch resources:', resResources.status);
+}
 
         // Fetch credits
         const resCredits = await apiCall(`${API_URL}/api/Credit`, {
