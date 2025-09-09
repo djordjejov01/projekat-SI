@@ -20,6 +20,8 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 import { SuccessComponent } from './components/success/success.component';
 import { FailComponent } from './components/fail/fail.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { TicketComponent } from './components/ticket/ticket.component';
+import { TicketFailComponent } from './components/ticket-fail/ticket-fail.component';
 
 
 export const routes: Routes = [
@@ -49,5 +51,7 @@ export const routes: Routes = [
   },
   {path: 'verify/success', component: SuccessComponent},
   {path: 'verify/fail', component: FailComponent},
+  {path: 'verify/ticket/success', component: TicketComponent},
+  {path: 'verify/ticket/fail', component: TicketFailComponent},
     {path: '**', component: NotFoundComponent}
 ];
