@@ -31,7 +31,8 @@ type ResourceReservation = {
 export default function ReservationDetails() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { eventID } = useLocalSearchParams();
+  const params = useLocalSearchParams<{ eventID: string | string[]; from?: string }>();
+  const eventID = Array.isArray(params.eventID) ? params.eventID[0] : params.eventID;
   const [loading, setLoading] = useState(true);
   const [eventTitle, setEventTitle] = useState('');
   const [reservations, setReservations] = useState<ResourceReservation[]>([]);
@@ -132,14 +133,20 @@ useEffect(() => {
         <Ionicons name="arrow-back" size={28} color="black" />
       </TouchableOpacity>
     <View style={{ alignItems: 'center', marginBottom: 15 }}>
-  <TouchableOpacity
-    disabled={userTickets.length === 0}
-    onPress={() => router.push(`/event/${eventID}`)}
-  >
-    <Text style={[styles.eventTitle, userTickets.length === 0 && { color: '#95a5a6' }]}>
-      {eventTitle}
-    </Text>
-  </TouchableOpacity>
+<TouchableOpacity
+  disabled={userTickets.length === 0}
+  onPress={() =>
+    router.push({
+      pathname: '/event/[id]',
+      params: { id: eventID, from: 'reservationDetails' },
+    })
+  }
+>
+  <Text style={[styles.eventTitle, userTickets.length === 0 && { color: '#95a5a6' }]}>
+    {eventTitle}
+  </Text>
+</TouchableOpacity>
+
 
   {/* Datum od-do */}
   <Text style={styles.eventDate}>

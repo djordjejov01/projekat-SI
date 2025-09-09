@@ -601,16 +601,18 @@ const handleAction = async () => {
   return (
     <ScrollView style={styles.container}>
       <TouchableOpacity
-        onPress={() => {
-          if (from === 'search') router.replace('/search');
-          else if (from === 'favorites') router.replace('/favorites');
-          else if (from === 'reservationDetails') router.back();
-          else router.replace('/events');
-        }}
-        style={styles.backButton}
-      >
-        <Ionicons name="arrow-back" size={24} color="#333" />
-      </TouchableOpacity>
+  onPress={() => {
+    if (from === 'search') router.replace('/search');
+    else if (from === 'favorites') router.replace('/favorites');
+    else if (from === 'reservationDetails') router.back();
+    else if (from === 'ticketDetails') router.back(); // dodato
+    else router.replace('/events');
+  }}
+  style={styles.backButton}
+>
+  <Ionicons name="arrow-back" size={24} color="#333" />
+</TouchableOpacity>
+
 
 
       <Text style={styles.naslov}>{t('aboutEvent')}</Text>
