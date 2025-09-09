@@ -154,8 +154,19 @@ app.UseWhen(ctx => ctx.Request.Path.StartsWithSegments("/images"), branch =>
     branch.Use(async (context, next) =>
     {
         var referer = context.Request.Headers["Referer"].ToString();
-        var isAllowed = !string.IsNullOrEmpty(referer) &&
-                        allowedReferers.Any(origin => referer.StartsWith(origin, StringComparison.OrdinalIgnoreCase));
+        var hasReferer = !string.IsNullOrEmpty(referer);
+        var refererAllowed = hasReferer &&
+            allowedReferers.Any(origin => referer.StartsWith(origin, StringComparison.OrdinalIgnoreCase));
+
+        var ua = context.Request.Headers["User-Agent"].ToString();
+        var isNativeUA =
+            ua.Contains("okhttp", StringComparison.OrdinalIgnoreCase) ||   // Android RN tipično
+            ua.Contains("CFNetwork", StringComparison.OrdinalIgnoreCase) || // iOS
+            ua.Contains("Darwin", StringComparison.OrdinalIgnoreCase) ||    // iOS
+            ua.Contains("Expo", StringComparison.OrdinalIgnoreCase) ||      // Expo dev
+            ua.Contains("reactnative", StringComparison.OrdinalIgnoreCase); // RN dev
+
+        var isAllowed = refererAllowed || isNativeUA;
 
         if (!isAllowed)
         {
