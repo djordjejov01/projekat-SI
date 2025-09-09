@@ -90,8 +90,8 @@ export class OrganizerPageComponent implements AfterContentInit, OnInit {
       if (name) {
         this.messageService.add({
           severity: 'success',
-          summary: 'Welcome',
-          detail: `Welcome back, ${name}!`,
+          summary: this.translate.instant('welcome.title'),
+          detail: this.translate.instant('welcome.back')+`, ${name}!`,
           life: 3000
         });
       }

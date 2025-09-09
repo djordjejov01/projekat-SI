@@ -204,7 +204,7 @@ export class SubeventModalComponent implements OnInit, OnDestroy, OnChanges, IDe
         const message = response.headers?.get('Location') || this.translate.instant('MESSAGES.EVENT_CREATED');
         this.messageService.add({
           severity: 'success',
-          summary: this.translate.instant('COMMON.SUCCESS'),
+          summary: this.translate.instant('SUCCESS'),
           detail: message,
           life: 3000
         });
@@ -215,7 +215,7 @@ export class SubeventModalComponent implements OnInit, OnDestroy, OnChanges, IDe
       error: () => {
         this.messageService.add({
           severity: 'error',
-          summary: this.translate.instant('COMMON.ERROR'),
+          summary: this.translate.instant('ERROR'),
           detail: this.translate.instant('MESSAGES.EVENT_CREATE_FAILED'),
           life: 3000
         });

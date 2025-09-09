@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { SelectModule } from 'primeng/select';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { CommonModule } from '@angular/common';
@@ -18,9 +18,7 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 import { ConfirmationDialogService } from '../../Services/confirmation-dialog.service';
 import { RegisterDto } from '../../Models/RegisterDto';
 import { ApiService } from '../../Services/api.service';
-import { UserDto } from '../../Models/UserDto';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { HostListener } from '@angular/core';
 import { LanguageService } from '../../Services/LanguageService';
 import { RegResponseDto } from '../../Models/RegResponseDto';
 
@@ -39,41 +37,26 @@ import { RegResponseDto } from '../../Models/RegResponseDto';
     RouterLink,
     ToastModule,
     ConfirmDialog,
-    TranslateModule],
+    TranslateModule
+  ],
   templateUrl: './register-form.component.html',
   styleUrls: ['./register-form.component.css']
 })
 export class RegisterForm implements OnInit, IDeactivate {
 
-  public currentLanguage : string;
+  public currentLanguage: string;
+  roles: Object[];
+  userToRegister: RegisterDto | undefined;
+  registerForm: FormGroup;
 
   constructor(
     private messageService: MessageService,
     private confirmationDialogService: ConfirmationDialogService,
     private apiService: ApiService,
     private translate: TranslateService,
-    private router : Router,
-    private languageService : LanguageService,
-    private translateService : TranslateService) { }
-
-  roles: Object[];
-  userToRegister: RegisterDto | undefined;
-
-  registerForm: FormGroup;
-
-changeLanguage(event: Event) {
-  const selectElement = event.target as HTMLSelectElement;
-  const lang = selectElement.value;
-
-   // Update the currentLanguage property
-    this.currentLanguage = lang;
-
-  // 1. Tell the LanguageService to save the new language to localStorage
-  this.languageService.setLanguage(lang);
-
-  // 2. Tell the frontend translation service to switch languages for the UI
-  this.translate.use(lang);
-}
+    private router: Router,
+    private languageService: LanguageService
+  ) { }
 
   ngOnInit(): void {
     const savedLang = this.languageService.language();
@@ -83,33 +66,49 @@ changeLanguage(event: Event) {
 
     this.translate.onLangChange.subscribe(() => {
       this.setTranslatedRoles();
-    })
+    });
 
     this.registerForm = new FormGroup({
       role: new FormControl(null, Validators.required),
       username: new FormControl('', Validators.required),
-      email: new FormControl('', [Validators.required, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]),
-      password: new FormControl('', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/)]),
-      confirm: new FormControl('', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/)])
-
-    }, CustomValidators.passwordsMatch('password', 'confirm'))
-
+      email: new FormControl('', [
+        Validators.required,
+        Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+      ]),
+      password: new FormControl('', [
+        Validators.required,
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/)
+      ]),
+      confirm: new FormControl('', [
+        Validators.required,
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/)
+      ])
+    }, CustomValidators.passwordsMatch('password', 'confirm'));
   }
 
- @HostListener('document:keydown.enter', ['$event'])
-handleEnter(event: KeyboardEvent) {
-  event.preventDefault();
-  this.submitForm(); // ili šta već
-}
+  changeLanguage(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const lang = selectElement.value;
+
+    this.currentLanguage = lang;
+    this.languageService.setLanguage(lang);
+    this.translate.use(lang);
+  }
+
+  @HostListener('document:keydown.enter', ['$event'])
+  handleEnter(event: KeyboardEvent) {
+    event.preventDefault();
+    this.submitForm();
+  }
+
   setTranslatedRoles() {
     this.roles = [
-      { label: this.translate.instant('ORGANIZER'), value: 'Organizer' },
-      { label: this.translate.instant('Supplier'), value: 'Supplier' }
-    ]
+      { label: this.translate.instant('ROLES.ORGANIZER'), value: 'Organizer' },
+      { label: this.translate.instant('ROLES.SUPPLIER'), value: 'Supplier' }
+    ];
   }
 
   submitForm() {
-
     if (this.registerForm.valid) {
       this.userToRegister = new RegisterDto(
         this.registerForm.get('username').value,
@@ -117,95 +116,90 @@ handleEnter(event: KeyboardEvent) {
         this.registerForm.get('password').value,
         this.registerForm.get('confirm').value,
         this.registerForm.get('role').value
-      )
+      );
 
-      //API LOGIC HERE
       this.apiService.register(this.userToRegister).subscribe({
         next: (response: RegResponseDto) => {
           this.messageService.add({
             severity: 'success',
-            summary: this.translateService.instant('SUCCESS'),
+            summary: this.translate.instant('REGISTERR.SUCCESS'),
             detail: response.getMessage(),
             life: 3000
           });
 
-          this.registerForm.reset()
+          this.registerForm.reset();
           setTimeout(() => {
             this.router.navigate(['login']);
           }, 3000);
-          
         },
-
         error: (errorResponse) => {
           this.messageService.add({
             severity: 'error',
-            summary: 'Error',
+            summary: this.translate.instant('ERROR'),
             detail: errorResponse.message,
             life: 3000
           });
         }
       });
-
-      //console.log('New user to register: ', this.userToRegister)
-
-      
-
-    }
-    else {
-
-      let warningString: string = 'Form Fields not Valid:\n';
+    } else {
+      let warningString: string = this.translate.instant('REGISTERR.FORM_INVALID') + '\n';
 
       for (let key in this.registerForm.controls) {
         switch (this.registerForm.controls[key]) {
-          case this.registerForm.controls['role']:
-            {
-              if (this.registerForm.controls['role'].errors?.['required']) warningString += " * Role is required\n";
-            } break;
+          case this.registerForm.controls['role']: {
+            if (this.registerForm.controls['role'].errors?.['required'])
+              warningString += " * " + this.translate.instant('REGISTERR.ROLE_REQUIRED') + "\n";
+          } break;
 
-          case this.registerForm.controls['username']:
-            {
-              if (this.registerForm.controls['username'].errors?.['required']) warningString += " * Name is required\n";
-            } break;
+          case this.registerForm.controls['username']: {
+            if (this.registerForm.controls['username'].errors?.['required'])
+              warningString += " * " + this.translate.instant('REGISTERR.NAME_REQUIRED') + "\n";
+          } break;
 
-          case this.registerForm.controls['email']:
-            {
-              if (this.registerForm.controls['email'].errors?.['required']) warningString += "  * Email is required\n";
-              else if (this.registerForm.controls['email'].errors?.['pattern']) warningString += "  * Email is not valid\n";
-            } break;
+          case this.registerForm.controls['email']: {
+            if (this.registerForm.controls['email'].errors?.['required'])
+              warningString += " * " + this.translate.instant('REGISTERR.EMAIL_REQUIRED') + "\n";
+            else if (this.registerForm.controls['email'].errors?.['pattern'])
+              warningString += " * " + this.translate.instant('REGISTERR.EMAIL_INVALID') + "\n";
+          } break;
 
-          case this.registerForm.controls['password']:
-            {
-              if (this.registerForm.controls['password'].errors?.['required']) warningString += " * Password is required\n";
-              else if (this.registerForm.controls['password'].errors?.['pattern']) warningString += " * Password must match the pattern\n";
-            } break;
+          case this.registerForm.controls['password']: {
+            if (this.registerForm.controls['password'].errors?.['required'])
+              warningString += " * " + this.translate.instant('REGISTERR.PASSWORD_REQUIRED') + "\n";
+            else if (this.registerForm.controls['password'].errors?.['pattern'])
+              warningString += " * " + this.translate.instant('REGISTERR.PASSWORD_PATTERN') + "\n";
+          } break;
 
-          case this.registerForm.controls['confirm']:
-            {
-              if (this.registerForm.controls['confirm'].errors?.['required']) warningString += "  * Confirmation is required\n";
-              else if (this.registerForm.controls['confirm'].errors?.['pattern']) warningString += "  * Confirmation must match the pattern\n";
-            } break;
+          case this.registerForm.controls['confirm']: {
+            if (this.registerForm.controls['confirm'].errors?.['required'])
+              warningString += " * " + this.translate.instant('REGISTERR.CONFIRM_REQUIRED') + "\n";
+            else if (this.registerForm.controls['confirm'].errors?.['pattern'])
+              warningString += " * " + this.translate.instant('REGISTERR.CONFIRM_PATTERN') + "\n";
+          } break;
 
-          default: warningString += "  * Somthing went wrong\n";
+          default:
+            warningString += " * " + this.translate.instant('REGISTERR.UNKNOWN_ERROR') + "\n";
         }
       }
 
-      if (this.registerForm.errors?.['passwordsDontMatch']) warningString += "  * Password and Confirmation must match\n";
+      if (this.registerForm.errors?.['passwordsDontMatch'])
+        warningString += " * " + this.translate.instant('REGISTERR.PASSWORDS_MUST_MATCH') + "\n";
 
-      this.messageService.add({ severity: 'error', summary: 'Form fields are not valid:', detail: warningString, life: 3000 });
-      return;
-
+      this.messageService.add({
+        severity: 'error',
+        summary: this.translate.instant('REGISTERR.FORM_INVALID'),
+        detail: warningString,
+        life: 3000
+      });
     }
-
   }
-
-  
 
   canExit(): boolean | Observable<boolean> | Promise<boolean> {
-    return (this.registerForm.dirty || this.registerForm.touched) ? this.confirmationDialogService.confirm(
-      'You have unsaved changes. Are you sure you want to leave this page?',
-      'Unsaved Changes'
-    )
+    return (this.registerForm.dirty || this.registerForm.touched)
+      ? this.confirmationDialogService.confirm(
+        this.translate.instant('UNSAVED_CHANGES_DETAIL'),
+        this.translate.instant('UNSAVED_CHANGES_TITLE')
+      )
       : true;
   }
-  
 }

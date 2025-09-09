@@ -111,7 +111,7 @@
   },
   "welcome": {
     "title": "Welcome",
-    "back": "Welcome back, {{name}}!"
+    "back": "Welcome back"
   },
   "charts": {
     "userCount": "Number of Users",
@@ -332,7 +332,7 @@
   },
   "COMMON": {
     "SAVE": "Save Changes",
-    "DELETED": "Obrisano",
+    "DELETED": "Deleted",
     "CANCEL": "Cancel",
     "CLOSE": "Close",
     "SUCCESS": "Success",
@@ -340,7 +340,9 @@
     "SAVE_CHANGES": "Save Changes",
     "NA": "N/A",
     "APPROVE": "Approve",
-    "DECLINE": "Decline"
+    "DECLINE": "Decline",
+     "UNSAVED_CHANGES_TITLE": "Unsaved changes",
+    "UNSAVED_CHANGES_DETAIL": "You have unsaved changes. Do you really want to leave?"
   },
 
   "CATEGORYS": {
@@ -499,7 +501,7 @@
     "RESERVABLE_INFO": "Mark the resources as reservable if you want attendees to be able to reserve it.",
     "CLOSE": "Close",
     "QUANTITY": "Quantity",
-    "ENTER_QUANTITY": "Enter Resource Quantity (max: {{max}})",
+    "ENTER_QUANTITY": "Enter Resource Quantity",
     "NEEDED_FROM": "Needed From",
     "NEEDED_FROM_DATETIME": "Needed From Date and Time",
     "NEEDED_UNTIL": "Needed Until",
@@ -727,6 +729,7 @@
     "SUMMARY": "Form fields are not valid:",
     "FORM": "Form",
     "TICKET": "Ticket",
+    "CONFIRM_REMOVE_TICKET": "Are you sure you want to remove the ticket?",
     "REQUIRED": "is required",
     "MIN": "must be at least {{value}}",
     "MAX": "must be at most {{value}}",
@@ -776,8 +779,46 @@
     "DESCRIPTION": "Enter your email so you can reset your password.",
     "EMAIL_LABEL": "Email",
     "EMAIL_PLACEHOLDER": "Enter your Email",
-    "SEND_EMAIL": "Send Email"
+    "SEND_EMAIL": "Send Email",
+    "EMAIL_NOT_VALID": "Email not valid",
+    "LINK_SENT": "Password reset link sent to your email!",
+    "LINK_FAILED": "Could not send password reset link. Please try again."
+  },
+
+  "CONFIRM_REMOVE_MESSAGE": "Are you sure you want to remove the ticket?",
+  "CONFIRM_REMOVE_TITLE": "Remove ticket",
+
+  "LOGING": {
+    "ERROR": "Login Error",
+    "INVALID_ROLE": "Invalid user role.",
+    "ACCESS_DENIED": "Access denied",
+    "NO_ACCESS_ALLOWED": "You are not allowed to access this resource.",
+    "SOMETHING_ELSE": "Something went wrong. Please try again.",
+    "FORM_INVALID": "Form fields are not valid:",
+    "EMAIL_REQUIRED": "Email is required",
+    "PASSWORD_REQUIRED": "Password is required"
+  },
+
+   "ROLES": {
+    "ORGANIZER": "Organizer",
+    "SUPPLIER": "Supplier"
+  },
+  "REGISTERR": {
+    "SUCCESS": "Registration successful",
+    "FORM_INVALID": "Form fields are not valid:",
+    "ROLE_REQUIRED": "Role is required",
+    "NAME_REQUIRED": "Name is required",
+    "EMAIL_REQUIRED": "Email is required",
+    "EMAIL_INVALID": "Email is not valid",
+    "PASSWORD_REQUIRED": "Password is required",
+    "PASSWORD_PATTERN": "Password must contain at least 8 characters, including uppercase, lowercase and a number",
+    "CONFIRM_REQUIRED": "Confirmation is required",
+    "CONFIRM_PATTERN": "Confirmation must match the password pattern",
+    "PASSWORDS_MUST_MATCH": "Password and Confirmation must match",
+    "UNKNOWN_ERROR": "Something went wrong"
   }
+
+  
 }
 
 

@@ -107,7 +107,7 @@ export class MyProfileComponent implements OnInit {
       error:(errorResponse) => {
         this.messageService.add({
           severity: 'error',
-          summary: this.translate.instant('PROFILE.ERROR'),
+          summary: this.translate.instant('ERROR'),
           detail: errorResponse.message,
           life: 3000
         });
@@ -139,7 +139,7 @@ export class MyProfileComponent implements OnInit {
       error:(errorResponse) =>{
         this.messageService.add({
           severity: 'error',
-          summary: this.translate.instant('PROFILE.ERROR'),
+          summary: this.translate.instant('ERROR'),
           detail: errorResponse.message,
           life: 3000
         });
@@ -246,7 +246,7 @@ export class MyProfileComponent implements OnInit {
     if (newPassword && newPassword !== confirmNewPassword) {
       this.messageService.add({
         severity: 'error',
-        summary: this.translate.instant('PROFILE.ERROR'),
+        summary: this.translate.instant('ERROR'),
         detail: this.translate.instant('PROFILE.ERROR_PASSWORD_MISMATCH'),
         life: 3000
       });
