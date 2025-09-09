@@ -261,7 +261,7 @@ export class EventsComponent implements OnInit {
     this.apiService.getCategoryMetrics().subscribe({
       next: (response: CategoryMetrics) => {
         Object.entries(response).forEach(([key, value]) => {
-          this.data2Labels.push(this.translate.instant(`CATEGORIES.${key.toUpperCase()}`));
+          this.data2Labels.push(this.translate.instant(`CATEGORYS.${key.toUpperCase()}`));
           this.data2Data.push(value);
         });
         this.data2 = { labels: this.data2Labels, datasets: [{ data: this.data2Data }] };

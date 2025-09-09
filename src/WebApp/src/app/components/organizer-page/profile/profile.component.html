@@ -16,7 +16,7 @@
                 </button>
 
                 <button class="del" (click)="deletePic()">
-                    <i class="pi pi-times"></i>Remove Picture
+                    <i class="pi pi-times"></i>{{ 'PROFILE.REMOVE_PICTURE' | translate }}
                 </button>
             </div>
 
@@ -52,8 +52,8 @@
 
                 <button id="upp" class ="dBut"(click)="updatePass()">{{ 'CHANGE_PASSWORD' | translate }}</button>
             </div>
-            <p class="text-[#636AE8] noacc" (click)="forgotPassword.show()" id="fpass">
-                Forgot Password?
+            <p class="text-[#636AE8] noacc" (click)="forgotPassword.show()">
+                {{ 'FORGOT_PASSWORD' | translate }}
             </p>
         </div>
 

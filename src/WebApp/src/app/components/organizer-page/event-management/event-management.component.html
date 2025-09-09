@@ -10,13 +10,11 @@
     </header>
 
      <div class="basic-info-and-map">
-
       <app-event-basic-info [eventBasicInfo]="eventBasicInfo" [editMode]="editMode"
         (cancelEdit)="onToggleEditMode(false)" (eventUpdated)="onEventUpdated($event)">
       </app-event-basic-info>
 
       <app-map-section [eventBasicInfo]="eventBasicInfo" [pins]="pins" (pinSaved)="onPinSaved()"></app-map-section>
-
     </div>
 
     <div class="agenda-section-and-tickets">
@@ -32,8 +30,9 @@
       *ngIf="eventBasicInfo.getParentEventId() == 0 && eventBasicInfo.getStatusLabel()!='Canceled'"
       [eventBasicInfo]="eventBasicInfo">
     </app-resource-allocation>
+
     <div id="tssec">
-      <h1 id="tsh1">Ticket Sales</h1>
+      <h1 id="tsh1">{{ 'TICKET_SALES.TITLE' | translate }}</h1>
       <div id="tSales" *ngFor="let ticket of ticketSales">
         <div id="tRow">
           <div id="tData">
@@ -41,28 +40,36 @@
             <p>{{ ticket.price }}</p>
           </div>
           <div id="tData">
-            <h1>Sold</h1>
+            <h1>{{ 'TICKET_SALES.SOLD' | translate }}</h1>
             <p>{{ ticket.sold }}</p>
           </div>
           <div id="tData">
-            <h1>Unsold</h1>
+            <h1>{{ 'TICKET_SALES.UNSOLD' | translate }}</h1>
             <p>{{ ticket.unsold }}</p>
           </div>
           <div id="tData">
-            <h1>Revenue</h1>
+            <h1>{{ 'TICKET_SALES.REVENUE' | translate }}</h1>
             <p>{{ ticket.revenue }}</p>
           </div>
-          <div id="tData" class="buyers-card" >
-            <h1>Buyers</h1>
-            <p style="cursor: pointer; font-size: 20px; color: #636AE8;" (click)="openBuyersModal(ticket)">Click to see details</p>
+          <div id="tData" class="buyers-card">
+            <h1>{{ 'TICKET_SALES.BUYERS' | translate }}</h1>
+            <p style="cursor: pointer; font-size: 20px; color: #636AE8;" (click)="openBuyersModal(ticket)">
+              {{ 'TICKET_SALES.CLICK_DETAILS' | translate }}
+            </p>
           </div>
         </div>
         <hr class="custom-hr">
       </div>
 
-      <p-dialog header="Buyers for {{ selectedTicket?.typeName }} Ticket" [(visible)]="showBuyersModal"
-        (onHide)="closeBuyersModal()" [modal]="true" [style]="{width: '50vw'}" [appendTo]="'body'"> <ng-container
-          *ngIf="selectedTicket?.buyers && selectedTicket.buyers.length > 0">
+      <p-dialog 
+        [header]="'TICKET_SALES.BUYERS_FOR' | translate:{typeName: selectedTicket?.typeName}" 
+        [(visible)]="showBuyersModal"
+        (onHide)="closeBuyersModal()" 
+        [modal]="true" 
+        [style]="{width: '50vw'}" 
+        [appendTo]="'body'">
+
+        <ng-container *ngIf="selectedTicket?.buyers && selectedTicket.buyers.length > 0">
           <div class="buyer-list">
             <div *ngFor="let buyer of selectedTicket.buyers" class="buyer-item">
               <img [src]="backendBaseUrl + '/' + buyer.profilePicture" alt="" class="buyer-pfp">
@@ -71,7 +78,10 @@
           </div>
         </ng-container>
       </p-dialog>
-      <p style="margin-left: 15px;" *ngIf="!ticketSales || ticketSales.length === 0">No tickets sold yet.</p>
+
+      <p style="margin-left: 15px;" *ngIf="!ticketSales || ticketSales.length === 0">
+        {{ 'TICKET_SALES.NO_TICKETS' | translate }}
+      </p>
     </div>
 
   </div>

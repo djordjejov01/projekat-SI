@@ -16,11 +16,13 @@ import { TicketSales } from '../../../Models/TicketSales';
 import { environment } from '../../../../environments/environment';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
+import { TranslateModule,TranslateService } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-event-management',
-  imports: [DialogModule,ButtonModule,EventBasicInfoComponent,EventManagementHeaderComponent,CommonModule,TicketSectionComponent,MapSectionComponent,AgendaSectionComponent,ResourceAllocationComponent],
+  imports: [TranslateModule,DialogModule,ButtonModule,EventBasicInfoComponent,EventManagementHeaderComponent,CommonModule,TicketSectionComponent,MapSectionComponent,AgendaSectionComponent,ResourceAllocationComponent],
   templateUrl: './event-management.component.html',
-  styleUrl: './event-management.component.css'
+  styleUrls: ['./event-management.component.css']
 })
 export class EventManagementComponent implements OnInit{
 

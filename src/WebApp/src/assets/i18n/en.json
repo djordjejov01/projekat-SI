@@ -38,6 +38,7 @@
   "MANAGE": "Manage",
   "EMAILPH": "Enter Your Email",
   "Password": "Password",
+   "FORGOT_PASSWORD":"Forgot password?",
   "PASSPH": "Enter Your Password",
   "PICK": "Pick a password",
   "U1": "At least one lowercase",
@@ -299,6 +300,7 @@
   "NO_EVENTS_FOUND": "No events found",
   "VISITORS": "Visitors",
   "REVENUE": "Revenue",
+  "ResourceCategoryDistribution":"Resource Category Distribution",
   "LOCATIONS": "Number of different locations",
   "LOCATIONS_DESC": "Total number of different locations",
   "ADD": "Add",
@@ -341,7 +343,7 @@
     "DECLINE": "Decline"
   },
 
-  "CATEGORIES": {
+  "CATEGORYS": {
     "MUSIC": "Music",
     "SPORTS": "Sports",
     "ENTERTAINMENT": "Entertainment",
@@ -353,13 +355,17 @@
   },
   
   "RESOURCE_CATEGORIES": {
-    "1": "Staff",
-    "2": "Equipment",
-    "3": "Food & Beverage",
-    "4": "Furniture",
-    "5": "Sanitation",
-    "6": "Security",
-    "7": "Medical"
+    "SECURITY": "Security",
+    "EQUIPMENT": "Equipment",
+    "FOODANDBEVERAGE": "Food & Beverage",
+    "FURNITURE": "Furniture",
+    "SANITATION": "Sanitation",
+    "TECHNOLOGY": "Technology",
+    "MEDICAL": "Medical",
+    "TRANSPORTATION":"Transport",
+    "MERCHANDISE":"Merch",
+    "ELECTRICAL":"Electrical",
+    "UNDEFINED":"Undefined"
   }
 
 ,
@@ -478,6 +484,14 @@
   },
 
   "RESOURCE": {
+    "TYPES": {
+      "EXHAUSTIBLE": "Exhaustible",
+      "INEXHAUSTIBLE": "Inexhaustible"
+    },
+    "AVAILABILITY": {
+      "AVAILABLE": "Available",
+      "UNAVAILABLE": "Unavailable"
+    },
     "ALLOCATE_TITLE": "Allocate {{name}} for your event",
     "EXHAUSTABLE": "Exhaustable",
     "INEXHAUSTABLE": "Inexhaustable",
@@ -639,7 +653,7 @@
     }
   },
   "TABLE": {
-    "SHOWING": "Showing {{first}} to {{last}} of {{totalRecords}} entries"
+    "SHOWING": "Showing {first} to {last} of {totalRecords} entries"
   },
 
   "RESOURCE_DASHBOARD": {
@@ -745,6 +759,24 @@
     "endDateTimeBooked": "Booked To",
     "isReservable": "Reservable",
     "quantity": "Quantity"
+    },
+  "TICKET_SALES": {
+    "TITLE": "Ticket Sales",
+    "SOLD": "Sold",
+    "UNSOLD": "Unsold",
+    "REVENUE": "Revenue",
+    "BUYERS": "Buyers",
+    "CLICK_DETAILS": "Click to see details",
+    "BUYERS_FOR": "Buyers for {{typeName}} Ticket",
+    "NO_TICKETS": "No tickets sold yet."
+  },
+
+  "FORGOT_PASS": {
+    "TITLE": "Forgot Password?",
+    "DESCRIPTION": "Enter your email so you can reset your password.",
+    "EMAIL_LABEL": "Email",
+    "EMAIL_PLACEHOLDER": "Enter your Email",
+    "SEND_EMAIL": "Send Email"
   }
 }
 
