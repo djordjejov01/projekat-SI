@@ -15,6 +15,7 @@ export class FormValidationService {
 
   showValidationErrors(form: FormGroup, formName: string = 'Form') {
     const errors: string[] = [];
+    const translatedFormName = this.translate.instant(formName);
 
     Object.keys(form.controls).forEach(field => {
       const control = form.get(field);
@@ -22,9 +23,9 @@ export class FormValidationService {
       if (control instanceof FormArray) {
         control.controls.forEach((group: AbstractControl, index: number) => {
           if (group instanceof FormGroup) {
-            const itemLabel = formName === 'Create Event'
+            const itemLabel = translatedFormName === 'Create Event'
               ? this.translate.instant('FORM_ERRORS.TICKET')
-              : this.translate.instant(formName);
+              : translatedFormName;
 
             // Field-level errors inside FormGroup
             Object.keys(group.controls).forEach(nestedField => {
@@ -32,8 +33,9 @@ export class FormValidationService {
               if (nestedControl && nestedControl.invalid && nestedControl.errors) {
                 Object.keys(nestedControl.errors).forEach(errorKey => {
                   const errorMsg = this.getErrorMessage(errorKey, nestedControl.errors![errorKey]);
+                  const translatedField = this.toDisplayName(nestedField);
                   errors.push(
-                    `*${itemLabel} ${index + 1} - ${this.toDisplayName(nestedField)} ${errorMsg}`
+                    `*${itemLabel} ${index + 1} - ${translatedField} ${errorMsg}`
                   );
                 });
               }
@@ -56,7 +58,8 @@ export class FormValidationService {
       if (control && control.invalid && control.errors) {
         Object.keys(control.errors).forEach(errorKey => {
           const errorMsg = this.getErrorMessage(errorKey, control.errors![errorKey]);
-          errors.push(`*${this.toDisplayName(field)} - ${errorMsg}`);
+          const translatedField = this.toDisplayName(field);
+          errors.push(`*${translatedField} - ${errorMsg}`);
         });
       }
     });
@@ -89,6 +92,15 @@ export class FormValidationService {
   }
 
   private toDisplayName(fieldName: string): string {
+    const key = `FORM_FIELDS.${fieldName}`;
+    const translated = this.translate.instant(key);
+    
+    // Check if a translation for the key exists
+    if (translated !== key) {
+      return translated;
+    }
+
+    // Fallback to the old method if no translation is found
     return fieldName
       .replace(/([A-Z])/g, ' $1')
       .replace(/^./, strr => strr.toUpperCase());

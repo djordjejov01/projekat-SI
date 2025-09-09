@@ -738,7 +738,30 @@
     "START_BEFORE_END": "vreme početka mora biti pre vremena završetka",
     "DATE_OUT_OF_RANGE": "je van dozvoljenog opsega datuma događaja"
   },
-
+  "FORM_FIELDS": {
+    "title": "Naslov",
+    "description": "Opis",
+    "location": "Lokacija",
+    "isUnlimitedCapacity": "Neograničen kapacitet",
+    "capacity": "Kapacitet",
+    "startDateTime": "Datum početka",
+    "endDateTime": "Datum završetka",
+    "category": "Kategorija",
+    "tickets": "Karte",
+    "name": "Ime",
+    "price": "Cena",
+    "quota": "Kvota",
+    "validFrom": "Važi od",
+    "validUntil": "Važi do",
+    "type": "Tip",
+    "startTime": "Vreme početka",
+    "endTime": "Vreme završetka",
+    "allocatedQuantity": "Dodeljena količina",
+    "startDateTimeBooked": "Rezervisano od",
+    "endDateTimeBooked": "Rezervisano do",
+    "isReservable": "Moguće rezervisati",
+    "quantity": "Količina"
+  },
   "TICKET_SALES": {
     "TITLE": "Prodaja karata",
     "SOLD": "Prodate",
