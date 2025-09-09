@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
+using Org.BouncyCastle.Asn1.Cmp;
 
 namespace Backend.Controllers
 {
@@ -314,9 +315,9 @@ namespace Backend.Controllers
             else if (newStatus == EventResourceStatus.Declined)
             {
                 // Add the quantity back to the supplier's available resources.
-                if (eventResource.Resource.IsExhaustable)
+                if (eventResource.Status == EventResourceStatus.Approved && eventResource.Resource.IsExhaustable) 
                 {
-                    eventResource.Resource.Quantity += eventResource.Quantity;
+                    eventResource.Resource.Quantity += eventResource.Quantity; 
                 }
 
                 // Ensure the resource is marked as available again.

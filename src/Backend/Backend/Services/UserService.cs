@@ -60,7 +60,7 @@ namespace Backend.Services
                 LastName = registerDto.LastName,
                 Role = role,
                 IsActive = isActive,
-                ProfilePicture = "",
+                ProfilePicture = "images/default-pfp.png",
                 Language = "",
                 PhoneNumber = "",
             };

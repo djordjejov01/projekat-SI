@@ -158,6 +158,20 @@ app.UseWhen(ctx => ctx.Request.Path.StartsWithSegments("/images"), branch =>
         var refererAllowed = hasReferer &&
             allowedReferers.Any(origin => referer.StartsWith(origin, StringComparison.OrdinalIgnoreCase));
 
+        // Browser hint headers
+        var secDest = context.Request.Headers["Sec-Fetch-Dest"].ToString();
+        var secMode = context.Request.Headers["Sec-Fetch-Mode"].ToString();
+        var secUser = context.Request.Headers["Sec-Fetch-User"].ToString(); // "?1" kod user navigacije
+        var secSite = context.Request.Headers["Sec-Fetch-Site"].ToString(); // "same-origin" | "same-site" | ...
+
+        var isStrictSubresourceImage =
+            secDest.Equals("image", StringComparison.OrdinalIgnoreCase) &&
+            !secMode.Equals("navigate", StringComparison.OrdinalIgnoreCase) &&
+            !secUser.Equals("?1") &&
+            (secSite.Equals("same-origin", StringComparison.OrdinalIgnoreCase) ||
+             secSite.Equals("same-site", StringComparison.OrdinalIgnoreCase));
+
+
         var ua = context.Request.Headers["User-Agent"].ToString();
         var isNativeUA =
             ua.Contains("okhttp", StringComparison.OrdinalIgnoreCase) ||   // Android RN tipično
@@ -166,7 +180,7 @@ app.UseWhen(ctx => ctx.Request.Path.StartsWithSegments("/images"), branch =>
             ua.Contains("Expo", StringComparison.OrdinalIgnoreCase) ||      // Expo dev
             ua.Contains("reactnative", StringComparison.OrdinalIgnoreCase); // RN dev
 
-        var isAllowed = refererAllowed || isNativeUA;
+        var isAllowed = (refererAllowed && isStrictSubresourceImage) || isNativeUA;
 
         if (!isAllowed)
         {
@@ -181,7 +195,15 @@ app.UseWhen(ctx => ctx.Request.Path.StartsWithSegments("/images"), branch =>
     branch.UseStaticFiles(new StaticFileOptions
     {
         RequestPath = "/images",
-        FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.WebRootPath, "images"))
+        FileProvider = new PhysicalFileProvider(Path.Combine(app.Environment.WebRootPath, "images")),
+        OnPrepareResponse = ctx =>
+        {
+            var headers = ctx.Context.Response.Headers;
+            headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
+            headers["Pragma"] = "no-cache";
+            headers["Expires"] = "0";
+            headers["X-Content-Type-Options"] = "nosniff";
+        }
     });
 });
 
