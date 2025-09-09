@@ -101,7 +101,7 @@ export class TicketSectionComponent implements OnInit {
           next: (msg) => {
             this.messageService.add({
               severity: 'success',
-              summary: this.translateService.instant('DELETED'),
+              summary: this.translateService.instant('COMMON.DELETED'),
               detail: msg,
               life: 3000
             });

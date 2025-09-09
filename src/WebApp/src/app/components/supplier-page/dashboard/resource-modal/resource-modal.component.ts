@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, Resource } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../Validators/custom.validators';
 import { FormValidationService } from '../../../../Services/FormValidationService';
@@ -10,74 +10,87 @@ import { ButtonModule } from 'primeng/button';
 import { IDeactivate } from '../../../../Interfaces/IDeactivate';
 import { Observable, take } from 'rxjs';
 import { ConfirmationDialogService } from '../../../../Services/confirmation-dialog.service';
+import { ResourceDto } from '../../../../Models/ResourceDto';
 import { RESOURCE_CATEGORIES, ResourceAvailability, ResourceMeasure, ResourceType } from '../../../../MockData/MockResources';
 import { InputText } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ResourceAvailabilityService } from '../../../../Services/ResourceAvailabilityService';
 import { ResourceCategoryService } from '../../../../Services/ResourceCategoryService';
-import { ResourceDto } from '../../../../Models/ResourceDto';
 import { ApiService } from '../../../../Services/api.service';
 import { AuthService } from '../../../../Services/auth.service';
 import { MessageService } from 'primeng/api';
-import { TranslateModule,TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-resource-modal',
-  imports: [TranslateModule,ReactiveFormsModule,DialogModule,FloatLabelModule,InputNumberModule,SelectModule,ButtonModule,InputText,TextareaModule],
+  imports: [
+    TranslateModule,
+    ReactiveFormsModule,
+    DialogModule,
+    FloatLabelModule,
+    InputNumberModule,
+    SelectModule,
+    ButtonModule,
+    InputText,
+    TextareaModule,
+  ],
   templateUrl: './resource-modal.component.html',
-  styleUrls: ['./resource-modal.component.css']
+  styleUrls: ['./resource-modal.component.css'],
 })
-export class ResourceModalComponent implements OnInit, IDeactivate{
-
-  resourceForm : FormGroup;
-  visible : boolean = false;
-  resourceCategoryOptions: { label: string, value: number }[] = [];
-  resourceAvailabilityOptions : { label: string; value: number }[] = []
+export class ResourceModalComponent implements OnInit, IDeactivate {
+  resourceForm: FormGroup;
+  visible: boolean = false;
+  resourceCategoryOptions: { label: string; value: number }[] = [];
+  resourceAvailabilityOptions: { label: string; value: number }[] = [];
   @Output() resourceSaved = new EventEmitter<ResourceDto>();
-  resourceToEdit : ResourceDto | null = null;
+  resourceToEdit: ResourceDto | null = null;
 
-  resourceTypeOptions = [
-    { label: 'Exhaustible', value: true },
-    { label: 'Inexhaustible', value: false }
-  ];
+  resourceTypeOptions: { label: string; value: boolean }[] = [];
 
   constructor(
-    private formValidationService : FormValidationService,
-    private confirmationDialogService : ConfirmationDialogService,
-    private resourceAvailabilityService : ResourceAvailabilityService,
-    private resourceCategoryService : ResourceCategoryService,
-    private apiService : ApiService,
-    private authService : AuthService,
-    private messageService : MessageService,
+    private formValidationService: FormValidationService,
+    private confirmationDialogService: ConfirmationDialogService,
+    private resourceAvailabilityService: ResourceAvailabilityService,
+    private resourceCategoryService: ResourceCategoryService,
+    private apiService: ApiService,
+    private authService: AuthService,
+    private messageService: MessageService,
     private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
+    // Lokalizovani tipovi resursa
+    this.resourceTypeOptions = [
+      { label: this.translate.instant('RESOURCE.TYPES.EXHAUSTIBLE'), value: true },
+      { label: this.translate.instant('RESOURCE.TYPES.INEXHAUSTIBLE'), value: false },
+    ];
 
-    this.resourceAvailabilityService.loadAvailabilitiesIfEmpty()
+    this.resourceAvailabilityService
+      .loadAvailabilitiesIfEmpty()
       .pipe(take(1))
-      .subscribe(availabilities => {
-        this.resourceAvailabilityOptions = availabilities.map(availability => ({
-          label: availability.name,
-          value: availability.id
+      .subscribe((availabilities) => {
+        this.resourceAvailabilityOptions = availabilities.map((availability) => ({
+          label: this.translate.instant(`RESOURCE.AVAILABILITY.${availability.name.toUpperCase()}`),
+          value: availability.id,
         }));
       });
 
-    this.resourceCategoryService.loadCategoriesIfEmpty()
+    this.resourceCategoryService
+      .loadCategoriesIfEmpty()
       .pipe(take(1))
-      .subscribe(categories => {
-        this.resourceCategoryOptions = categories.map(category => ({
-          label: category.name,
-          value: category.id
+      .subscribe((categories) => {
+        this.resourceCategoryOptions = categories.map((category) => ({
+          label: this.translate.instant(`RESOURCE_CATEGORIES.${category.name.toUpperCase()}`),
+          value: category.id,
         }));
       });
 
     this.resourceForm = new FormGroup({
-      name: new FormControl('',[Validators.required, CustomValidators.noWhitespaceValidator]),
-      category: new FormControl('',Validators.required),
+      name: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
+      category: new FormControl('', Validators.required),
       type: new FormControl('', Validators.required),
-      quantity: new FormControl(null,[ Validators.required,Validators.min(0)]),
-      description: new FormControl('',[CustomValidators.noWhitespaceValidator,Validators.required])
+      quantity: new FormControl(null, [Validators.required, Validators.min(0)]),
+      description: new FormControl('', [CustomValidators.noWhitespaceValidator, Validators.required]),
     });
   }
 
@@ -85,7 +98,6 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
     this.visible = true;
 
     if (resourceToEdit) {
-      // Editing mode
       this.resourceForm.patchValue({
         name: resourceToEdit.getName(),
         category: resourceToEdit.getCategory(),
@@ -97,7 +109,6 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
       this.resourceForm.get('type')?.disable();
       this.resourceToEdit = resourceToEdit;
     } else {
-      // Adding mode
       this.resourceForm.reset();
       this.resourceForm.get('type')?.enable();
       this.resourceToEdit = null;
@@ -109,24 +120,28 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
     this.resourceForm.reset();
   }
 
-  async onCancleClick(){
+  async onCancleClick() {
     const canLeave = await this.canExit();
-    if(canLeave){
-      this.closeModal()
+    if (canLeave) {
+      this.closeModal();
     }
   }
 
   submitForm() {
-    if(!this.resourceForm.valid) {
+    if (!this.resourceForm.valid) {
       this.formValidationService.showValidationErrors(
-        this.resourceForm, 
+        this.resourceForm,
         this.translate.instant('RESOURCE.FORM')
       );
       return;
     }
 
-    const formValue = this.resourceForm.getRawValue(); 
-    const availability = formValue.type ? (formValue.quantity > 0 ? ResourceAvailability.Available : ResourceAvailability.Unavailable) : ResourceAvailability.Available;
+    const formValue = this.resourceForm.getRawValue();
+    const availability = formValue.type
+      ? formValue.quantity > 0
+        ? ResourceAvailability.Available
+        : ResourceAvailability.Unavailable
+      : ResourceAvailability.Available;
 
     const resource = new ResourceDto(
       this.resourceToEdit ? this.resourceToEdit.getResourceID() : 0,
@@ -139,14 +154,14 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
       formValue.quantity
     );
 
-    if(this.resourceToEdit) {
+    if (this.resourceToEdit) {
       this.apiService.editResource(resource).subscribe({
         next: (msg) => {
-          this.messageService.add({ 
-            severity: 'success', 
-            summary: this.translate.instant('SUCCESS'), 
-            detail: msg, 
-            life: 3000
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translate.instant('SUCCESS'),
+            detail: msg,
+            life: 3000,
           });
           this.resourceSaved.emit(null);
           this.closeModal();
@@ -156,19 +171,18 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
             severity: 'error',
             summary: this.translate.instant('ERROR'),
             detail: errorResponse.message,
-            life: 3000 
+            life: 3000,
           });
-        }
+        },
       });
-
     } else {
       this.apiService.addResource(resource).subscribe({
-        next: (addedResource : ResourceDto) => {
-          this.messageService.add({ 
-            severity: 'success', 
-            summary: this.translate.instant('SUCCESS'), 
-            detail: this.translate.instant('RESOURCE.ADDED_SUCCESS'), 
-            life: 3000
+        next: (addedResource: ResourceDto) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translate.instant('SUCCESS'),
+            detail: this.translate.instant('RESOURCE.ADDED_SUCCESS'),
+            life: 3000,
           });
           this.resourceSaved.emit(addedResource);
           this.closeModal();
@@ -178,20 +192,19 @@ export class ResourceModalComponent implements OnInit, IDeactivate{
             severity: 'error',
             summary: this.translate.instant('ERROR'),
             detail: errorResponse.message,
-            life: 3000 
+            life: 3000,
           });
-        }
+        },
       });
     }
   }
 
   canExit(): boolean | Observable<boolean> | Promise<boolean> {
-    return (this.resourceForm.dirty || this.resourceForm.touched) 
+    return this.resourceForm.dirty || this.resourceForm.touched
       ? this.confirmationDialogService.confirm(
           this.translate.instant('RESOURCE.UNSAVED_CHANGES'),
           this.translate.instant('RESOURCE.UNSAVED_CHANGES_TITLE')
         )
       : true;
   }
-
 }
