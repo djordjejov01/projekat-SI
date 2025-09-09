@@ -105,8 +105,8 @@ useEffect(() => {
     }
   });
 
-  console.log('Grouped reservations:', data);
-  console.log('Unique reservations count:', uniqueReservations.size);
+  // console.log('Grouped reservations:', data);
+  // console.log('Unique reservations count:', uniqueReservations.size);
 
   setResourcesCount(uniqueReservations.size);
 } else {

@@ -70,7 +70,7 @@ export default function MyReservations() {
 
         const allReservations = Object.values(grouped);
 
-        console.log('Grouped reservations:', allReservations);
+        // console.log('Grouped reservations:', allReservations);
 
         setReservations(allReservations);
 
