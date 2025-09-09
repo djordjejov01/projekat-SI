@@ -117,7 +117,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy {
       isUnlimitedCapacity: new FormControl(isParentUnlimited),
       capacity: new FormControl(
         capacityValue,
-        [Validators.required, Validators.min(1)]
+        [Validators.required, Validators.min(1), Validators.max(2147483647)]
       ),
       startDateTime: new FormControl(this.eventBasicInfo.getStartDate(), [Validators.required, CustomValidators.notInPast]),
       endDateTime: new FormControl(this.eventBasicInfo.getEndDate(), Validators.required),
@@ -134,7 +134,7 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy {
         capacityControl?.setValue(null);
       } else {
         capacityControl?.enable();
-        capacityControl?.setValidators([Validators.required, Validators.min(1)]);
+        capacityControl?.setValidators([Validators.required, Validators.min(1), Validators.max(2147483647)]);
         capacityControl?.setValue(this.eventBasicInfo.getCapacity() !== -1 ? this.eventBasicInfo.getCapacity() : null);
       }
       capacityControl?.updateValueAndValidity();

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { EventBasicInfo } from '../../../../../Models/EventBasicInfo';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { CustomValidators } from '../../../../../Validators/custom.validators';
 import { MessageService } from 'primeng/api';
 import { FormValidationService } from '../../../../../Services/FormValidationService';
@@ -120,17 +120,28 @@ export class TicketModalComponent implements OnInit, OnChanges, OnDestroy, IDeac
 
     const eventStartDate = this.eventBasicInfo.getStartDate();
     const eventEndDate = this.eventBasicInfo.getEndDate();
+    const eventCapacity = this.eventBasicInfo.getCapacity();
 
      this.ticketForm = new FormGroup({
       name: new FormControl('',[Validators.required, CustomValidators.noWhitespaceValidator]),
-      price: new FormControl('', [Validators.required, Validators.min(1)]),
+      price: new FormControl('', [Validators.required, Validators.min(1), Validators.max(2147483647)]),
       description: new FormControl('', [CustomValidators.noWhitespaceValidator, Validators.required]),
-      quota: new FormControl('',[Validators.required,Validators.min(1)]),
+      quota: new FormControl('',[Validators.required,Validators.min(1), Validators.max(2147483647), this.quotaValidator(eventCapacity)]),
       validFrom: new FormControl('', [Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]),
       validUntil: new FormControl('', [Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)])
 
     }, {validators: CustomValidators.startBeforeEndDates('validFrom','validUntil')})
 
+  }
+
+  private quotaValidator(eventCapacity: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (eventCapacity === -1) {
+        return null;
+      }
+      const quota = control.value;
+      return quota > eventCapacity ? { quotaExceedsEventCapacity: true } : null;
+    };
   }
 
   private setLocalFormLang(lang: string) {

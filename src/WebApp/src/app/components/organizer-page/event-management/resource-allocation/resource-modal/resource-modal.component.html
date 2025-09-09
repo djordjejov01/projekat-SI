@@ -32,14 +32,14 @@
       <div class="input-wrapper">
         <p>{{ 'RESOURCE.QUANTITY' | translate }}</p>
         <p-floatlabel class="w-full md:w-56" variant="on">
-          <input
-            type="text"
-            pInputText
-            placeholder=" "
-            formControlName="allocatedQuantity"
+          <p-inputNumber
             inputId="allocatedQuantity"
-            class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-          />
+            formControlName="allocatedQuantity"
+            [min]="1"
+            [style]="{ width: '100%' }"
+            mode="decimal"
+            inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+          ></p-inputNumber>
           <label for="allocatedQuantity">
             {{ 'RESOURCE.ENTER_QUANTITY' | translate:{ max: selectedResource?.quantity } }}
           </label>

@@ -4,7 +4,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CommonModule } from '@angular/common';
-import { InputNumberModule } from 'primeng/inputnumber';
+import { InputNumber, InputNumberModule } from 'primeng/inputnumber';
 import { PicklistItem } from '../../resource-allocation/resource-allocation.component';
 import { ApiService } from '../../../../../Services/api.service';
 import { EventBasicInfo } from '../../../../../Models/EventBasicInfo';
@@ -34,6 +34,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
     CommonModule,
     DatePickerModule,
     CalendarModule,
+    InputNumberModule,
     InputNumberModule,
     TranslateModule
   ],

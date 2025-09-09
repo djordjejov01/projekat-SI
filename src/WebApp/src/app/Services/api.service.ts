@@ -163,6 +163,9 @@ export class ApiService{
 
     constructor(private http: HttpClient) {}
 
+    getUserRole(): Observable<{ role: string }>{
+        return this.http.get<{ role: string }>(`${this.apiUrl}/User/role`);
+    }
 
   resetPassword(data: ResetPasswordDto): Observable<any> {
     return this.http.post(`${this.baseApiUrl}/auth/reset-password`, data).pipe(

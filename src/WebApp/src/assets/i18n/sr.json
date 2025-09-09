@@ -741,7 +741,10 @@
     "WHITESPACE": "ne može biti prazno ili samo razmaci",
     "PAST_DATE": "ne može biti u prošlosti",
     "START_BEFORE_END": "vreme početka mora biti pre vremena završetka",
-    "DATE_OUT_OF_RANGE": "je van dozvoljenog opsega datuma događaja"
+    "DATE_OUT_OF_RANGE": "je van dozvoljenog opsega datuma događaja",
+    "CAPACITY_EXCEEDS_PARENT": "Kapacitet ne može preći kapacitet glavnog događaja.",
+    "QUOTA_EXCEEDS_EVENT_CAPACITY": "Kvota ne može preći kapacitet događaja.",
+    "TOTAL_QUOTA_EXCEEDS_CAPACITY": "Ukupna kvota karata ne može da premaši kapacitet događaja."
   },
   "FORM_FIELDS": {
     "title": "Naslov",
@@ -820,5 +823,10 @@
     "CONFIRM_PATTERN": "Potvrda mora odgovarati šablonu lozinke",
     "PASSWORDS_MUST_MATCH": "Lozinka i potvrda moraju biti iste",
     "UNKNOWN_ERROR": "Došlo je do greške"
+  },
+
+  "AUTH_GUARD": {
+  "ACCESS_DENIED_SUMMARY": "Pristup Odbijen",
+  "ACCESS_DENIED_DETAIL": "Nemate dozvolu za prikaz te stranice."
   }
 }

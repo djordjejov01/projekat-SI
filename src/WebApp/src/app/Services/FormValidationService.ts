@@ -87,6 +87,9 @@ export class FormValidationService {
       case 'pastDate': return this.translate.instant('FORM_ERRORS.PAST_DATE');
       case 'startBeforeEnd': return this.translate.instant('FORM_ERRORS.START_BEFORE_END');
       case 'dateOutOfRange': return this.translate.instant('FORM_ERRORS.DATE_OUT_OF_RANGE');
+      case 'capacityExceedsParent': return this.translate.instant('FORM_ERRORS.CAPACITY_EXCEEDS_PARENT');
+      case 'quotaExceedsEventCapacity': return this.translate.instant('FORM_ERRORS.QUOTA_EXCEEDS_EVENT_CAPACITY');
+      case 'totalQuotaExceedsCapacity': return this.translate.instant('FORM_ERRORS.TOTAL_QUOTA_EXCEEDS_CAPACITY');
       default: return errorKey;
     }
   }
