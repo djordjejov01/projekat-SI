@@ -123,7 +123,7 @@ handleEnter(event: KeyboardEvent) {
         next: (response: RegResponseDto) => {
           this.messageService.add({
             severity: 'success',
-            summary: this.translateService.instant('COMMON.SUCCESS'),
+            summary: this.translateService.instant('SUCCESS'),
             detail: response.getMessage(),
             life: 3000
           });

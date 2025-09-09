@@ -58,6 +58,7 @@
   "ORGANIZER": "Organizer",
   "Supplier": "Supplier",
   "DASHBOARD": "Dashboard",
+   "GETANDROIDAPP": "Get Android application",
 
   "--- NEW ---": "",
   "EMAIL_REQUIRED": "Email is required",
@@ -338,7 +339,7 @@
     "DECLINE": "Decline"
   },
 
-  "CATEGORYS": {
+  "CATEGORIES": {
     "MUSIC": "Music",
     "SPORTS": "Sports",
     "ENTERTAINMENT": "Entertainment",

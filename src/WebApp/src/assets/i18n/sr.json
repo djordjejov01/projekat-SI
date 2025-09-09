@@ -58,6 +58,7 @@
   "ORGANIZER": "Organizator",
   "Supplier": "Dobavljač",
   "DASHBOARD": "Kontrolna tabla",
+  "GETANDROIDAPP": "Preuzmi Android aplikaciju",
   "COMPARE_PREV_PERIOD": "u poređenju sa prethodnim periodom",
 
   "--- NOVO ---": "",
@@ -345,7 +346,7 @@
     "DECLINE": "Odbij"
   },
 
-  "CATEGORYS": {
+  "CATEGORIES": {
     "MUSIC": "Muzika",
     "SPORTS": "Sport",
     "ENTERTAINMENT": "Zabava",
