@@ -2,12 +2,15 @@ import { AbstractControl, FormGroup, ValidationErrors, ValidatorFn } from "@angu
 
 export class CustomValidators{
 
-    static passwordsMatch(group : AbstractControl): ValidationErrors | null{
-        const password = group.get('password')?.value;
-        const confirm = group.get('confirm')?.value;
+// In CustomValidators.ts
+static passwordsMatch(passwordKey: string, confirmPasswordKey: string) {
+  return (group: AbstractControl): ValidationErrors | null => {
+    const password = group.get(passwordKey)?.value;
+    const confirm = group.get(confirmPasswordKey)?.value;
 
-        return password === confirm ? null : {passwordsDontMatch: true}
-    }
+    return password === confirm ? null : { passwordsDontMatch: true };
+  };
+}
     
     static startBeforeEndDates(startKey : string, endKey: string) : ValidatorFn {
         return (group: AbstractControl) : ValidationErrors | null => {

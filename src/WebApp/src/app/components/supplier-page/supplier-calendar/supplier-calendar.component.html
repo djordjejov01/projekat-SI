@@ -1,11 +1,10 @@
- <div class="calendarTitle">
-        <h3>Resource Calendar</h3>
-        <p>
-           This calendar provides a overview of all your approved bookings and resource availability.
-        </p>
-    </div>
+<div class="calendarTitle">
+    <h3>{{ 'RCALENDAR.TITLE' | translate }}</h3>
+    <p>
+       {{ 'RCALENDAR.DESCRIPTION' | translate }}
+    </p>
+</div>
 
 <div class="calendar">
     <full-calendar [options]="calendarOptions"></full-calendar>
 </div>
-

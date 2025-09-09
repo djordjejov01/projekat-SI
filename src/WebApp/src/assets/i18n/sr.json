@@ -31,6 +31,7 @@
   "CREATE": "Napravi novi događaj",
   "MYPROFILE": "Moj profil",
   "UPEV": "Predstojeći Događaji",
+  "NO_EVENTS": "Nema pronađenih događaja.",
   "ADDEV": "Dodaj Događaj",
   "TE": "Broj predstojećih događaja",
   "UA": "Broj Učesnika",
@@ -133,114 +134,124 @@
 
    "CANCELLED": "Otkazano",
    "ACTION_CANCELLED": "Akcija otkazana od strane korisnika",
-
+  "CATEGORIES": "Kategorije",
    "CALENDAR_ACTIONS": "Akcije kalendara",
    "CALENDAR_INSTRUCTIONS": "Izaberite dan ili period da kreirate novi događaj. Imajte u vidu da se prošli datumi ne mogu izabrati.",
    "CREATE_EVENT_MSG": "Kreirati događaj od {{start}} do {{end}}?",
    "CREATE_EVENT_TITLE": "Kreiraj događaj",
    "UNKNOWN": "Nepoznat",
-
-   "EVENT": {
+  
+   
+  "EVENT": {
     "CREATE_TITLE": "Kreiraj novi događaj",
-    "CREATE_SUBTITLE": "Popuni formular ispod da dodaš novi događaj.",
+    "CREATE_SUBTITLE": "Popunite formu ispod da biste dodali novi događaj.",
 
-    "TITLE": "Naslov događaja",
-    "TITLE_PLACEHOLDER": "Unesi naslov događaja",
+    "TITLE": "Naziv događaja",
+    "TITLE_PLACEHOLDER": "Unesite naziv događaja",
 
     "DESCRIPTION": "Opis događaja",
-    "DESCRIPTION_PLACEHOLDER": "Unesi opis događaja",
+    "DESCRIPTION_PLACEHOLDER": "Unesite opis događaja",
 
     "LOCATION": "Lokacija",
-    "LOCATION_PLACEHOLDER": "Unesi ili pronađi lokaciju",
+    "LOCATION_PLACEHOLDER": "Unesite ili pretražite lokaciju",
 
     "CAPACITY": "Kapacitet",
-    "CAPACITY_PLACEHOLDER": "Unesi kapacitet događaja",
+    "CAPACITY_PLACEHOLDER": "Unesite kapacitet događaja",
     "UNLIMITED_CAPACITY": "Neograničen kapacitet",
 
     "START_DATE": "Datum i vreme početka",
-    "START_DATE_PLACEHOLDER": "Izaberi datum i vreme početka",
+    "START_DATE_PLACEHOLDER": "Izaberite datum i vreme početka",
 
     "END_DATE": "Datum i vreme završetka",
-    "END_DATE_PLACEHOLDER": "Izaberi datum i vreme završetka",
+    "END_DATE_PLACEHOLDER": "Izaberite datum i vreme završetka",
 
     "CATEGORY": "Kategorija",
-    "CATEGORY_PLACEHOLDER": "Izaberi kategoriju",
+    "CATEGORY_PLACEHOLDER": "Izaberite kategoriju",
 
-    "TICKETS": "Ulaznice",
+    "TICKETS": "Karte",
 
-    "TICKET_NAME": "Naziv ulaznice",
-    "TICKET_NAME_PLACEHOLDER": "Unesi naziv ulaznice",
+    "TICKET_NAME": "Naziv karte",
+    "TICKET_NAME_PLACEHOLDER": "Unesite naziv karte",
 
-    "TICKET_PRICE": "Cena ulaznice",
-    "TICKET_PRICE_PLACEHOLDER": "Unesi cenu ulaznice",
+    "TICKET_PRICE": "Cena karte",
+    "TICKET_PRICE_PLACEHOLDER": "Unesite cenu karte",
 
     "TICKET_VALID_FROM": "Važi od",
-    "TICKET_VALID_FROM_PLACEHOLDER": "Izaberi datum od kada važi ulaznica",
+    "TICKET_VALID_FROM_PLACEHOLDER": "Izaberite datum početka važenja",
 
     "TICKET_VALID_UNTIL": "Važi do",
-    "TICKET_VALID_UNTIL_PLACEHOLDER": "Izaberi datum do kada važi ulaznica",
+    "TICKET_VALID_UNTIL_PLACEHOLDER": "Izaberite datum završetka važenja",
 
-    "TICKET_QUOTA": "Broj ulaznica",
-    "TICKET_QUOTA_PLACEHOLDER": "Unesi broj ulaznica",
+    "TICKET_QUOTA": "Kvota karte",
+    "TICKET_QUOTA_PLACEHOLDER": "Unesite kvotu karte",
 
-    "TICKET_DESCRIPTION": "Opis ulaznice",
-    "TICKET_DESCRIPTION_PLACEHOLDER": "Unesi opis ulaznice",
+    "TICKET_DESCRIPTION": "Opis karte",
+    "TICKET_DESCRIPTION_PLACEHOLDER": "Unesite opis karte",
 
-    "UPLOAD_IMAGE": "Dodaj sliku događaja",
-    "UPLOAD_IMAGE_BUTTON": "Izaberi sliku",
+    "UPLOAD_IMAGE": "Otpremi sliku događaja",
+    "UPLOAD_IMAGE_BUTTON": "Izaberite sliku",
 
     "CREATE_BUTTON": "Kreiraj događaj",
-
-      "CREATE_EVENT": "Kreiraj Novi Događaj",
-  "FILL_DETAILS": "Popunite detalje ispod kako biste postavili događaj.",
-  "EVENT_TITLE": "Naziv događaja",
-  "ENTER_EVENT_TITLE": "Unesite naziv događaja",
-  "DESCRIBE_EVENT": "Opišite vaš događaj",
-  "ENTER_EVENT_LOCATION": "Unesite lokaciju događaja",
-  "ENTER_EVENT_CAPACITY": "Unesite kapacitet događaja",
-  "START_DATE_TIME": "Datum i vreme početka",
-  "END_DATE_TIME": "Datum i vreme kraja",
-  "SELECT_EVENT_CATEGORY": "Izaberite kategoriju događaja",
-  "ENTER_TICKET_NAME": "Unesite naziv ulaznice",
-  "ENTER_TICKET_PRICE": "Unesite cenu ulaznice",
-  "VALID_FROM": "Važi od",
-  "VALID_FROM_DATE_TIME": "Datum i vreme od kada važi",
-  "VALID_UNTIL": "Važi do",
-  "VALID_UNTIL_DATE_TIME": "Datum i vreme do kada važi",
-  "QUOTA": "Kvote",
-  "ENTER_TICKET_QUOTA": "Unesite kvotu ulaznica",
-  "DESCRIBE_TICKET": "Opišite ulaznicu",
-  "UPLOAD_EVENT_IMAGE": "Otpremite sliku događaja",
-  "CHOOSE_EVENT_IMAGE": "Izaberite sliku događaja",
-  "CREATE_EVENT_BTN": "Kreiraj događaj",
-  "UNSAVED_CHANGES_CONFIRM": "Imate sačuvane izmene. Da li ste sigurni da želite napustiti ovu stranicu?",
-  "UNSAVED_CHANGES_TITLE": "Nesačuvane izmene",
-  "EVENT_CREATED_SUCCESS": "Događaj je uspešno kreiran!",
-  "FAILED_CREATE_EVENT": "Kreiranje događaja nije uspelo.",
-  "UNLIMITED": "Neograničeno",
-    "ATTENDEES": "Učesnika",
+    "CREATE_EVENT": "Kreiraj novi događaj",
+    "FILL_DETAILS": "Popunite formu ispod da biste dodali novi događaj.",
+    "EVENT_TITLE": "Naziv događaja",
+    "ENTER_EVENT_TITLE": "Unesite naziv događaja",
+    "DESCRIBE_EVENT": "Opis događaja",
+    "ENTER_EVENT_LOCATION": "Unesite lokaciju događaja (npr. Zoom, Sala A)",
+    "ENTER_EVENT_CAPACITY": "Unesite kapacitet događaja",
+    "START_DATE_TIME": "Datum i vreme početka",
+    "END_DATE_TIME": "Datum i vreme završetka",
+    "SELECT_EVENT_CATEGORY": "Izaberite kategoriju događaja",
+    "ENTER_TICKET_NAME": "Unesite naziv karte",
+    "ENTER_TICKET_PRICE": "Unesite cenu karte",
+    "VALID_FROM": "Važi od",
+    "VALID_FROM_DATE_TIME": "Datum i vreme početka važenja",
+    "VALID_UNTIL": "Važi do",
+    "VALID_UNTIL_DATE_TIME": "Datum i vreme završetka važenja",
+    "QUOTA": "Kvota",
+    "ENTER_TICKET_QUOTA": "Unesite kvotu karte",
+    "DESCRIBE_TICKET": "Opis karte",
+    "UPLOAD_EVENT_IMAGE": "Otpremi sliku događaja",
+    "CHOOSE_EVENT_IMAGE": "Izaberite sliku događaja",
+    "CREATE_EVENT_BTN": "Kreiraj događaj",
+    "UNSAVED_CHANGES_CONFIRM": "Imate nesačuvane izmene. Da li ste sigurni da želite da napustite ovu stranu?",
+    "UNSAVED_CHANGES_TITLE": "Nesačuvane izmene",
+    "EVENT_CREATED_SUCCESS": "Događaj je uspešno kreiran!",
+    "FAILED_CREATE_EVENT": "Kreiranje događaja nije uspelo.",
+    "UNLIMITED": "Neograničeno",
+    "ATTENDEES": "Učesnici",
     "CHANGE_PICTURE": "Promeni sliku događaja",
     "EDIT_TITLE": "Izmeni događaj",
-    "EDIT_DESC": "Popuni detalje ispod da izmeniš događaj.",
-    "ENTER_TITLE": "Unesi naziv događaja",
-    "ENTER_DESCRIPTION": "Opiši svoj događaj",
-    "ENTER_LOCATION": "Unesi lokaciju događaja (npr. Zoom, Konferencijska sala A)",
-    "ENTER_CAPACITY": "Unesi kapacitet događaja",
-    "SELECT_CATEGORY": "Izaberi kategoriju događaja",
+    "EDIT_DESC": "Popunite formu ispod da biste izmenili događaj.",
+    "ENTER_TITLE": "Unesite naziv događaja",
+    "ENTER_DESCRIPTION": "Opis događaja",
+    "ENTER_LOCATION": "Unesite lokaciju događaja (npr. Zoom, Sala A)",
+    "ENTER_CAPACITY": "Unesite kapacitet događaja",
+    "SELECT_CATEGORY": "Izaberite kategoriju događaja",
     "SAVE_CHANGES": "Sačuvaj izmene",
     "CANCEL": "Otkaži",
     "UPDATED": "Događaj je uspešno izmenjen.",
-    "IMAGE_CHANGED": "Slika događaja je uspešno promenjena.",
+    "IMAGE_CHANGED": "Slika je uspešno promenjena.",
     "DELETE": "Obriši događaj",
-  "CANCELED": "Događaj je otkazan",
-  "EDIT": "Izmeni događaj",
-  "PUBLISH": "Objavi događaj",
-  "CONFIRM_CANCEL":"Potvrdi otkazivanje",
-  "CONFIRM_DELETE":"Potvrdi brisanje",
-  "CONFIRM_PUBLISH":"Potvrdi objavljivanje",
-  "EVENTS":"Događaji"
-
+    "CANCELED": "Događaj je otkazan",
+    "EDIT": "Izmeni događaj",
+    "PUBLISH": "Objavi događaj",
+    "CONFIRM_CANCEL": "Potvrdi otkazivanje",
+    "CONFIRM_DELETE": "Potvrdi brisanje",
+    "CONFIRM_PUBLISH": "Potvrdi objavljivanje",
+    "EVENTS": "Događaji"
   },
+
+  "RESOURCE_CATEGORIES": {
+    "1": "Osoblje",
+    "2": "Oprema",
+    "3": "Hrana i Piće",
+    "4": "Nameštaj",
+    "5": "Sanitarije",
+    "6": "Bezbednost",
+    "7": "Medicinski"
+  }
+,
 
   "ERROR_404": "Greška",
   "PAGE_NOT_FOUND": "Stranica nije pronađena",
@@ -339,7 +350,10 @@
     "CLOSE": "Zatvori",
     "SUCCESS": "Uspeh",
     "ERROR": "Greška",
-    "SAVE_CHANGES": "Sačuvaj izmene"
+    "SAVE_CHANGES": "Sačuvaj izmene",
+    "NA": "N/A",
+    "APPROVE": "Odobri",
+    "DECLINE": "Odbij"
   },
 
   "CATEGORYS": {
@@ -379,58 +393,63 @@
     "UNSAVED_CHANGES_TITLE": "Nesačuvane izmene",
     "UNSAVED_CHANGES_MSG": "Imate nesačuvane izmene. Da li ste sigurni da želite da zatvorite modal?"
   },
-
   "AGENDA": {
-    "TITLE": "Agenda događaja",
+    "TITLE": "Dnevni red događaja",
     "ADD_SUBEVENT": "Dodaj poddogađaj",
     "ADD_ACTIVITY": "Dodaj aktivnost",
     "MANAGE_SUBEVENT": "Upravljaj poddogađajem",
-    "SCHEDULED_FOR": "Zakazano",
+    "EDIT_ACTIVITY": "Izmeni aktivnost",
+    "DELETE_ACTIVITY": "Obriši aktivnost",
+    "SCHEDULED_FOR": "Zakazano za",
     "DESCRIPTION": "Opis",
-    "NO_AGENDA": "Agenda nije dodata",
-    "NO_AGENDA_DESC": "Ovde možeš dodati poddogađaje i aktivnosti koje čine program tvog događaja.",
+    "NO_AGENDA": "Nema dodanih aktivnosti",
+    "NO_AGENDA_DESC": "Ovde možete dodati poddogađaje i aktivnosti koji čine program vašeg događaja.",
     "ACTIVITY_CREATED": "Aktivnost je uspešno kreirana!",
-    "SUBEVENT_CREATED": "Poddogađaj je uspešno kreiran!"
-  },
-
+    "SUBEVENT_CREATED": "Poddogađaj je uspešno kreiran!",
+    "ACTIVITY_UPDATED": "Aktivnost je uspešno izmenjena!",
+    "ACTIVITY_DELETED_SUCCESS": "Aktivnost je uspešno obrisana!",
+    "ACTIVITY_DELETED_ERROR": "Brisanje aktivnosti nije uspelo",
+    "DELETE_ACTIVITY_CONFIRM_TITLE": "Obriši aktivnost",
+    "DELETE_ACTIVITY_CONFIRM_MSG": "Da li ste sigurni da želite da obrišete ovu aktivnost?"
+  }
+,
   "PIN": {
     "CREATE_NEW_PIN": "Kreiraj novi Pin",
+    "EDIT_PIN": "Izmeni Pin",
     "FILL_DETAILS_BELOW": "Popunite detalje ispod da biste podesili vaš pin.",
-    "TITLE": "Naziv Pina",
-    "ENTER_TITLE": "Unesite naziv pina",
+    "UPDATE_DETAILS_BELOW": "Ažurirajte detalje ispod.",
+    "TITLE": "Naslov Pina",
+    "ENTER_TITLE": "Unesite naslov Pina",
     "TYPE": "Tip",
-    "SELECT_TYPE": "Izaberite tip pina",
+    "SELECT_TYPE": "Izaberite tip Pina",
     "DESCRIPTION": "Opis",
-    "DESCRIBE_PIN": "Opišite vaš pin",
-    "FORM": "Forma za Pin",
-    "CREATING_NEW_PIN": "Kreiraj novi Pin",
-    "ENTER_DESCRIPTION": "Opišite vaš Pin",
-    "SAVE_CHANGES": "Sačuvaj izmene",
+    "DESCRIBE_PIN": "Opišite vaš Pin",
+    "FORM": "Forma Pina",
+    "SAVED": "Pin je uspešno sačuvan",
+    "UPDATED": "Pin je uspešno ažuriran",
+    "SAVE_FAILED": "Čuvanje Pina nije uspelo",
+    "UPDATE_FAILED": "Ažuriranje Pina nije uspelo",
+    "UNKNOWN_ERROR": "Došlo je do nepoznate greške",
+    "UNSAVED_CHANGES": "Imate nespremljene promene. Da li ste sigurni da želite da napustite?",
+    "UNSAVED_TITLE": "Nespremljene promene",
+    "SAVE_CHANGES": "Sačuvaj promene",
     "CANCEL": "Otkaži",
-    "SAVED": "Pin je sačuvan",
-    "UPDATED": "Pin je ažuriran",
-    "SAVE_FAILED": "Čuvanje nije uspelo",
-    "UPDATE_FAILED": "Ažuriranje nije uspelo",
-    "UNKNOWN_ERROR": "Nepoznata greška",
-    "UNSAVED_CHANGES": "Imate nesnimljene promene. Da li ste sigurni da želite da zatvorite modal?",
-    "UNSAVED_TITLE": "Nesnimljene promene",
-
     "TYPES": {
       "FOOD": "Hrana",
       "DRINK": "Piće",
       "ENTRANCE": "Ulaz",
       "STAGE": "Bina",
       "RESTROOM": "Toalet",
-      "INFO": "Info pult",
+      "INFO": "Informacije",
       "FIRSTAID": "Prva pomoć",
       "PARKING": "Parking",
-      "SECURITY":"Obezbeđenje",
-      "BOOTH":"Štand",
-      "LOSTANDFOUND":"Izgubljeno-nađeno",
-      "EXIT":"Izlaz"
+      "SECURITY": "Bezbednost",
+      "BOOTH": "Štand",
+      "LOSTANDFOUND": "Izgubljeno i nađeno",
+      "EXIT": "Izlaz"
     }
   },
-
+ 
   "MAP": {
     "LOCATION_MAP": "Mapa Lokacije",
     "ADD_PIN": "Dodaj Pin",
@@ -467,7 +486,7 @@
     "RESERVABLE_INFO": "Označite resurse kao rezervabilne ako želite da posetioci mogu da ih rezervišu.",
     "CLOSE": "Zatvori",
     "QUANTITY": "Količina",
-    "ENTER_QUANTITY": "Unesite količinu resursa (maks: {{max}})",
+    "ENTER_QUANTITY": "Unesite količinu resursa",
     "NEEDED_FROM": "Potrebno od",
     "NEEDED_FROM_DATETIME": "Datum i vreme početka",
     "NEEDED_UNTIL": "Potrebno do",
@@ -481,7 +500,23 @@
     "ALLOCATE_FAILED": "Dodela nije uspela",
     "ALLOCATE_FAILED_DETAIL": "Došlo je do neočekivane greške prilikom dodele resursa.",
     "UNSAVED_CHANGES": "Imate nespremljene izmene. Da li ste sigurni da želite da zatvorite modal?",
-    "UNSAVED_CHANGES_TITLE": "Nespremljene izmene"
+    "UNSAVED_CHANGES_TITLE": "Nespremljene izmene",
+     "ADD_TITLE": "Dodaj novi resurs",
+    "EDIT_TITLE": "Izmeni resurs",
+    "ADD_SUBTITLE": "Popunite detalje ispod da biste dodali novi resurs.",
+    "EDIT_SUBTITLE": "Ažurirajte detalje ispod.",
+    "NAME": "Naziv resursa",
+    "ENTER_NAME": "Unesite naziv resursa",
+    "CATEGORY": "Kategorija",
+    "SELECT_CATEGORY": "Izaberite kategoriju resursa",
+    "TYPE": "Tip resursa",
+    "SELECT_TYPE": "Izaberite tip resursa",
+    "DESCRIPTION": "Opis",
+    "ENTER_DESCRIPTION": "Opišite svoj resurs",
+    "ADD": "Dodaj resurs",
+    "RESOURCE_NAME": "Naziv resursa",
+    "RESOURCE_TYPE": "Tip resursa",
+    "ADD_RESOURCE": "Dodaj resurs"
   },
 
   "RESOURCE_ALLOCATION": {
@@ -499,10 +534,11 @@
       "QUANTITY_ALLOCATED": "Dodeljeno: {{allocatedQuantity}}"
     }
   },
+   "CLOSE": "Zatvori",
 
   "CREATE_NEW_TICKET": "Kreiraj novu kartu",
   "FILL_TICKET_DETAILS": "Popunite detalje ispod da kreirate kartu.",
-  "CLOSE": "Zatvori",
+ 
   "TICKET_NAME": "Naziv karte",
   "ENTER_TICKET_NAME": "Unesite naziv karte",
   "TICKET_PRICE": "Cena karte",
@@ -517,7 +553,9 @@
   "DESCRIBE_YOUR_TICKET": "Opišite svoju kartu",
   "SAVE_CHANGES": "Sačuvaj Promene",
    "TICKET": "Karta",
-  "UNSAVED_CHANGES_MESSAGE": "Imate nesnimljene izmene. Da li ste sigurni da želite da zatvorite modal?",
+
+  "UNSAVED_CHANGES_MESSAGE": "Imate nesnimljene izmene. Da li ste sigurni da želite da zatvorite modal?"
+  ,
 
    "EVENT_TICKETS": "Karte za događaj",
   "ADD_TICKET": "Dodaj kartu",
@@ -539,6 +577,27 @@
   "QTY_LEFT": "Preostalo",
   "QTY_ALLOC": "Dodeljeno",
 
+    "TICKETS": {
+    "EDIT_TICKET": "Izmeni kartu",
+    "CREATE_NEW_TICKET": "Kreiraj novu kartu",
+    "UPDATE_DETAILS_BELOW": "Ažurirajte detalje ispod",
+    "FILL_DETAILS_BELOW": "Popunite detalje ispod",
+    "TICKET_NAME": "Naziv karte",
+    "ENTER_TICKET_NAME": "Unesite naziv karte",
+    "TICKET_PRICE": "Cena karte",
+    "ENTER_TICKET_PRICE": "Unesite cenu karte",
+    "VALID_FROM": "Važi od",
+    "VALID_FROM_DATE": "Odaberite datum početka",
+    "VALID_UNTIL": "Važi do",
+    "VALID_UNTIL_DATE": "Odaberite datum završetka",
+    "QUOTA": "Količina",
+    "ENTER_TICKET_QUOTA": "Unesite količinu karata",
+    "TICKET_DESCRIPTION": "Opis karte",
+    "DESCRIBE_YOUR_TICKET": "Opišite kartu",
+    "CREATE_TICKET": "Kreiraj kartu"
+  },
+
+
   "ERROR_FETCHING_RESOURCES": "Greška pri učitavanju resursa",
   "PENDING": "Na čekanju",
   "APPROVED": "Odobreno",
@@ -559,5 +618,109 @@
     "CREATE_EVENT_TITLE": "Kreiraj događaj",
     "UNKNOWN": "Nepoznato",
     "ALL_DAY":"ceo dan"
+  },
+
+  "REQUESTS": {
+    "TITLE": "Pregledaj svoje zahteve.",
+    "SUBTITLE": "Pregledaj svoje zahteve i dozvoli organizatorima da alociraju tvoje resurse.",
+    "TABLE": {
+      "RESOURCE": "Naziv resursa",
+      "QUANTITY": "Količina",
+      "EVENT": "Naziv događaja",
+      "ORGANIZER": "Organizator",
+      "DATES": "Zahtevani datumi",
+      "ACTIONS": "Akcije",
+       "ERROR_FETCH": "Nije moguće učitati zahteve.",
+    "APPROVED": "Zahtev je odobren!",
+    "DECLINED": "Zahtev je odbijen!",
+    "APPROVE_FAILED": "Odobravanje zahteva nije uspelo.",
+    "DECLINE_FAILED": "Odbijanje zahteva nije uspelo."
+    },
+    "EMPTY": {
+      "TITLE": "Nema zahteva na čekanju",
+      "DESCRIPTION": "Trenutno nemaš nijedan zahtev za alokaciju resursa na čekanju."
+    }
+  },
+  "TABLE": {
+    "SHOWING": "Prikazano {{first}} do {{last}} od ukupno {{totalRecords}} unosa"
+  },
+
+  "RESOURCE_DASHBOARD": {
+    "TITLE": "Resursni Dashboard",
+    "DESCRIPTION": "Upravljajte dostupnim resursima i pregledajte dolazne zahteve.",
+    "TOTAL_RESOURCES": "Ukupno resursa",
+    "AVAILABLE_TODAY": "Dostupno danas",
+    "BOOKED": "Rezervisano",
+    "PENDING_REQUESTS": "Na čekanju",
+    "VIEW": "Pregled",
+    "RESOURCE_TABLE": "Tabela resursa",
+    "ADD_RESOURCE": "Dodaj resurs",
+    "CLEAR": "Očisti",
+    "KEYBOARD_SEARCH": "Pretraga preko tastature",
+    "NAME": "Naziv",
+    "CATEGORY": "Kategorija",
+    "TYPE": "Tip",
+    "AVAILABILITY": "Dostupnost",
+    "QUANTITY": "Količina",
+    "ACTIONS": "Akcije",
+    "EDIT_RESOURCE": "Izmeni resurs",
+    "DELETE_RESOURCE": "Obriši resurs",
+    "NO_RESOURCES": "Nema dodatih resursa",
+    "NO_RESOURCES_DESC": "Dodajte resurse kako bi organizatori mogli da ih koriste za svoje događaje.",
+    "CONFIRM_DELETE": "Da li ste sigurni da želite da obrišete resurs \"{{resourceName}}\"?",
+    "DELETED": "Obrisano",
+    "ERROR": "Greška",
+    "RESOURCE_CATEGORY_DISTRIBUTION": "Raspodela kategorija resursa",
+    "EXHAUSTIBLE": "Iscrpljiv",
+    "INEXHAUSTIBLE": "Neiscrpljiv",
+    "AVAILABLE": "Dostupno",
+    "UNAVAILABLE": "Nedostupno",
+    "BOOKED_STATUS": "Rezervisano"
+  },
+
+  "PROFILE": {
+    "MY_PROFILE": "Moj Profil",
+    "SUPPLIER": "Dobavljač",
+    "CHOOSE": "Izaberi",
+    "REMOVE_PICTURE": "Ukloni Sliku",
+    "NAME": "Ime",
+    "USERNAME": "Korisničko ime",
+    "EMAIL": "Email",
+    "PHONE_NUMBER": "Broj telefona",
+    "BIO": "Biografija",
+    "WEBSITE": "Web sajt",
+    "UPDATE_PROFILE": "Ažuriraj Profil",
+    "CURRENT_PASSWORD": "Trenutna lozinka",
+    "NEW_PASSWORD": "Nova lozinka",
+    "CONFIRM_NEW_PASSWORD": "Potvrdi novu lozinku",
+    "CHANGE_PASSWORD": "Promeni lozinku",
+    "RESOURCE_OVERVIEW": "Pregled Resursa",
+    "RESOURCES": "Resursi",
+    "UNAVAILABLE_RESOURCES": "Nedostupni resursi",
+    "AVAILABLE_RESOURCES": "Dostupni resursi",
+    "SUCCESS_PICTURE_CHANGE": "Uspešno promenjena slika profila",
+    "SUCCESS_UPDATE_PROFILE": "Profil uspešno ažuriran",
+    "ERROR_NAME_ONLY_LETTERS": "Ime mora sadržati samo slova.",
+    "ERROR_PASSWORD_MISMATCH": "Šifre se ne poklapaju",
+    "CONFIRM_REMOVE_PICTURE": "Da li ste sigurni da želite da uklonite sliku?",
+    "REMOVE_PICTURE_TITLE": "Ukloni sliku"
+  },
+
+  "RCALENDAR": {
+    "TITLE": "Kalendar resursa",
+    "DESCRIPTION": "Ovaj kalendar pruža pregled svih vaših odobrenih rezervacija i dostupnosti resursa."
+  },
+
+  "FORM_ERRORS": {
+    "SUMMARY": "Polja u formi nisu validna:",
+    "FORM": "Forma",
+    "TICKET": "Karta",
+    "REQUIRED": "je obavezno",
+    "MIN": "mora biti najmanje {{value}}",
+    "MAX": "mora biti najviše {{value}}",
+    "WHITESPACE": "ne može biti prazno ili samo razmaci",
+    "PAST_DATE": "ne može biti u prošlosti",
+    "START_BEFORE_END": "vreme početka mora biti pre vremena završetka",
+    "DATE_OUT_OF_RANGE": "je van dozvoljenog opsega datuma događaja"
   }
 }

@@ -1,3 +1,4 @@
+<!-- resource-dialog.component.html -->
 <p-dialog
   [modal]="true"
   [(visible)]="visible"
@@ -10,126 +11,145 @@
   <ng-template pTemplate="header">
     <div class="flex justify-between items-start w-full">
       <div class="formTitle">
-        <h3>{{ resourceToEdit ? 'Edit Resource' : 'Add New Resource' }}</h3>
-        <p>{{ resourceToEdit ? 'Update the details below.' : 'Fill in the details below to add your new resource.' }}</p>
+        <h3>
+          {{
+            resourceToEdit
+              ? ('RESOURCE.EDIT_TITLE' | translate)
+              : ('RESOURCE.ADD_TITLE' | translate)
+          }}
+        </h3>
+        <p>
+          {{
+            resourceToEdit
+              ? ('RESOURCE.EDIT_SUBTITLE' | translate)
+              : ('RESOURCE.ADD_SUBTITLE' | translate)
+          }}
+        </p>
       </div>
       <button
         type="button"
         class="p-dialog-header-icon p-link p-button-rounded p-button-text exit-button"
         (click)="onCancleClick()"
-        pTooltip="Close"
+        pTooltip="{{ 'COMMON.CLOSE' | translate }}"
         tooltipPosition="left"
       >
         <i class="pi pi-times"></i>
       </button>
     </div>
   </ng-template>
-    
-    <form action="" [formGroup]="resourceForm" class="resourceForm">
 
-        <div class="form-inputs">
+  <form [formGroup]="resourceForm" class="resourceForm">
+    <div class="form-inputs">
+      <!-- Name -->
+      <div class="input-wrapper">
+        <p>{{ 'RESOURCE.NAME' | translate }}</p>
+        <p-floatlabel class="w-full md:w-56" variant="on">
+          <input
+            type="text"
+            pInputText
+            placeholder=" "
+            formControlName="name"
+            inputId="name"
+            class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2
+                   focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+          />
+          <label for="name">{{ 'RESOURCE.ENTER_NAME' | translate }}</label>
+        </p-floatlabel>
+      </div>
 
-            <div  class="input-wrapper">
-
-                <p>Resource Name</p>
-                <p-floatlabel class="w-full md:w-56" variant="on">
-                    <input  type="text"  pInputText  placeholder=" "  formControlName="name"  inputId="name"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-                <label for="name">Enter Resource Name</label>
-                </p-floatlabel>
-
-            </div>
-
-            <div class="category-type">
-
-                <div  class="input-wrapper">
-
-                    <p>Category</p>
-                    <p-floatlabel class="w-full" variant="on">
-                        <p-select  [options]="resourceCategoryOptions"  name="category"  formControlName="category"  placeholder=" "  inputId="category"  class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"/>
-                        <label for="category">Select Resource Category</label>
-                    </p-floatlabel>
-
-                </div>
-
-                 <div  class="input-wrapper">
-
-                    <p>Resource Type</p>
-                    <p-floatlabel class="w-full" variant="on">
-                        <p-select  [options]="resourceTypeOptions"  name="type"  formControlName="type"  placeholder=" "  inputId="type"  class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"/>
-                        <label for="type">Select Resource Type</label>
-                    </p-floatlabel>
-
-                </div>
-
-            </div>
-
-            
-
-
-            <!-- <div  class="input-wrapper">
-
-                <p>Location</p>
-                <p-floatlabel class="w-full md:w-56" variant="on">
-                    <input  type="text"  pInputText  placeholder=" "  formControlName="location"  inputId="location"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-                <label for="location">Enter Resource Location</label>
-                </p-floatlabel>
-
-            </div> -->
-
-
-            <!-- <div class="quantity-measure"> -->
-
-                <div  class="input-wrapper">
-
-                    <p>Quantity</p>
-                        
-                    <p-floatlabel class="w-full md:w-56" variant="on">
-                        <p-inputnumber
-                            formControlName="quantity"
-                            inputId="quantity"
-                            [min]="0"
-                            [useGrouping]="false"
-                            [showButtons]="false"
-                            [style]="{ width: '100%' }"
-                            inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                        ></p-inputnumber>
-                        <label for="quantity">Enter Resource Quantity</label>
-                    </p-floatlabel>
-
-                </div>
-
-            <!-- </div> -->
-
-
-
-             <div  class="input-wrapper">
-
-                <p>Description</p>
-                <p-floatlabel class="w-full md:w-56" variant="on">
-                    <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
-                <label for="description">Describe Your Resource</label>
-                </p-floatlabel>
-
-            </div>
-
-            <div class="form-buttons">
-                <p-button 
-                [label]="resourceToEdit ? 'Save Changes' : 'Add Resource'"
-                [icon]="resourceToEdit ? 'pi pi-save' : 'pi pi-plus'"
-                [raised]="true"
-                (onClick)="submitForm()"
-                severity="primary"
-                ></p-button>
-
-                <p-button 
-                    label="Cancel"
-                    icon="pi pi-times"
-                    [raised]="true"
-                    severity="secondary"
-                    type="button"
-                    (onClick)="onCancleClick()"
-                    ></p-button>
-            </div>
+      <!-- Category & Type -->
+      <div class="category-type">
+        <div class="input-wrapper">
+          <p>{{ 'RESOURCE.CATEGORY' | translate }}</p>
+          <p-floatlabel class="w-full" variant="on">
+            <p-select
+              [options]="resourceCategoryOptions"
+              formControlName="category"
+              placeholder=" "
+              inputId="category"
+              class="w-full h-10 border border-gray-300 rounded-md
+                     focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"
+            ></p-select>
+            <label for="category">{{ 'RESOURCE.SELECT_CATEGORY' | translate }}</label>
+          </p-floatlabel>
         </div>
-    </form>
+
+        <div class="input-wrapper">
+          <p>{{ 'RESOURCE.TYPE' | translate }}</p>
+          <p-floatlabel class="w-full" variant="on">
+            <p-select
+              [options]="resourceTypeOptions"
+              formControlName="type"
+              placeholder=" "
+              inputId="type"
+              class="w-full h-10 border border-gray-300 rounded-md
+                     focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"
+            ></p-select>
+            <label for="type">{{ 'RESOURCE.SELECT_TYPE' | translate }}</label>
+          </p-floatlabel>
+        </div>
+      </div>
+
+      <!-- Quantity -->
+      <div class="input-wrapper">
+        <p>{{ 'RESOURCE.QUANTITY' | translate }}</p>
+        <p-floatlabel class="w-full md:w-56" variant="on">
+          <p-inputnumber
+            formControlName="quantity"
+            inputId="quantity"
+            [min]="0"
+            [useGrouping]="false"
+            [showButtons]="false"
+            [style]="{ width: '100%' }"
+            inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2
+                             focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+          ></p-inputnumber>
+          <label for="quantity">{{ 'RESOURCE.ENTER_QUANTITY' | translate }}</label>
+        </p-floatlabel>
+      </div>
+
+      <!-- Description -->
+      <div class="input-wrapper">
+        <p>{{ 'RESOURCE.DESCRIPTION' | translate }}</p>
+        <p-floatlabel class="w-full md:w-56" variant="on">
+          <textarea
+            pTextarea
+            id="description"
+            placeholder=" "
+            formControlName="description"
+            rows="5"
+            cols="30"
+            style="resize: none"
+            class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2
+                   focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
+          ></textarea>
+          <label for="description">{{ 'RESOURCE.ENTER_DESCRIPTION' | translate }}</label>
+        </p-floatlabel>
+      </div>
+
+      <!-- Buttons -->
+      <div class="form-buttons">
+        <p-button
+          [label]="
+            resourceToEdit
+              ? ('RESOURCE.SAVE_CHANGES' | translate)
+              : ('RESOURCE.ADD' | translate)
+          "
+          [icon]="resourceToEdit ? 'pi pi-save' : 'pi pi-plus'"
+          [raised]="true"
+          (onClick)="submitForm()"
+          severity="primary"
+        ></p-button>
+
+        <p-button
+          label="{{ 'COMMON.CANCEL' | translate }}"
+          icon="pi pi-times"
+          [raised]="true"
+          severity="secondary"
+          type="button"
+          (onClick)="onCancleClick()"
+        ></p-button>
+      </div>
+    </div>
+  </form>
 </p-dialog>

@@ -21,6 +21,9 @@ import { ApiService } from '../../Services/api.service';
 import { UserDto } from '../../Models/UserDto';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { HostListener } from '@angular/core';
+import { LanguageService } from '../../Services/LanguageService';
+import { RegResponseDto } from '../../Models/RegResponseDto';
+
 @Component({
   selector: 'app-register-form',
   imports: [
@@ -42,25 +45,39 @@ import { HostListener } from '@angular/core';
 })
 export class RegisterForm implements OnInit, IDeactivate {
 
+  public currentLanguage : string;
+
   constructor(
     private messageService: MessageService,
     private confirmationDialogService: ConfirmationDialogService,
     private apiService: ApiService,
     private translate: TranslateService,
-    private router : Router) { }
+    private router : Router,
+    private languageService : LanguageService,
+    private translateService : TranslateService) { }
 
   roles: Object[];
   userToRegister: RegisterDto | undefined;
 
   registerForm: FormGroup;
 
-  changeLanguage(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const lang = selectElement.value;
-    this.translate.use(lang);
-  }
+changeLanguage(event: Event) {
+  const selectElement = event.target as HTMLSelectElement;
+  const lang = selectElement.value;
+
+   // Update the currentLanguage property
+    this.currentLanguage = lang;
+
+  // 1. Tell the LanguageService to save the new language to localStorage
+  this.languageService.setLanguage(lang);
+
+  // 2. Tell the frontend translation service to switch languages for the UI
+  this.translate.use(lang);
+}
 
   ngOnInit(): void {
+    const savedLang = this.languageService.language();
+    this.currentLanguage = savedLang || 'en';
 
     this.setTranslatedRoles();
 
@@ -75,7 +92,7 @@ export class RegisterForm implements OnInit, IDeactivate {
       password: new FormControl('', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/)]),
       confirm: new FormControl('', [Validators.required, Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})/)])
 
-    }, CustomValidators.passwordsMatch)
+    }, CustomValidators.passwordsMatch('password', 'confirm'))
 
   }
 
@@ -104,16 +121,19 @@ handleEnter(event: KeyboardEvent) {
 
       //API LOGIC HERE
       this.apiService.register(this.userToRegister).subscribe({
-        next: (response: UserDto) => {
+        next: (response: RegResponseDto) => {
           this.messageService.add({
             severity: 'success',
-            summary: 'Success',
-            detail: `User ${response.getUsername()} Successfully Registered`,
+            summary: this.translateService.instant('COMMON.SUCCESS'),
+            detail: response.getMessage(),
             life: 3000
           });
 
           this.registerForm.reset()
-          this.router.navigate(['login']);
+          setTimeout(() => {
+            this.router.navigate(['login']);
+          }, 3000);
+          
         },
 
         error: (errorResponse) => {
@@ -178,6 +198,7 @@ handleEnter(event: KeyboardEvent) {
 
   }
 
+  
 
   canExit(): boolean | Observable<boolean> | Promise<boolean> {
     return (this.registerForm.dirty || this.registerForm.touched) ? this.confirmationDialogService.confirm(

@@ -18,6 +18,7 @@ import {
   Mesh
 } from 'ogl';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 // Tipovi i pomoćne funkcije
 export type RaysOrigin =
   | 'top-center'
@@ -84,6 +85,10 @@ export class FailComponent implements OnInit, AfterViewInit, OnDestroy, OnChange
   @Input() className: string = '';
 
   @ViewChild('container') containerRef!: ElementRef<HTMLDivElement>;
+
+
+  constructor(private router : Router) {}
+
 
   private renderer!: Renderer;
   private uniforms: any;
@@ -216,6 +221,10 @@ void main() {
     if (this.containerRef) {
       this.observer.observe(this.containerRef.nativeElement);
     }
+
+    setTimeout(() => {
+            this.router.navigate(['home']);
+          }, 4000);
   }
 
   ngOnDestroy() {
