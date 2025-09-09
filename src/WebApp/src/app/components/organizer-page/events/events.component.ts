@@ -28,6 +28,8 @@ import { take } from 'rxjs';
 import { TooltipModule } from 'primeng/tooltip';
 import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { SharedService } from '../../../Services/shared.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-events',
@@ -115,7 +117,7 @@ export class EventsComponent implements OnInit {
       }
     }
   };
-
+  catMetrics: CategoryMetrics;
   constructor(
     private apiService: ApiService,
     private authService: AuthService,
@@ -124,7 +126,8 @@ export class EventsComponent implements OnInit {
     private catSer: CategoryService,
     private categoryService: CategoryService,
     private confirmationDialogService: ConfirmationDialogService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private sharedEvents: SharedService
   ) {}
 
   onRoleFilterChange(selectedOptions: any[], filterFn: (val: any) => void) {
@@ -182,12 +185,24 @@ export class EventsComponent implements OnInit {
       }
     });
   }
-
+  private destroy$ = new Subject<void>();
   getCatName(catID: number) {
     return this.catSer.getCategoryName(catID);
   }
 
   ngOnInit() {
+    this.data1Labels = [];
+        this.data1Data = [];
+        this.data2Labels = [];
+        this.data2Data = [];
+        this.data4Labels = [];
+        this.data4Data = [];
+        this.data3Labels = [];
+        this.data3Data = [];
+        this.data1 = {};
+        this.data2 = {};
+        this.data3 = {};
+        this.data4 = {};
     this.categoryService.loadCategoriesIfEmpty().pipe(take(1)).subscribe(categories => {
       this.categories = categories.map(cat => ({ name: cat.name, value: cat.id }));
     });
@@ -260,6 +275,7 @@ export class EventsComponent implements OnInit {
 
     this.apiService.getCategoryMetrics().subscribe({
       next: (response: CategoryMetrics) => {
+        this.catMetrics = response;
         Object.entries(response).forEach(([key, value]) => {
           this.data2Labels.push(this.translate.instant(`CATEGORYS.${key.toUpperCase()}`));
           this.data2Data.push(value);
@@ -275,8 +291,20 @@ export class EventsComponent implements OnInit {
         });
       }
     });
+      if(!this.locked)
+      {
+        this.sharedEvents.langChange$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.locked = true;
+        this.ngOnInit();
+        
+        // Ažuriraj grafikone
+      });
+      }
+      
   }
-
+  locked = false;
   createEvent() {
     this.router.navigate(["/organizer/create-event"], { queryParams: { showID: 3 } });
   }

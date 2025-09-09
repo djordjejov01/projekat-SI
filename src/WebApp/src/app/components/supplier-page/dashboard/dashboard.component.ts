@@ -19,7 +19,7 @@ import { PinCategoryService } from '../../../Services/PinCategoryService';
 import { ResourceModalComponent } from './resource-modal/resource-modal.component';
 import { ResourceAvailabilityService } from '../../../Services/ResourceAvailabilityService';
 import { ResourceCategoryService } from '../../../Services/ResourceCategoryService';
-import { take } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { ApiService } from '../../../Services/api.service';
 import { ResourceDto } from '../../../Models/ResourceDto';
 import { AuthService } from '../../../Services/auth.service';
@@ -29,6 +29,7 @@ import { ConfirmationDialogService } from '../../../Services/confirmation-dialog
 import { RequestsComponent } from './requests/requests.component';
 import { EventResourceCalendarResponse } from '../../../Interfaces/EventResourceCalendarResponse';
 import { TranslateModule,TranslateService } from '@ngx-translate/core';
+import { SharedService } from '../../../Services/shared.service';
 @Component({
   selector: 'app-dashboard',
   imports: [TranslateModule,RequestsComponent, TableModule, ButtonModule, IconField, InputIcon, FormsModule, MultiSelect, TooltipModule, InputTextModule, CommonModule, ChartModule, ResourceModalComponent, IconFieldModule, InputIconModule],
@@ -91,9 +92,10 @@ resourceTypeOptions = [
     private authService: AuthService,
     private messageService: MessageService,
     private confirmationDialogService: ConfirmationDialogService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private sharedEvents: SharedService
   ) { }
-
+  private destroy$ = new Subject<void>();
   ngOnInit(): void {
 
     this.currentSupplierId = this.authService.getUserId();
@@ -117,8 +119,19 @@ resourceTypeOptions = [
 
     this.fetchResources();
     this.fetchPendingRequestsCount();
-  }
 
+    if(!this.locked)
+          {
+            this.sharedEvents.langChange$
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(() => {
+            this.locked = true;
+            this.ngOnInit();
+            // Ažuriraj grafikone
+          });
+          }
+  }
+locked = false;
   getBooked() {
     this.apiService.getBookedResources().subscribe({
 

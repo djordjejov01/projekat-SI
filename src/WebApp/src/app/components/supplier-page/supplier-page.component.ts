@@ -107,6 +107,8 @@ changeLanguage(event: Event) {
 
   // 2. Tell the frontend translation service to switch languages for the UI
   this.translate.use(lang);
+
+  this.sharedService.notifyLangChange();
 }
 
   myProfile(){
