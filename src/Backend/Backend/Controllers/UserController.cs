@@ -201,6 +201,12 @@ namespace Backend.Controllers
             if (user == null)
                 return NotFound(new { message = _localizer["user.not_found"].ToString() });
 
+            const string defaultImagePath = "images/default-pfp.png";
+            if (user.ProfilePicture == defaultImagePath)
+            {
+                return Ok();
+            }
+
             if (!string.IsNullOrEmpty(user.ProfilePicture))
             {
                 // Assume user.ProfilePicture is stored like "/profile-images/filename.jpg"
@@ -221,7 +227,7 @@ namespace Backend.Controllers
 
                 
             }
-            const string defaultImagePath = "images/default-pfp.png";
+          
             user.ProfilePicture = defaultImagePath;
             if (user.Role == UserRole.Organizer)
             {
