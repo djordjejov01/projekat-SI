@@ -369,26 +369,37 @@
   "sendResetLink": "Send Reset Link",
   "resetLinkSent": "Password reset link has been sent to your email."
  ,
+
   "reservationDetails": {
-    "title": "Reservation Details",
     "noReservations": "You have no reservations for this event.",
+    "youHaveTickets": "You have tickets",
+    "ticket": "ticket",
+    "tickets": "tickets",
+    "category": "Category",
+    "description": "Description",
     "quantity": "Quantity",
     "reservedAt": "Reserved at",
-    "description": "Description",
-    "eventEnds": "Event ends",
-    "isFree": "This event is free",
-    "isPaid": "This event requires a ticket",
-    "tickets": "Your tickets",
-    "ticketType": "Ticket type"
+    "categoryNames": {
+      "Undefined": "Undefined",
+      "Equipment": "Equipment",
+      "Furniture": "Furniture",
+      "Electrical": "Electrical",
+      "Sanitation": "Sanitation",
+      "FoodAndBeverage": "Food & Beverage",
+      "Medical": "Medical",
+      "Security": "Security",
+      "Merchandise": "Merchandise",
+      "Transportation": "Transportation",
+      "Technology": "Technology"
+    },
+    "availabilityNames": {
+      "Available": "Available",
+      "Unavailable": "Unavailable",
+      "Booked": "Booked"
+    
   }
 
-
-
-
-
-
-  
-
+    }
 
 }
 

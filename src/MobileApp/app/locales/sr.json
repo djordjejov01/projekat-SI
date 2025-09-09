@@ -341,27 +341,34 @@
 
 ,
   "reservationDetails": {
-    "title": "Detalji rezervacije",
-    "noReservations": "Nemate rezervacija za ovaj događaj.",
+    "noReservations": "Nemate rezervacije za ovaj događaj.",
+    "youHaveTickets": "Imate karte",
+    "ticket": "kartu",
+    "tickets": "karte",
+    "category": "Kategorija",
+    "description": "Opis",
     "quantity": "Količina",
     "reservedAt": "Rezervisano",
-    "description": "Opis",
-    "eventEnds": "Događaj se završava",
-    "isFree": "Ovaj događaj je besplatan",
-    "isPaid": "Za ovaj događaj je potrebna karta",
-    "tickets": "Vaše karte",
-    "ticketType": "Tip karte"
+    "categoryNames": {
+      "Undefined": "Nedefinisano",
+      "Equipment": "Oprema",
+      "Furniture": "Nameštaj",
+      "Electrical": "Električni uređaji",
+      "Sanitation": "Sanitarije",
+      "FoodAndBeverage": "Hrana i piće",
+      "Medical": "Medicinska oprema",
+      "Security": "Bezbednost",
+      "Merchandise": "Merchandise / Suveniri",
+      "Transportation": "Transport",
+      "Technology": "Tehnologija"
+    },
+    "availabilityNames": {
+      "Available": "Dostupno",
+      "Unavailable": "Nedostupno",
+      "Booked": "Rezervisano"
+    }
+
   }
-
-
-
-
-
-
-
-
-
-
 
 }
 
