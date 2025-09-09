@@ -286,10 +286,10 @@ submitForm(): void {
 
   this.apiService.createEvent(formData, organizerId).subscribe({
     next: (response) => {
-      const message = response.headers?.get('Location') || this.translateService.instant('EVENT.SUCCESS');
+      const message = response.headers?.get('Location') || this.translateService.instant('SUCCESS');
       this.messageService.add({
         severity: 'success',
-        summary: this.translateService.instant('COMMON.SUCCESS'),
+        summary: this.translateService.instant('SUCCESS'),
         detail: message
       });
 
@@ -325,8 +325,8 @@ submitForm(): void {
     error: () => {
       this.messageService.add({
         severity: 'error',
-        summary: this.translateService.instant('COMMON.ERROR'),
-        detail: this.translateService.instant('EVENT.ERROR')
+        summary: this.translateService.instant('ERROR'),
+        detail: this.translateService.instant('ERROR')
       });
     }
   });

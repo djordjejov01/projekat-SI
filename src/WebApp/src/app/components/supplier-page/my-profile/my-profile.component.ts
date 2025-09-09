@@ -164,7 +164,7 @@ export class MyProfileComponent implements OnInit {
     }
   }
 
-  regexIme: RegExp = /^[a-zA-Z]*$/;
+  regexIme: RegExp = /^[a-zA-Z\s-]*$/;
   update() {
     const name = (document.getElementById('name') as HTMLInputElement).value;
     const username1 = (document.getElementById('username1') as HTMLInputElement).value;

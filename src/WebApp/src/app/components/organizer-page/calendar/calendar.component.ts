@@ -190,8 +190,7 @@ export class CalendarComponent implements OnInit, OnDestroy {
     selectInfo.view.calendar.unselect();
   }
   handleEventClick(clickInfo: any) {
-    const eventId = clickInfo.event.id; 
-    alert("TEST");
+    const eventId = clickInfo.event.id;
     if (eventId) {
         this.router.navigate(['/organizer/event-management/', eventId]); 
     }
