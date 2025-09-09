@@ -37,7 +37,7 @@ export const routes: Routes = [
     ]},
     {path: 'register', component: RegisterForm, canDeactivate: [(comp: RegisterForm) => comp.canExit()], canActivate: [GuestGuard]},
     {path: 'login', component: LoginForm, canDeactivate: [(comp: LoginForm) => comp.canExit()], canActivate: [GuestGuard]},
-    { path: 'reset-password', component: ResetPasswordComponent, canActivate: [GuestGuard] }, 
+    { path: 'reset-password', component: ResetPasswordComponent}, 
     {path: 'admin', component: AdminPage, canActivate: [AuthGuard], data : { roles: ['Admin']}},
     {path: 'supplier', component: SupplierPageComponent, canActivate: [AuthGuard], data : { roles: ['Supplier']},
     children: [
