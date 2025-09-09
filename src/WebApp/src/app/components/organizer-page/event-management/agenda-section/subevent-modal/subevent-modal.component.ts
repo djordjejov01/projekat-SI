@@ -22,7 +22,7 @@ import { IDeactivate } from '../../../../../Interfaces/IDeactivate';
 import { ConfirmationDialogService } from '../../../../../Services/confirmation-dialog.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { AutoComplete } from 'primeng/autocomplete';
-import {TranslateModule,TranslateService } from '@ngx-translate/core';
+import { TranslateModule, TranslateService, LangChangeEvent } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-subevent-modal',
@@ -54,6 +54,7 @@ export class SubeventModalComponent implements OnInit, OnDestroy, OnChanges, IDe
   filteredLocations: any[] = [];
 
   private unlimitedSub: Subscription | undefined;
+  private langSub: Subscription | undefined;
 
   constructor(
     private categoryService: CategoryService,
@@ -68,16 +69,26 @@ export class SubeventModalComponent implements OnInit, OnDestroy, OnChanges, IDe
   ngOnInit(): void {
     const isParentUnlimited = this.parentEventBasicInfo.getCapacity() === -1;
 
+    this.loadLocalizedCategories();
+
+    // osluškuj promenu jezika
+    this.langSub = this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+      this.loadLocalizedCategories();
+    });
+
+    this.initializeForm();
+  }
+
+  private loadLocalizedCategories() {
     this.categoryService.loadCategoriesIfEmpty()
       .pipe(take(1))
       .subscribe(categories => {
         this.categories = categories.map(cat => ({
-          label: cat.name,
-          value: cat.id
+          label: this.translate.instant(`CATEGORYS.${cat.name.toUpperCase()}`),
+          value: cat.id,
+          code: cat.name
         }));
       });
-
-    this.initializeForm();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -88,6 +99,7 @@ export class SubeventModalComponent implements OnInit, OnDestroy, OnChanges, IDe
 
   ngOnDestroy(): void {
     this.unlimitedSub?.unsubscribe();
+    this.langSub?.unsubscribe();
   }
 
   private initializeForm(): void {
@@ -97,14 +109,14 @@ export class SubeventModalComponent implements OnInit, OnDestroy, OnChanges, IDe
     const eventStartDate = this.parentEventBasicInfo.getStartDate();
     const eventEndDate = this.parentEventBasicInfo.getEndDate();
 
-     this.subeventForm = new FormGroup({
+    this.subeventForm = new FormGroup({
       title: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
-      description: new FormControl('', [CustomValidators.noWhitespaceValidator,Validators.required]),
+      description: new FormControl('', [CustomValidators.noWhitespaceValidator, Validators.required]),
       location: new FormControl(this.parentEventBasicInfo.getLocation(), [Validators.required, CustomValidators.noWhitespaceValidator]),
       isUnlimitedCapacity: new FormControl({ value: isParentUnlimited, disabled: !isParentUnlimited }),
-      capacity: new FormControl({value : capacityValue, disabled: isParentUnlimited} ,[Validators.required, Validators.min(1)]),
-      startDateTime: new FormControl('', [Validators.required, CustomValidators.notInPast,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]),
-      endDateTime: new FormControl('', [Validators.required,CustomValidators.dateWithinRange(eventStartDate,eventEndDate)]),
+      capacity: new FormControl({ value: capacityValue, disabled: isParentUnlimited }, [Validators.required, Validators.min(1)]),
+      startDateTime: new FormControl('', [Validators.required, CustomValidators.notInPast, CustomValidators.dateWithinRange(eventStartDate, eventEndDate)]),
+      endDateTime: new FormControl('', [Validators.required, CustomValidators.dateWithinRange(eventStartDate, eventEndDate)]),
       category: new FormControl(this.parentEventBasicInfo.getCategory(), Validators.required),
     }, {
       validators: CustomValidators.startBeforeEndDates('startDateTime', 'endDateTime')
@@ -167,49 +179,49 @@ export class SubeventModalComponent implements OnInit, OnDestroy, OnChanges, IDe
   }
 
   submitForm() {
-  if (this.subeventForm.invalid) {
-    this.formValidationService.showValidationErrors(this.subeventForm, 'Subevent Form');
-    return;
-  }
-
-  const formValues = this.subeventForm.getRawValue();
-  const capacity = formValues.isUnlimitedCapacity ? -1 : formValues.capacity;
-
-  const formData = new FormData();
-  formData.append('Title', formValues.title);
-  formData.append('Description', formValues.description);
-  formData.append('Location', formValues.location);
-  formData.append('StartDateTime', new Date(formValues.startDateTime).toISOString());
-  formData.append('EndDateTime', new Date(formValues.endDateTime).toISOString());
-  formData.append('Capacity', capacity.toString());
-  formData.append('Category', formValues.category.toString());
-  formData.append('ParentEventId', this.parentEventBasicInfo.getEventID().toString());
-
-  const organizerId = this.authService.getUserId();
-
-  this.apiService.createEvent(formData, organizerId).subscribe({
-    next: (response) => {
-      const message = response.headers?.get('Location') || this.translate.instant('MESSAGES.EVENT_CREATED');
-      this.messageService.add({
-        severity: 'success',
-        summary: this.translate.instant('COMMON.SUCCESS'),
-        detail: message,
-        life: 3000
-      });
-      this.subeventForm.reset();
-      this.hide();
-      this.subeventCreated.emit();
-    },
-    error: () => {
-      this.messageService.add({
-        severity: 'error',
-        summary: this.translate.instant('COMMON.ERROR'),
-        detail: this.translate.instant('MESSAGES.EVENT_CREATE_FAILED'),
-        life: 3000
-      });
+    if (this.subeventForm.invalid) {
+      this.formValidationService.showValidationErrors(this.subeventForm, 'Subevent Form');
+      return;
     }
-  });
-}
+
+    const formValues = this.subeventForm.getRawValue();
+    const capacity = formValues.isUnlimitedCapacity ? -1 : formValues.capacity;
+
+    const formData = new FormData();
+    formData.append('Title', formValues.title);
+    formData.append('Description', formValues.description);
+    formData.append('Location', formValues.location);
+    formData.append('StartDateTime', new Date(formValues.startDateTime).toISOString());
+    formData.append('EndDateTime', new Date(formValues.endDateTime).toISOString());
+    formData.append('Capacity', capacity.toString());
+    formData.append('Category', formValues.category.toString());
+    formData.append('ParentEventId', this.parentEventBasicInfo.getEventID().toString());
+
+    const organizerId = this.authService.getUserId();
+
+    this.apiService.createEvent(formData, organizerId).subscribe({
+      next: (response) => {
+        const message = response.headers?.get('Location') || this.translate.instant('MESSAGES.EVENT_CREATED');
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translate.instant('COMMON.SUCCESS'),
+          detail: message,
+          life: 3000
+        });
+        this.subeventForm.reset();
+        this.hide();
+        this.subeventCreated.emit();
+      },
+      error: () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.instant('COMMON.ERROR'),
+          detail: this.translate.instant('MESSAGES.EVENT_CREATE_FAILED'),
+          life: 3000
+        });
+      }
+    });
+  }
 
   canExit(): boolean | Observable<boolean> | Promise<boolean> {
     return (this.subeventForm.dirty || this.subeventForm.touched)
