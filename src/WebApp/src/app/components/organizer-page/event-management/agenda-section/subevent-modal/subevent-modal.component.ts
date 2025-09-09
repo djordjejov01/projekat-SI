@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CustomValidators } from '../../../../../Validators/custom.validators';
 import { DialogModule } from 'primeng/dialog';
@@ -26,6 +26,7 @@ import { TranslateModule, TranslateService, LangChangeEvent } from '@ngx-transla
 
 @Component({
   selector: 'app-subevent-modal',
+  standalone: true,
   imports: [
     ReactiveFormsModule,
     DialogModule,
@@ -108,13 +109,21 @@ export class SubeventModalComponent implements OnInit, OnDestroy, OnChanges, IDe
 
     const eventStartDate = this.parentEventBasicInfo.getStartDate();
     const eventEndDate = this.parentEventBasicInfo.getEndDate();
+    const parentCapacity = this.parentEventBasicInfo.getCapacity();
+
+    const capacityValidators = [
+      Validators.required,
+      Validators.min(1),
+      Validators.max(2147483647),
+      this.subeventCapacityValidator(parentCapacity)
+    ];
 
     this.subeventForm = new FormGroup({
       title: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
       description: new FormControl('', [CustomValidators.noWhitespaceValidator, Validators.required]),
       location: new FormControl(this.parentEventBasicInfo.getLocation(), [Validators.required, CustomValidators.noWhitespaceValidator]),
       isUnlimitedCapacity: new FormControl({ value: isParentUnlimited, disabled: !isParentUnlimited }),
-      capacity: new FormControl({ value: capacityValue, disabled: isParentUnlimited }, [Validators.required, Validators.min(1)]),
+      capacity: new FormControl({ value: capacityValue, disabled: isParentUnlimited }, capacityValidators),
       startDateTime: new FormControl('', [Validators.required, CustomValidators.notInPast, CustomValidators.dateWithinRange(eventStartDate, eventEndDate)]),
       endDateTime: new FormControl('', [Validators.required, CustomValidators.dateWithinRange(eventStartDate, eventEndDate)]),
       category: new FormControl(this.parentEventBasicInfo.getCategory(), Validators.required),
@@ -137,13 +146,23 @@ export class SubeventModalComponent implements OnInit, OnDestroy, OnChanges, IDe
           capacityControl?.setValue(null);
         } else {
           capacityControl?.enable();
-          capacityControl?.setValidators([Validators.required, Validators.min(1)]);
+          capacityControl?.setValidators(capacityValidators);
         }
         capacityControl?.updateValueAndValidity();
       });
     } else {
       this.subeventForm.get('capacity')?.setValue(this.parentEventBasicInfo.getCapacity());
     }
+  }
+
+  private subeventCapacityValidator(parentCapacity: number): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (parentCapacity === -1) {
+        return null;
+      }
+      const capacity = control.value;
+      return capacity > parentCapacity ? { capacityExceedsParent: true } : null;
+    };
   }
 
   searchLocations(event: any) {

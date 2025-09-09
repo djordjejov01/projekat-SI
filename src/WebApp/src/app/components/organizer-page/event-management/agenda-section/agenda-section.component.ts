@@ -63,17 +63,17 @@ export class AgendaSectionComponent {
 
     onActivityCreated() {
       this.agendaChanged.emit();
-      this.messageService.add({ severity: 'success', summary: 'Success', detail: this.translate.instant('AGENDA.ACTIVITY_CREATED') });
+      // this.messageService.add({ severity: 'success', summary: 'Success', detail: this.translate.instant('AGENDA.ACTIVITY_CREATED') });
     }
 
     onSubeventCreated() {
       this.agendaChanged.emit();
-      this.messageService.add({ severity: 'success', summary: 'Success', detail: this.translate.instant('AGENDA.SUBEVENT_CREATED') });
+      // this.messageService.add({ severity: 'success', summary: 'Success', detail: this.translate.instant('AGENDA.SUBEVENT_CREATED') });
     }
 
     onActivityUpdated() {
       this.agendaChanged.emit();
-      this.messageService.add({ severity: 'success', summary: 'Success', detail: this.translate.instant('AGENDA.ACTIVITY_UPDATED') });
+      // this.messageService.add({ severity: 'success', summary: 'Success', detail: this.translate.instant('AGENDA.ACTIVITY_UPDATED') });
     }
 
     /** EDITED: Opens the ActivityModalComponent for editing using its new showForEdit method */

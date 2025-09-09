@@ -61,7 +61,7 @@ export class ResourceModalComponent implements OnInit, IDeactivate, OnDestroy {
 
   ngOnInit(): void {
 
-        // Initial setup of the resource types
+    // Initial setup of the resource types
     this.resourceTypeOptions = [
       { label: this.translate.instant('RESOURCE.TYPES.EXHAUSTIBLE'), value: true },
       { label: this.translate.instant('RESOURCE.TYPES.INEXHAUSTIBLE'), value: false },
@@ -99,7 +99,7 @@ export class ResourceModalComponent implements OnInit, IDeactivate, OnDestroy {
       name: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
       category: new FormControl('', Validators.required),
       type: new FormControl('', Validators.required),
-      quantity: new FormControl(null, [Validators.required, Validators.min(0)]),
+      quantity: new FormControl(null, [Validators.required, Validators.min(0), Validators.max(2147483647)]),
       description: new FormControl('', [CustomValidators.noWhitespaceValidator, Validators.required]),
     });
   }

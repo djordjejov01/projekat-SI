@@ -736,7 +736,10 @@
     "WHITESPACE": "cannot be empty or just spaces",
     "PAST_DATE": "cannot be in the past",
     "START_BEFORE_END": "start time must be before end time",
-    "DATE_OUT_OF_RANGE": "is outside the valid event dates"
+    "DATE_OUT_OF_RANGE": "is outside the valid event dates",
+    "CAPACITY_EXCEEDS_PARENT": "Capacity cannot exceed parent event's capacity.",
+    "QUOTA_EXCEEDS_EVENT_CAPACITY": "Quota cannot exceed event's capacity.",
+    "TOTAL_QUOTA_EXCEEDS_CAPACITY": "Total ticket quota cannot exceed event capacity."
   },
 
     "FORM_FIELDS": {
@@ -816,8 +819,12 @@
     "CONFIRM_PATTERN": "Confirmation must match the password pattern",
     "PASSWORDS_MUST_MATCH": "Password and Confirmation must match",
     "UNKNOWN_ERROR": "Something went wrong"
-  }
-
+  },
+  
+"AUTH_GUARD": {
+"ACCESS_DENIED_SUMMARY": "Access Denied",
+"ACCESS_DENIED_DETAIL": "You do not have permission to view that page."
+}
   
 }
 
