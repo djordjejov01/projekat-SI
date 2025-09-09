@@ -71,89 +71,87 @@ export class ResourceAllocationComponent implements OnInit {
     this.resourceCategoryService.loadCategoriesIfEmpty().pipe(take(1)).subscribe();
 
     this.apiService.getSuppliersForOrganizer().subscribe({
-      next: (suppliers) => {
-        this.suppliers = suppliers;
-        const resourceRequests = suppliers.map(s => 
-          this.apiService.getResourcesBySupplierId(s.getId(), this.eventBasicInfo.getEventID())
-        );
-        const allocatedResourceRequest = this.apiService.getEventResourcesForEvent(this.eventBasicInfo.getEventID());
+        next: (suppliers) => {
+            this.suppliers = suppliers;
+            const resourceRequests = suppliers.map(supplier =>
+                this.apiService.getResourcesBySupplierId(supplier.getId(), this.eventBasicInfo.getEventID())
+            );
 
-        forkJoin([forkJoin(resourceRequests), allocatedResourceRequest]).subscribe({
-          next: ([allResources, eventResources]) => {
-            const allocatedMap = new Map<number, EventResourceDto>();
-            eventResources.forEach(res => allocatedMap.set(res.getResourceID(), res));
+            const allocatedResourceRequest = this.apiService.getEventResourcesForEvent(this.eventBasicInfo.getEventID());
+            
+            forkJoin([forkJoin(resourceRequests), allocatedResourceRequest]).subscribe({
+                next: ([allResources, eventResources]) => {
+                    const allocatedMap = new Map<number, EventResourceDto>();
+                    eventResources.forEach(res => {
+                        allocatedMap.set(res.getResourceID(), res);
+                    });
 
-            const availableList: PicklistItem[] = [];
-            const allocatedList: PicklistItem[] = [];
+                    const availableList: PicklistItem[] = [];
+                    const allocatedList: PicklistItem[] = [];
 
-            allResources.flat().forEach(resourceDto => {
-              const allocatedDetails = allocatedMap.get(resourceDto.getResourceID());
+                    allResources.flat().forEach(resourceDto => {
+                        const allocatedDetails = allocatedMap.get(resourceDto.getResourceID());
 
-              if (allocatedDetails) {
-                allocatedList.push({
-                  resourceID: resourceDto.getResourceID(),
-                  name: resourceDto.getName(),
-                  category: resourceDto.getCategory(),
-                  isExhaustable: resourceDto.getIsExhaustable(),
-                  isAvailable: resourceDto.getIsAvailable(),
-                  description: resourceDto.getDescription(),
-                  supplierID: resourceDto.getSupplierID(),
-                  quantity: allocatedDetails.getQuantity(),
-                  allocatedQuantity: allocatedDetails.getQuantity(),
-                  status: allocatedDetails.getStatus(),
-                  startDateTimeBooked: allocatedDetails.getStartDateTimeBooked(),
-                  endDateTimeBooked: allocatedDetails.getEndDateTimeBooked()
-                });
+                        if (allocatedDetails) {
+                            // This resource is allocated to the current event.
+                            allocatedList.push({
+                                resourceID: resourceDto.getResourceID(),
+                                name: resourceDto.getName(),
+                                category: resourceDto.getCategory(),
+                                isExhaustable: resourceDto.getIsExhaustable(),
+                                isAvailable: resourceDto.getIsAvailable(),
+                                description: resourceDto.getDescription(),
+                                supplierID: resourceDto.getSupplierID(),
+                                quantity: allocatedDetails.getQuantity(), // Display allocated quantity in target list
+                                allocatedQuantity: allocatedDetails.getQuantity(),
+                                status: allocatedDetails.getStatus(),
+                                startDateTimeBooked: allocatedDetails.getStartDateTimeBooked(),
+                                endDateTimeBooked: allocatedDetails.getEndDateTimeBooked()
+                            });
+                            
+                            // Check if there is a remaining quantity to show in the source list.
+                            // The backend now handles this correctly.
+                            if (resourceDto.getQuantity() > 0) {
+                                availableList.push({
+                                    resourceID: resourceDto.getResourceID(),
+                                    name: resourceDto.getName(),
+                                    category: resourceDto.getCategory(),
+                                    isExhaustable: resourceDto.getIsExhaustable(),
+                                    isAvailable: resourceDto.getIsAvailable(),
+                                    description: resourceDto.getDescription(),
+                                    supplierID: resourceDto.getSupplierID(),
+                                    quantity: resourceDto.getQuantity()
+                                });
+                            }
+                        } else {
+                            // This resource is not allocated to the current event.
+                            availableList.push({
+                                resourceID: resourceDto.getResourceID(),
+                                name: resourceDto.getName(),
+                                category: resourceDto.getCategory(),
+                                isExhaustable: resourceDto.getIsExhaustable(),
+                                isAvailable: resourceDto.getIsAvailable(),
+                                description: resourceDto.getDescription(),
+                                supplierID: resourceDto.getSupplierID(),
+                                quantity: resourceDto.getQuantity()
+                            });
+                        }
+                    });
 
-                if (resourceDto.getQuantity() > 0) {
-                  availableList.push({
-                    resourceID: resourceDto.getResourceID(),
-                    name: resourceDto.getName(),
-                    category: resourceDto.getCategory(),
-                    isExhaustable: resourceDto.getIsExhaustable(),
-                    isAvailable: resourceDto.getIsAvailable(),
-                    description: resourceDto.getDescription(),
-                    supplierID: resourceDto.getSupplierID(),
-                    quantity: resourceDto.getQuantity()
-                  });
+                    this.availableResources = availableList;
+                    this.allocatedResources = allocatedList;
+                },
+                error: (error) => {
+                    this.messageService.add({ severity: 'error', summary: 'Error fetching resources', detail: error.message, life: 3000 });
                 }
-              } else {
-                availableList.push({
-                  resourceID: resourceDto.getResourceID(),
-                  name: resourceDto.getName(),
-                  category: resourceDto.getCategory(),
-                  isExhaustable: resourceDto.getIsExhaustable(),
-                  isAvailable: resourceDto.getIsAvailable(),
-                  description: resourceDto.getDescription(),
-                  supplierID: resourceDto.getSupplierID(),
-                  quantity: resourceDto.getQuantity()
-                });
-              }
             });
-
-            this.availableResources = availableList;
-            this.allocatedResources = allocatedList;
-          },
-          error: (err) => {
-            this.messageService.add({
-              severity: 'error',
-              summary: this.translate.instant('ERROR_FETCHING_RESOURCES'),
-              detail: err.message,
-              life: 3000
-            });
-          }
-        });
-      },
-      error: (err) => {
-        this.messageService.add({
-          severity: 'error',
-          summary: this.translate.instant('ERROR'),
-          detail: err.message,
-          life: 3000
-        });
-      }
+        },
+        error: (errorResponse) => {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: errorResponse.message, life: 3000 });
+        }
     });
-  }
+}
+
 
   findSupplier(supplierId: number): SupplierDto | undefined {
     return this.suppliers.find(s => s.getId() === supplierId);
@@ -163,23 +161,29 @@ export class ResourceAllocationComponent implements OnInit {
     return this.resourceCategoryService.getCategoryName(resource.category);
   }
 
-  getCategoryStyle(resource: PicklistItem) {
-    const categoryColors: { [key: number]: { bg: string, text: string } } = {
-      0: { bg: 'rgba(180,180,180,0.2)', text: 'rgba(180,180,180,1.0)' },
-      1: { bg: 'rgba(100,106,232,0.2)', text: 'rgba(100,106,232,1.0)' },
-      2: { bg: 'rgba(126,230,78,0.2)', text: 'rgba(126,230,78,1.0)' },
-      3: { bg: 'rgba(54,162,235,0.2)', text: 'rgba(54,162,235,1.0)' },
-      4: { bg: 'rgba(233,99,141,0.2)', text: 'rgba(233,99,141,1.0)' },
-      5: { bg: 'rgba(23,162,184,0.2)', text: 'rgba(23,162,184,1.0)' },
-      6: { bg: 'rgba(220,53,69,0.2)', text: 'rgba(220,53,69,1.0)' },
-      7: { bg: 'rgba(153,102,255,0.2)', text: 'rgba(153,102,255,1.0)' },
-      8: { bg: 'rgba(255,159,64,0.2)', text: 'rgba(255,159,64,1.0)' },
-      9: { bg: 'rgba(108,117,125,0.2)', text: 'rgba(108,117,125,1.0)' },
-      10: { bg: 'rgba(255,193,7,0.2)', text: 'rgba(255,193,7,1.0)' }
-    };
-    const c = categoryColors[resource.category] || categoryColors[0];
-    return { 'background-color': c.bg, color: c.text };
-  }
+
+getCategoryStyle(resource: PicklistItem) {
+  const categoryColors: { [key: number]: { bg: string, text: string } } = {
+    0: { bg: 'rgba(180,180,180,0.2)', text: 'rgba(180,180,180,1.0)' }, // Undefined
+    1: { bg: 'rgba(100,106,232,0.2)', text: 'rgba(100,106,232,1.0)' }, // Equipment (purple/blue)
+    2: { bg: 'rgba(126,230,78,0.2)', text: 'rgba(126,230,78,1.0)' },   // Furniture (green)
+    3: { bg: 'rgba(54,162,235,0.2)', text: 'rgba(54,162,235,1.0)' },   // Electrical (blue)
+    4: { bg: 'rgba(233,99,141,0.2)', text: 'rgba(233,99,141,1.0)' },   // Sanitation (pink)
+    5: { bg: 'rgba(23,162,184,0.2)', text: 'rgba(23,162,184,1.0)' },   // Food & Beverage (teal)
+    6: { bg: 'rgba(220,53,69,0.2)', text: 'rgba(220,53,69,1.0)' },     // Medical (red)
+    7: { bg: 'rgba(153,102,255,0.2)', text: 'rgba(153,102,255,1.0)' }, // Security (purple)
+    8: { bg: 'rgba(255,159,64,0.2)', text: 'rgba(255,159,64,1.0)' },   // Merchandise (orange)
+    9: { bg: 'rgba(108,117,125,0.2)', text: 'rgba(108,117,125,1.0)' }, // Transportation (gray)
+    10:{ bg: 'rgba(255,193,7,0.2)', text: 'rgba(255,193,7,1.0)' }      // Technology (yellow)
+  };
+
+  const c = categoryColors[resource.category] || categoryColors[0];
+  return { 
+    'background-color': c.bg,
+    'color': c.text
+  };
+}
+
 
   getStatusText(status: number): string {
     switch (status) {
@@ -190,44 +194,81 @@ export class ResourceAllocationComponent implements OnInit {
     }
   }
 
-  getStatusClass(status: number): string {
-    switch (status) {
-      case EventResourceStatus.Pending: return 'pending-chip';
-      case EventResourceStatus.Approved: return 'approved-chip';
-      case EventResourceStatus.Declined: return 'declined-chip';
-      default: return '';
-    }
+getStatusClass(status: number): string {
+  switch (status) {
+    case EventResourceStatus.Pending:
+      return 'pending-chip';
+    case EventResourceStatus.Approved:
+      return 'approved-chip';
+    case EventResourceStatus.Declined:
+      return 'declined-chip';
+    default:
+      return '';
   }
+}
+
 
   getShortDateRange(start: Date | undefined, end: Date | undefined): string {
-    if (!start || !end) return '';
-    const startStr = `${start.getMonth() + 1}/${start.getDate()}`;
-    const endStr = `${end.getMonth() + 1}/${end.getDate()}`;
-    return start.getFullYear() === end.getFullYear() ? `${startStr} - ${endStr}` : `${startStr}/${start.getFullYear().toString().substr(-2)} - ${endStr}/${end.getFullYear().toString().substr(-2)}`;
+    if (!start || !end) {
+      return '';
+    }
+    
+    // Format the dates as 'M/d' (e.g., '8/19') or 'M/d/yy'
+    const startString = `${start.getMonth() + 1}/${start.getDate()}`;
+    const endString = `${end.getMonth() + 1}/${end.getDate()}`;
+
+    // A slightly more advanced version could handle different years, etc.
+    const startYear = start.getFullYear();
+    const endYear = end.getFullYear();
+
+    if (startYear === endYear) {
+      return `${startString} - ${endString}`;
+    } else {
+      return `${startString}/${startYear.toString().substr(-2)} - ${endString}/${endYear.toString().substr(-2)}`;
+    }
   }
 
-  handleMoveToTarget(event: { items: PicklistItem[] }) {
-    event.items.forEach(resource => {
-      const supplier = this.findSupplier(resource.supplierID);
-      if (supplier) this.modalQueue.push({ resource, supplier });
-    });
-    this.openNextModal();
-  }
+
+handleMoveToTarget(event: { items: PicklistItem[] }) {
+  event.items.forEach(resource => {
+    // The PicklistItem has a supplierID property directly.
+    const supplier = this.findSupplier(resource.supplierID); 
+    if (supplier) {
+      // The modal queue now holds PicklistItem
+      this.modalQueue.push({ resource, supplier });
+    }
+  });
+  this.openNextModal();
+}
+
 
   async handleMoveToSource(event: { items: PicklistItem[] }) {
-    const deallocationRequests = [];
-    for (const item of event.items) {
-      const confirmed = await this.confirmationDialogService.confirm(
+  // Use a temporary array to store all API requests
+  const deallocationRequests = [];
+
+  // Use a temporary array to track which items were successfully confirmed to be deallocated
+  const confirmedItems = [];
+
+  for (const item of event.items) {
+    const isConfirmed = await this.confirmationDialogService.confirm(
         this.translate.instant('CONFIRM_DEALLOCATE_RESOURCE', { resourceName: item.name }),
         this.translate.instant('DEALLOCATE_RESOURCE_TITLE')
-      );
+    );
 
-      if (confirmed) {
-        deallocationRequests.push(this.apiService.deallocateResource(item.resourceID, this.eventBasicInfo.getEventID()));
-      } else this.revertItem(item);
+    if (isConfirmed) {
+      // If confirmed, add the API call to our array of requests
+      deallocationRequests.push(this.apiService.deallocateResource(item.resourceID, this.eventBasicInfo.getEventID()));
+      confirmedItems.push(item);
+    } else {
+      // If the user cancels, revert the item's position back to the allocated list.
+      this.revertItem(item);
     }
+  }
 
-    if (deallocationRequests.length) {
+
+  // Only proceed if there are deallocation requests to send
+  if (deallocationRequests.length > 0) {
+
       forkJoin(deallocationRequests).subscribe({
         next: () => {
           this.messageService.add({
@@ -261,26 +302,39 @@ export class ResourceAllocationComponent implements OnInit {
     this.loadResources();
   }
 
-  onModalCancel(canceledResource: PicklistItem) {
-    this.availableResources = [...this.availableResources, canceledResource];
-    this.allocatedResources = this.allocatedResources.filter(r => r.resourceID !== canceledResource.resourceID);
-  }
+onModalCancel(canceledResource: PicklistItem) {
+  // Add the item back to the source list (availableResources).
+  this.availableResources = [...this.availableResources, canceledResource];
+  
+  // Remove the item from the target list.
+  this.allocatedResources = this.allocatedResources.filter(r => r.resourceID !== canceledResource.resourceID);
 
-  onModalClosed() {
-    this.isModalOpen = false;
-    this.openNextModal();
-  }
+  // The onModalClosed event from the modal will handle opening the next modal.
+}
 
-  private revertItem(item: PicklistItem) {
-    this.allocatedResources = [...this.allocatedResources, item];
-    this.availableResources = this.availableResources.filter(r => r.resourceID !== item.resourceID);
-  }
 
-  private openNextModal() {
-    if (this.isModalOpen || !this.modalQueue.length) return;
-    const { resource, supplier } = this.modalQueue.shift();
-    this.isModalOpen = true;
-    this.resourceModal.openModal(resource, supplier);
-  }
+onModalClosed() {
+  this.isModalOpen = false;
+  this.openNextModal();
+}
+
+
+private revertItem(item: PicklistItem) {
+  // Add the item back to the allocated list.
+  this.allocatedResources = [...this.allocatedResources, item];
+  // Remove the item from the available list.
+  this.availableResources = this.availableResources.filter(r => r.resourceID !== item.resourceID);
+}
+
+
+private openNextModal() {
+  if (this.isModalOpen) return;
+  if (this.modalQueue.length === 0) return;
+
+  const { resource, supplier } = this.modalQueue.shift();
+  this.isModalOpen = true; // Mark as open immediately
+  this.resourceModal.openModal(resource, supplier);
+}
+
 
 }

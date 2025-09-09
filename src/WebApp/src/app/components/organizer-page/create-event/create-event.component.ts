@@ -250,7 +250,7 @@ submitForm(): void {
   if (this.eventForm.invalid) {
     this.fromValidationService.showValidationErrors(
       this.eventForm,
-      this.translateService.instant('EVENT.FORM_TITLE')
+      "Create Event"
     );
     return;
   }
