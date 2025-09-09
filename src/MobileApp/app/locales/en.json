@@ -368,7 +368,21 @@
   "forgotPasswordSubtitle": "Enter your email to receive a password reset link.",
   "sendResetLink": "Send Reset Link",
   "resetLinkSent": "Password reset link has been sent to your email."
- 
+ ,
+  "reservationDetails": {
+    "title": "Reservation Details",
+    "noReservations": "You have no reservations for this event.",
+    "quantity": "Quantity",
+    "reservedAt": "Reserved at",
+    "description": "Description",
+    "eventEnds": "Event ends",
+    "isFree": "This event is free",
+    "isPaid": "This event requires a ticket",
+    "tickets": "Your tickets",
+    "ticketType": "Ticket type"
+  }
+
+
 
 
 

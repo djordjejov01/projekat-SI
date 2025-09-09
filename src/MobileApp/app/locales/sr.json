@@ -339,10 +339,20 @@
   "sendResetLink": "Pošalji link",
   "resetLinkSent": "Link za resetovanje lozinke je poslat na vaš email."
 
+,
+  "reservationDetails": {
+    "title": "Detalji rezervacije",
+    "noReservations": "Nemate rezervacija za ovaj događaj.",
+    "quantity": "Količina",
+    "reservedAt": "Rezervisano",
+    "description": "Opis",
+    "eventEnds": "Događaj se završava",
+    "isFree": "Ovaj događaj je besplatan",
+    "isPaid": "Za ovaj događaj je potrebna karta",
+    "tickets": "Vaše karte",
+    "ticketType": "Tip karte"
+  }
 
-
-
-  
 
 
 
