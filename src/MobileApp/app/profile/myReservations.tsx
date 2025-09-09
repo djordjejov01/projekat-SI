@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../config';
 import { apiCall } from '../../config';
+
 type Reservation = {
   EventID: number;
   EventTitle: string;
@@ -24,10 +25,9 @@ export default function MyReservations() {
   const router = useRouter();
   const { from } = useLocalSearchParams();
   const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [resourcesCount, setResourcesCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
-useEffect(() => {
+  useEffect(() => {
     const fetchReservations = async () => {
       try {
         const token = await AsyncStorage.getItem('token');
@@ -48,10 +48,9 @@ useEffect(() => {
 
         const data = await res.json();
 
-        // Grupisanje podataka sa backend-a po eventu
+        // Grupisanje podataka po EventID
         const grouped: Record<number, Reservation> = {};
         data.forEach((r: any) => {
-          // Backend šalje ključeve sa malim početnim slovom
           if (!grouped[r.eventID]) {
             grouped[r.eventID] = {
               EventID: r.eventID,
@@ -63,14 +62,17 @@ useEffect(() => {
               Resources: [],
             };
           }
-          // Dodajemo resurs u niz Resources
           grouped[r.eventID].Resources.push({
             Name: r.resourceName,
             Quantity: r.quantity,
           });
         });
 
-        setReservations(Object.values(grouped));
+        const allReservations = Object.values(grouped);
+
+        console.log('Grouped reservations:', allReservations);
+
+        setReservations(allReservations);
 
       } catch (err) {
         console.error(err);
@@ -80,7 +82,7 @@ useEffect(() => {
     };
 
     fetchReservations();
-}, []);
+  }, []);
 
   if (loading) {
     return (
@@ -93,7 +95,6 @@ useEffect(() => {
 
   return (
     <View style={styles.container}>
-      {/* Header sa back button */}
       <View style={styles.headerContainer}>
         <TouchableOpacity
           onPress={() => {
@@ -109,8 +110,12 @@ useEffect(() => {
       </View>
 
       <ScrollView style={styles.scroll}>
+        {reservations.length === 0 && (
+          <Text style={{ textAlign: 'center', marginTop: 50 }}>{t('myReservations.noReservations') || 'No reservations found'}</Text>
+        )}
+
         {reservations.map((event, index) => {
-          const resourceNames = event.Resources.map(r => r.Name).join(', ');
+          const resourceNames = Array.from(new Set(event.Resources.map(r => r.Name))).join(', ');
           const totalQuantity = event.Resources.reduce((sum, r) => sum + r.Quantity, 0);
 
           return (
@@ -137,22 +142,6 @@ const styles = StyleSheet.create({
   headerContainer: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 35, paddingBottom: 30 },
   backButton: { marginRight: 12, padding: 6, borderRadius: 8 },
   header: { fontSize: 28, fontWeight: 'bold', color: '#2c3e50', flex: 1, textAlign: 'center', marginRight: 40 },
-
-  statBox: {
-    backgroundColor: '#f0f0ff',
-    padding: 20,
-    marginHorizontal: 16,
-    borderRadius: 14,
-    alignItems: 'center',
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    elevation: 5,
-  },
-  statNumber: { fontSize: 28, fontWeight: '800' },
-  statLabel: { fontSize: 16, marginTop: 4 },
 
   eventCard: {
     backgroundColor: '#fefefe',
