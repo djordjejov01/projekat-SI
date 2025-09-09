@@ -33,7 +33,7 @@
                 <label for="phone">{{ 'PHONE_NUMBER' | translate }}</label>
                 <input id="phone" type="text" [value]="currOrganizer?.getPhoneNumber()" class="form-control" (input) ="check()"/>
 
-                <button id="upp1" class="dBut disBut" (click)="update()">{{ 'UPDATE_PROFILE' | translate }}</button>
+                <button id="upp1" class="dBut disBut" (click)="update()" disabled>{{ 'UPDATE_PROFILE' | translate }}</button>
 
                 <div id="pass">
                     <div id="onepass">
@@ -50,7 +50,7 @@
                     </div>
                 </div>
 
-                <button id="upp" class ="dBut"(click)="updatePass()">{{ 'CHANGE_PASSWORD' | translate }}</button>
+                <button id="upp" class ="dBut"(click)="updatePass()" >{{ 'CHANGE_PASSWORD' | translate }}</button>
             </div>
             <p class="text-[#636AE8] noacc" (click)="forgotPassword.show()">
                 {{ 'FORGOT_PASSWORD' | translate }}

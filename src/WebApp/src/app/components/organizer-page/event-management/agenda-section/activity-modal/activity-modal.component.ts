@@ -7,7 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { DatePickerModule } from 'primeng/datepicker';
 import { CategoryService } from '../../../../../Services/EventCategoryService';
-import { Observable, take } from 'rxjs';
+import { Observable, Subject, Subscription, take, takeUntil } from 'rxjs';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { FormValidationService } from '../../../../../Services/FormValidationService';
@@ -19,6 +19,8 @@ import { IDeactivate } from '../../../../../Interfaces/IDeactivate';
 import { ConfirmationDialogService } from '../../../../../Services/confirmation-dialog.service';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TooltipModule } from 'primeng/tooltip';
+import { SharedService } from '../../../../../Services/shared.service';
+import {LangChangeEvent} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-activity-modal',
@@ -48,22 +50,41 @@ export class ActivityModalComponent implements OnInit, OnChanges, IDeactivate {
     private apiService: ApiService,
     private messageService: MessageService,
     private confirmationDialogService: ConfirmationDialogService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private sharedEvents: SharedService
   ) {}
-
+  private destroy$ = new Subject<void>();
+private langSub: Subscription | undefined;
   ngOnInit(): void {
+    this.categories = [];
     this.categoryService.loadCategoriesIfEmpty()
       .pipe(take(1))
       .subscribe(categories => {
         this.categories = categories.map(cat => ({
           label: this.translate.instant(`CATEGORYS.${cat.name.toUpperCase()}`),
-          value: cat.id
+          value: cat.id,
+          code: cat.name
         }));
       });
     
+    this.langSub = this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+          this.loadLocalizedCategories();
+        });
     this.initializeForm();
   }
 
+    private loadLocalizedCategories() {
+    this.categoryService.loadCategoriesIfEmpty()
+      .pipe(take(1))
+      .subscribe(categories => {
+        this.categories = categories.map(cat => ({
+          label: this.translate.instant(`CATEGORYS.${cat.name.toUpperCase()}`),
+          value: cat.id,
+          code: cat.name
+        }));
+      });
+  }
+locked = false;
   ngOnChanges(changes: SimpleChanges): void {
     if(changes['parentEventBasicInfo'] && !changes['parentEventBasicInfo'].firstChange) {
       this.initializeForm();

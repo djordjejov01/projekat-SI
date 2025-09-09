@@ -8,7 +8,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { IDeactivate } from '../../../../Interfaces/IDeactivate';
-import { Observable, Subscription, take } from 'rxjs';
+import { Observable, Subject, Subscription, take, takeUntil } from 'rxjs';
 import { ConfirmationDialogService } from '../../../../Services/confirmation-dialog.service';
 import { ResourceDto } from '../../../../Models/ResourceDto';
 import { RESOURCE_CATEGORIES, ResourceAvailability, ResourceMeasure, ResourceType } from '../../../../MockData/MockResources';
@@ -20,6 +20,7 @@ import { ApiService } from '../../../../Services/api.service';
 import { AuthService } from '../../../../Services/auth.service';
 import { MessageService } from 'primeng/api';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { SharedService } from '../../../../Services/shared.service';
 
 @Component({
   selector: 'app-resource-modal',
@@ -56,9 +57,10 @@ export class ResourceModalComponent implements OnInit, IDeactivate, OnDestroy {
     private apiService: ApiService,
     private authService: AuthService,
     private messageService: MessageService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private sharedEvents: SharedService
   ) {}
-
+private destroy$ = new Subject<void>();
   ngOnInit(): void {
 
         // Initial setup of the resource types
@@ -102,8 +104,19 @@ export class ResourceModalComponent implements OnInit, IDeactivate, OnDestroy {
       quantity: new FormControl(null, [Validators.required, Validators.min(0)]),
       description: new FormControl('', [CustomValidators.noWhitespaceValidator, Validators.required]),
     });
-  }
 
+    if(!this.locked)
+              {
+                this.sharedEvents.langChange$
+              .pipe(takeUntil(this.destroy$))
+              .subscribe(() => {
+                this.locked = true;
+                this.ngOnInit();
+                // Ažuriraj grafikone
+              });
+              }
+  }
+  locked = false;
   ngOnDestroy(): void {
     if (this.translateSubscription) {
       this.translateSubscription.unsubscribe();

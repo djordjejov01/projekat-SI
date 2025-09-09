@@ -113,7 +113,7 @@ changeLanguage(event: Event) {
 
   // 1. Tell the LanguageService to save the new language to localStorage
   this.languageService.setLanguage(lang);
-
+  this.sharedService.notifyLangChange();
   // 2. Tell the frontend translation service to switch languages for the UI
   this.translate.use(lang);
 }

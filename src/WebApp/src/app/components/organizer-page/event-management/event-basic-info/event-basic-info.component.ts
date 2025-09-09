@@ -12,7 +12,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { Checkbox } from 'primeng/checkbox';
 import { TextareaModule } from 'primeng/textarea';
 import { CategoryService } from '../../../../Services/EventCategoryService';
-import { Subscription, take } from 'rxjs';
+import { Subject, Subscription, take, takeUntil } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { UpdateEventDto } from '../../../../Models/UpdateEventDto';
 import { ApiService } from '../../../../Services/api.service';
@@ -22,7 +22,8 @@ import { EventBasicInfo } from '../../../../Models/EventBasicInfo';
 import { ActivatedRoute } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
 import { AutoComplete } from 'primeng/autocomplete';
-import { TranslateModule,TranslateService } from '@ngx-translate/core';
+import { LangChangeEvent, TranslateModule,TranslateService } from '@ngx-translate/core';
+import { SharedService } from '../../../../Services/shared.service';
 
 @Component({
   selector: 'app-event-basic-info',
@@ -67,24 +68,34 @@ export class EventBasicInfoComponent implements OnInit, OnChanges, OnDestroy {
     private apiService: ApiService,
     private formValidationService: FormValidationService,
     private route: ActivatedRoute,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private sharedEvents: SharedService
   ) {}
-
+  private destroy$ = new Subject<void>();
+  private langSub: Subscription | undefined;
   ngOnInit(): void {
     this.minDate = new Date();
     
+    this.loadLocalizedCategories();
+
+    this.langSub = this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+              this.loadLocalizedCategories();
+            });
+    this.initFormWithEvent();
+
+  }
+  private loadLocalizedCategories() {
     this.categoryService.loadCategoriesIfEmpty()
       .pipe(take(1))
       .subscribe(categories => {
         this.categories = categories.map(cat => ({
-          label: cat.name,
-          value: cat.id
+          label: this.translate.instant(`CATEGORYS.${cat.name.toUpperCase()}`),
+          value: cat.id,
+          code: cat.name
         }));
       });
-
-    this.initFormWithEvent();
   }
-
+  locked = false;
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['eventBasicInfo'] && changes['eventBasicInfo'].currentValue) {
       this.initFormWithEvent();
