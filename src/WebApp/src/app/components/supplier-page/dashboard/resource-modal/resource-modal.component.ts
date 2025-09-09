@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../Validators/custom.validators';
 import { FormValidationService } from '../../../../Services/FormValidationService';
@@ -8,7 +8,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { IDeactivate } from '../../../../Interfaces/IDeactivate';
-import { Observable, take } from 'rxjs';
+import { Observable, Subscription, take } from 'rxjs';
 import { ConfirmationDialogService } from '../../../../Services/confirmation-dialog.service';
 import { ResourceDto } from '../../../../Models/ResourceDto';
 import { RESOURCE_CATEGORIES, ResourceAvailability, ResourceMeasure, ResourceType } from '../../../../MockData/MockResources';
@@ -37,13 +37,14 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
   templateUrl: './resource-modal.component.html',
   styleUrls: ['./resource-modal.component.css'],
 })
-export class ResourceModalComponent implements OnInit, IDeactivate {
+export class ResourceModalComponent implements OnInit, IDeactivate, OnDestroy {
   resourceForm: FormGroup;
   visible: boolean = false;
   resourceCategoryOptions: { label: string; value: number }[] = [];
   resourceAvailabilityOptions: { label: string; value: number }[] = [];
   @Output() resourceSaved = new EventEmitter<ResourceDto>();
   resourceToEdit: ResourceDto | null = null;
+  private translateSubscription: Subscription;
 
   resourceTypeOptions: { label: string; value: boolean }[] = [];
 
@@ -59,11 +60,20 @@ export class ResourceModalComponent implements OnInit, IDeactivate {
   ) {}
 
   ngOnInit(): void {
-    // Lokalizovani tipovi resursa
+
+        // Initial setup of the resource types
     this.resourceTypeOptions = [
       { label: this.translate.instant('RESOURCE.TYPES.EXHAUSTIBLE'), value: true },
       { label: this.translate.instant('RESOURCE.TYPES.INEXHAUSTIBLE'), value: false },
     ];
+
+    // Your new subscription for resource types
+    this.translateSubscription = this.translate.onLangChange.subscribe(() => {
+      this.resourceTypeOptions = [
+        { label: this.translate.instant('RESOURCE.TYPES.EXHAUSTIBLE'), value: true },
+        { label: this.translate.instant('RESOURCE.TYPES.INEXHAUSTIBLE'), value: false },
+      ];
+    });
 
     this.resourceAvailabilityService
       .loadAvailabilitiesIfEmpty()
@@ -92,6 +102,12 @@ export class ResourceModalComponent implements OnInit, IDeactivate {
       quantity: new FormControl(null, [Validators.required, Validators.min(0)]),
       description: new FormControl('', [CustomValidators.noWhitespaceValidator, Validators.required]),
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.translateSubscription) {
+      this.translateSubscription.unsubscribe();
+    }
   }
 
   openModal(resourceToEdit?: ResourceDto) {
