@@ -25,6 +25,9 @@ import { ToastModule } from 'primeng/toast';
 import { Toast } from 'primeng/toast';
 import { RouterLink } from '@angular/router';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { LanguageService } from '../../Services/LanguageService';
+import { SharedService } from '../../Services/shared.service';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-admin-page',
@@ -76,7 +79,10 @@ export class AdminPage implements OnInit, AfterContentInit {
     private apiService: ApiService,
     private sessionService: SessionService,
     private confirmationDialogService: ConfirmationDialogService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private languageService : LanguageService,
+    private sharedService : SharedService,
+    private sharedEvents : SharedService
   ) { }
 
   @HostListener('window:resize')
@@ -91,8 +97,23 @@ export class AdminPage implements OnInit, AfterContentInit {
       this.doughnutChartComponent.chart.update();
     }
   }
+  public currentLanguage : string;
+  changeLanguage(event: Event) {
+  const selectElement = event.target as HTMLSelectElement;
+  const lang = selectElement.value;
 
+   // Update the currentLanguage property
+    this.currentLanguage = lang;
+
+  // 1. Tell the LanguageService to save the new language to localStorage
+  this.languageService.setLanguage(lang);
+  this.sharedService.notifyLangChange();
+  // 2. Tell the frontend translation service to switch languages for the UI
+  this.translate.use(lang);
+}
   ngOnInit(): void {
+    const savedLang = this.languageService.language();
+    this.currentLanguage = savedLang || 'en';
     this.apiService.getAllUsers().subscribe({
       next: (users) => {
         this.users = users;
@@ -110,14 +131,23 @@ export class AdminPage implements OnInit, AfterContentInit {
         });
       }
     });
+    if(!this.locked)
+          {
+            this.sharedEvents.langChange$
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(() => {
+            this.locked = true;
+            this.ngOnInit();
+          });
+          }
   }
-
+  locked = false;
   onRoleFilterChange(selectedOptions: any[], filterFn: (val: any) => void) {
     this.selectedRoles = selectedOptions || [];
     const filterValues = this.selectedRoles.map(role => role.value);
     filterFn(filterValues.length ? filterValues : null);
   }
-
+  private destroy$ = new Subject<void>();
   ngAfterContentInit(): void {
     this.cd.detectChanges();
 

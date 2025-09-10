@@ -50,14 +50,14 @@ export class MyProfileComponent implements OnInit {
       };
       reader.readAsDataURL(this.selectedFile);
     }
-    this.triggerFileUpload();
+    this.triggerFileUpload(true);
   }
 
   @ViewChild('fileInput') fileInput;
 
-  triggerFileUpload() {
+  triggerFileUpload(opened) {
     const fileInput = document.getElementById('fileUpload') as HTMLInputElement;
-    if (fileInput) {
+    if (fileInput && !opened) {
       fileInput.click();
     }
     if (!this.selectedFile) return;

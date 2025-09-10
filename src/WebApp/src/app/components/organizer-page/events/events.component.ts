@@ -1,4 +1,4 @@
-import { Component, numberAttribute, OnInit } from '@angular/core';
+import { Component, HostListener, numberAttribute, OnInit, ViewChild } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { Tag } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
@@ -15,7 +15,7 @@ import { AuthService } from '../../../Services/auth.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { Event } from '../../../Models/Event';
-import { ChartModule } from 'primeng/chart';
+import { ChartModule, UIChart } from 'primeng/chart';
 import { FormsModule } from '@angular/forms';
 import { Table } from 'primeng/table';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -135,7 +135,10 @@ export class EventsComponent implements OnInit {
     const filterValues = this.selectedCategories.map(role => role.value);
     filterFn(filterValues.length ? filterValues : null);
   }
-
+@ViewChild('graf1') graf1!: UIChart
+@ViewChild('graf2') graf2!: UIChart
+@ViewChild('graf3') graf3!: UIChart
+@ViewChild('graf4') graf4!: UIChart
   clear(table: Table) {
     table.clear();
     this.selectedEvents = [];
@@ -189,7 +192,26 @@ export class EventsComponent implements OnInit {
   getCatName(catID: number) {
     return this.catSer.getCategoryName(catID);
   }
+@HostListener('window:resize')
+  onResize() {
+    if (this.graf1 && this.graf1.chart) {
+      this.graf1.chart.resize();
+      this.graf1.chart.update();
+    }
 
+    if (this.graf2 && this.graf2.chart) {
+      this.graf2.chart.resize();
+      this.graf2.chart.update();
+    }
+    if (this.graf3 && this.graf3.chart) {
+      this.graf3.chart.resize();
+      this.graf3.chart.update();
+    }
+    if (this.graf4 && this.graf4.chart) {
+      this.graf4.chart.resize();
+      this.graf4.chart.update();
+    }
+  }
   ngOnInit() {
     this.data1Labels = [];
         this.data1Data = [];
@@ -261,7 +283,9 @@ export class EventsComponent implements OnInit {
           this.data3Labels.push(this.translate.instant(`EVENT_STATUS_${key.toUpperCase()}`));
           this.data3Data.push(value);
         });
-        this.data3 = { labels: this.data3Labels, datasets: [{ data: this.data3Data }] };
+        this.data3 = { labels: this.data3Labels, datasets: [{ data: this.data3Data,  backgroundColor: ['rgba(100,106,232, 0.2)', 'rgba(126, 230, 78, 0.2)', 'rgba(180, 180, 180, 0.2)', 'rgba(233, 99, 141, 0.2)'],
+              hoverBackgroundColor: ['rgba(100,106,232, 0.4)', 'rgba(126, 230, 78, 0.4)', 'rgba(180, 180, 180, 0.4)', 'rgba(233, 99, 141, 0.4)'],
+              borderColor: ['rgba(100,106,232, 0.7)', 'rgba(126, 230, 78, 0.7)', 'rgba(180, 180, 180, 0.7)', 'rgba(233, 99, 141, 0.7)'], }] };
       },
       error: (errorResponse) => {
         this.messageService.add({
@@ -280,7 +304,36 @@ export class EventsComponent implements OnInit {
           this.data2Labels.push(this.translate.instant(`CATEGORYS.${key.toUpperCase()}`));
           this.data2Data.push(value);
         });
-        this.data2 = { labels: this.data2Labels, datasets: [{ data: this.data2Data }] };
+        this.data2 = { labels: this.data2Labels, datasets: [{ data: this.data2Data,               backgroundColor: [
+                'rgba(100,106,232, 0.2)',  // Music
+                'rgba(126, 230, 78, 0.2)', // Sports
+                'rgba(180, 180, 180, 0.2)',// Entertainment
+                'rgba(233, 99, 141, 0.2)', // Protest
+                'rgba(255, 193, 7, 0.2)',  // Charity
+                'rgba(23, 162, 184, 0.2)', // Business
+                'rgba(153, 102, 255, 0.2)',// Culture
+                'rgba(108, 117, 125, 0.2)' // Other
+              ],
+              hoverBackgroundColor: [
+                'rgba(100,106,232, 0.4)',
+                'rgba(126, 230, 78, 0.4)',
+                'rgba(180, 180, 180, 0.4)',
+                'rgba(233, 99, 141, 0.4)',
+                'rgba(255, 193, 7, 0.4)',
+                'rgba(23, 162, 184, 0.4)',
+                'rgba(153, 102, 255, 0.4)',
+                'rgba(108, 117, 125, 0.4)'
+              ],
+              borderColor: [
+                'rgba(100,106,232, 0.7)',
+                'rgba(126, 230, 78, 0.7)',
+                'rgba(180, 180, 180, 0.7)',
+                'rgba(233, 99, 141, 0.7)',
+                'rgba(255, 193, 7, 0.7)',
+                'rgba(23, 162, 184, 0.7)',
+                'rgba(153, 102, 255, 0.7)',
+                'rgba(108, 117, 125, 0.7)'
+              ], }] };
       },
       error: (errorResponse) => {
         this.messageService.add({

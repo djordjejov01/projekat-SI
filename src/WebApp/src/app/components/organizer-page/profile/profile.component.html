@@ -11,7 +11,7 @@
                     <img [src]="previewUrl || defaultImage" class="profile-img" alt="Profile" />
                     <input type="file" id="fileUpload" (change)="onFileSelected($event)" accept="image/*" hidden />
                 </label>
-                <button id="upbut" (click)="triggerFileUpload()">
+                <button id="upbut" (click)="triggerFileUpload(false)">
                     <i class="pi pi-upload"></i>{{ 'CHOOSE_IMAGE' | translate }}
                 </button>
 

@@ -34,32 +34,32 @@
     <div id="graphs">
         <div id="group">
             <div class="chart-box bar">
-                <p-chart *ngIf="data1" type="bar" [data]="data1" [options]="options1" class="bar"></p-chart>
+                <p-chart *ngIf="data1" type="bar" [data]="data1" [options]="options1" class="bar" #graf1></p-chart>
             </div>
             <div class="chart-box pad">
                 <p>{{ 'CATEGORIES' | translate }}</p>
-                <p-chart *ngIf="data2" type="pie" [data]="data2" [options]="options3" class="pad" />
+                <p-chart *ngIf="data2" type="pie" [data]="data2" [options]="options3" class="pad" #graf2/>
             </div>
         </div>
         <div id="group">
             <div class="chart-box bar">
-                <p-chart *ngIf="data4" type="line" [data]="data4" [options]="options1" class="bar"></p-chart>
+                <p-chart *ngIf="data4" type="line" [data]="data4" [options]="options1" class="bar" #graf3></p-chart>
             </div>
             <div class="chart-box pad">
                 <p>{{ 'STATUS' | translate }}</p>
-                <p-chart *ngIf="data3" type="doughnut" [data]="data3" [options]="options3" class="pad" />
+                <p-chart *ngIf="data3" type="doughnut" [data]="data3" [options]="options3" class="pad" #graf4/>
             </div>
         </div>
     </div>
 
-    <div class="events-table">
+    <div class="events-table" >
 
         <h1 id="ev">{{ 'EVENTS' | translate }}</h1>
 
         <hr class="custom-hr">
 
         <p-table #dt [value]="allEvents" [(selection)]="selectedEvents" dataKey="eventId" [rowHover]="true" [rows]="5"
-            [showCurrentPageReport]="true" [rowsPerPageOptions]="[5 ,10, 25, 50]" [loading]="loading" [paginator]="true"
+            [showCurrentPageReport]="true" [rowsPerPageOptions]="[5 ,10, 25, 50]"  [paginator]="true"
             currentPageReportTemplate="{{ 'SHOWING_ENTRIES' | translate:{first: '{first}', last: '{last}', total: '{totalRecords}'} }}"
             [filterDelay]="0"
             [globalFilterFields]="['title', 'startDateTime', 'endDateTime', 'category', 'status' , 'location']">

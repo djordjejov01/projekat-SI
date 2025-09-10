@@ -18,6 +18,7 @@ import { SupplierDto } from '../../Models/SupplierDto';
 import { environment } from '../../../environments/environment';
 import { LanguageService } from '../../Services/LanguageService';
 import { FormsModule } from '@angular/forms';
+import { OrganizerDto } from '../../Models/OrganizerDto';
 @Component({
   selector: 'app-supplier-page',
   imports: [RouterModule, ConfirmDialogModule, ToastModule, TranslateModule, Toast, MenuBarComponent,FormsModule],
@@ -43,6 +44,26 @@ export class SupplierPageComponent implements OnInit{
 
     currSupplier : SupplierDto;
     getSupplierCall() {
+      const userRole = this.authService.getUserRole();
+      
+      if (userRole === 'Supplier') {
+        this.apiService.getSupplier().subscribe({
+          next: (response: SupplierDto) => {
+            this.currSupplier = response;
+            this.previewUrl = this.currSupplier.getImage();
+          },
+          error: (errorResponse) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000
+            });
+          }
+        });
+      }
+    }
+    /*getSupplierCall() {
         this.apiService.getSupplier().subscribe({
     
           next: (response: SupplierDto) => {
@@ -59,7 +80,7 @@ export class SupplierPageComponent implements OnInit{
           }
     
         })
-      }
+      }*/
       ngAfterContentInit(): void {
     this.cd.detectChanges();
     const shouldShowWelcome = sessionStorage.getItem('showWelcome') === 'true';

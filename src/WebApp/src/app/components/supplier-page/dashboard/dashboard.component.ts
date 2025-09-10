@@ -155,7 +155,7 @@ locked = false;
       next: (response: ResourceDto[]) => {
         this.resources = response;
         this.availableResources = this.resources.filter(x => x.getIsAvailable() == 0);
-        //console.log(this.resources)
+        ////console.log(this.resources)
         this.initChart()
       },
 
@@ -352,9 +352,10 @@ locked = false;
 
   getResourceCategoryChartData(resources: ResourceDto[]): { labels: string[], counts: number[] } {
     const countsMap: Record<string, number> = {};
-
+    //this.translate.instant(`RESOURCE_CATEGORIES.${category.name.toUpperCase()}`)
     for (const resource of resources) {
-      const categoryName = this.resourceCategoryService.getCategoryName(resource.getCategory()) ?? this.translate.instant('Unknown');
+      let categoryName = this.resourceCategoryService.getCategoryName(resource.getCategory()) ?? this.translate.instant('Unknown');
+      categoryName = this.translate.instant(`RESOURCE_CATEGORIES.${categoryName.toUpperCase()}`)
       countsMap[categoryName] = (countsMap[categoryName] || 0) + 1;
     }
 
