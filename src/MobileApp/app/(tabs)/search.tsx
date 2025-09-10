@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../config';
-
+import { apiCall } from '../../config';
 import {
   View,
   Text,
@@ -64,16 +64,17 @@ const SearchScreen = () => {
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  const categoryOptions = [
-    { label: 'Music', value: 'Music' },
-    { label: 'Sports', value: 'Sports' },
-    { label: 'Entertainment', value: 'Entertainment' },
-    { label: 'Protest', value: 'Protest' },
-    { label: 'Charity', value: 'Charity' },
-    { label: 'Business', value: 'Business' },
-    { label: 'Culture', value: 'Culture' },
-    { label: 'Other', value: 'Other' },
+    const categoryOptions = [
+    { label: t('category.music'), value: 'Music' },
+    { label: t('category.sports'), value: 'Sports' },
+    { label: t('category.entertainment'), value: 'Entertainment' },
+    { label: t('category.protest'), value: 'Protest' },
+    { label: t('category.charity'), value: 'Charity' },
+    { label: t('category.business'), value: 'Business' },
+    { label: t('category.culture'), value: 'Culture' },
+    { label: t('category.other'), value: 'Other' },
   ];
+
 
 
   const [locations, setLocations] = useState<LocationType[]>([]);
@@ -98,7 +99,7 @@ const SearchScreen = () => {
   };
     const fetchLocations = async () => {
     try {
-      const response = await fetch(`${BASE_URL}/api/Events`);
+      const response = await apiCall(`${BASE_URL}/api/Events`);
       const data: EventType[] = await response.json();
 
       const uniqueLocations = Array.from(new Set(data.map(ev => ev.location)))
@@ -113,7 +114,7 @@ const SearchScreen = () => {
 
   const fetchEventDetailsPrice = async (eventId: number) => {
     try {
-      const response = await fetch(`${DETAILS_API_URL}?id=${eventId}`);
+      const response = await apiCall(`${DETAILS_API_URL}?id=${eventId}`);
       if (!response.ok) throw new Error('Failed to fetch event details');
       const data = await response.json();
       setEventPrices(prev => ({
@@ -162,13 +163,13 @@ const fetchEvents = useCallback(async () => {
     }
     if (selectedCategory) params.append('category', selectedCategory);
 
-    const response = await fetch(`${SEARCH_API_URL}?${params.toString()}`);
+    const response = await apiCall(`${SEARCH_API_URL}?${params.toString()}`);
     let data: EventType[] = await response.json();
 
     // fetchuj cene za svaki event
     await Promise.all(
       data.map(async (event) => {
-        const resp = await fetch(`${DETAILS_API_URL}?id=${event.id}`);
+        const resp = await apiCall(`${DETAILS_API_URL}?id=${event.id}`);
         const details = await resp.json();
         setEventPrices((prev) => ({
           ...prev,
@@ -235,7 +236,7 @@ useEffect(() => {
       <TouchableOpacity
         style={styles.eventItem}
         onPress={() => {
-          router.push({ pathname: '/event/[id]', params: { id: String(item.id) } });
+          router.push({ pathname: '/event/[id]', params: { id: String(item.id), from: 'search' } });
         }}
       >
         <View style={{ position: 'relative' }}>
@@ -355,11 +356,14 @@ useEffect(() => {
               value={startDate || new Date()}
               mode="date"
               display="default"
-              onChange={(_, date) => {
+              onChange={(event, date) => {
                 setShowStartPicker(false);
-                if (date) setStartDate(date);
+                if (date && event.type !== 'dismissed') {
+                  setStartDate(date);
+                }
               }}
             />
+
           )}
 
           <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.dateButton}>
@@ -369,15 +373,18 @@ useEffect(() => {
             </Text>
           </TouchableOpacity>
           {showEndPicker && (
-            <DateTimePicker
+           <DateTimePicker
               value={endDate || new Date()}
               mode="date"
               display="default"
-              onChange={(_, date) => {
+              onChange={(event, date) => {
                 setShowEndPicker(false);
-                if (date) setEndDate(date);
+                if (date && event.type !== 'dismissed') {
+                  setEndDate(date);
+                }
               }}
             />
+
           )}
         </View>
 

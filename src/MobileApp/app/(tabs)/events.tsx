@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { apiCall } from '../../config';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AntDesign } from '@expo/vector-icons';
@@ -28,7 +29,7 @@ export default function EventsScreen() {
   const fetchEvents = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/events`);
+      const response = await apiCall(`${API_URL}/api/events`);
       if (response.ok) {
         const data = await response.json();
 

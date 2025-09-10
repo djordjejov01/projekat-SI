@@ -3,6 +3,7 @@ import { Link } from 'expo-router';
 import { router } from 'expo-router';
 import { Animated } from 'react-native';
 import { API_URL } from '../config';
+import { apiCall } from '../config';
 
 import {
   View,
@@ -64,7 +65,7 @@ export default function SignUpScreen() {
     }
 
     try {
-      const response = await fetch(`${API_URL}/api/User/register`, {
+      const response = await apiCall(`${API_URL}/api/User/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

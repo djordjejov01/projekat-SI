@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { API_URL } from '../../config';
+import { apiCall } from '../../config';
 import {
   View,
   Text,
@@ -38,7 +39,7 @@ export default function FavoritesScreen() {
       setIsGuest(false);
 
       try {
-        const response = await fetch(`${API_URL}/api/favorites`, {
+        const response = await apiCall(`${API_URL}/api/favorites`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -98,12 +99,13 @@ export default function FavoritesScreen() {
 
       <View style={styles.row}>
         <Text style={styles.attending}>
-          {item.attendingCount || 0}+ {t('attending')}
+          {item.attendingCount === 0 ? '0' : `${item.attendingCount}+`} {t('attending')}
         </Text>
         <TouchableOpacity onPress={() => toggleFavorite(item.id)}>
           <AntDesign name="heart" size={20} color="#FF2D55" />
         </TouchableOpacity>
       </View>
+
     </TouchableOpacity>
   );
 
