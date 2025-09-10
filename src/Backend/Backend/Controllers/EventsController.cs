@@ -33,7 +33,7 @@ namespace Backend.Controllers
         public async Task<ActionResult<IEnumerable<EventListDto>>> GetAllEvents()
         {
             var events = await _context.Events
-                .Where(e => e.Status == EventStatus.Published)
+                .Where(e => e.Status == EventStatus.Published && e.EndDate > DateTime.UtcNow)
                 .OrderBy(e => e.StartDate)
                 .Select(e => new EventListDto
                 {
