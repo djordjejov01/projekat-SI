@@ -232,6 +232,8 @@
     "CANCEL": "Cancel",
     "UPDATED": "Event updated successfully.",
     "IMAGE_CHANGED": "Image changed successfully.",
+    "SUCCESS":"Succes",
+    "ERROR":"Error",
     "DELETE": "Delete Event",
     "CANCELED": "Event is canceled",
     "EDIT": "Edit Event",
