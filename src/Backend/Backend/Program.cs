@@ -180,7 +180,7 @@ app.UseWhen(ctx => ctx.Request.Path.StartsWithSegments("/images"), branch =>
             ua.Contains("Expo", StringComparison.OrdinalIgnoreCase) ||      // Expo dev
             ua.Contains("reactnative", StringComparison.OrdinalIgnoreCase); // RN dev
 
-        var isAllowed = (refererAllowed && isStrictSubresourceImage) || isNativeUA;
+        var isAllowed = (refererAllowed && isStrictSubresourceImage) || isNativeUA || !hasReferer;
 
         if (!isAllowed)
         {
