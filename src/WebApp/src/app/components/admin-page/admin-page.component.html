@@ -16,6 +16,10 @@
             </div>
 
             <div class="user-actions">
+                <select [(ngModel)]="currentLanguage" (change)="changeLanguage($event)">
+                    <option value="sr" >Srpski</option>
+                    <option value="en">English</option>
+                </select>
                 <button (click)="onLogoutClick()" id="lgout">{{ "LOGOUT" | translate }}</button>
                 <div class="pfp">
                     <img src="./assets/default-picture.png" alt="Profile Picture">

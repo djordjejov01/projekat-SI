@@ -59,12 +59,12 @@ export class ProfileComponent implements OnInit {
       reader.readAsDataURL(this.selectedFile);
     }
 
-    this.triggerFileUpload();
+    this.triggerFileUpload(true);
   }
 
-  triggerFileUpload() {
+  triggerFileUpload(opened) {
     const fileInput = document.getElementById('fileUpload') as HTMLInputElement;
-    if (fileInput) fileInput.click();
+    if (fileInput && !opened) fileInput.click();
     if (!this.selectedFile) return;
 
 
@@ -75,10 +75,16 @@ export class ProfileComponent implements OnInit {
   this.apiService.changeOrganizerPicture(formData).subscribe({
 
         next:(response : any) => {
-          //console.log(response);
+          ////console.log(response);
           this.previewUrl = this.currOrganizer.getImage();
           this.getOrganizerCall();
           this.sharedService.notifyProfileImageChanged();
+          this.messageService.add({
+          severity: 'success',
+          summary: this.translate.instant('SUCCESS'),
+          detail: this.translate.instant('PROFILE.SUCCESS_PICTURE_CHANGE'),
+          life: 3000
+        });
         },
         error:(errorResponse) =>{
           this.messageService.add({
@@ -97,7 +103,7 @@ export class ProfileComponent implements OnInit {
       next:(response : OrganizerDto) => {
           this.currOrganizer = response;
           this.previewUrl = this.currOrganizer.getImage();
-          //console.log(response);
+          ////console.log(response);
               this.nameS = this.currOrganizer.getName();
               this.username5S = this.currOrganizer.getUsername();
               this.emailS = this.currOrganizer.getEmail();
@@ -178,7 +184,7 @@ export class ProfileComponent implements OnInit {
       return;
     }
     const toUpdate = new OrganizerDto(this.authService.getUserId(),name,username5,email,phone,"");
-    //console.log(toUpdate)
+    ////console.log(toUpdate)
     this.apiService.updateOrg(toUpdate).subscribe({
       next:(response : string) =>{
         this.nameS = name;

@@ -18,6 +18,7 @@ import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { LanguageService } from '../../Services/LanguageService';
 import { FormsModule } from '@angular/forms';
+import { SupplierDto } from '../../Models/SupplierDto';
 @Component({
   selector: 'app-organizer-page',
   imports: [MenuBarComponent, RouterModule, ConfirmDialogModule, ToastModule, TranslateModule, Toast,FormsModule],
@@ -44,9 +45,11 @@ export class OrganizerPageComponent implements AfterContentInit, OnInit {
   defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
   previewUrl: string | ArrayBuffer | null = null;
   username : string;
-  getOrganizerCall() {
+getOrganizerCall() {
+  const userRole = this.authService.getUserRole();
+  
+  if (userRole === 'Organizer') {
     this.apiService.getOrganizer(this.authService.getUserId()).subscribe({
-
       next: (response: OrganizerDto) => {
         this.currOrganizer = response;
         this.previewUrl = this.currOrganizer.getImage();
@@ -59,9 +62,9 @@ export class OrganizerPageComponent implements AfterContentInit, OnInit {
           life: 3000
         });
       }
-
-    })
+    });
   }
+}
 
 
 

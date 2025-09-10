@@ -155,7 +155,7 @@ locked = false;
       next: (response: ResourceDto[]) => {
         this.resources = response;
         this.availableResources = this.resources.filter(x => x.getIsAvailable() == 0);
-        //console.log(this.resources)
+        ////console.log(this.resources)
         this.initChart()
       },
 

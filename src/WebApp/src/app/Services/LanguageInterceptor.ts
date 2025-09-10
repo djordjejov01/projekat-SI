@@ -18,11 +18,11 @@ export class LanguageInterceptor implements HttpInterceptor {
         headers: req.headers.set('Accept-Language', language)
       });
       // Log for debugging purposes to see the header being added
-      console.log(`LanguageInterceptor: Adding 'Accept-Language' header with value: ${language}`);
+      //console.log(`LanguageInterceptor: Adding 'Accept-Language' header with value: ${language}`);
       return next.handle(clonedRequest);
     } else {
       // If no language is found, pass the request on without changes.
-      console.log('LanguageInterceptor: No language found in localStorage, skipping header.');
+      //console.log('LanguageInterceptor: No language found in localStorage, skipping header.');
       return next.handle(req);
     }
   }

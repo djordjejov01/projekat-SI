@@ -73,7 +73,7 @@ export class ResetPasswordComponent implements OnInit {
         token: this.token,
         newPassword: this.resetForm.get('newPassword')?.value
       };
-      console.log(resetData)
+      //console.log(resetData)
       this.apiService.resetPassword(resetData).subscribe({
         next: (response) => {
           this.messageService.add({

@@ -29,7 +29,7 @@ export class EditData {
       window.location.reload();
     },
     error: (err : any) => {
-      //console.log('Update Failed', err);
+      ////console.log('Update Failed', err);
     }
    });
 
