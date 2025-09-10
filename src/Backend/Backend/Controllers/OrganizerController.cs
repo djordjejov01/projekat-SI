@@ -500,12 +500,7 @@ namespace Backend.Controllers
                     })
                     .ToList();
 
-                var monthNames = CultureInfo
-                    .CurrentCulture
-                    .DateTimeFormat
-                    .MonthNames
-                    .Take(12)
-                    .ToArray();
+                var monthNames = GetMonthNamesLatin();
 
                 var result = Enumerable.Range(1, 12)
                     .Select(m => new OrganizerStatsDto
@@ -998,6 +993,26 @@ namespace Backend.Controllers
                 .ToListAsync();
 
             return Ok(result);
+        }
+
+        public static string[] GetMonthNamesLatin()
+        {
+            // Ako je current srpski, koristi latinicu
+            if (CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "sr")
+            {
+                return new CultureInfo("sr-Latn-RS")
+                    .DateTimeFormat
+                    .MonthNames
+                    .Take(12)
+                    .ToArray();
+            }
+
+            // Inače koristi trenutnu kulturu
+            return CultureInfo.CurrentCulture
+                .DateTimeFormat
+                .MonthNames
+                .Take(12)
+                .ToArray();
         }
     }
 }

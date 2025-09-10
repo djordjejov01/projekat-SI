@@ -127,8 +127,8 @@ export class AdminPage implements OnInit, AfterContentInit {
       if (name) {
         this.messageService.add({
           severity: 'success',
-          summary: this.translate.instant('welcome.title'),
-          detail: this.translate.instant('welcome.back', { name }),
+           summary: this.translate.instant('welcome.title'),
+          detail: this.translate.instant('welcome.back')+`, ${name}!`,
           life: 3000
         });
       }
