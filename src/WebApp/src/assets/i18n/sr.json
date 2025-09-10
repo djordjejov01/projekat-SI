@@ -243,7 +243,9 @@
     "CONFIRM_CANCEL": "Potvrdi otkazivanje",
     "CONFIRM_DELETE": "Potvrdi brisanje",
     "CONFIRM_PUBLISH": "Potvrdi objavljivanje",
-    "EVENTS": "Događaji"
+    "EVENTS": "Događaji",
+    "SUCCESS":"Uspeh",
+    "ERROR":"Greška"
   },
 
   "ERROR_404": "Greška",

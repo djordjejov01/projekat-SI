@@ -204,7 +204,7 @@ namespace Backend.Controllers
                 .Where(t => t.EventID == eventEntity.EventID)
                 .SumAsync(t => (int?)t.Quota) ?? 0;
 
-            if (dto.Capacity != -1 && dto.Capacity <= currentTotalQuota)
+            if (dto.Capacity != -1 && dto.Capacity < currentTotalQuota)
                 return BadRequest(_localizer["event.capacity_below_quota", currentTotalQuota].ToString());
 
             eventEntity.NumberOfPeople = dto.Capacity;

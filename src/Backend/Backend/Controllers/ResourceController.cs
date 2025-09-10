@@ -26,7 +26,7 @@ namespace Backend.Controllers
         public async Task<IActionResult> GetResourcesForEvent(int eventId)
         {
             var resources = await _context.EventResources
-                .Where(er => er.EventID == eventId && er.IsReservable && er.Event.EndDate > DateTime.UtcNow)
+                .Where(er => er.EventID == eventId && er.IsReservable && er.Event.EndDate > DateTime.UtcNow && er.Status == EventResourceStatus.Approved)
                 .Select(er => new {
                     id = er.ID,
                     supplierID = er.SupplierID,
