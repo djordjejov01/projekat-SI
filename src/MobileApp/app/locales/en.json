@@ -363,10 +363,43 @@
     "reservedOn": "Reserved on",
     "noReservations": "You have no reservations yet."
   }
-  
+  ,
+  "forgotPasswordTitle": "Forgot Password",
+  "forgotPasswordSubtitle": "Enter your email to receive a password reset link.",
+  "sendResetLink": "Send Reset Link",
+  "resetLinkSent": "Password reset link has been sent to your email."
+ ,
 
-  
+  "reservationDetails": {
+    "noReservations": "You have no reservations for this event.",
+    "youHaveTickets": "You have tickets",
+    "ticket": "ticket",
+    "tickets": "tickets",
+    "category": "Category",
+    "description": "Description",
+    "quantity": "Quantity",
+    "reservedAt": "Reserved at",
+    "categoryNames": {
+      "Undefined": "Undefined",
+      "Equipment": "Equipment",
+      "Furniture": "Furniture",
+      "Electrical": "Electrical",
+      "Sanitation": "Sanitation",
+      "FoodAndBeverage": "Food & Beverage",
+      "Medical": "Medical",
+      "Security": "Security",
+      "Merchandise": "Merchandise",
+      "Transportation": "Transportation",
+      "Technology": "Technology"
+    },
+    "availabilityNames": {
+      "Available": "Available",
+      "Unavailable": "Unavailable",
+      "Booked": "Booked"
+    
+  }
 
+    }
 
 }
 

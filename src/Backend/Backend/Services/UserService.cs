@@ -3,6 +3,7 @@ using Backend.Models;
 using Backend.Models.Dto;
 using Backend.Services.Email;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using System;
 using System.Linq;
 using System.Security.Cryptography;
@@ -16,27 +17,29 @@ namespace Backend.Services
     {
         private readonly AppDbContext _context;
         private readonly IEmailVerificationService _emailVerificationService;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public UserService(AppDbContext context,IEmailVerificationService emailVerificationService)
+        public UserService(AppDbContext context, IEmailVerificationService emailVerificationService, IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
             _emailVerificationService = emailVerificationService;
+            _localizer = localizer;
         }
 
         public async Task<UserDto> RegisterAsync(RegisterDto registerDto)
         {
             if (!CommonHelpers.IsPasswordStrong(registerDto.Password))
-                throw new Exception("The password must be at least 8 characters long, include one uppercase letter, one lowercase letter, and one number.");
+                throw new Exception(_localizer["user.password_policy_failed"].ToString());
 
             if (await _context.Users.AnyAsync(u => u.Email == registerDto.Email))
             {
-                throw new Exception("A user with the given email already exists.");
+                throw new Exception(_localizer["common.email_exists"].ToString());
             }
 
 
             if (registerDto.Role != UserRole.Organizer && registerDto.Role != UserRole.Supplier && registerDto.Role!=UserRole.MobileUser)
             {
-                throw new Exception("Role not allowed for public registration.");
+                throw new Exception(_localizer["user.role_not_allowed"].ToString());
             }
 
 
@@ -113,18 +116,18 @@ namespace Backend.Services
         public async Task<UserDto> RegisterWebAsync(RegisterWebDto registerWebDto)
         {
             if (!CommonHelpers.IsPasswordStrong(registerWebDto.Password))
-                throw new Exception("The password must be at least 8 characters long, contain one uppercase letter, one lowercase letter, and one number.");
+                throw new Exception(_localizer["user.password_policy_failed"].ToString());
 
             if (await _context.Users.AnyAsync(u => u.Email == registerWebDto.Email))
-                throw new Exception("A user with this email already exists.");
+                throw new Exception(_localizer["common.email_exists"].ToString());
 
             if (registerWebDto.Role != UserRole.Organizer && registerWebDto.Role != UserRole.Supplier)
-                throw new Exception("Role not permitted for public registration.");
+                throw new Exception(_localizer["user.role_not_allowed"].ToString());
 
             
 
             if (await _context.Users.AnyAsync(u => u.Username == registerWebDto.Username))
-                throw new Exception("Username is already taken.");
+                throw new Exception(_localizer["organizer.username_exists"].ToString());
 
             string hashedPassword = CommonHelpers.HashPassword(registerWebDto.Password);
 
@@ -199,28 +202,28 @@ namespace Backend.Services
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == loginDto.Email);
             if (user == null)
             {
-                throw new Exception("The user with the given email address does not exist.");
+                throw new Exception(_localizer["user.not_found"].ToString());
             }
 
             string hashedInputPassword = CommonHelpers.HashPassword(loginDto.Password);
             if (user.Password != hashedInputPassword)
             {
-                throw new Exception("Wrong password.");
+                throw new Exception(_localizer["user.invalid_credentials"].ToString());
             }
 
             if (!user.IsEmailVerified)
             {
-                throw new Exception("Email address not verified. Please check your email and verify your account.");
+                throw new Exception(_localizer["user.email_not_verified"].ToString());
             }
 
             if (user.Role == UserRole.Supplier && !user.IsActive)
             {
-                throw new Exception("Supplier not yet approved by admin.");
+                throw new Exception(_localizer["supplier.not_approved"].ToString());
             }
 
             if (!user.IsActive)
             {
-                throw new Exception("The user is not active.");
+                throw new Exception(_localizer["user.not_active"].ToString());
             }
 
             user.LastLoginTime = DateTime.UtcNow;

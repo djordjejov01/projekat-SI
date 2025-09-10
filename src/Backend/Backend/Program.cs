@@ -1,6 +1,9 @@
 ﻿using Backend.Models;
 using Backend.Services;
 using Backend.Services.Email;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
+using System.Globalization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +11,10 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using Backend.Models.Dto;
+using Backend;
+using System.Security.Claims;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +39,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IOrganizerService, OrganizerService>();
 builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -50,7 +58,9 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(
-                                                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+                                                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        NameClaimType = ClaimTypes.NameIdentifier,
+        RoleClaimType = ClaimTypes.Role
     };
 });
 builder.Services.AddSwaggerGen(c =>
@@ -96,6 +106,27 @@ builder.WebHost.UseUrls("http://0.0.0.0:11061");
 
 builder.Services.AddScoped<IEmailVerificationService, EmailVerificationService>();
 builder.Services.AddEmail(builder.Configuration);
+
+// Localization services
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+var supportedCultures = new[] { "en", "sr" }
+    .Select(c => new CultureInfo(c))
+    .ToList();
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    
+    options.DefaultRequestCulture = new RequestCulture("en");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+
+    // Rely on Accept-Language (web) and default for others; no query or user.language
+    options.RequestCultureProviders = new IRequestCultureProvider[]
+    {
+        new AcceptLanguageHeaderRequestCultureProvider()
+    };
+});
 
 var app = builder.Build();
 
@@ -150,11 +181,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+
 
 
 //app.UseHttpsRedirection();
@@ -164,6 +191,22 @@ app.UseCors("AllowAll");
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+// Enable request localization middleware
+app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
+
+// Global exception handler returning localized generic message
+app.UseExceptionHandler(handlerApp =>
+{
+    handlerApp.Run(async context =>
+    {
+        var localizer = context.RequestServices.GetRequiredService<Microsoft.Extensions.Localization.IStringLocalizer<SharedResource>>();
+        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        context.Response.ContentType = "application/json";
+        var msg = localizer["common.unexpected_error"].ToString();
+        await context.Response.WriteAsJsonAsync(new { message = msg });
+    });
+});
 
 app.MapPost("/auth/send-verification", async (
     IEmailVerificationService svc,
@@ -205,7 +248,39 @@ app.MapGet("/auth/verify-email", async (
     return Results.Redirect(verified ? successUrl : failUrl);
 });
 
+
+app.MapPost("/auth/forgot-password", async (
+    IPasswordResetService svc,
+    ForgotPasswordDto body,
+    CancellationToken ct) =>
+{
+    await svc.RequestAsync(body.Email, ct);
+    return Results.Ok(new { sent = true });
+});
+
+
+
+app.MapPost("/auth/reset-password", async (
+    IPasswordResetService svc,
+    ResetPasswordDto body,
+    CancellationToken ct) =>
+{
+    if (!Guid.TryParse(body.Token, out var tokenId))
+        return Results.BadRequest(new { ok = false, message = "Invalid token format." });
+
+    var (ok, msg) = await svc.ResetAsync(tokenId, body.NewPassword, ct);
+    return ok ? Results.Ok(new { ok = true }) : Results.BadRequest(new { ok = false, message = msg });
+});
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 app.Run();
+
+
+

@@ -16,13 +16,17 @@ import { OrganizerDto } from '../../Models/OrganizerDto';
 import { SharedService } from '../../Services/shared.service';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { LanguageService } from '../../Services/LanguageService';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-organizer-page',
-  imports: [MenuBarComponent, RouterModule, ConfirmDialogModule, ToastModule, TranslateModule, Toast],
+  imports: [MenuBarComponent, RouterModule, ConfirmDialogModule, ToastModule, TranslateModule, Toast,FormsModule],
   templateUrl: './organizer-page.component.html',
-  styleUrl: './organizer-page.component.css'
+  styleUrls: ['./organizer-page.component.css']
 })
 export class OrganizerPageComponent implements AfterContentInit, OnInit {
+
+  public currentLanguage : string;
 
   constructor(
     private sessionService: SessionService,
@@ -33,7 +37,8 @@ export class OrganizerPageComponent implements AfterContentInit, OnInit {
     private categoryService: CategoryService,
     private apiService: ApiService,
     private sharedService: SharedService,
-    private router : Router) { }
+    private router : Router,
+    private languageService : LanguageService) { }
 
   currOrganizer: OrganizerDto;
   defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
@@ -61,6 +66,8 @@ export class OrganizerPageComponent implements AfterContentInit, OnInit {
 
 
   ngOnInit(): void {
+    const savedLang = this.languageService.language();
+    this.currentLanguage = savedLang || 'en';
     this.username = this.authService.getUserName();
 
     this.sharedService.profileImageChanged$.subscribe(changed => {
@@ -97,11 +104,19 @@ export class OrganizerPageComponent implements AfterContentInit, OnInit {
     this.sessionService.logoutWithConfirmation();
   }
 
-  changeLanguage(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const lang = selectElement.value;
-    this.translate.use(lang);
-  }
+changeLanguage(event: Event) {
+  const selectElement = event.target as HTMLSelectElement;
+  const lang = selectElement.value;
+
+   // Update the currentLanguage property
+    this.currentLanguage = lang;
+
+  // 1. Tell the LanguageService to save the new language to localStorage
+  this.languageService.setLanguage(lang);
+
+  // 2. Tell the frontend translation service to switch languages for the UI
+  this.translate.use(lang);
+}
 
   myProfile(){
     this.router.navigate(["/organizer/my-profile"],{

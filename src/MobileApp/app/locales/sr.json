@@ -333,17 +333,42 @@
     "reservedOn": "Rezervisano",
     "noReservations": "Još uvek nemate rezervacije."
   }
+  ,
+  "forgotPasswordTitle": "Zaboravljena lozinka",
+  "forgotPasswordSubtitle": "Unesite svoj email da biste dobili link za resetovanje lozinke.",
+  "sendResetLink": "Pošalji link",
+  "resetLinkSent": "Link za resetovanje lozinke je poslat na vaš email."
 
-  
+,
+  "reservationDetails": {
+    "noReservations": "Nemate rezervacije za ovaj događaj.",
+    "youHaveTickets": "Imate karte",
+    "ticket": "kartu",
+    "tickets": "karte",
+    "category": "Kategorija",
+    "description": "Opis",
+    "quantity": "Količina",
+    "reservedAt": "Rezervisano",
+    "categoryNames": {
+      "Undefined": "Nedefinisano",
+      "Equipment": "Oprema",
+      "Furniture": "Nameštaj",
+      "Electrical": "Električni uređaji",
+      "Sanitation": "Sanitarije",
+      "FoodAndBeverage": "Hrana i piće",
+      "Medical": "Medicinska oprema",
+      "Security": "Bezbednost",
+      "Merchandise": "Merchandise / Suveniri",
+      "Transportation": "Transport",
+      "Technology": "Tehnologija"
+    },
+    "availabilityNames": {
+      "Available": "Dostupno",
+      "Unavailable": "Nedostupno",
+      "Booked": "Rezervisano"
+    }
 
-
-
-
-
-
-
-
-
+  }
 
 }
 

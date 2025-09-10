@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { API_URL } from '../../config';
+import { apiCall } from '../../config';
 import {
   View,
   Text,
@@ -72,7 +73,7 @@ const handleChangePassword = async () => {
       return;
     }
 
-    const res = await fetch(`${API_URL}/api/User/change-password`, {
+    const res = await apiCall(`${API_URL}/api/User/change-password`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -231,6 +232,7 @@ const styles = StyleSheet.create({
   passwordInput: {
     flex: 1,
     fontSize: 16,
+    color: '#111827', 
   },
   saveButton: {
     backgroundColor: '#2563EB',

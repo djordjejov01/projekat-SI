@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Backend.Helpers;
 using Backend.Services;
 using System.Globalization;
+using Microsoft.Extensions.Localization;
 
 namespace Backend.Controllers
 {
@@ -20,13 +21,15 @@ namespace Backend.Controllers
         private readonly AppDbContext _context;
         private readonly IOrganizerService _organizerService;
         private readonly IWebHostEnvironment _env;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
 
-        public OrganizerController(AppDbContext context, IOrganizerService organizerService, IWebHostEnvironment env)
+        public OrganizerController(AppDbContext context, IOrganizerService organizerService, IWebHostEnvironment env, IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
             _organizerService = organizerService;
             _env = env;
+            _localizer = localizer;
         }
         [HttpGet("get-organizer")]
         public async Task<IActionResult> GetOrganizer(int id)
@@ -42,7 +45,7 @@ namespace Backend.Controllers
             }).FirstOrDefault();
             if (Organizer is not null)
                 return Ok(Organizer);
-            return BadRequest(new { message = "Organizer with that ID does not exist." });
+            return BadRequest(new { message = _localizer["organizer.not_found"].ToString() });
         }
         [HttpPost("change-organizer-picture")]
         [Consumes("multipart/form-data")]
@@ -52,19 +55,19 @@ namespace Backend.Controllers
 
             Organizer organizer = _context.Organizers.Where(o => o.Id == model.Id).First();
             if (organizer is null)
-                return BadRequest("ERROR!");
+                return BadRequest(_localizer["organizer.not_found"].ToString());
 
             
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == model.Id);
             if (user == null)
-                return BadRequest("User not found!");
+                return BadRequest(_localizer["organizer.user_not_found"].ToString());
 
             
             string oldOrganizerImage = organizer.Image;
             string oldUserImage = user.ProfilePicture;
 
-            
-            await CommonHelpers.RemovePhoto(organizer.Image, _env);
+            if(oldOrganizerImage != "images/default-pfp.png")
+                await CommonHelpers.RemovePhoto(organizer.Image, _env);
             organizer.Image = imageName;
             user.ProfilePicture = imageName;
 
@@ -79,12 +82,12 @@ namespace Backend.Controllers
         {
             var organizer = _context.Organizers.Where(o => o.Id == model.Id).FirstOrDefault();
             if (organizer is null)
-                return BadRequest(new { message = "Organizer with that ID does not exist." });
+                return BadRequest(new { message = _localizer["organizer.not_found"].ToString() });
 
             
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == model.Id);
             if (user == null)
-                return BadRequest(new { message = "User not found." });
+                return BadRequest(new { message = _localizer["organizer.user_not_found"].ToString() });
 
             
             if (model.Name != organizer.Name && !string.IsNullOrEmpty(model.Name))
@@ -94,7 +97,7 @@ namespace Backend.Controllers
             if (model.Username != organizer.Username)
             {
                 if (_context.Organizers.Any(o => o.Username == model.Username))
-                    return BadRequest(new { message = "Username already exists." });
+                    return BadRequest(new { message = _localizer["organizer.username_exists"].ToString() });
 
                 organizer.Username = model.Username;
                 user.Username = model.Username;
@@ -104,9 +107,9 @@ namespace Backend.Controllers
             if (model.Email != organizer.Email)
             {
                 if (!CommonHelpers.IsEmailInValidForm(model.Email))
-                    return BadRequest(new { message = "Invalid email format." });
+                    return BadRequest(new { message = _localizer["common.invalid_email"].ToString() });
                 if (_context.Organizers.Any(o => o.Email == model.Email))
-                    return BadRequest(new { message = "Email already exists." });
+                    return BadRequest(new { message = _localizer["common.email_exists"].ToString() });
 
                 organizer.Email = model.Email;
                 user.Email = model.Email;
@@ -116,9 +119,9 @@ namespace Backend.Controllers
             if (model.PhoneNumber != organizer.PhoneNumber)
             {
                 if (!CommonHelpers.IsPhoneNumberValid(model.PhoneNumber))
-                    return BadRequest(new { message = "Invalid phone number format." });
+                    return BadRequest(new { message = _localizer["common.invalid_phone"].ToString() });
                 if (_context.Organizers.Any(o => o.PhoneNumber == model.PhoneNumber))
-                    return BadRequest(new { message = "Phone number already exists." });
+                    return BadRequest(new { message = _localizer["common.phone_exists"].ToString() });
 
                 organizer.PhoneNumber = model.PhoneNumber;
                 user.PhoneNumber = model.PhoneNumber;
@@ -129,7 +132,7 @@ namespace Backend.Controllers
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "User data successfully changed!" });
+            return Ok(new { message = _localizer["organizer.updated"].ToString() });
         }
         [HttpGet("events")]
         public async Task<IActionResult> GetEventsForOrganier(int id)
@@ -166,7 +169,7 @@ namespace Backend.Controllers
             try
             {
                 await _organizerService.CreateEventForOrganizer(model, organizerID);
-                return Created("Event created successfully.", null);
+                return Ok(new { message = _localizer["event.created"].ToString() });
             }
             catch (Exception ex)
             {
@@ -184,10 +187,10 @@ namespace Backend.Controllers
 
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             if (eventEntity.OrganizerID != userId)
-                return NotFound("You do not have permission to edit this event.");
+                return NotFound(_localizer["event.edit_forbidden"].ToString());
 
             if (dto.Capacity != -1 && dto.Capacity <= 0)
-                return BadRequest("Capacity must be -1 (unlimited) or a positive number.");
+                return BadRequest(_localizer["event.capacity_invalid"].ToString());
 
             eventEntity.Title = dto.Title;
             eventEntity.Description = dto.Description;
@@ -202,7 +205,7 @@ namespace Backend.Controllers
                 .SumAsync(t => (int?)t.Quota) ?? 0;
 
             if (dto.Capacity != -1 && dto.Capacity <= currentTotalQuota)
-                return BadRequest($"Cannot set capacity below current total ticket quota ({currentTotalQuota}).");
+                return BadRequest(_localizer["event.capacity_below_quota", currentTotalQuota].ToString());
 
             eventEntity.NumberOfPeople = dto.Capacity;
 
@@ -221,7 +224,7 @@ namespace Backend.Controllers
 
                 await _organizerService.PublishEvent(eventId, organizerId);
 
-                return Ok(new { message = "Event published successfully." });
+                return Ok(new { message = _localizer["event.published"].ToString() });
             }
             catch (ArgumentException ex)
             {
@@ -233,7 +236,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "An error occurred while publishing the event." });
+                return BadRequest(new { message = _localizer["event.published_error"].ToString() });
             }
         }
 
@@ -246,7 +249,7 @@ namespace Backend.Controllers
 
                 await _organizerService.DeleteEvent(eventId, organizerId);
 
-                return Ok(new { message = "Event deleted successfully." });
+                return Ok(new { message = _localizer["event.deleted"].ToString() });
             }
             catch (ArgumentException ex)
             {
@@ -258,7 +261,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "An error occurred while deleting the event." });
+                return BadRequest(new { message = _localizer["event.deleted_error"].ToString() });
             }
         }
         [HttpPost("events/cancel")]
@@ -270,7 +273,7 @@ namespace Backend.Controllers
 
                 await _organizerService.CancelEvent(eventId, organizerId);
 
-                return Ok(new { message = "Event canceled successfully." });
+                return Ok(new { message = _localizer["event.canceled"].ToString() });
             }
             catch (ArgumentException ex)
             {
@@ -282,7 +285,7 @@ namespace Backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "An error occurred while canceling the event." });
+                return BadRequest(new { message = _localizer["event.canceled_error"].ToString() });
             }
         }
 
@@ -373,7 +376,7 @@ namespace Backend.Controllers
             try
             {
                 await _organizerService.CreateActivity(dto);
-                return Created("Activity created successfully.", null);
+                return Ok(new { message = _localizer["organizer.activity_created"].ToString() });
             }
             catch (Exception ex)
             {
@@ -394,18 +397,18 @@ namespace Backend.Controllers
                     .FirstOrDefaultAsync(a => a.ActivityID == dto.ActivityId);
 
                 if (existingActivity == null)
-                    return NotFound(new { message = "Activity not found." });
+                    return NotFound(new { message = _localizer["activity.not_found"].ToString() });
 
                 
                 if (existingActivity.Event.OrganizerID != organizerId)
-                    return StatusCode(403, new { message = "You can only edit activities from your own events." });
+                    return StatusCode(403, new { message = _localizer["activity.own_events_only"].ToString() });
 
                 
                 if (dto.StartDate >= dto.EndDate)
-                    return BadRequest(new { message = "Start time must be before end time." });
+                    return BadRequest(new { message = _localizer["activity.time_order"].ToString() });
 
                 if (dto.StartDate < existingActivity.Event.StartDate || dto.EndDate > existingActivity.Event.EndDate)
-                    return BadRequest(new { message = "Activity time must be within event dates." });
+                    return BadRequest(new { message = _localizer["activity.time_within_event"].ToString() });
 
                 
                 existingActivity.Title = dto.Title;
@@ -418,7 +421,7 @@ namespace Backend.Controllers
                 _context.EventActivities.Update(existingActivity);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = "Activity updated successfully." });
+                return Ok(new { message = _localizer["organizer.activity_updated"].ToString() });
             }
             catch (Exception ex)
             {
@@ -440,17 +443,17 @@ namespace Backend.Controllers
                     .FirstOrDefaultAsync(a => a.ActivityID == activityId);
 
                 if (activity == null)
-                    return NotFound(new { message = "Activity not found." });
+                    return NotFound(new { message = _localizer["activity.not_found"].ToString() });
 
                 
                 if (activity.Event.OrganizerID != organizerId)
-                    return StatusCode(403, new { message = "You can only delete activities from your own events." });
+                    return StatusCode(403, new { message = _localizer["activity.own_events_only"].ToString() });
 
 
                 _context.EventActivities.Remove(activity);
                 await _context.SaveChangesAsync();
 
-                return Ok(new { message = "Activity deleted successfully." });
+                return Ok(new { message = _localizer["organizer.activity_deleted"].ToString() });
             }
             catch (Exception ex)
             {
@@ -535,7 +538,7 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
 
             if (eventEntity == null)
-                return NotFound("You do not have access to this event.");
+                return NotFound(_localizer["organizer.no_access_event"].ToString());
 
             var tickets = await _context.Tickets
                 .Where(t => t.EventID == eventId)
@@ -560,15 +563,15 @@ namespace Backend.Controllers
         {
             if (ticketDto==null)
             {
-                return BadRequest("Ticket information was not provided.");
+                return BadRequest(_localizer["tickets.info_missing"].ToString());
             }
 
             if (ticketDto.Quota <= 0)
-                return BadRequest("Ticket quota must be greater than 0.");
+                return BadRequest(_localizer["tickets.quota_gt_zero"].ToString());
 
             if (ticketDto.Price <= 0)
             {
-                return BadRequest("The ticket must have a price greater than 0 EUR.");
+                return BadRequest(_localizer["tickets.price_gt_zero"].ToString());
             }
 
 
@@ -577,12 +580,12 @@ namespace Backend.Controllers
             var eventEntity = await _context.Events
                 .FirstOrDefaultAsync(e => e.EventID == ticketDto.EventId && e.OrganizerID == organizerId);
             if (eventEntity == null)
-                return NotFound("Event not found or you do not have permission to add a ticket for this event.");
+                return NotFound(_localizer["organizer.event_not_found_or_no_permission"].ToString());
 
             if (ticketDto.ValidFrom >= ticketDto.ValidUntil)
-                return BadRequest("Ticket validFrom must be before validUntil.");
+                return BadRequest(_localizer["tickets.valid_from_before_until"].ToString());
             if (ticketDto.ValidFrom < eventEntity.StartDate || ticketDto.ValidUntil > eventEntity.EndDate)
-                return BadRequest("Ticket validity must be within event dates.");
+                return BadRequest(_localizer["tickets.validity_within_event"].ToString());
 
             var newTicket = new Ticket
             {
@@ -603,9 +606,9 @@ namespace Backend.Controllers
             if (cap != -1) // skip ako je unlimited
             {
                 if (cap == null)
-                    return BadRequest("Event capacity is not set.");
+                    return BadRequest(_localizer["tickets.event_capacity_not_set"].ToString());
                 if (cap < usedQuota + ticketDto.Quota)
-                    return BadRequest($"Total tickets across all types would exceed event capacity ({cap}).");
+                    return BadRequest(_localizer["tickets.exceed_capacity", cap].ToString());
             }
 
             _context.Tickets.Add(newTicket);
@@ -623,7 +626,7 @@ namespace Backend.Controllers
 
             return Ok(new
             {
-                message = "Ticket created successfully.",
+                message = _localizer["tickets.created"].ToString(),
                 ticketId = newTicket.TicketID
             });
         }
@@ -634,11 +637,11 @@ namespace Backend.Controllers
             if (ticketDto == null)
                 return BadRequest();
 
-            if (ticketDto.Quota <= 0) return BadRequest("Ticket quota must be greater than 0.");
+            if (ticketDto.Quota <= 0) return BadRequest(_localizer["tickets.quota_gt_zero"].ToString());
 
             if (ticketDto.Price <= 0)
             {
-                return BadRequest("The ticket must have a price greater than 0 EUR.");
+                return BadRequest(_localizer["tickets.price_gt_zero"].ToString());
             }
 
             int organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
@@ -649,7 +652,7 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(t => t.TicketID == ticketDto.TicketId && t.Event.OrganizerID == organizerId);
 
             if (existingTicket == null)
-                return NotFound("Ticket not found or you do not have permission to edit it.");
+                return NotFound(_localizer["tickets.not_found_or_no_permission", "edit"].ToString());
 
             
             if (ticketDto.EventId != existingTicket.EventID)
@@ -658,19 +661,19 @@ namespace Backend.Controllers
                     .FirstOrDefaultAsync(e => e.EventID == ticketDto.EventId && e.OrganizerID == organizerId);
 
                 if (newEventEntity == null)
-                    return NotFound("Event not found or you do not have permission to use this event.");
+                    return NotFound(_localizer["organizer.event_not_found_or_no_permission"].ToString());
             }
 
 
             var targetEventId = ticketDto.EventId;
             var targetEventEntity = await _context.Events.FirstOrDefaultAsync(e => e.EventID == targetEventId);
             if (targetEventEntity == null)
-                return NotFound("Event not found.");
+                return NotFound(_localizer["events.not_found"].ToString());
 
             if (ticketDto.ValidFrom >= ticketDto.ValidUntil)
-                return BadRequest("Ticket validFrom must be before validUntil.");
+                return BadRequest(_localizer["tickets.valid_from_before_until"].ToString());
             if (ticketDto.ValidFrom < targetEventEntity.StartDate || ticketDto.ValidUntil > targetEventEntity.EndDate)
-                return BadRequest("Ticket validity must be within event dates.");
+                return BadRequest(_localizer["tickets.validity_within_event"].ToString());
 
             var otherQuotas = await _context.Tickets
                 .Where(t => t.EventID == targetEventId && t.TicketID != ticketDto.TicketId)
@@ -678,7 +681,7 @@ namespace Backend.Controllers
 
             var cap = targetEventEntity.NumberOfPeople;
             if (cap != -1 && cap <= otherQuotas + ticketDto.Quota)
-                return BadRequest($"Total tickets across all types would exceed event capacity ({cap}).");
+                return BadRequest(_localizer["tickets.exceed_capacity", cap].ToString());
 
 
             existingTicket.TypeName = ticketDto.Name;
@@ -715,7 +718,7 @@ namespace Backend.Controllers
 
             return Ok(new
             {
-                message = "Ticket updated successfully.",
+                message = _localizer["tickets.updated"].ToString(),
                 ticketId = existingTicket.TicketID
             });
         }
@@ -724,7 +727,7 @@ namespace Backend.Controllers
         public async Task<IActionResult> DeleteTicket([FromBody] int ticketId)
         {
             if (ticketId <= 0)
-                return BadRequest("Invalid ticket ID.");
+                return BadRequest(_localizer["tickets.invalid_id"].ToString());
 
             int organizerId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
 
@@ -734,14 +737,14 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(t => t.TicketID == ticketId && t.Event.OrganizerID == organizerId);
 
             if (existingTicket == null)
-                return NotFound("Ticket not found or you do not have permission to delete it.");
+                return NotFound(_localizer["tickets.not_found_or_no_permission", "delete"].ToString());
 
             
             var purchasedTickets = await _context.UserTickets
                 .CountAsync(ut => ut.TicketID == ticketId);
 
             if (purchasedTickets > 0)
-                return BadRequest("Cannot delete the ticket because there are purchased tickets.");
+                return BadRequest(_localizer["tickets.cannot_delete_with_purchases"].ToString());
 
             var eventId = existingTicket.EventID;
 
@@ -772,7 +775,7 @@ namespace Backend.Controllers
 
             return Ok(new
             {
-                message = "Ticket deleted successfully.",
+                message = _localizer["tickets.deleted"].ToString(),
                 ticketId = ticketId
             });
         }
@@ -796,7 +799,7 @@ namespace Backend.Controllers
             var ourEvent = await _context.Events
                 .FirstOrDefaultAsync(x => x.EventID == eventId);
 
-            if (ourEvent == null) return NotFound($"Event {eventId} not found.");
+            if (ourEvent == null) return NotFound(_localizer["events.not_found"].ToString());
 
             // Retrieve all approved event resources, but exclude the ones from the current event.
             var otherEventResources = await _context.EventResources
@@ -839,7 +842,7 @@ namespace Backend.Controllers
         {
             var supplierResource = await _context.Resources.FindAsync(dto.ResourceID);
             if (supplierResource == null)
-                return NotFound("Resource not found.");
+                return NotFound(_localizer["resources.not_found"].ToString());
 
             var existingEventResource = await _context.EventResources
                 .FirstOrDefaultAsync(er => er.EventID == dto.EventID && er.ResourceID == dto.ResourceID);
@@ -856,7 +859,7 @@ namespace Backend.Controllers
                 // Now, check if the supplier has enough to fulfill the new quantity
                 if (supplierResource.Quantity < dto.Quantity)
                 {
-                    return BadRequest("Not enough quantity available to fulfill the new request.");
+                    return BadRequest(_localizer["resources.not_enough_quantity_request"].ToString());
                 }
 
                 // Update the event resource to the new quantity, dates, and status.
@@ -873,7 +876,7 @@ namespace Backend.Controllers
                 // For a new request, check if the quantity is available.
                 if (supplierResource.Quantity < dto.Quantity)
                 {
-                    return BadRequest("Not enough quantity available for a new request.");
+                    return BadRequest(_localizer["resources.not_enough_quantity_new"].ToString());
                 }
 
                 var newEventResource = new EventResource
@@ -891,7 +894,7 @@ namespace Backend.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return Ok(new { message = "Resource request submitted or updated successfully." });
+            return Ok(new { message = _localizer["organizer.resource_request_ok"].ToString() });
         }
 
         [HttpDelete("eventresource/deallocate/{resourceId}/{eventId}")]
@@ -904,7 +907,7 @@ namespace Backend.Controllers
 
             if (eventResource == null)
             {
-                return NotFound("Event resource allocation not found.");
+                return NotFound(_localizer["organizer.event_resource_not_found"].ToString());
             }
 
             // Condition 1: Only return quantity if the request was Approved and the resource is exhaustible.
@@ -927,7 +930,7 @@ namespace Backend.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Resource deallocated successfully." });
+            return Ok(new { message = _localizer["organizer.resource_deallocated"].ToString() });
         }
 
         [HttpGet("event/{eventId}/eventresources")]
@@ -953,6 +956,48 @@ namespace Backend.Controllers
             }).ToList();
 
             return Ok(dtos);
+        }
+
+        [Authorize(Roles = "Organizer")]
+        [HttpGet("events/{eventId}/ticket-sales")]
+        public async Task<IActionResult> GetTicketSalesForEvent(int eventId)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var ev = await _context.Events
+                .AsNoTracking()
+                .FirstOrDefaultAsync(e => e.EventID == eventId);
+
+            if (ev == null)
+                return NotFound(_localizer["event.not_found"].ToString());
+
+            if (ev.OrganizerID != userId)
+                return NotFound(_localizer["event.edit_forbidden"].ToString());
+
+            var result = await _context.Tickets
+                .Where(t => t.EventID == eventId)
+                .Select(t => new TicketSalesDto
+                {
+                    TicketId = t.TicketID,
+                    TypeName = t.TypeName,
+                    Price = t.Price,
+                    Quota = t.Quota,
+                    Sold = _context.UserTickets.Count(ut => ut.TicketID == t.TicketID),
+                    Unsold = t.Quota - _context.UserTickets.Count(ut => ut.TicketID == t.TicketID),
+                    Revenue = _context.UserTickets.Count(ut => ut.TicketID == t.TicketID) * t.Price,
+                    Buyers = _context.UserTickets
+                        .Where(ut => ut.TicketID == t.TicketID)
+                        .Select(ut => new BuyerDto
+                        {
+                            Username = ut.User.Username,
+                            ProfilePicture = ut.User.ProfilePicture
+                        })
+                        .Distinct()
+                        .ToList()
+                })
+                .ToListAsync();
+
+            return Ok(result);
         }
     }
 }

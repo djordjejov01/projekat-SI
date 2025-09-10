@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { API_URL } from '../../config';
 import { MaterialIcons } from '@expo/vector-icons';
+import { apiCall } from '../../config';
 import { WebView } from 'react-native-webview';
 import {
   View,
@@ -207,7 +208,7 @@ const [agendaData, setAgendaData] = useState<EventsSubeventsActivitiesDto | null
       const headers: any = {};
       if (token) headers.Authorization = `Bearer ${token}`;
 
-      const response = await fetch(`${API_URL}/api/Events/Details?id=${currentId}`, {
+      const response = await apiCall(`${API_URL}/api/Events/Details?id=${currentId}`, {
         headers,
       });
 
@@ -226,7 +227,7 @@ const [agendaData, setAgendaData] = useState<EventsSubeventsActivitiesDto | null
 
       const fetchCategories = async () => {
         try {
-          const response = await fetch(`${API_URL}/api/EventPin/categories`);
+          const response = await apiCall(`${API_URL}/api/EventPin/categories`);
           if (!response.ok) throw new Error('Failed to load categories');
           const data: PinCategory[] = await response.json();
           setPinCategories(data);
@@ -279,7 +280,7 @@ useEffect(() => {
       const headers: any = {};
       if (token) headers.Authorization = `Bearer ${token}`;
 
-      const response = await fetch(`${API_URL}/api/Resource/${event.id}/resources`, { headers });
+      const response = await apiCall(`${API_URL}/api/Resource/${event.id}/resources`, { headers });
       if (!response.ok) throw new Error('Failed to load resources');
 
       const data = await response.json();
@@ -312,7 +313,7 @@ useEffect(() => {
       const headers: any = {};
       if (token) headers.Authorization = `Bearer ${token}`;
 
-      const response = await fetch(`${API_URL}/api/events/subevents-activities/${currentId}`, { headers });
+      const response = await apiCall(`${API_URL}/api/events/subevents-activities/${currentId}`, { headers });
       if (!response.ok) throw new Error(t('failedToLoadAgenda'));
 
 
@@ -340,7 +341,7 @@ useEffect(() => {
       const headers: any = {};
       if (token) headers.Authorization = `Bearer ${token}`;
 
-      const response = await fetch(`${API_URL}/api/Resource/${currentId}/resources`, { headers });
+      const response = await apiCall(`${API_URL}/api/Resource/${currentId}/resources`, { headers });
       if (!response.ok) throw new Error('Failed to load resources');
 
       const data = await response.json();
@@ -405,7 +406,7 @@ const checkUserProfile = async () => {
 }
 
 
-    const response = await fetch(`${API_URL}/api/MobileUser/profile`, {
+    const response = await apiCall(`${API_URL}/api/MobileUser/profile`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -476,7 +477,7 @@ const handleAction = async () => {
     if (token) headers.Authorization = `Bearer ${token}`;
 
     // Ispravan endpoint
-    const response = await fetch(`${API_URL}/api/EventPin/event/?eventId=${eventId}`, {
+    const response = await apiCall(`${API_URL}/api/EventPin/event/?eventId=${eventId}`, {
       headers,
     });
 
@@ -511,7 +512,7 @@ const handleAction = async () => {
 
   const geocodeLocation = async (location: string) => {
     try {
-      const response = await fetch(
+      const response = await apiCall(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(location)}`,
         {
           headers: {
@@ -557,7 +558,7 @@ const handleAction = async () => {
 
       const method = event.isFavorite ? 'DELETE' : 'POST';
 
-      const res = await fetch(`${API_URL}/api/Favorites`, {
+      const res = await apiCall(`${API_URL}/api/Favorites`, {
         method,
         headers: {
           'Content-Type': 'application/json',
@@ -600,16 +601,18 @@ const handleAction = async () => {
   return (
     <ScrollView style={styles.container}>
       <TouchableOpacity
-        onPress={() => {
-          if (from === 'search') router.replace('/search');
-          else if (from === 'favorites') router.replace('/favorites');
-          else if (from === 'reservationDetails') router.back();
-          else router.replace('/events');
-        }}
-        style={styles.backButton}
-      >
-        <Ionicons name="arrow-back" size={24} color="#333" />
-      </TouchableOpacity>
+  onPress={() => {
+    if (from === 'search') router.replace('/search');
+    else if (from === 'favorites') router.replace('/favorites');
+    else if (from === 'reservationDetails') router.back();
+    else if (from === 'ticketDetails') router.back(); // dodato
+    else router.replace('/events');
+  }}
+  style={styles.backButton}
+>
+  <Ionicons name="arrow-back" size={24} color="#333" />
+</TouchableOpacity>
+
 
 
       <Text style={styles.naslov}>{t('aboutEvent')}</Text>

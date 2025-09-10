@@ -1,47 +1,34 @@
 import { Component, OnInit } from '@angular/core';
 import { FullCalendarModule } from '@fullcalendar/angular';
-import { CalendarOptions, DateSelectArg, EventInput } from '@fullcalendar/core/index.js';
+import { CalendarOptions } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import listPlugin from '@fullcalendar/list'
+import listPlugin from '@fullcalendar/list';
+import srLocale from '@fullcalendar/core/locales/sr';
 import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { ApiService } from '../../../Services/api.service';
 import { AuthService } from '../../../Services/auth.service';
-import { Event } from '../../../Models/Event';
 import { CategoryService } from '../../../Services/EventCategoryService';
 import { ResourceDto } from '../../../Models/ResourceDto';
 import { MessageService } from 'primeng/api';
 import { EventResourceCalendarResponse } from '../../../Interfaces/EventResourceCalendarResponse';
+import { TranslateModule,TranslateService, LangChangeEvent } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-supplier-calendar',
-  imports: [FullCalendarModule],
+  imports: [TranslateModule,FullCalendarModule],
   templateUrl: './supplier-calendar.component.html',
-  styleUrl: './supplier-calendar.component.css'
+  styleUrls: ['./supplier-calendar.component.css']
 })
 export class SupplierCalendarComponent implements OnInit {
-  
-  constructor(
-    private confirmationDialogService : ConfirmationDialogService,
-    private router : Router,
-    private datePipe : DatePipe,
-    private apiService : ApiService,
-    private authService : AuthService,
-    private categoryService : CategoryService,
-  private messageService : MessageService) {}
 
   calendarOptions: CalendarOptions = {
-    plugins: [dayGridPlugin,timeGridPlugin,interactionPlugin,listPlugin],
+    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin],
     selectable: true,
-    selectAllow: (selectInfo) => {
-      const today = new Date();
-      today.setHours(0,0,0,0);
-      return selectInfo.start >= today
-    },
-    selectMirror: true,
+    locale: srLocale,
     initialView: 'dayGridMonth',
     headerToolbar: {
       left: 'prev,next today',
@@ -59,47 +46,64 @@ export class SupplierCalendarComponent implements OnInit {
       hour12: false
     },
     events: []
-  }
-  reusableResources : ResourceDto[];
+  };
 
-  bookedResources : EventResourceCalendarResponse[] = [];
+  reusableResources: ResourceDto[];
+  bookedResources: EventResourceCalendarResponse[] = [];
+
+  constructor(
+    private confirmationDialogService: ConfirmationDialogService,
+    private router: Router,
+    private datePipe: DatePipe,
+    private apiService: ApiService,
+    private authService: AuthService,
+    private categoryService: CategoryService,
+    private messageService: MessageService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
+    this.loadResources();
+    this.loadBookedResources();
+    this.setCalendarButtonTexts();
 
-      this.apiService.getReusableResources().subscribe({
-          
-                next: (response: any) => {
-                  this.reusableResources = response;
-                },
-                error: (errorResponse) => {
-                  this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: errorResponse.message,
-                    life: 3000
-                  });
-                }
-          
-              })
-      this.apiService.getBookedResources().subscribe({
-          
-                next: (response: any) => {
-                  this.bookedResources = response;
-                  this.calendarOptions.events = this.mapToCalendarEvents(this.bookedResources);
-                },
-                error: (errorResponse) => {
-                  this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: errorResponse.message,
-                    life: 3000
-                  });
-                }
-          
-              })
-      
-      
+    // Pretplata na promenu jezika
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+      this.setCalendarButtonTexts();
+    });
+  }
 
+  private loadResources() {
+    this.apiService.getReusableResources().subscribe({
+      next: (response: any) => {
+        this.reusableResources = response;
+      },
+      error: (errorResponse) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.instant('ERROR'),
+          detail: errorResponse.message,
+          life: 3000
+        });
+      }
+    });
+  }
+
+  private loadBookedResources() {
+    this.apiService.getBookedResources().subscribe({
+      next: (response: any) => {
+        this.bookedResources = response;
+        this.calendarOptions.events = this.mapToCalendarEvents(this.bookedResources);
+      },
+      error: (errorResponse) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.instant('ERROR'),
+          detail: errorResponse.message,
+          life: 3000
+        });
+      }
+    });
   }
 
   private isAllDayEvent(start: Date, end: Date): boolean {
@@ -112,19 +116,35 @@ export class SupplierCalendarComponent implements OnInit {
     );
   }
 
-  // Pretvaranje u FullCalendar format
-mapToCalendarEvents(apiResponse: EventResourceCalendarResponse[]) {
-  return apiResponse.map(item => {
-    const start = new Date(item.EventStartDate);
-    const end = new Date(item.EventEndDate);
+  private mapToCalendarEvents(apiResponse: EventResourceCalendarResponse[]) {
+    return apiResponse.map(item => {
+      const start = new Date(item.EventStartDate);
+      const end = new Date(item.EventEndDate);
 
-    return {
-      title: item.ResourceName,   // ili item.eventTitle ako želiš event ime
-      start: start.toISOString(),
-      end: end.toISOString(),
-      allDay: this.isAllDayEvent(start, end)
+      return {
+        title: item.ResourceName,
+        start: start.toISOString(),
+        end: end.toISOString(),
+        allDay: this.isAllDayEvent(start, end)
+      };
+    });
+  }
+
+  private setCalendarButtonTexts() {
+    if (!this.calendarOptions) return;
+
+    this.calendarOptions.buttonText = {
+      today: this.translate.instant('KALENDAR.TODAY'),
+      month: this.translate.instant('KALENDAR.MONTH'),
+      week: this.translate.instant('KALENDAR.WEEK'),
+      day: this.translate.instant('KALENDAR.DAY'),
+      list: this.translate.instant('KALENDAR.LIST')
     };
-  });
-}
+    this.calendarOptions.allDayText = this.translate.instant('CALENDAR.ALL_DAY');
 
+    // Rerender kalendara da bi se dugmići odmah osvežili
+    if ((window as any).calendarApi) {
+      (window as any).calendarApi.render();
+    }
+  }
 }

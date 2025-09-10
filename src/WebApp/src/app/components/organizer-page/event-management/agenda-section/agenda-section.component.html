@@ -1,93 +1,140 @@
-    <div class="agenda">
-        <div class="agenda-header">
-            <h1 class="font-archivo">Event Agenda</h1>
-            <div class="buttons" *ngIf = "eventBasicInfo.getStatusLabel()!='Canceled'">
-                    <button *ngIf="eventBasicInfo.getParentEventId() === 0"  icon="pi pi-plus" (click)="subeventModal.show()"><i class="pi pi-plus"></i>Add Subevent</button>
-                    <button  icon="pi pi-plus" (click)="activityModal.show()" ><i class="pi pi-plus" ></i>Add Activity</button>
-            </div>
-        </div>
-        
-        <hr class="custom-hr">
-
-        <!-- Subevents and their activities -->
-
-        <p-accordion [value]="['0']" [multiple]="true">
-            @for (subevent of subevents; track subevent.id) 
-            {
-                <p-accordion-panel [value]="subevent.id">
-                    <p-accordion-header class="m-0">
-                        
-                        <span class="flex items-center justify-between w-full">
-                        <span class="flex items-center gap-2">
-                            <i class="pi pi-calendar-clock" style="color: #636AE8"></i>
-                            <span>{{ subevent.title }}  {{ subevent.startDateTime | date: 'HH:mm' }} - {{ subevent.endDateTime | date: 'HH:mm' }}</span>
-                        </span>
-
-                        <button pButton type="button" icon="pi pi-external-link" class="p-button-text p-button-sm"
-                                (click)="goToSubeventManagement(subevent.id)" pTooltip="Manage Subevent" tooltipPosition="top"></button>
-                        </span>
-
-                    </p-accordion-header>
-                    <p-accordion-content>
-                        <p-accordion [value]="['0']" [multiple]="true">
-                            @for (activity of subevent.activities; track activity.id) 
-                            {
-                                <p-accordion-panel [value]="activity.id">
-                                    <p-accordion-header>
-                                        <span class="flex items-center gap-2 w-full">
-                                            <span><i class="pi pi-check-circle" style="color: #636AE8"></i></span>
-                                            <span>{{ activity.title }}</span>
-                                        </span>
-                                    </p-accordion-header>
-                                    <p-accordion-content>
-                                        <ol>
-                                            <li>Scheduled for: {{ activity.startDateTime | date: 'HH:mm' }} - {{ activity.endDateTime | date: 'HH:mm' }}</li>
-                                            <li>Description: {{ activity.description }}</li>
-                                        </ol>
-                                    </p-accordion-content>
-                                </p-accordion-panel>
-                            }
-                        </p-accordion>
-                    </p-accordion-content>
-                </p-accordion-panel>
-            }
-
-            <!-- Current event activities -->
-             
-            <p-accordion [value]="['0']" [multiple]="true">
-                @for (activity of activities; track activity.id) 
-                {
-                    <p-accordion-panel [value]="activity.id">
-                        <p-accordion-header>
-                            <span class="flex items-center gap-2 w-full">
-                                <span><i class="pi pi-check-circle" style="color: #636AE8"></i></span>
-                                <span>{{ activity.title }}</span>
-                            </span>
-                        </p-accordion-header>
-                        <p-accordion-content>
-                            <ol>
-                                <li>Scheduled for: {{ activity.startDateTime | date: 'HH:mm' }} - {{ activity.endDateTime | date: 'HH:mm' }}</li>
-                                <li>Description: {{ activity.description }}</li>
-                            </ol>
-                        </p-accordion-content>
-                    </p-accordion-panel>
-                }
-            </p-accordion>
-
-        </p-accordion>
-
-        <div class="no-agenda flex flex-col items-center justify-center text-center gap-4 py-8" *ngIf="subevents.length === 0 && activities.length === 0">
-            <i class="pi pi-calendar-times text-4xl text-gray-400"></i>
-            <h2 class="text-xl font-semibold text-gray-700">No Agenda Added</h2>
-            <p class="text-gray-500 max-w-md">
-                Here you can add sub-events and activities that make up your event's program.
-            </p>
-            <div class="flex gap-4">
-                <button *ngIf="eventBasicInfo.getParentEventId() == 0" pButton type="button" icon="pi pi-plus" label="Add Subevent" (click)="subeventModal.show()"></button>
-                <button pButton type="button" icon="pi pi-plus" label="Add Activity" class="p-button-outlined" (click)="activityModal.show()"></button>
-            </div>
-        </div>
+<div class="agenda">
+  <div class="agenda-header">
+    <h1 class="font-archivo">{{ 'AGENDA.TITLE' | translate }}</h1>
+    <div class="buttons" *ngIf="eventBasicInfo.getStatusLabel()!='Canceled'">
+      <button *ngIf="eventBasicInfo.getParentEventId() === 0" (click)="subeventModal.show()">
+        <i class="pi pi-plus"></i>{{ 'AGENDA.ADD_SUBEVENT' | translate }}
+      </button>
+      <button (click)="activityModal.show()">
+        <i class="pi pi-plus"></i>{{ 'AGENDA.ADD_ACTIVITY' | translate }}
+      </button>
     </div>
+  </div>
 
-    <app-activity-modal #activityModal [parentEventBasicInfo]="eventBasicInfo" (activityCreated)="onActivityCreated()"></app-activity-modal>
-    <app-subevent-modal #subeventModal [parentEventBasicInfo]="eventBasicInfo" (subeventCreated)="onSubeventCreated()"></app-subevent-modal>
+  <hr class="custom-hr">
+
+  <p-accordion [value]="['0']" [multiple]="true">
+    @for (subevent of subevents; track subevent.id) {
+      <p-accordion-panel [value]="subevent.id">
+        <p-accordion-header class="m-0">
+          <span class="flex items-center justify-between w-full">
+            <span class="flex items-center gap-2">
+              <i class="pi pi-calendar-clock" style="color: #636AE8"></i>
+              <span>
+                {{ subevent.title }}
+                {{ subevent.startDateTime | date: 'HH:mm' }} -
+                {{ subevent.endDateTime | date: 'HH:mm' }}
+              </span>
+            </span>
+            <button
+              pButton
+              type="button"
+              icon="pi pi-external-link"
+              class="p-button-text p-button-sm"
+              (click)="goToSubeventManagement(subevent.id); $event.stopPropagation()"
+              pTooltip="{{ 'AGENDA.MANAGE_SUBEVENT' | translate }}"
+              tooltipPosition="top">
+            </button>
+          </span>
+        </p-accordion-header>
+        <p-accordion-content>
+          <p-accordion [value]="['0']" [multiple]="true">
+            @for (activity of subevent.activities; track activity.id) {
+              <p-accordion-panel [value]="activity.id">
+                <p-accordion-header>
+                  <span class="flex items-center justify-between w-full">
+                    <span class="flex items-center gap-2">
+                      <span><i class="pi pi-check-circle" style="color: #636AE8"></i></span>
+                      <span>{{ activity.title }}</span>
+                    </span>
+                    <span class="flex gap-2" *ngIf="eventBasicInfo.getStatusLabel()!='Canceled'">
+                      <button
+                        pButton
+                        type="button"
+                        icon="pi pi-pencil"
+                        class="p-button-text p-button-sm"
+                        (click)="editActivity(activity); $event.stopPropagation()"
+                        pTooltip="{{ 'AGENDA.EDIT_ACTIVITY' | translate }}"
+                        tooltipPosition="top">
+                      </button>
+                      <button
+                        pButton
+                        type="button"
+                        icon="pi pi-trash"
+                        class="p-button-text p-button-sm p-button-danger"
+                        (click)="deleteActivity(activity.id); $event.stopPropagation()"
+                        pTooltip="{{ 'AGENDA.DELETE_ACTIVITY' | translate }}"
+                        tooltipPosition="top">
+                      </button>
+                    </span>
+                  </span>
+                </p-accordion-header>
+                <p-accordion-content>
+                  <ol>
+                    <li>{{ 'AGENDA.SCHEDULED_FOR' | translate }}: {{ activity.startDateTime | date: 'HH:mm' }} - {{ activity.endDateTime | date: 'HH:mm' }}</li>
+                    <li>{{ 'AGENDA.DESCRIPTION' | translate }}: {{ activity.description }}</li>
+                  </ol>
+                </p-accordion-content>
+              </p-accordion-panel>
+            }
+          </p-accordion>
+        </p-accordion-content>
+      </p-accordion-panel>
+    }
+    @for (activity of activities; track activity.id) {
+      <p-accordion-panel [value]="activity.id">
+        <p-accordion-header>
+          <span class="flex items-center justify-between w-full">
+            <span class="flex items-center gap-2 w-full">
+              <span><i class="pi pi-check-circle" style="color: #636AE8"></i></span>
+              <span>{{ activity.title }}</span>
+            </span>
+            <span class="flex gap-2" *ngIf="eventBasicInfo.getStatusLabel()!='Canceled'">
+              <button
+                pButton
+                type="button"
+                icon="pi pi-pencil"
+                class="p-button-text p-button-sm"
+                (click)="editActivity(activity); $event.stopPropagation()"
+                pTooltip="{{ 'AGENDA.EDIT_ACTIVITY' | translate }}"
+                tooltipPosition="top">
+              </button>
+              <button
+                pButton
+                type="button"
+                icon="pi pi-trash"
+                class="p-button-text p-button-sm p-button-danger"
+                (click)="deleteActivity(activity.id); $event.stopPropagation()"
+                pTooltip="{{ 'AGENDA.DELETE_ACTIVITY' | translate }}"
+                tooltipPosition="top">
+              </button>
+            </span>
+          </span>
+        </p-accordion-header>
+        <p-accordion-content>
+          <ol>
+            <li>{{ 'AGENDA.SCHEDULED_FOR' | translate }}: {{ activity.startDateTime | date: 'HH:mm' }} - {{ activity.endDateTime | date: 'HH:mm' }}</li>
+            <li>{{ 'AGENDA.DESCRIPTION' | translate }}: {{ activity.description }}</li>
+          </ol>
+        </p-accordion-content>
+      </p-accordion-panel>
+    }
+  </p-accordion>
+
+  <div
+    class="no-agenda flex flex-col items-center justify-center text-center gap-4 py-8"
+    *ngIf="subevents.length === 0 && activities.length === 0">
+    <i class="pi pi-calendar-times text-4xl text-gray-400"></i>
+    <h2 class="text-xl font-semibold text-gray-700">{{ 'AGENDA.NO_AGENDA' | translate }}</h2>
+    <p class="text-gray-500 max-w-md" *ngIf="eventBasicInfo.getStatusLabel()!='Canceled'">
+      {{ 'AGENDA.NO_AGENDA_DESC' | translate }}
+    </p>
+    <div class="flex gap-4" *ngIf="eventBasicInfo.getStatusLabel()!='Canceled'">
+      <button *ngIf="eventBasicInfo.getParentEventId() == 0" pButton type="button" icon="pi pi-plus" label="{{ 'AGENDA.ADD_SUBEVENT' | translate }}" (click)="subeventModal.show()"></button>
+      <button pButton type="button" icon="pi pi-plus" label="{{ 'AGENDA.ADD_ACTIVITY' | translate }}" class="p-button-outlined" (click)="activityModal.show()"></button>
+    </div>
+  </div>
+</div>
+
+<app-activity-modal #activityModal [parentEventBasicInfo]="eventBasicInfo" (activityCreated)="onActivityCreated()" (activityUpdated)="onActivityUpdated()"></app-activity-modal>
+<app-subevent-modal #subeventModal [parentEventBasicInfo]="eventBasicInfo" (subeventCreated)="onSubeventCreated()"></app-subevent-modal>

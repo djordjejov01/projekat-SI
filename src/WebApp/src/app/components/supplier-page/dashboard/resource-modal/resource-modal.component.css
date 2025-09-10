@@ -65,3 +65,10 @@
     height: 32px;
     width: 32px;
 }
+
+@media screen and (width <= 738px){
+     .quantity-measure, .category-type{
+        flex-direction: column;
+        gap: 1rem;
+     }
+}

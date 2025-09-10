@@ -3,6 +3,11 @@ using Backend.Models;
 using Backend.Models.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Backend.Services
 {
@@ -10,11 +15,13 @@ namespace Backend.Services
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public OrganizerService(AppDbContext context, IWebHostEnvironment env)
+        public OrganizerService(AppDbContext context, IWebHostEnvironment env, IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
             _env = env;
+            _localizer = localizer;
         }
         public List<Event> GetUpcomingEventsForOrganier(int id)
         {
@@ -23,7 +30,7 @@ namespace Backend.Services
                 .Where(e => e.OrganizerID == id && e.ParentEventId == 0).ToList();
             if (events == null || !events.Any())
             {
-                throw new Exception("No events found for this organizer.");
+                throw new Exception(_localizer["organizer.no_events_found"].ToString());
             }
             List<Event> upcoming = events.Where(e => e.StartDate >= now).OrderBy(e => e.StartDate).ToList();
             return upcoming;
@@ -32,10 +39,12 @@ namespace Backend.Services
         {
             var now = DateTime.Now;
             var events = _context.Events
-                .Where(e => e.OrganizerID == id && e.ParentEventId == 0).ToList();
+                .Where(e => e.OrganizerID == id && e.ParentEventId == 0)
+                .OrderBy(e => e.EventID)
+                .ToList();
             if (events == null || !events.Any())
             {
-                throw new Exception("No events found for this organizer.");
+                throw new Exception(_localizer["organizer.no_events_found"].ToString());
             }
             return events;
         }
@@ -43,29 +52,28 @@ namespace Backend.Services
         {
             if (model == null)
             {
-                throw new ArgumentNullException(nameof(model), "Event model cannot be null.");
+                throw new ArgumentNullException(nameof(model), _localizer["common.model_cannot_be_null"].ToString());
             }
             if (organizerID <= 0)
             {
-                throw new ArgumentException("Invalid organizer ID.", nameof(organizerID));
+                throw new ArgumentException(_localizer["common.invalid_id"].ToString(), nameof(organizerID));
             }
             if (model.Tickets != null && model.Tickets.Any())
             {
                 if (model.Tickets.Any(t => t.Price <= 0))
                 {
-                    throw new ArgumentException("Tickets must have a price greater than 0.");
+                    throw new ArgumentException(_localizer["tickets.price_gt_zero"].ToString());
                 }
             }
             if (model.Capacity != -1 && model.Capacity <= 0)
-                throw new ArgumentException("Capacity must be -1 (unlimited) or a positive number.");
+                throw new ArgumentException(_localizer["event.capacity_invalid"].ToString());
 
             //provera da broj karata ne predje kapacitet
             var totalQuota = model.Tickets?.Sum(t => t.Quota) ?? 0;
             if (model.Capacity != -1 && totalQuota > model.Capacity)
             {
-                throw new ArgumentException("Total ticket quota cannot exceed event capacity.");
+                throw new ArgumentException(_localizer["event.capacity_below_quota"].ToString());
             }
-
             string imageName = null;
             if (model.ImageFile != null)
             {
@@ -139,41 +147,41 @@ namespace Backend.Services
         public async Task PublishEvent(int eventId, int organizerId)
         {
             if (eventId <= 0)
-                throw new ArgumentException("Invalid event ID.", nameof(eventId));
+                throw new ArgumentException(_localizer["common.invalid_id"].ToString(), nameof(eventId));
 
             if (organizerId <= 0)
-                throw new ArgumentException("Invalid organizer ID.", nameof(organizerId));
+                throw new ArgumentException(_localizer["common.invalid_id"].ToString(), nameof(organizerId));
 
             var eventEntity = await _context.Events
                 .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
 
             if (eventEntity == null)
-                throw new ArgumentException("Event not found or you don't have permission to publish it.");
+                throw new ArgumentException(_localizer["event.not_found_or_permission"].ToString());
 
             if (eventEntity.Status == EventStatus.Published)
-                throw new InvalidOperationException("Event is already published.");
+                throw new InvalidOperationException(_localizer["event.already_published"].ToString());
 
             if (eventEntity.Status == EventStatus.Canceled)
-                throw new InvalidOperationException("Cannot publish a canceled event.");
+                throw new InvalidOperationException(_localizer["event.cannot_publish_canceled"].ToString());
 
             
             if (string.IsNullOrWhiteSpace(eventEntity.Title))
-                throw new InvalidOperationException("Event title is required.");
+                throw new InvalidOperationException(_localizer["event.title_required"].ToString());
 
             if (string.IsNullOrWhiteSpace(eventEntity.Location))
-                throw new InvalidOperationException("Event location is required.");
+                throw new InvalidOperationException(_localizer["event.location_required"].ToString());
             
             if (eventEntity.StartDate == default(DateTime))
-                throw new InvalidOperationException("Event start date is required.");
+                throw new InvalidOperationException(_localizer["event.start_date_required"].ToString());
 
             if (eventEntity.EndDate == default(DateTime))
-                throw new InvalidOperationException("Event end date is required.");
+                throw new InvalidOperationException(_localizer["event.end_date_required"].ToString());
 
             if (eventEntity.StartDate >= eventEntity.EndDate)
-                throw new InvalidOperationException("Event start date must be before end date.");
+                throw new InvalidOperationException(_localizer["event.start_date_before_end_date"].ToString());
 
             if (eventEntity.StartDate <= DateTime.UtcNow)
-                throw new InvalidOperationException("Event start date must be in the future.");
+                throw new InvalidOperationException(_localizer["event.start_date_future"].ToString());
 
             if (!eventEntity.isFree)
             {
@@ -181,12 +189,12 @@ namespace Backend.Services
                     .AnyAsync(t => t.EventID == eventId);
 
                 if (!hasTickets)
-                    throw new InvalidOperationException("Paid events must have tickets before publishing.");
+                    throw new InvalidOperationException(_localizer["event.paid_event_tickets_required"].ToString());
             }
 
 
             if (eventEntity.EndDate < DateTime.Today)
-                throw new InvalidOperationException("Event end date cannot be in the past.");
+                throw new InvalidOperationException(_localizer["event.end_date_past"].ToString());
 
 
             
@@ -198,16 +206,16 @@ namespace Backend.Services
             {
                 
                 if (string.IsNullOrWhiteSpace(subevent.Title))
-                    throw new InvalidOperationException($"Sub-event '{subevent.Title}' must have a title.");
+                    throw new InvalidOperationException(_localizer["subevent.title_required", subevent.Title].ToString());
 
                 if (string.IsNullOrWhiteSpace(subevent.Location))
-                    throw new InvalidOperationException($"Sub-event '{subevent.Location}' must have a location.");
+                    throw new InvalidOperationException(_localizer["subevent.location_required", subevent.Title].ToString());
 
                 if (subevent.StartDate >= subevent.EndDate)
-                    throw new InvalidOperationException($"Sub-event '{subevent.Title}' start date must be before end date.");
+                    throw new InvalidOperationException(_localizer["subevent.start_date_before_end_date", subevent.Title].ToString());
 
                 if (subevent.StartDate < DateTime.Today)
-                    throw new InvalidOperationException($"Sub-event '{subevent.Title}' start date cannot be in the past.");
+                    throw new InvalidOperationException(_localizer["subevent.start_date_past", subevent.Title].ToString());
             }
 
             eventEntity.Status = EventStatus.Published;
@@ -242,11 +250,11 @@ namespace Backend.Services
                     .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
 
                 if (eventEntity == null)
-                    throw new ArgumentException("Event not found or you don't have permission to delete it.");
+                    throw new ArgumentException(_localizer["event.not_found_or_permission"].ToString());
 
             
                 if (eventEntity.Status != EventStatus.Draft && eventEntity.Status != EventStatus.Canceled)
-                    throw new InvalidOperationException("Event can be deleted only if it's Draft or Canceled.");
+                    throw new InvalidOperationException(_localizer["event.delete_only_draft_canceled"].ToString());
 
             
                 var activities = await _context.EventActivities
@@ -381,10 +389,10 @@ namespace Backend.Services
         public async Task CancelEvent(int eventId,int organizerId)
         {
             if (eventId <= 0)
-                throw new ArgumentException("Invalid event ID.", nameof(eventId));
+                throw new ArgumentException(_localizer["common.invalid_id"].ToString(), nameof(eventId));
 
             if (organizerId <= 0)
-                throw new ArgumentException("Invalid organizer ID.", nameof(organizerId));
+                throw new ArgumentException(_localizer["common.invalid_id"].ToString(), nameof(organizerId));
 
 
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -393,18 +401,18 @@ namespace Backend.Services
                        .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == organizerId);
 
                 if (eventEntity == null)
-                    throw new ArgumentException("Event not found or you don't have permission to cancel it.");
+                    throw new ArgumentException(_localizer["event.not_found_or_permission"].ToString());
 
             
                 if (eventEntity.Status == EventStatus.Canceled)
-                    throw new InvalidOperationException("Event is already canceled.");
+                    throw new InvalidOperationException(_localizer["event.already_canceled"].ToString());
 
                 if (eventEntity.Status == EventStatus.Draft)
-                    throw new InvalidOperationException("Draft events should be deleted, not canceled.");
+                    throw new InvalidOperationException(_localizer["event.draft_delete"].ToString());
 
             
                 if (eventEntity.StartDate <= DateTime.UtcNow)
-                    throw new InvalidOperationException("Cannot cancel an event that has already started.");
+                    throw new InvalidOperationException(_localizer["event.cannot_cancel_started"].ToString());
 
 
                 var hasPurchasedTickets = await _context.UserTickets
@@ -532,7 +540,7 @@ namespace Backend.Services
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException($"Error releasing resources for event {eventId}: {ex.Message}", ex);
+                throw new InvalidOperationException(_localizer["common.resource_release_error", eventId].ToString(), ex);
             }
         }
 
@@ -646,7 +654,7 @@ namespace Backend.Services
         public Task CreateActivity(ActivityDto activity)
         {
             if (activity == null)
-                throw new ArgumentNullException(nameof(activity), "Activity cannot be null.");
+                throw new ArgumentNullException(nameof(activity), _localizer["common.activity_cannot_be_null"].ToString());
 
             var startUtc = DateTime.SpecifyKind(activity.StartDate, DateTimeKind.Utc);
             var endUtc = DateTime.SpecifyKind(activity.EndDate, DateTimeKind.Utc);

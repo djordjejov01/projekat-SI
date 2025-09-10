@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { apiCall } from '../../config';
 import {
   View,
   Text,
@@ -49,8 +50,8 @@ export default function TicketPurchaseScreen() {
         const token = await AsyncStorage.getItem('token');
 
         const [ticketsRes, resourcesRes] = await Promise.all([
-          fetch(`${API_URL}/api/Ticket/events/${eventId}/tickets`),
-          fetch(`${API_URL}/api/Resource/${eventId}/resources`, {
+          apiCall(`${API_URL}/api/Ticket/events/${eventId}/tickets`),
+          apiCall(`${API_URL}/api/Resource/${eventId}/resources`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         ]);

@@ -30,7 +30,8 @@ export class AuthGuard implements CanActivate{
                     this.messageService.add({
                     severity: 'warn',
                     summary: 'Access Denied',
-                    detail: 'You do not have permission to view that page.'
+                    detail: 'You do not have permission to view that page.',
+                    life: 3000
                     });
 
                     return false;

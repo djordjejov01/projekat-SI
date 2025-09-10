@@ -14,7 +14,8 @@
         AppDbContext db,
         IEmailSender email,
         ILogger<EmailVerificationService> log,
-        IConfiguration config
+        IConfiguration config,
+        Microsoft.Extensions.Localization.IStringLocalizer<SharedResource> localizer
     ) : IEmailVerificationService
     {
         public async Task SendVerificationAsync(User user, CancellationToken ct = default)
@@ -39,11 +40,11 @@
             var verifyUrl = $"{baseUrl}/auth/verify-email?token={token.Id:N}";
 
             var html = $@"
-<h2>Verify your email</h2>
-<p>Hi {(user.Username ?? "there")}, click the button below to verify your email address.</p>
-<p><a href=""{verifyUrl}"" style=""display:inline-block;padding:10px 16px;text-decoration:none;border-radius:6px;border:1px solid #ccc"">Verify Email</a></p>
-<p>If you didn’t request this, you can ignore this email.</p>
-";
+                        <h2>Verify your email</h2>
+                        <p>Hi {(user.Username ?? "there")}, click the button below to verify your email address.</p>
+                        <p><a href=""{verifyUrl}"" style=""display:inline-block;padding:10px 16px;text-decoration:none;border-radius:6px;border:1px solid #ccc"">Verify Email</a></p>
+                        <p>If you didn’t request this, you can ignore this email.</p>
+                        ";
 
             await email.SendAsync(new EmailMessage
             {
@@ -62,9 +63,9 @@
                 .Include(t => t.User)
                 .FirstOrDefaultAsync(t => t.Id == tokenId, ct);
 
-            if (token is null) return (false, "Token not found.");
-            if (token.ConsumedAtUtc is not null) return (false, "Token already used.");
-            if (DateTime.UtcNow > token.ExpiresAtUtc) return (false, "Token expired.");
+            if (token is null) return (false, localizer["email_verification.token_not_found"].ToString());
+            if (token.ConsumedAtUtc is not null) return (false, localizer["email_verification.token_used"].ToString());
+            if (DateTime.UtcNow > token.ExpiresAtUtc) return (false, localizer["email_verification.token_expired"].ToString());
 
             // idempotent: if already verified, still consume and return ok
             token.User.IsEmailVerified = true;
@@ -77,7 +78,7 @@
             foreach (var o in others) o.ConsumedAtUtc = DateTime.UtcNow;
 
             await db.SaveChangesAsync(ct);
-            return (true, "Email verified.");
+            return (true, localizer["email_verification.verified"].ToString());
         }
     }
 

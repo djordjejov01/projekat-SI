@@ -4,70 +4,108 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { API_URL } from '../../config';
 import { useTranslation } from 'react-i18next';
+import { apiCall } from '../../config';
+import { Ionicons } from '@expo/vector-icons';
 
 type Ticket = {
-  id: number;
-  token: string;
-  typeName: string;
+  UserTicketID: number;
+  ticketType: string;
 };
 
 type ResourceReservation = {
+  ReservationID: number;
   ResourceName: string;
+  ResourceCategory: string;  // dodato
+  ResourceDescription: string; // dodato
   Quantity: number;
   ReservedAt: string;
-  Tickets: Ticket[];
+  UserTicketID: number | null;
+  EventTitle: string;
+  EventID: number;
+  EventDate: string;      // dodato
+  EventEndDate: string;   // dodato
+  UserTickets: Ticket[];
 };
+
 
 export default function ReservationDetails() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { eventID } = useLocalSearchParams();
+  const params = useLocalSearchParams<{ eventID: string | string[]; from?: string }>();
+  const eventID = Array.isArray(params.eventID) ? params.eventID[0] : params.eventID;
   const [loading, setLoading] = useState(true);
   const [eventTitle, setEventTitle] = useState('');
-  const [resources, setResources] = useState<ResourceReservation[]>([]);
+  const [reservations, setReservations] = useState<ResourceReservation[]>([]);
 
-  useEffect(() => {
-    const fetchDetails = async () => {
-      try {
-        const token = await AsyncStorage.getItem('token');
-        if (!token) return;
-
-        const res = await fetch(`${API_URL}/api/Resource/my-reservations`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-
-        const eventData = data.filter((r: any) => r.EventID == eventID);
-        if (!eventData.length) return;
-
-        setEventTitle(eventData[0].EventTitle);
-
-        // Grupisanje po resursima
-        const grouped: Record<string, ResourceReservation> = {};
-        eventData.forEach((r: any) => {
-          if (!grouped[r.ResourceName]) {
-            grouped[r.ResourceName] = {
-              ResourceName: r.ResourceName,
-              Quantity: r.Quantity,
-              ReservedAt: r.ReservedAt,
-              Tickets: r.UserTickets ?? [],
-            };
-          } else {
-            grouped[r.ResourceName].Quantity += r.Quantity;
-            grouped[r.ResourceName].Tickets.push(...(r.UserTickets ?? []));
-          }
-        });
-
-        setResources(Object.values(grouped));
-      } catch (err) {
-        console.error(err);
-      } finally {
+useEffect(() => {
+  const fetchDetails = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
         setLoading(false);
+        return;
       }
-    };
 
-    fetchDetails();
-  }, [eventID]);
+      const res = await apiCall(`${API_URL}/api/Resource/my-reservations`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        console.error('Failed to fetch reservations');
+        setLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+      const eventReservations = data.filter((r: any) => r.eventID == eventID);
+
+      if (eventReservations.length === 0) {
+        setLoading(false);
+        return;
+      }
+
+      setEventTitle(eventReservations[0].eventTitle);
+
+      // Grupisanje resursa po ResourceName
+      const groupedResources: Record<string, ResourceReservation> = {};
+      eventReservations.forEach((r: any) => {
+        const key = r.resourceName;
+        if (!groupedResources[key]) {
+          groupedResources[key] = {
+            ReservationID: r.reservationID,
+            ResourceName: r.resourceName,
+            ResourceCategory: r.resourceCategory,
+            ResourceDescription: r.resourceDescription,
+            Quantity: r.quantity,
+            ReservedAt: r.reservedAt,
+            UserTicketID: r.userTicketID,
+            EventTitle: r.eventTitle,
+            EventID: r.eventID,
+            EventDate: r.eventDate,
+            EventEndDate: r.eventEndDate,
+            UserTickets: r.userTickets ?? [],
+          };
+        } else {
+          // Saberi količinu
+          groupedResources[key].Quantity += r.quantity;
+          // Poslednji datum rezervacije
+          if (new Date(r.reservedAt) > new Date(groupedResources[key].ReservedAt)) {
+            groupedResources[key].ReservedAt = r.reservedAt;
+          }
+        }
+      });
+
+      setReservations(Object.values(groupedResources));
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchDetails();
+}, [eventID]);
+
 
   if (loading) {
     return (
@@ -78,63 +116,116 @@ export default function ReservationDetails() {
     );
   }
 
-  return (
-    <ScrollView style={styles.container}>
-      <TouchableOpacity onPress={() => router.push(`../event/${eventID}`)}>
+  if (reservations.length === 0) {
+    return (
+      <View style={styles.container}>
         <Text style={styles.eventTitle}>{eventTitle}</Text>
+        <Text style={styles.noReservationsText}>{t('reservationDetails.noReservations')}</Text>
+      </View>
+    );
+  }
+
+  const userTickets = reservations[0].UserTickets;
+
+  return (
+    <View style={styles.container}>
+      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <Ionicons name="arrow-back" size={28} color="black" />
       </TouchableOpacity>
+    <View style={{ alignItems: 'center', marginBottom: 15 }}>
+<TouchableOpacity
+  disabled={userTickets.length === 0}
+  onPress={() =>
+    router.push({
+      pathname: '/event/[id]',
+      params: { id: eventID, from: 'reservationDetails' },
+    })
+  }
+>
+  <Text style={[styles.eventTitle, userTickets.length === 0 && { color: '#95a5a6' }]}>
+    {eventTitle}
+  </Text>
+</TouchableOpacity>
 
-      {resources.map((res, idx) => (
-        <View key={idx} style={styles.resourceCard}>
-          <Text style={styles.resourceName}>{res.ResourceName}</Text>
-          <Text style={styles.detailText}>{t('reservationDetails.quantity')}: {res.Quantity}</Text>
-          <Text style={styles.detailText}>{t('reservationDetails.reservedAt')}: {new Date(res.ReservedAt).toLocaleString()}</Text>
 
-          {res.Tickets && res.Tickets.length > 0 && (
-            <View style={styles.ticketsSection}>
-              <Text style={styles.ticketsHeader}>Karte:</Text>
-              {res.Tickets.map((ticket, index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => router.push({
-                    pathname: '../tickets/ticketDetails',
-                    params: {
-                      ticketIDs: JSON.stringify([ticket.id]),
-                      validationTokens: JSON.stringify([ticket.token]),
-                      eventID: eventID,
-                      eventName: eventTitle,
-                      from: 'reservationDetails',
-                    }
-                  })}
-                >
-                  <Text style={styles.ticketLink}>→ {ticket.typeName}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-        </View>
-      ))}
+  {/* Datum od-do */}
+  <Text style={styles.eventDate}>
+    {new Date(reservations[0].EventDate).toLocaleDateString()} - {new Date(reservations[0].EventEndDate).toLocaleDateString()}
+  </Text>
+{/* Tipovi karata */}
+{userTickets.length > 0 && (
+  <View style={{ marginTop: 10, alignItems: 'center' }}>
+    <Text style={styles.ticketsInfo}>{t('reservationDetails.youHaveTickets')}:</Text>
+    <Text style={styles.ticketText}>
+      {Object.entries(
+        userTickets.reduce((acc: Record<string, number>, ticket) => {
+          const type = ticket.ticketType ?? 'Unknown';
+          acc[type] = (acc[type] || 0) + 1;
+          return acc;
+        }, {})
+      )
+        .map(([type, count]) => `${type} (x${count})`)
+        .join(', ')}
+    </Text>
+  </View>
+)}
 
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => router.back()}
-      >
-        <Text style={styles.backButtonText}>{t('buttons.backToMyReservations')}</Text>
-      </TouchableOpacity>
-    </ScrollView>
+
+</View>
+
+{/* Lista resursa */}
+<ScrollView style={{ marginTop: 10 }}>
+  {reservations.map(res => (
+    <View key={res.ReservationID} style={styles.resourceCard}>
+      <Text style={styles.resourceName}>{res.ResourceName}</Text>
+      {/* Tip resursa preveden */}
+      <Text style={styles.detailText}>
+        {t('reservationDetails.category')}:{' '}
+        {t(`reservationDetails.categoryNames.${res.ResourceCategory}`)}
+      </Text>
+      <Text style={styles.detailText}>
+        {t('reservationDetails.description')}: {res.ResourceDescription}
+      </Text>
+      <Text style={styles.detailText}>
+        {t('reservationDetails.quantity')}: {res.Quantity}
+      </Text>
+      <Text style={styles.detailText}>
+        {t('reservationDetails.reservedAt')}: {new Date(res.ReservedAt).toLocaleString()}
+      </Text>
+    </View>
+  ))}
+</ScrollView>
+
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 25, backgroundColor: '#fff' },
-  eventTitle: { fontSize: 24, fontWeight: '700', color: '#3478f6', marginBottom: 20 },
+  backButton: { marginBottom: 15 },
+  eventTitle: { fontSize: 24, fontWeight: '700', color: '#3478f6', marginBottom: 10, textDecorationLine: 'underline' },
+  ticketsInfo: { fontSize: 16, marginBottom: 15, color: '#2c3e50' },
+  noReservationsText: { fontSize: 18, textAlign: 'center', marginTop: 50, color: '#95a5a6' },
   resourceCard: { backgroundColor: '#fafafa', borderRadius: 12, padding: 20, marginBottom: 20 },
   resourceName: { fontSize: 20, fontWeight: '700', marginBottom: 8 },
   detailText: { fontSize: 16, marginBottom: 6 },
-  ticketsSection: { marginTop: 10 },
-  ticketsHeader: { fontSize: 16, fontWeight: '700', marginBottom: 6 },
-  ticketLink: { fontSize: 16, color: '#1A56DB', marginBottom: 4 },
-  backButton: { backgroundColor: '#1A56DB', padding: 16, borderRadius: 12, alignItems: 'center', marginTop: 20 },
-  backButtonText: { color: 'white', fontSize: 18, fontWeight: '700', textAlign: 'center' },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  ticketCard: {
+  backgroundColor: '#e1f0ff',
+  borderRadius: 10,
+  paddingVertical: 6,
+  paddingHorizontal: 12,
+  marginTop: 5,
+},
+ticketText: {
+  fontSize: 14,
+  fontWeight: '500',
+  color: '#0047FF',
+},
+eventDate: { 
+  fontSize: 16, 
+  color: '#555', 
+  marginBottom: 8 
+},
+
 });

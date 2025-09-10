@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../../config';
+import { apiCall } from '../../config';
 import {
   View,
   Text,
@@ -46,7 +47,7 @@ export default function PersonalInfoScreen() {
         const token = await AsyncStorage.getItem('token');
         if (!token) return;
 
-        const res = await fetch(`${API_URL}/api/MobileUser/profile`, {
+        const res = await apiCall(`${API_URL}/api/MobileUser/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -107,43 +108,47 @@ export default function PersonalInfoScreen() {
     );
   };
 
-  const uploadProfileImage = async (): Promise<string | null> => {
-    if (!newProfileImage) return profilePicture;
-    try {
-      const token = await AsyncStorage.getItem('token');
-      if (!token) throw new Error(t('personalInfo.notLoggedIn'));
+const uploadProfileImage = async (): Promise<string | null> => {
+  if (!newProfileImage) return profilePicture;
+  try {
+    const token = await AsyncStorage.getItem('token');
+    if (!token) throw new Error(t('personalInfo.notLoggedIn'));
 
-      const formData = new FormData();
-      // @ts-ignore
-      formData.append('Image', {
-        uri: newProfileImage.uri,
-        name: 'profile.jpg',
-        type: 'image/jpeg',
-      });
+    const formData = new FormData();
+    // @ts-ignore
+    formData.append('Image', {
+      uri: newProfileImage.uri,
+      name: 'profile.jpg',
+      type: 'image/jpeg',
+    });
 
-      const res = await fetch(`${API_URL}/api/MobileUser/profile-image`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data',
-        },
-        body: formData,
-      });
 
-      if (!res.ok) throw new Error(await res.text());
-      const data = await res.json();
-      return data.imageUrl || null;
-    } catch (error) {
-      console.error('Upload error:', error);
-      return null;
+    const res = await fetch(`${API_URL}/api/MobileUser/profile-image`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(err);
     }
-  };
+
+    const data = await res.json();
+   return normalizeImageUrl(data.imageUrl || null);
+  } catch (error) {
+    console.error('Upload error:', error);
+    return null;
+  }
+};
 
   const deleteProfileImageOnServer = async () => {
     const token = await AsyncStorage.getItem('token');
     if (!token) throw new Error(t('personalInfo.notLoggedIn'));
 
-    const res = await fetch(`${API_URL}/api/MobileUser/delete-profile-picture`, {
+    const res = await apiCall(`${API_URL}/api/MobileUser/delete-profile-picture`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -173,7 +178,7 @@ export default function PersonalInfoScreen() {
         uploadedImageUrl = '';
       }
 
-      const res = await fetch(`${API_URL}/api/MobileUser/profileUpdate`, {
+      const res = await apiCall(`${API_URL}/api/MobileUser/profileUpdate`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -244,11 +249,12 @@ export default function PersonalInfoScreen() {
         <TouchableOpacity onPress={pickImage} style={styles.editButton}>
           <Ionicons name="pencil" size={24} color="#2563EB" />
         </TouchableOpacity>
-        {profilePicture ? (
+        {(profilePicture || newProfileImage) && (
           <TouchableOpacity onPress={handleDeleteImage} style={styles.deleteButton}>
             <Ionicons name="trash" size={24} color="red" />
           </TouchableOpacity>
-        ) : null}
+        )}
+
       </View>
 
       <Text style={styles.label}>{t('personalInfo.firstName')}</Text>

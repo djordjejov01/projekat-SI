@@ -104,19 +104,20 @@
       <button type="submit" class="bg-[#636AE8] text-white rounded-md px-4 py-2 hover:bg-[#575FCE]">
         {{"RACC" | translate}}
       </button>
+      
+    </form>
 
-      <div class="have-account">
+    <div class="have-account">
         <p class="text-[#636AE8]" routerLink="/login">
           {{"YESACC" | translate}}
         </p>
-        <select (change)="changeLanguage($event)">
-      <option value="sr">Srpski</option>
-      <option value="en">English</option>
-    </select>
+            <select [(ngModel)]="currentLanguage" (change)="changeLanguage($event)">
+                <option value="sr" >Srpski</option>
+                <option value="en">English</option>
+            </select>
       </div>
-      
-    </form>
     
   </div>
+  
 
 </section>
