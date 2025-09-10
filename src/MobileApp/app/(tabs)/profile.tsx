@@ -300,19 +300,22 @@ export default function ProfileScreen() {
   );
 }
 
+import { Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
-    paddingHorizontal: 24,
-    paddingTop: 40, 
-    paddingBottom: 20,
+    flex: 1,
+    paddingHorizontal: width * 0.06, // ~6% širine ekrana
+    paddingTop: height * 0.05,
+    paddingBottom: height * 0.02,
     backgroundColor: '#fff',
-    justifyContent: 'space-between', 
   },
   header: {
-    fontSize: 24,
+    fontSize: width * 0.06,
     fontWeight: '900',
-    marginBottom: 8, 
+    marginBottom: height * 0.01,
     textAlign: 'center',
     color: '#1a202c',
     letterSpacing: 0.8,
@@ -322,47 +325,80 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#7c3aed',
     borderRadius: 16,
-    padding: 16, 
-    marginBottom: 20, 
+    padding: width * 0.04,
+    marginBottom: height * 0.025,
     shadowColor: '#7c3aed',
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 8 },
     shadowRadius: 15,
     elevation: 10,
   },
+  avatarImage: {
+    width: width * 0.18,
+    height: width * 0.18,
+    borderRadius: width * 0.09,
+    backgroundColor: '#eee',
+  },
+  name: {
+    color: 'white',
+    fontWeight: '900',
+    fontSize: width * 0.05,
+  },
+  email: {
+    color: 'white',
+    fontSize: width * 0.04,
+    marginTop: 2,
+    flexWrap: 'wrap',
+  },
+  credits: {
+    color: 'white',
+    fontSize: width * 0.045,
+    fontWeight: '700',
+    marginTop: 2,
+  },
   rowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 24, 
+    marginBottom: height * 0.03,
   },
-statBox: {
-  backgroundColor: '#edeff1ff',
-  flex: 1,
-  alignItems: 'center',
-  justifyContent: 'center',
-  paddingVertical: 16,
-  marginHorizontal: 6,
-  borderRadius: 16,
-  shadowColor: '#000',
-  shadowOpacity: 0.05,
-  shadowOffset: { width: 0, height: 4 },
-  shadowRadius: 10,
-  elevation: 3,
-  minHeight: 90, 
-},
-
-  sectionTitle: {
-    fontSize: 18,
+  statBox: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: height * 0.02,
+    marginHorizontal: 4,
+    borderRadius: 16,
+    backgroundColor: '#edeff1ff',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+    elevation: 3,
+    minHeight: height * 0.12,
+  },
+  statNumber: {
+    fontSize: width * 0.07,
     fontWeight: '900',
-    marginBottom: 12, 
+    marginBottom: 4,
+    color: '#4a5568',
+  },
+  statLabel: {
+    fontSize: width * 0.035,
+    color: '#6b7280',
+    textAlign: 'center',
+  },
+  sectionTitle: {
+    fontSize: width * 0.045,
+    fontWeight: '900',
+    marginBottom: 8,
     color: '#2d3748',
   },
   option: {
     backgroundColor: '#edeff1ff',
-    paddingVertical: 14, 
-    paddingHorizontal: 16, 
+    paddingVertical: height * 0.018,
+    paddingHorizontal: width * 0.04,
     borderRadius: 14,
-    marginBottom: 5,
+    marginBottom: 6,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -372,56 +408,28 @@ statBox: {
     shadowRadius: 6,
     elevation: 2,
   },
- 
-  avatarImage: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
-    backgroundColor: '#eee',
-  },
-  name: {
-    color: 'white',
-    fontWeight: '900',
-    fontSize: 20,
-  },
-  email: {
-    color: 'white',
-    fontSize: 15,
-    marginTop: 4,
-  },
-  edit: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: '700',
-  },
- 
-  statNumber: {
-    fontSize: 26,
-    fontWeight: '900',
-    marginBottom: 6,
-    color: '#4a5568',
-  },
-  statLabel: {
-    fontSize: 13,
-    color: '#6b7280',
-    textAlign: 'center',
-    lineHeight: 16,
-  },
   optionArrow: {
-    fontSize: 20,
+    fontSize: width * 0.05,
     fontWeight: '700',
     color: '#9ca3af',
   },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    paddingHorizontal: width * 0.06,
+  },
   message: {
-    fontSize: 16,
+    fontSize: width * 0.04,
     color: '#555',
     textAlign: 'center',
-    marginBottom: 28,
+    marginBottom: height * 0.03,
   },
   loginButton: {
     backgroundColor: '#6d28d9',
-    paddingVertical: 14,
-    paddingHorizontal: 32,
+    paddingVertical: height * 0.018,
+    paddingHorizontal: width * 0.1,
     borderRadius: 30,
     alignSelf: 'center',
     shadowColor: '#6d28d9',
@@ -433,75 +441,41 @@ statBox: {
   loginText: {
     color: '#fff',
     fontWeight: '900',
-    fontSize: 16,
+    fontSize: width * 0.045,
   },
-  centeredContainer: {
+  modalOverlay: {
     flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingHorizontal: 24,
   },
-modalOverlay: {
-  flex: 1,
-  backgroundColor: 'rgba(0, 0, 0, 0.7)',
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-
-modalBackground: {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  zIndex: 1,
-},
-
-modalContent: {
-  zIndex: 2,
-  backgroundColor: 'transparent',
-  justifyContent: 'center',
-  alignItems: 'center',
-  padding: 10,
-},
-
-
+  modalContent: {
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+  },
   modalImage: {
-    width: 300,
-    height: 300,
+    width: width * 0.7,
+    height: width * 0.7,
     borderRadius: 12,
   },
-
-credits: {
-  color: 'white',
-  fontSize: 18,
-  fontWeight: '700',
-  marginTop: 4,
-},
-langOption: {
-  paddingVertical: 12,
-  paddingHorizontal: 16,
-},
-optionText: {
-  fontSize: 16,
-  fontWeight: '500',
-},
-modalOverlay1: {
-  flex: 1,
-  backgroundColor: 'rgba(0,0,0,0.3)',
-  justifyContent: 'flex-start',
-  alignItems: 'flex-end',
-  paddingTop: 80,
-  paddingRight: 20,
-},
-modalContent1: {
-  backgroundColor: '#fff',
-  borderRadius: 10,
-  paddingVertical: 10,
-  width: 150,
-  elevation: 4,
-},
-
-
+  modalContent1: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    paddingVertical: 10,
+    width: width * 0.4,
+    elevation: 4,
+  },
+  langOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  optionText: {
+    fontSize: width * 0.04,
+    fontWeight: '500',
+  },
 });
+
+
+
