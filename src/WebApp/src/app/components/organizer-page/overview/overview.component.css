@@ -142,3 +142,73 @@ h2{
 @media screen and (max-width: 768px) {
 
 }
+
+
+/* Kontejner za centriranje sadržaja */
+.no-events-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh; /* Podesi visinu prema potrebi, 60% visine prozora */
+  text-align: center;
+  margin-left: -83px;
+}
+
+/* Stilovi za centralni sadržaj */
+.no-events-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px; /* Razmak između elemenata */
+  padding: 40px;
+  background-color: var(--surface-card); /* Pozadinska boja kartice, prilagođava se PrimeNG temi */
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+/* Stilovi za naslov */
+.no-events-content h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color); /* Boja teksta, prilagođava se PrimeNG temi */
+  margin: 0;
+}
+
+/* Stilovi za dugme */
+.create-event-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: #6366f1; /* Primarna boja, možeš je prilagoditi */
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.create-event-button:hover {
+  background-color: #4f46e5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.create-event-button .pi {
+  font-size: 1.1rem;
+}
+
+/* Animacija za pojavljivanje */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
