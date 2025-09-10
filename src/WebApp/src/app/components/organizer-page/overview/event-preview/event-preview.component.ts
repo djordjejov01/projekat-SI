@@ -1,33 +1,46 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { Event } from '../../../../Models/Event';
-import { DatePipe } from '@angular/common';
 import { AuthService } from '../../../../Services/auth.service';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-event-preview',
-  imports: [TranslateModule,DatePipe, CommonModule],
+  imports: [TranslateModule, CommonModule],
   templateUrl: './event-preview.component.html',
-  styleUrl: './event-preview.component.css'
+  styleUrls: ['./event-preview.component.css']
 })
-export class EventPreviewComponent implements OnInit{
-  // @Input() title: string;
-  // @Input() status: string;
-  // @Input() time: string;
-  // @Input() host: string;
-  // @Input() location: string;
-  // @Input() image: string;
-  @Input() event : Event;
-  currentUser : string;
+export class EventPreviewComponent implements OnInit {
 
-  constructor(private router : Router, private authService : AuthService) {}
+  @Input() event: Event;
+  currentUser: string;
+  translatedStatus: string;
+
+  constructor(
+    private router: Router, 
+    private authService: AuthService,
+    private translateService: TranslateService
+  ) {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getUserName();
+    this.translateStatus();
+    // Re-translate if language changes dynamically
+    this.translateService.onLangChange.subscribe(() => {
+      this.translateStatus();
+    });
   }
 
-  manageEvent(event: Event){
-    this.router.navigate(['/organizer/event-management', event.getEventId()])
+  manageEvent(event: Event) {
+    this.router.navigate(['/organizer/event-management', event.getEventId()]);
+  }
+
+  private translateStatus() {
+    const statusKey = 'EVENT_STATUS_' + this.event.getStatusLabel().toUpperCase();
+    this.translateService.get(statusKey).subscribe(translated => {
+      this.translatedStatus = translated;
+    });
   }
 }

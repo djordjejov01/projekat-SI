@@ -55,6 +55,7 @@
     justify-content: center;
     align-items: center;
     gap: 1rem;
+    padding-top: 2rem;
     /* padding-top: 5rem; */
 }
 
@@ -65,4 +66,9 @@
 
 ::ng-deep .p-dialog-content {
     overflow: visible !important;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-content {
+  overflow-y: auto; /* Use 'auto' instead of 'scroll' for a cleaner look */
+  max-height: 70vh; /* This is the key. It sets a maximum height. */
 }

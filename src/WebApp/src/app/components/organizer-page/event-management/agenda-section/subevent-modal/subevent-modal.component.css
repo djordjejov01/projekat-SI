@@ -65,3 +65,15 @@
     height: 32px;
     width: 32px;
 }
+:host ::ng-deep .p-dialog .p-dialog-content {
+  overflow-y: auto; /* Use 'auto' instead of 'scroll' for a cleaner look */
+  max-height: 70vh; /* This is the key. It sets a maximum height. */
+}
+
+@media screen and (width < 968px){
+
+     .dates, .location-capacity{
+        flex-direction: column;
+     }
+    
+}

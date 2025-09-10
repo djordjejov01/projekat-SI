@@ -1,7 +1,7 @@
 <p-dialog
   [modal]="true"
   [(visible)]="visible"
-  [style]="{ width: '50rem', height: '55rem' }"
+  [style]="{ 'max-height': '70rem', 'overflow-y': 'auto', 'width': '45rem' }"
   (onHide)="onCancleClick()"
   [closable]="false"
   [dismissableMask]="false"
@@ -10,14 +10,14 @@
   <ng-template pTemplate="header">
     <div class="flex justify-between items-start w-full">
       <div class="formTitle">
-        <h3>Create New Subevent</h3>
-        <p>Fill in the details below to set up your subevent.</p>
+        <h3>{{ 'SUBEVENT.CREATE_TITLE' | translate }}</h3>
+        <p>{{ 'SUBEVENT.CREATE_DESC' | translate }}</p>
       </div>
       <button
         type="button"
         class="p-dialog-header-icon p-link p-button-rounded p-button-text exit-button"
         (click)="onCancleClick()"
-        pTooltip="Close"
+        pTooltip="{{ 'COMMON.CLOSE' | translate }}"
         tooltipPosition="left"
       >
         <i class="pi pi-times"></i>
@@ -25,131 +25,134 @@
     </div>
   </ng-template>
     
-    <form action="" [formGroup]="subeventForm" class="activityForm">
+  <form action="" [formGroup]="subeventForm" class="activityForm">
+    <div class="form-inputs">
 
-        <div class="form-inputs">
+      <!-- Title -->
+      <div class="input-wrapper">
+        <p>{{ 'SUBEVENT.TITLE' | translate }}</p>
+        <p-floatlabel class="w-full md:w-56" variant="on">
+          <input type="text" pInputText placeholder=" " formControlName="title" inputId="title"
+            class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
+          <label for="title">{{ 'SUBEVENT.TITLE_PLACEHOLDER' | translate }}</label>
+        </p-floatlabel>
+      </div>
 
-            <div  class="input-wrapper">
+      <!-- Description -->
+      <div class="input-wrapper">
+        <p>{{ 'SUBEVENT.DESCRIPTION' | translate }}</p>
+        <p-floatlabel class="w-full md:w-56" variant="on">
+          <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30"
+            style="resize: none"
+            class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
+          <label for="description">{{ 'SUBEVENT.DESCRIPTION_PLACEHOLDER' | translate }}</label>
+        </p-floatlabel>
+      </div>
 
-                <p>Subevent Title</p>
-                <p-floatlabel class="w-full md:w-56" variant="on">
-                    <input  type="text"  pInputText  placeholder=" "  formControlName="title"  inputId="title"  class="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500" />
-                <label for="title">Enter Subevent Title</label>
-                </p-floatlabel>
-
-            </div>
-
-            <div  class="input-wrapper">
-
-                <p>Description</p>
-                <p-floatlabel class="w-full md:w-56" variant="on">
-                    <textarea pTextarea id="description" placeholder=" " formControlName="description" rows="5" cols="30" style="resize: none" class="h-full w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"></textarea>
-                <label for="description">Describe Your Subevent</label>
-                </p-floatlabel>
-
-            </div>
-
-            <div class="location-capacity">
-
-                <div  class="input-wrapper">
-
-                    <p>Location</p>
-                    <p-floatlabel class="w-full md:w-56" variant="on">
-                            <p-autoComplete
-                                inputId="location"
-                                formControlName="location"
-                                [suggestions]="filteredLocations"
-                                (completeMethod)="searchLocations($event)"
-                                field="display_name"
-                                [minLength]="2"
-                                class="w-full md:w-56"
-                                (onSelect)="onLocationSelect($event)"
-                                [style]="{ width: '100%' }"
-                                inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                                >
-                            </p-autoComplete>
-                    <label for="location">Enter Event Location (e.g. Zoom, Conference Hall A)</label>
-                    </p-floatlabel>
-
-                </div>
-
-                <div  class="input-wrapper">
-
-                    <p>Capacity</p>
-                        
-
-                    <p-floatlabel class="w-full md:w-56" variant="on">
-                        <p-inputnumber
-                            formControlName="capacity"
-                            inputId="capacity"
-                            [min]="1"
-                            [useGrouping]="false"
-                            [showButtons]="false"
-                            [max]="parentEventBasicInfo.getCapacity()"
-                            [style]="{ width: '100%' }"
-                            inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"
-                        ></p-inputnumber>
-                        <label for="capacity">Enter Event Capacity</label>
-                    </p-floatlabel>
-
-                    <div class="flex items-center gap-2">
-                        <p-checkbox formControlName="isUnlimitedCapacity" inputId="isUnlimitedCapacity" name="isUnlimitedCapacity" binary="true" size="large" />
-                        <label for="isUnlimitedCapacity" >Unlimited Capacity</label>
-                    </div>
-
-                    </div>
-
-            </div>
-
-
-            <div class="dates">
-
-                <div  class="input-wrapper">
-                    <p>Start Date and Time</p>
-                    <p-floatlabel class="w-full md:w-56"  variant="on">
-                        <p-datepicker inputId="startDateTime" placeholder=" " formControlName="startDateTime" [showTime]="true" hourFormat="24" [minDate]="parentEventBasicInfo.getStartDate()" [maxDate]="parentEventBasicInfo.getEndDate()" [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
-                            <label for="startDateTime">Start Date And Time</label>
-                    </p-floatlabel>
-                </div>
-
-                 <div  class="input-wrapper">
-                    <p>End Date And Time</p>
-                    <p-floatlabel class="w-full md:w-56"  variant="on">
-                        <p-datepicker inputId="endDateTime" placeholder=" " formControlName="endDateTime" [showTime]="true" hourFormat="24" [minDate]="parentEventBasicInfo.getStartDate()" [maxDate]="parentEventBasicInfo.getEndDate()" [style]="{ width: '100%' }"  inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500"/>
-                        <label for="endDateTime">End Date And Time</label>
-                    </p-floatlabel>
-                </div>
-
-            </div>
-
-            <div  class="input-wrapper">
-
-                <p>Category</p>
-                <p-floatlabel class="w-full" variant="on">
-                    <p-select  [options]="categories"  name="category"  formControlName="category"  placeholder=" "  inputId="category"  class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]"/>
-                    <label for="category">Select Event Category</label>
-                </p-floatlabel>
-
-            </div>
-
-            <div class="form-buttons">
-                <p-button 
-                label="Save Changes"
-                icon="pi pi-pen-to-square"
-                [raised]="true"
-                (onClick)="submitForm()"
-                severity="primary"
-                ></p-button>
-
-                <p-button 
-                    label="Cancel"
-                    icon="pi pi-times"
-                    [raised]="true"
-                    severity="secondary"
-                    type="button"
-                    (onClick)="onCancleClick()"
-                ></p-button>
-            </div>
+      <!-- Location + Capacity -->
+      <div class="location-capacity">
+        <div class="input-wrapper">
+          <p>{{ 'SUBEVENT.LOCATION' | translate }}</p>
+          <p-floatlabel class="w-full md:w-56" variant="on">
+            <p-autoComplete
+              inputId="location"
+              formControlName="location"
+              [suggestions]="filteredLocations"
+              (completeMethod)="searchLocations($event)"
+              field="display_name"
+              [minLength]="2"
+              class="w-full md:w-56"
+              (onSelect)="onLocationSelect($event)"
+              [style]="{ width: '100%' }"
+              inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500">
+            </p-autoComplete>
+            <label for="location">{{ 'SUBEVENT.LOCATION_PLACEHOLDER' | translate }}</label>
+          </p-floatlabel>
         </div>
-    </form>
+
+        <div class="input-wrapper">
+          <p>{{ 'SUBEVENT.CAPACITY' | translate }}</p>
+          <p-floatlabel class="w-full md:w-56" variant="on">
+            <p-inputnumber
+              formControlName="capacity"
+              inputId="capacity"
+              [min]="1"
+              [useGrouping]="false"
+              [showButtons]="false"
+              [style]="{ width: '100%' }"
+              inputStyleClass="w-full md:w-56 h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500">
+            </p-inputnumber>
+            <label for="capacity">{{ 'SUBEVENT.CAPACITY_PLACEHOLDER' | translate }}</label>
+          </p-floatlabel>
+
+          <div class="flex items-center gap-2">
+            <p-checkbox formControlName="isUnlimitedCapacity" inputId="isUnlimitedCapacity"
+              name="isUnlimitedCapacity" binary="true" size="large" />
+            <label for="isUnlimitedCapacity">{{ 'SUBEVENT.UNLIMITED_CAPACITY' | translate }}</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dates -->
+      <div class="dates">
+        <div class="input-wrapper">
+          <p>{{ 'SUBEVENT.START' | translate }}</p>
+          <p-floatlabel class="w-full md:w-56" variant="on">
+            <p-datepicker inputId="startDateTime" placeholder=" " formControlName="startDateTime"
+              [showTime]="true" hourFormat="24"
+              [minDate]="parentEventBasicInfo.getStartDate()"
+              [maxDate]="parentEventBasicInfo.getEndDate()"
+              [style]="{ width: '100%' }"
+              inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500">
+            </p-datepicker>
+            <label for="startDateTime">{{ 'SUBEVENT.START_PLACEHOLDER' | translate }}</label>
+          </p-floatlabel>
+        </div>
+
+        <div class="input-wrapper">
+          <p>{{ 'SUBEVENT.END' | translate }}</p>
+          <p-floatlabel class="w-full md:w-56" variant="on">
+            <p-datepicker inputId="endDateTime" placeholder=" " formControlName="endDateTime"
+              [showTime]="true" hourFormat="24"
+              [minDate]="parentEventBasicInfo.getStartDate()"
+              [maxDate]="parentEventBasicInfo.getEndDate()"
+              [style]="{ width: '100%' }"
+              inputStyleClass="w-full h-10 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-violet-500">
+            </p-datepicker>
+            <label for="endDateTime">{{ 'SUBEVENT.END_PLACEHOLDER' | translate }}</label>
+          </p-floatlabel>
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="input-wrapper">
+        <p>{{ 'SUBEVENT.CATEGORY' | translate }}</p>
+        <p-floatlabel class="w-full" variant="on">
+          <p-select [options]="categories" name="category" formControlName="category" placeholder=" " inputId="category"
+            class="w-full h-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#636AE8] focus:border-[#636AE8]" />
+          <label for="category">{{ 'SUBEVENT.CATEGORY_PLACEHOLDER' | translate }}</label>
+        </p-floatlabel>
+      </div>
+
+      <!-- Buttons -->
+      <div class="form-buttons">
+        <p-button
+          label="{{ 'COMMON.SAVE_CHANGES' | translate }}"
+          icon="pi pi-pen-to-square"
+          [raised]="true"
+          (onClick)="submitForm()"
+          severity="primary">
+        </p-button>
+
+        <p-button
+          label="{{ 'COMMON.CANCEL' | translate }}"
+          icon="pi pi-times"
+          [raised]="true"
+          severity="secondary"
+          type="button"
+          (onClick)="onCancleClick()">
+        </p-button>
+      </div>
+    </div>
+  </form>
 </p-dialog>

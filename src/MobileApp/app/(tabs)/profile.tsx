@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import i18n from '../i18n';
+import { apiCall } from '../../config';
 import { API_URL } from '../../config';
 import {
   View,
@@ -9,6 +11,7 @@ import {
   Image,
   Modal,
   Pressable,
+  ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,12 +29,17 @@ export default function ProfileScreen() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [ticketsCount, setTicketsCount] = useState(0);
+  const [resourcesCount, setResourcesCount] = useState(0);
+
   const [credits, setCredits] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [profilePicture, setProfilePicture] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [imageModalVisible, setImageModalVisible] = useState(false);
-  const defaultAvatar = require('../../assets/images/avatar-placeholder.png');
+  const defaultAvatar = require('../../assets/images/avatar_placeholder.png');
+
+  const [selectedLang, setSelectedLang] = useState<'en' | 'sr'>('en');
+  const [languageModalVisible, setLanguageModalVisible] = useState(false);
 
   const normalizeImageUrl = (path: string | null) => {
     if (!path) return null;
@@ -41,55 +49,114 @@ export default function ProfileScreen() {
   };
 
 
-
-  useEffect(() => {
-    const fetchUserDataAndTickets = async () => {
+useEffect(() => {
+    const fetchUserDataAndStats = async () => {
       const token = await AsyncStorage.getItem('token');
-      if (!token) return;
+      if (!token) {
+        setIsLoggedIn(false);
+        return;
+      }
 
       setIsLoggedIn(true);
       setIsLoading(true);
+
       try {
-        const res = await fetch(`${API_URL}/api/MobileUser/profile`, {
+        // Fetch profile data
+        const resProfile = await apiCall(`${API_URL}/api/MobileUser/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (res.ok) {
-          const data = await res.json();
+        if (resProfile.ok) {
+          const data = await resProfile.json();
           setFirstName(data.firstName || '');
           setLastName(data.lastName || '');
           setEmail(data.email || '');
           const imageUrl = normalizeImageUrl(data.profilePicture || null);
           setProfilePicture(imageUrl);
+        } else {
+          console.error('Failed to fetch profile data:', resProfile.status);
         }
 
-        const resTickets = await fetch(`${API_URL}/api/ticket/tickets/my`, {
+        // Fetch tickets count
+        const resTickets = await apiCall(`${API_URL}/api/ticket/tickets/my`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         if (resTickets.ok) {
-          const dataCount = await resTickets.json();
-          setTicketsCount(dataCount.length);
+          const data = await resTickets.json();
+          setTicketsCount(data.length);
+        } else {
+          console.error('Failed to fetch tickets:', resTickets.status);
         }
 
-        const resCredits = await fetch(`${API_URL}/api/Credit`, {
+        // Fetch resources count
+        const resResources = await apiCall(`${API_URL}/api/Resource/my-reservations`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+ if (resResources.ok) {
+  const data = await resResources.json();
+
+  const uniqueReservations = new Set<string>();
+
+  data.forEach((res: any) => {
+    if (res.eventID && res.eventResourceID) {
+      uniqueReservations.add(`${res.eventID}-${res.eventResourceID}`);
+    }
+  });
+
+  // console.log('Grouped reservations:', data);
+  // console.log('Unique reservations count:', uniqueReservations.size);
+
+  setResourcesCount(uniqueReservations.size);
+} else {
+  console.error('Failed to fetch resources:', resResources.status);
+}
+
+        // Fetch credits
+        const resCredits = await apiCall(`${API_URL}/api/Credit`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
         if (resCredits.ok) {
           const data = await resCredits.json();
-          setCredits(data.credits);
+          
+          if (data && typeof data.credits === 'number') {
+            setCredits(data.credits);
+          } else {
+            console.warn('Credits field is missing or not a number:', data);
+            setCredits(0);
+          }
+        } else {
+          console.error('Failed to fetch credits. Status:', resCredits.status);
+          const errorText = await resCredits.text();
+          console.error('Response text:', errorText);
+          setCredits(0);
         }
-      } catch (error) {
-        console.error('Failed to load user data or tickets:', error);
+
+      } catch (err) {
+        console.error('An unexpected error occurred during API calls:', err);
+        // U slučaju bilo kakve greške, postavi kredite na 0 i prikaži grešku
+        setCredits(0); 
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchUserDataAndTickets();
+    const fetchLanguage = async () => {
+      setSelectedLang(i18n.language === 'sr' ? 'sr' : 'en');
+    };
+
+    fetchUserDataAndStats();
+    fetchLanguage();
   }, []);
 
+  const handleLanguageSwitch = async (lang: 'en' | 'sr') => {
+    await i18n.changeLanguage(lang);
+    await i18n.services.languageDetector.cacheUserLanguage(lang);
+    setSelectedLang(lang);
+    setLanguageModalVisible(false);
+  };
   const handleLogout = () => {
     Alert.alert(
       t('profile.logoutTitle'),
@@ -155,10 +222,33 @@ export default function ProfileScreen() {
 </View>
 
       <View style={styles.rowContainer}>
-        <TouchableOpacity style={styles.statBox} onPress={() => router.push('../profile/myTickets')}>
+        <TouchableOpacity
+          style={styles.statBox}
+          onPress={() =>
+            router.push({
+              pathname: '../profile/myTickets',
+              params: { from: 'profile' }, 
+            })
+          }
+        >
           <Text style={styles.statNumber}>{ticketsCount}</Text>
           <Text style={styles.statLabel}>{t('profile.tickets')}</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.statBox}
+          onPress={() =>
+            router.push({
+              pathname: '../profile/myReservations',
+              params: { from: 'profile' }, 
+            })
+          }
+              >
+          <Text style={styles.statNumber}>{resourcesCount}</Text>
+          <Text style={styles.statLabel}>{t('profile.myReservations')}</Text>
+        </TouchableOpacity>
+
+
 
         <TouchableOpacity style={styles.statBox} onPress={() => router.push('/favorites')}>
           <Text style={styles.statNumber}>{favorites.length}</Text>
@@ -189,6 +279,13 @@ export default function ProfileScreen() {
         <Text>❓ {t('profile.about')}</Text>
         <Text style={styles.optionArrow}>›</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.option} onPress={() => setLanguageModalVisible(true)}>
+        <Text>🌐 {t('profile.language')}</Text>
+        <Text style={styles.optionArrow}>
+          {selectedLang === 'en' ? '🇬🇧' : '🇷🇸'} ›
+        </Text>
+      </TouchableOpacity>
+
 
       <TouchableOpacity style={styles.option} onPress={handleLogout}>
         <Text style={{ color: 'red' }}>🚪 {t('profile.logout')}</Text>
@@ -206,22 +303,53 @@ export default function ProfileScreen() {
           </View>
         </Pressable>
       </Modal>
+        <Modal
+    transparent
+    animationType="fade"
+    visible={languageModalVisible}
+    onRequestClose={() => setLanguageModalVisible(false)}
+  >
+    <Pressable
+      style={styles.modalOverlay}
+      onPress={() => setLanguageModalVisible(false)}
+    >
+      <View style={styles.modalContent1}>
+        <TouchableOpacity
+          style={styles.langOption}
+          onPress={() => handleLanguageSwitch('en')}
+        >
+          <Text style={styles.optionText}>🇬🇧 English</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.langOption}
+          onPress={() => handleLanguageSwitch('sr')}
+        >
+          <Text style={styles.optionText}>🇷🇸 Srpski</Text>
+        </TouchableOpacity>
+      </View>
+    </Pressable>
+  </Modal>
+
     </View>
   );
 }
 
+import { Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 50,
-    paddingBottom: 40,
+    paddingHorizontal: width * 0.06, // ~6% širine ekrana
+    paddingTop: height * 0.05,
+    paddingBottom: height * 0.02,
     backgroundColor: '#fff',
   },
   header: {
-    fontSize: 24,
+    fontSize: width * 0.06,
     fontWeight: '900',
-    marginBottom: 10,
+    marginBottom: height * 0.01,
     textAlign: 'center',
     color: '#1a202c',
     letterSpacing: 0.8,
@@ -231,8 +359,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#7c3aed',
     borderRadius: 16,
-    padding: 20,
-    marginBottom: 28,
+    padding: width * 0.04,
+    marginBottom: height * 0.025,
     shadowColor: '#7c3aed',
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 8 },
@@ -240,67 +368,71 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   avatarImage: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
+    width: width * 0.18,
+    height: width * 0.18,
+    borderRadius: width * 0.09,
     backgroundColor: '#eee',
   },
   name: {
     color: 'white',
     fontWeight: '900',
-    fontSize: 20,
+    fontSize: width * 0.05,
   },
   email: {
     color: 'white',
-    fontSize: 15,
-    marginTop: 4,
+    fontSize: width * 0.04,
+    marginTop: 2,
+    flexWrap: 'wrap',
   },
-  edit: {
+  credits: {
     color: 'white',
-    fontSize: 20,
+    fontSize: width * 0.045,
     fontWeight: '700',
+    marginTop: 2,
   },
   rowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 32,
+    marginBottom: height * 0.03,
   },
   statBox: {
-    backgroundColor: '#edeff1ff',
     flex: 1,
     alignItems: 'center',
-    paddingVertical: 20,
-    marginHorizontal: 8,
+    justifyContent: 'center',
+    paddingVertical: height * 0.02,
+    marginHorizontal: 4,
     borderRadius: 16,
+    backgroundColor: '#edeff1ff',
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 10,
     elevation: 3,
+    minHeight: height * 0.12,
   },
   statNumber: {
-    fontSize: 26,
+    fontSize: width * 0.07,
     fontWeight: '900',
-    marginBottom: 6,
+    marginBottom: 4,
     color: '#4a5568',
   },
   statLabel: {
-    fontSize: 13,
+    fontSize: width * 0.035,
     color: '#6b7280',
     textAlign: 'center',
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: width * 0.045,
     fontWeight: '900',
-    marginBottom: 16,
+    marginBottom: 8,
     color: '#2d3748',
   },
   option: {
     backgroundColor: '#edeff1ff',
-    paddingVertical: 16,
-    paddingHorizontal: 18,
+    paddingVertical: height * 0.018,
+    paddingHorizontal: width * 0.04,
     borderRadius: 14,
-    marginBottom: 5,
+    marginBottom: 6,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -311,20 +443,27 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   optionArrow: {
-    fontSize: 20,
+    fontSize: width * 0.05,
     fontWeight: '700',
     color: '#9ca3af',
   },
+  centeredContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    paddingHorizontal: width * 0.06,
+  },
   message: {
-    fontSize: 16,
+    fontSize: width * 0.04,
     color: '#555',
     textAlign: 'center',
-    marginBottom: 28,
+    marginBottom: height * 0.03,
   },
   loginButton: {
     backgroundColor: '#6d28d9',
-    paddingVertical: 14,
-    paddingHorizontal: 32,
+    paddingVertical: height * 0.018,
+    paddingHorizontal: width * 0.1,
     borderRadius: 30,
     alignSelf: 'center',
     shadowColor: '#6d28d9',
@@ -336,51 +475,41 @@ const styles = StyleSheet.create({
   loginText: {
     color: '#fff',
     fontWeight: '900',
-    fontSize: 16,
+    fontSize: width * 0.045,
   },
-  centeredContainer: {
+  modalOverlay: {
     flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingHorizontal: 24,
   },
-modalOverlay: {
-  flex: 1,
-  backgroundColor: 'rgba(0, 0, 0, 0.7)',
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-
-modalBackground: {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  zIndex: 1,
-},
-
-modalContent: {
-  zIndex: 2,
-  backgroundColor: 'transparent',
-  justifyContent: 'center',
-  alignItems: 'center',
-  padding: 10,
-},
-
-
+  modalContent: {
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 10,
+  },
   modalImage: {
-    width: 300,
-    height: 300,
+    width: width * 0.7,
+    height: width * 0.7,
     borderRadius: 12,
   },
-
-credits: {
-  color: 'white',
-  fontSize: 18,
-  fontWeight: '700',
-  marginTop: 4,
-},
-
+  modalContent1: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    paddingVertical: 10,
+    width: width * 0.4,
+    elevation: 4,
+  },
+  langOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  optionText: {
+    fontSize: width * 0.04,
+    fontWeight: '500',
+  },
 });
+
+
+

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace Backend.Controllers
 {
@@ -13,10 +14,12 @@ namespace Backend.Controllers
     public class TicketController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public TicketController(AppDbContext context)
+        public TicketController(AppDbContext context, IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
+            _localizer = localizer;
         }
 
         [HttpGet("events/{eventId}/tickets")]
@@ -47,25 +50,34 @@ namespace Backend.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound("User not found.");
+                return NotFound(_localizer["user.not_found"].ToString());
 
-            
+            if (dtos == null || dtos.Count == 0)
+                return BadRequest(new { message = _localizer["tickets.at_least_one"].ToString() });
+
+            if (dtos.Any(d => d.TicketID <= 0))
+                return BadRequest(new { message = _localizer["tickets.invalid"].ToString() });
+
+            if (dtos.Any(d => d.Quantity <= 0))
+                return BadRequest(new { message = _localizer["tickets.min_quantity"].ToString() });
+
+
             decimal ukupnaCena = 0;
             foreach (var dto in dtos)
             {
                 var ticket = await _context.Tickets.FirstOrDefaultAsync(t => t.TicketID == dto.TicketID);
                 if (ticket == null)
-                    return NotFound($"Ticket with ID {dto.TicketID} does not exist.");
+                    return NotFound(_localizer["tickets.not_exist", dto.TicketID].ToString());
 
                 var eventEntity = await _context.Events.FirstOrDefaultAsync(e => e.EventID == ticket.EventID);
                 if (eventEntity == null)
-                    return NotFound($"Event for ticket {dto.TicketID} not found.");
+                    return NotFound(_localizer["tickets.event_not_found", dto.TicketID].ToString());
 
                 if (eventEntity.EndDate < DateTime.UtcNow)
-                    return BadRequest($"It is not possible to purchase a ticket for the event {eventEntity.Title} that has already passed.");
+                    return BadRequest(_localizer["tickets.event_passed", eventEntity.Title].ToString());
 
                 if (eventEntity.isFree)
-                    return BadRequest($"It is not possible to purchase a ticket for a free event ({eventEntity.Title}).");
+                    return BadRequest(_localizer["tickets.free_event", eventEntity.Title].ToString());
 
                 var userTicketsForEvent = await _context.UserTickets
                     .Include(ut => ut.Ticket)
@@ -73,19 +85,19 @@ namespace Backend.Controllers
                     .CountAsync();
 
                 if (userTicketsForEvent + dto.Quantity > 10)
-                    return BadRequest($"You cannot purchase more than 10 tickets for the event {eventEntity.Title}. You already have {userTicketsForEvent} tickets.");
+                    return BadRequest(_localizer["tickets.limit_exceeded", eventEntity.Title, userTicketsForEvent].ToString());
 
 
                 int sold =await _context.UserTickets.CountAsync(ut => ut.TicketID == dto.TicketID);
                 if (sold + dto.Quantity > ticket.Quota)
-                    return BadRequest($"Not enough available tickets for type {ticket.TypeName}.");
+                    return BadRequest(_localizer["tickets.not_enough_quota", ticket.TypeName].ToString());
 
                 ukupnaCena += ticket.Price * dto.Quantity;
             }
 
             
             if (user.Credit < ukupnaCena)
-                return BadRequest("Insufficient credit for purchase.");
+                return BadRequest(_localizer["credit.insufficient"].ToString());
 
             
             using (var transaction =await _context.Database.BeginTransactionAsync())

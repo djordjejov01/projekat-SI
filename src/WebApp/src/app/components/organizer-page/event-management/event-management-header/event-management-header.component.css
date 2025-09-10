@@ -53,10 +53,12 @@ header{
     justify-content: space-between;
     align-items: center;
     padding-bottom: 1rem;
+    flex-wrap: wrap;
 }
 
 .buttons{
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
 }
 

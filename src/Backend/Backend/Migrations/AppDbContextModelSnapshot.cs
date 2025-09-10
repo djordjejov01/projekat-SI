@@ -22,796 +22,813 @@ namespace Backend.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Backend.Models.EmailVerificationToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("ConsumedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Purpose")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "Purpose", "ConsumedAtUtc");
+
+                    b.ToTable("EmailVerificationTokens");
+                });
+
             modelBuilder.Entity("Backend.Models.Event", b =>
-            {
-                b.Property<int>("EventID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("EventID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EventID"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("EventID"));
 
-                b.Property<int>("Category")
-                    .HasColumnType("integer");
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
 
-                b.Property<string>("Description")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<DateTime>("EndDate")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("timestamp with time zone");
 
-                b.Property<string>("ImageUrl")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<string>("Location")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<int?>("NumberOfPeople")
-                    .HasColumnType("integer");
+                    b.Property<int?>("NumberOfPeople")
+                        .HasColumnType("integer");
 
-                b.Property<int>("OrganizerID")
-                    .HasColumnType("integer");
+                    b.Property<int>("OrganizerID")
+                        .HasColumnType("integer");
 
-                b.Property<int>("ParentEventId")
-                    .HasColumnType("integer");
+                    b.Property<int>("ParentEventId")
+                        .HasColumnType("integer");
 
-                b.Property<DateTime?>("PublishedAt")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("timestamp with time zone");
 
-                b.Property<DateTime>("StartDate")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("timestamp with time zone");
 
-                b.Property<int>("Status")
-                    .HasColumnType("integer");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
-                b.Property<string>("Title")
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("character varying(50)");
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
-                b.Property<bool>("isFree")
-                    .HasColumnType("boolean");
+                    b.Property<bool>("isFree")
+                        .HasColumnType("boolean");
 
-                b.HasKey("EventID");
+                    b.HasKey("EventID");
 
-                b.HasIndex("OrganizerID");
+                    b.HasIndex("OrganizerID");
 
-
-                b.ToTable("Events");
-            });
-
+                    b.ToTable("Events");
+                });
 
             modelBuilder.Entity("Backend.Models.EventActivity", b =>
-            {
-                b.Property<int>("ActivityID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("ActivityID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ActivityID"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ActivityID"));
 
-                b.Property<int>("Category")
-                    .HasColumnType("integer");
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
 
-                b.Property<string>("Description")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<DateTime>("EndTime")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("timestamp with time zone");
 
-                b.Property<int>("EventID")
-                    .HasColumnType("integer");
+                    b.Property<int>("EventID")
+                        .HasColumnType("integer");
 
-                b.Property<DateTime>("StartTime")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("timestamp with time zone");
 
-                b.Property<string>("Title")
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("character varying(50)");
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
-                b.HasKey("ActivityID");
+                    b.HasKey("ActivityID");
 
-                b.HasIndex("EventID");
+                    b.HasIndex("EventID");
 
-
-                b.ToTable("EventActivities");
-            });
-
+                    b.ToTable("EventActivities");
+                });
 
             modelBuilder.Entity("Backend.Models.EventCategories", b =>
-            {
-                b.Property<int>("CategoryID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("CategoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CategoryID"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CategoryID"));
 
-                b.Property<string>("CategoryName")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.HasKey("CategoryID");
+                    b.HasKey("CategoryID");
 
-
-                b.ToTable("EventCategories");
-            });
+                    b.ToTable("EventCategories");
+                });
 
             modelBuilder.Entity("Backend.Models.EventPin", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                b.Property<string>("Description")
-                    .HasColumnType("text");
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
 
-                b.Property<int>("EventId")
-                    .HasColumnType("integer");
+                    b.Property<int>("EventId")
+                        .HasColumnType("integer");
 
-                b.Property<string>("Label")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("Label")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<double>("Latitude")
-                    .HasColumnType("double precision");
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
 
-                b.Property<double>("Longitude")
-                    .HasColumnType("double precision");
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
 
-                b.Property<int>("PinCategory")
-                    .HasColumnType("integer");
+                    b.Property<int>("PinCategory")
+                        .HasColumnType("integer");
 
-                b.Property<DateTime>("PinnedAt")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime>("PinnedAt")
+                        .HasColumnType("timestamp with time zone");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-
-                b.ToTable("EventPin");
-            });
-
+                    b.ToTable("EventPin");
+                });
 
             modelBuilder.Entity("Backend.Models.EventResource", b =>
-            {
-                b.Property<int>("ID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
 
-                b.Property<DateTime?>("EndDateTimeBooked")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime?>("EndDateTimeBooked")
+                        .HasColumnType("timestamp with time zone");
 
-                b.Property<int>("EventID")
-                    .HasColumnType("integer");
+                    b.Property<int>("EventID")
+                        .HasColumnType("integer");
 
-                b.Property<bool>("IsReservable")
-                    .HasColumnType("boolean");
+                    b.Property<bool>("IsReservable")
+                        .HasColumnType("boolean");
 
-                b.Property<int>("Quantity")
-                    .HasColumnType("integer");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
 
-                b.Property<int>("ResourceID")
-                    .HasColumnType("integer");
+                    b.Property<int>("ResourceID")
+                        .HasColumnType("integer");
 
-                b.Property<DateTime?>("StartDateTimeBooked")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime?>("StartDateTimeBooked")
+                        .HasColumnType("timestamp with time zone");
 
-                b.Property<int>("Status")
-                    .HasColumnType("integer");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
-                b.Property<int>("SupplierID")
-                    .HasColumnType("integer");
+                    b.Property<int>("SupplierID")
+                        .HasColumnType("integer");
 
-                b.HasKey("ID");
+                    b.HasKey("ID");
 
-                b.HasIndex("EventID");
+                    b.HasIndex("EventID");
 
-                b.HasIndex("ResourceID");
+                    b.HasIndex("ResourceID");
 
-                b.HasIndex("SupplierID");
+                    b.HasIndex("SupplierID");
 
-
-                b.ToTable("EventResources");
-            });
-
+                    b.ToTable("EventResources");
+                });
 
             modelBuilder.Entity("Backend.Models.FavoriteEvent", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                b.Property<int>("EventId")
-                    .HasColumnType("integer");
+                    b.Property<int>("EventId")
+                        .HasColumnType("integer");
 
-                b.Property<int>("UserId")
-                    .HasColumnType("integer");
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-                b.HasIndex("EventId");
+                    b.HasIndex("EventId");
 
-                b.HasIndex("UserId");
+                    b.HasIndex("UserId");
 
-
-                b.ToTable("FavoriteEvents");
-            });
-
+                    b.ToTable("FavoriteEvents");
+                });
 
             modelBuilder.Entity("Backend.Models.Organizer", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                b.Property<string>("Email")
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("character varying(50)");
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
-                b.Property<string>("Image")
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .HasColumnType("character varying(100)");
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
-                b.Property<string>("Name")
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("character varying(50)");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
-                b.Property<string>("PhoneNumber")
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("character varying(50)");
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
-                b.Property<string>("Username")
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("character varying(50)");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-
-                b.ToTable("Organizers");
-            });
-
+                    b.ToTable("Organizers");
+                });
 
             modelBuilder.Entity("Backend.Models.PinType", b =>
-            {
-                b.Property<int>("PinTypeId")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("PinTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PinTypeId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PinTypeId"));
 
-                b.Property<string>("PinCategory")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("PinCategory")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.HasKey("PinTypeId");
+                    b.HasKey("PinTypeId");
 
+                    b.ToTable("PinTypes");
 
-                b.ToTable("PinTypes");
-
-
-                b.HasData(
-                    new
-                    {
-                        PinTypeId = 1,
-                        PinCategory = "Booth"
-                    },
-                    new
-                    {
-                        PinTypeId = 2,
-                        PinCategory = "Stage"
-                    },
-                    new
-                    {
-                        PinTypeId = 3,
-                        PinCategory = "Entrance"
-                    },
-                    new
-                    {
-                        PinTypeId = 4,
-                        PinCategory = "Exit"
-                    },
-                    new
-                    {
-                        PinTypeId = 5,
-                        PinCategory = "FirstAid"
-                    },
-                    new
-                    {
-                        PinTypeId = 6,
-                        PinCategory = "Food"
-                    },
-                    new
-                    {
-                        PinTypeId = 7,
-                        PinCategory = "Drink"
-                    },
-                    new
-                    {
-                        PinTypeId = 8,
-                        PinCategory = "Restroom"
-                    },
-                    new
-                    {
-                        PinTypeId = 9,
-                        PinCategory = "Info"
-                    },
-                    new
-                    {
-                        PinTypeId = 10,
-                        PinCategory = "Security"
-                    },
-                    new
-                    {
-                        PinTypeId = 11,
-                        PinCategory = "Parking"
-                    },
-                    new
-                    {
-                        PinTypeId = 12,
-                        PinCategory = "LostAndFound"
-                    });
-            });
+                    b.HasData(
+                        new
+                        {
+                            PinTypeId = 1,
+                            PinCategory = "Booth"
+                        },
+                        new
+                        {
+                            PinTypeId = 2,
+                            PinCategory = "Stage"
+                        },
+                        new
+                        {
+                            PinTypeId = 3,
+                            PinCategory = "Entrance"
+                        },
+                        new
+                        {
+                            PinTypeId = 4,
+                            PinCategory = "Exit"
+                        },
+                        new
+                        {
+                            PinTypeId = 5,
+                            PinCategory = "FirstAid"
+                        },
+                        new
+                        {
+                            PinTypeId = 6,
+                            PinCategory = "Food"
+                        },
+                        new
+                        {
+                            PinTypeId = 7,
+                            PinCategory = "Drink"
+                        },
+                        new
+                        {
+                            PinTypeId = 8,
+                            PinCategory = "Restroom"
+                        },
+                        new
+                        {
+                            PinTypeId = 9,
+                            PinCategory = "Info"
+                        },
+                        new
+                        {
+                            PinTypeId = 10,
+                            PinCategory = "Security"
+                        },
+                        new
+                        {
+                            PinTypeId = 11,
+                            PinCategory = "Parking"
+                        },
+                        new
+                        {
+                            PinTypeId = 12,
+                            PinCategory = "LostAndFound"
+                        });
+                });
 
             modelBuilder.Entity("Backend.Models.Resource", b =>
-            {
-                b.Property<int>("ResourceID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("ResourceID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ResourceID"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ResourceID"));
 
-                b.Property<int>("Category")
-                    .HasColumnType("integer");
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
 
-                b.Property<string>("Description")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<int>("IsAvailable")
-                    .HasColumnType("integer");
+                    b.Property<int>("IsAvailable")
+                        .HasColumnType("integer");
 
-                b.Property<bool>("IsExhaustable")
-                    .HasColumnType("boolean");
+                    b.Property<bool>("IsExhaustable")
+                        .HasColumnType("boolean");
 
-                b.Property<string>("Name")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<int>("Quantity")
-                    .HasColumnType("integer");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
 
-                b.Property<int>("SupplierID")
-                    .HasColumnType("integer");
+                    b.Property<int>("SupplierID")
+                        .HasColumnType("integer");
 
-                b.HasKey("ResourceID");
+                    b.HasKey("ResourceID");
 
-
-                b.ToTable("Resources");
-            });
-
+                    b.ToTable("Resources");
+                });
 
             modelBuilder.Entity("Backend.Models.ResourceLog", b =>
-            {
-                b.Property<int>("LogID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("LogID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("LogID"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("LogID"));
 
-                b.Property<int>("Category")
-                    .HasColumnType("integer");
+                    b.Property<int>("Category")
+                        .HasColumnType("integer");
 
-                b.Property<string>("Description")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<int>("IsAvailable")
-                    .HasColumnType("integer");
+                    b.Property<int>("IsAvailable")
+                        .HasColumnType("integer");
 
-                b.Property<bool>("IsExhaustable")
-                    .HasColumnType("boolean");
+                    b.Property<bool>("IsExhaustable")
+                        .HasColumnType("boolean");
 
-                b.Property<DateTime>("LogDate")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime>("LogDate")
+                        .HasColumnType("timestamp with time zone");
 
-                b.Property<string>("Name")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<int>("Quantity")
-                    .HasColumnType("integer");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
 
-                b.Property<int>("ResourceID")
-                    .HasColumnType("integer");
+                    b.Property<int>("ResourceID")
+                        .HasColumnType("integer");
 
-                b.Property<int>("SupplierID")
-                    .HasColumnType("integer");
+                    b.Property<int>("SupplierID")
+                        .HasColumnType("integer");
 
-                b.HasKey("LogID");
+                    b.HasKey("LogID");
 
-                b.ToTable("ResourceLog");
-            });
+                    b.ToTable("ResourceLog");
+                });
 
             modelBuilder.Entity("Backend.Models.Supplier", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                b.Property<string>("CompanyBio")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("CompanyBio")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<string>("CompanyName")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("CompanyName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<string>("Email")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<string>("Image")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<string>("PhoneNumber")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<string>("Username")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<string>("Website")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("Website")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-
-                b.ToTable("Suppliers");
-            });
-
+                    b.ToTable("Suppliers");
+                });
 
             modelBuilder.Entity("Backend.Models.Ticket", b =>
-            {
-                b.Property<int>("TicketID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("TicketID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TicketID"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TicketID"));
 
-                b.Property<string>("Description")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<int>("EventID")
-                    .HasColumnType("integer");
+                    b.Property<int>("EventID")
+                        .HasColumnType("integer");
 
-                b.Property<decimal>("Price")
-                    .HasColumnType("numeric");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
 
-                b.Property<int>("Quota")
-                    .HasColumnType("integer");
+                    b.Property<int>("Quota")
+                        .HasColumnType("integer");
 
-                b.Property<string>("TypeName")
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("character varying(50)");
+                    b.Property<string>("TypeName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
-                b.Property<DateTime>("validFrom")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime>("validFrom")
+                        .HasColumnType("timestamp with time zone");
 
-                b.Property<DateTime>("validUntil")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime>("validUntil")
+                        .HasColumnType("timestamp with time zone");
 
-                b.HasKey("TicketID");
+                    b.HasKey("TicketID");
 
-                b.HasIndex("EventID", "TypeName")
-                    .IsUnique();
+                    b.HasIndex("EventID", "TypeName")
+                        .IsUnique();
 
-
-                b.ToTable("Tickets");
-            });
-
+                    b.ToTable("Tickets");
+                });
 
             modelBuilder.Entity("Backend.Models.User", b =>
-            {
-                b.Property<int>("UserId")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
 
-                b.Property<DateTime>("CreationTime")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("timestamp with time zone");
 
-                b.Property<decimal>("Credit")
-                    .HasColumnType("numeric");
+                    b.Property<decimal>("Credit")
+                        .HasColumnType("numeric");
 
-                b.Property<string>("Email")
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("character varying(50)");
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
-                b.Property<string>("FirstName")
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("character varying(50)");
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
-                b.Property<bool>("IsActive")
-                    .HasColumnType("boolean");
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
 
-                b.Property<string>("Language")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<bool>("IsEmailVerified")
+                        .HasColumnType("boolean");
 
-                b.Property<DateTime?>("LastLoginTime")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<string>("LastName")
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("character varying(50)");
+                    b.Property<DateTime?>("LastLoginTime")
+                        .HasColumnType("timestamp with time zone");
 
-                b.Property<string>("Password")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
-                b.Property<string>("PhoneNumber")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<string>("ProfilePicture")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<int>("Role")
-                    .HasColumnType("integer");
+                    b.Property<string>("ProfilePicture")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.Property<string>("Username")
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasColumnType("character varying(50)");
+                    b.Property<int>("Role")
+                        .HasColumnType("integer");
 
-                b.HasKey("UserId");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
+                    b.HasKey("UserId");
 
-                b.ToTable("Users");
-            });
-
+                    b.ToTable("Users");
+                });
 
             modelBuilder.Entity("Backend.Models.UserResourceReservation", b =>
-            {
-                b.Property<int>("Id")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                b.Property<int>("EventResourceID")
-                    .HasColumnType("integer");
+                    b.Property<int>("EventResourceID")
+                        .HasColumnType("integer");
 
-                b.Property<int>("Quantity")
-                    .HasColumnType("integer");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
 
-                b.Property<DateTime>("ReservedAt")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime>("ReservedAt")
+                        .HasColumnType("timestamp with time zone");
 
-                b.Property<int>("UserID")
-                    .HasColumnType("integer");
+                    b.Property<int>("UserID")
+                        .HasColumnType("integer");
 
-                b.Property<int?>("UserTicketID")
-                    .HasColumnType("integer");
+                    b.Property<int?>("UserTicketID")
+                        .HasColumnType("integer");
 
-                b.HasKey("Id");
+                    b.HasKey("Id");
 
-                b.HasIndex("EventResourceID");
+                    b.HasIndex("EventResourceID");
 
-                b.HasIndex("UserID");
+                    b.HasIndex("UserID");
 
-                b.HasIndex("UserTicketID");
+                    b.HasIndex("UserTicketID");
 
-
-                b.ToTable("UserResourceReservations");
-            });
-
+                    b.ToTable("UserResourceReservations");
+                });
 
             modelBuilder.Entity("Backend.Models.UserRoles", b =>
-            {
-                b.Property<int>("RoleId")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("RoleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RoleId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RoleId"));
 
-                b.Property<int>("RoleName")
-                    .HasColumnType("integer");
+                    b.Property<int>("RoleName")
+                        .HasColumnType("integer");
 
-                b.HasKey("RoleId");
+                    b.HasKey("RoleId");
 
-
-                b.ToTable("UserRoles");
-            });
-
+                    b.ToTable("UserRoles");
+                });
 
             modelBuilder.Entity("Backend.Models.UserTicket", b =>
-            {
-                b.Property<int>("UserTicketID")
-                    .ValueGeneratedOnAdd()
-                    .HasColumnType("integer");
+                {
+                    b.Property<int>("UserTicketID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
 
-                NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserTicketID"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserTicketID"));
 
-                b.Property<bool>("IsUsed")
-                    .HasColumnType("boolean");
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("boolean");
 
-                b.Property<DateTime>("PurchasedAt")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime>("PurchasedAt")
+                        .HasColumnType("timestamp with time zone");
 
-                b.Property<int>("TicketID")
-                    .HasColumnType("integer");
+                    b.Property<int>("TicketID")
+                        .HasColumnType("integer");
 
-                b.Property<DateTime?>("UsedAt")
-                    .HasColumnType("timestamp with time zone");
+                    b.Property<DateTime?>("UsedAt")
+                        .HasColumnType("timestamp with time zone");
 
-                b.Property<int>("UserID")
-                    .HasColumnType("integer");
+                    b.Property<int>("UserID")
+                        .HasColumnType("integer");
 
-                b.Property<string>("ValidationToken")
-                    .IsRequired()
-                    .HasColumnType("text");
+                    b.Property<string>("ValidationToken")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                b.HasKey("UserTicketID");
+                    b.HasKey("UserTicketID");
 
-                b.HasIndex("TicketID");
+                    b.HasIndex("TicketID");
 
-                b.HasIndex("UserID");
+                    b.HasIndex("UserID");
 
+                    b.ToTable("UserTickets");
+                });
 
-                b.ToTable("UserTickets");
-            });
+            modelBuilder.Entity("Backend.Models.EmailVerificationToken", b =>
+                {
+                    b.HasOne("Backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
+                    b.Navigation("User");
+                });
 
             modelBuilder.Entity("Backend.Models.Event", b =>
-            {
-                b.HasOne("Backend.Models.User", "Organizer")
-                    .WithMany()
-                    .HasForeignKey("OrganizerID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("Backend.Models.User", "Organizer")
+                        .WithMany()
+                        .HasForeignKey("OrganizerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Organizer");
-            });
+                    b.Navigation("Organizer");
+                });
 
             modelBuilder.Entity("Backend.Models.EventActivity", b =>
-            {
-                b.HasOne("Backend.Models.Event", "Event")
-                    .WithMany()
-                    .HasForeignKey("EventID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("Backend.Models.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Event");
-            });
+                    b.Navigation("Event");
+                });
 
             modelBuilder.Entity("Backend.Models.EventResource", b =>
-            {
-                b.HasOne("Backend.Models.Event", "Event")
-                    .WithMany()
-                    .HasForeignKey("EventID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("Backend.Models.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("Backend.Models.Resource", "Resource")
-                    .WithMany()
-                    .HasForeignKey("ResourceID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("Backend.Models.Resource", "Resource")
+                        .WithMany()
+                        .HasForeignKey("ResourceID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("Backend.Models.User", "Supplier")
-                    .WithMany()
-                    .HasForeignKey("SupplierID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("Backend.Models.User", "Supplier")
+                        .WithMany()
+                        .HasForeignKey("SupplierID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Event");
+                    b.Navigation("Event");
 
-                b.Navigation("Resource");
+                    b.Navigation("Resource");
 
-                b.Navigation("Supplier");
-            });
+                    b.Navigation("Supplier");
+                });
 
             modelBuilder.Entity("Backend.Models.FavoriteEvent", b =>
-            {
-                b.HasOne("Backend.Models.Event", "Event")
-                    .WithMany()
-                    .HasForeignKey("EventId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("Backend.Models.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("Backend.Models.User", "User")
-                    .WithMany()
-                    .HasForeignKey("UserId")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("Backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Event");
+                    b.Navigation("Event");
 
-                b.Navigation("User");
-            });
+                    b.Navigation("User");
+                });
 
             modelBuilder.Entity("Backend.Models.Ticket", b =>
-            {
-                b.HasOne("Backend.Models.Event", "Event")
-                    .WithMany()
-                    .HasForeignKey("EventID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("Backend.Models.Event", "Event")
+                        .WithMany()
+                        .HasForeignKey("EventID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Event");
-            });
+                    b.Navigation("Event");
+                });
 
             modelBuilder.Entity("Backend.Models.UserResourceReservation", b =>
-            {
-                b.HasOne("Backend.Models.EventResource", "EventResource")
-                    .WithMany()
-                    .HasForeignKey("EventResourceID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("Backend.Models.EventResource", "EventResource")
+                        .WithMany()
+                        .HasForeignKey("EventResourceID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("Backend.Models.User", "User")
-                    .WithMany()
-                    .HasForeignKey("UserID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("Backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("Backend.Models.UserTicket", "UserTicket")
-                    .WithMany()
-                    .HasForeignKey("UserTicketID");
+                    b.HasOne("Backend.Models.UserTicket", "UserTicket")
+                        .WithMany()
+                        .HasForeignKey("UserTicketID");
 
-                b.Navigation("EventResource");
+                    b.Navigation("EventResource");
 
-                b.Navigation("User");
+                    b.Navigation("User");
 
-                b.Navigation("UserTicket");
-            });
+                    b.Navigation("UserTicket");
+                });
 
             modelBuilder.Entity("Backend.Models.UserTicket", b =>
-            {
-                b.HasOne("Backend.Models.Ticket", "Ticket")
-                    .WithMany()
-                    .HasForeignKey("TicketID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                {
+                    b.HasOne("Backend.Models.Ticket", "Ticket")
+                        .WithMany()
+                        .HasForeignKey("TicketID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.HasOne("Backend.Models.User", "User")
-                    .WithMany()
-                    .HasForeignKey("UserID")
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .IsRequired();
+                    b.HasOne("Backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                b.Navigation("Ticket");
+                    b.Navigation("Ticket");
 
-                b.Navigation("User");
-            });
+                    b.Navigation("User");
+                });
 #pragma warning restore 612, 618
         }
     }

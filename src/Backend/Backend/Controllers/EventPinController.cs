@@ -3,6 +3,7 @@ using Backend.Models.Dto;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 
 namespace Backend.Controllers
 {
@@ -11,10 +12,12 @@ namespace Backend.Controllers
     public class EventPinController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public EventPinController(AppDbContext context)
+        public EventPinController(AppDbContext context, IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
+            _localizer = localizer;
         }
 
         // Add new pin
@@ -35,7 +38,7 @@ namespace Backend.Controllers
                 };
                 _context.EventPin.Add(eventPin);
                 await _context.SaveChangesAsync();
-                return Ok("Event pin saved!");
+                return Ok(_localizer["eventpin.saved"].ToString());
             }
             catch (Exception ex)
             {
@@ -50,7 +53,7 @@ namespace Backend.Controllers
             {
                 var eventPin = await _context.EventPin.FindAsync(pin.Id);
                 if (eventPin == null)
-                    return NotFound(new { message = "Event pin not found." });
+                    return NotFound(new { message = _localizer["eventpin.not_found"].ToString() });
 
                 eventPin.Latitude = pin.Latitude;
                 eventPin.Longitude = pin.Longitude;
@@ -59,7 +62,7 @@ namespace Backend.Controllers
                 eventPin.PinCategory = pin.PinCategory;
 
                 await _context.SaveChangesAsync();
-                return Ok("Event pin updated!");
+                return Ok(_localizer["eventpin.updated"].ToString());
             }
             catch (Exception ex)
             {
@@ -74,11 +77,11 @@ namespace Backend.Controllers
             {
                 var eventPin = await _context.EventPin.FindAsync(id);
                 if (eventPin == null)
-                    return NotFound(new { message = "Event pin not found." });
+                    return NotFound(new { message = _localizer["eventpin.not_found"].ToString() });
 
                 _context.EventPin.Remove(eventPin);
                 await _context.SaveChangesAsync();
-                return Ok("Event pin deleted!");
+                return Ok(_localizer["eventpin.deleted"].ToString());
             }
             catch (Exception ex)
             {

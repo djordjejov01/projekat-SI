@@ -17,36 +17,56 @@ import { ApiService } from '../../../../Services/api.service';
 import { MessageService } from 'primeng/api';
 import { ConfirmationDialogService } from '../../../../Services/confirmation-dialog.service';
 import { CommonModule } from '@angular/common';
+import { TranslateModule,TranslateService } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-ticket-section',
-  imports: [CommonModule,TableModule,ButtonModule,MultiSelectModule,InputTextModule,DropdownModule,FormsModule,InputIcon,IconField,TooltipModule, DatePipe,TicketModalComponent],
+  imports: [
+    CommonModule,
+    TableModule,
+    ButtonModule,
+    MultiSelectModule,
+    InputTextModule,
+    DropdownModule,
+    FormsModule,
+    InputIcon,
+    IconField,
+    TooltipModule,
+    DatePipe,
+    TicketModalComponent,
+    TranslateModule
+  ],
   templateUrl: './ticket-section.component.html',
-  styleUrl: './ticket-section.component.css'
+  styleUrls: ['./ticket-section.component.css']
 })
-export class TicketSectionComponent implements OnInit{
+export class TicketSectionComponent implements OnInit {
 
+  @Input() eventBasicInfo: EventBasicInfo;
 
-  @Input() eventBasicInfo : EventBasicInfo;
-
-  tickets : Ticket[] = [];
-  selectedTickets : Ticket [] = [];
+  tickets: Ticket[] = [];
+  selectedTickets: Ticket[] = [];
   loading: boolean = false;
-  searchValue : string = '';
+  searchValue: string = '';
 
-  constructor(private apiService : ApiService, private messageService : MessageService, private confirmationDialogService : ConfirmationDialogService) {}
+  constructor(
+    private apiService: ApiService,
+    private messageService: MessageService,
+    private confirmationDialogService: ConfirmationDialogService,
+    private translateService: TranslateService
+  ) {}
 
   ngOnInit(): void {
-    this.loadTickets()
+    this.loadTickets();
   }
 
   clear(table: Table) {
     table.clear();
-    this.selectedTickets = []
+    this.selectedTickets = [];
     this.searchValue = '';
   }
 
-  loadTickets() : void {
-    if(!this.eventBasicInfo?.getEventID()) return;
+  loadTickets(): void {
+    if (!this.eventBasicInfo?.getEventID()) return;
 
     this.loading = true;
     this.apiService.getTicketsForEvent(this.eventBasicInfo.getEventID()).subscribe({
@@ -54,40 +74,48 @@ export class TicketSectionComponent implements OnInit{
         this.tickets = data;
         this.loading = false;
       },
-
       error: (errorResponse) => {
         this.messageService.add({
           severity: 'error',
-          summary: 'Error',
+          summary: this.translateService.instant('ERROR'),
           detail: errorResponse.message,
-          life: 3000 });
-        }
-
-    })
-  }
-
-  onTicketCreated(){
-    this.loadTickets()
-  }
-
-
-  onDeleteTicket(ticket : Ticket){
-
-    this.confirmationDialogService
-    .confirm(`Are you sure you want to delete the ticket "${ticket.getTypeName()}"?`)
-    .then(confirmed => {
-
-      if(!confirmed) return;
-
-      this.apiService.deleteTicket(ticket.getTicketID()).subscribe({
-        next: (msg) =>{
-          this.messageService.add({ severity: 'success', summary: 'Deleted', detail: msg });
-          this.loadTickets(); // Refresh ticket list
-        },  error: (err) => {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: err.message });
-        }
-      });
+          life: 3000
+        });
+      }
     });
+  }
 
+  onTicketCreated() {
+    this.loadTickets();
+  }
+
+  onDeleteTicket(ticket: Ticket) {
+    this.confirmationDialogService
+      .confirm(
+        this.translateService.instant('CONFIRM_DELETE_TICKET', { name: ticket.getTypeName() })
+      )
+      .then(confirmed => {
+        if (!confirmed) return;
+
+        this.apiService.deleteTicket(ticket.getTicketID()).subscribe({
+          next: (msg) => {
+            this.messageService.add({
+              severity: 'success',
+              summary: this.translateService.instant('COMMON.DELETED'),
+              detail: msg,
+              life: 3000
+            });
+            this.loadTickets(); // Refresh ticket list
+          },
+          error: (err) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: this.translateService.instant('ERROR'),
+              detail: err.message,
+              life: 3000
+            });
+          }
+        });
+      });
   }
 }

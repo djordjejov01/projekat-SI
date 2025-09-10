@@ -32,6 +32,8 @@
   "invalidEmail": "Invalid email format",
   "invalidPassword": "Invalid password.",
   "loginError": "Login Error",
+  "mobileroleLogin":"Only mobile users are allowed access",
+  "accountNotVerified":"Account is not verified",
   "genericError": "Something went wrong",
   "noToken": "No token received from server.",
   "googleUserInfoFailed": "Failed to get user info",
@@ -46,7 +48,7 @@
   "alreadyHaveAccount": "Already have an account?",
   "allFieldsRequired": "All fields are required",
   "success": "Success",
-  "accountCreated": "Account created successfully!",
+  "accountCreated": "Account created successfully, verify it via email!",
   "passwordRequirements": "Password must meet all the listed requirements",
   "passwordMismatch": "Passwords do not match",
     "guest": {
@@ -57,12 +59,17 @@
     "login_signup": "Login / Sign up",
     "guest_mode": "Guest mode"
   },
+  "price": "Price",
   "addToFavorites": "Add to favorites",
   "removeFromFavorites": "Remove from favorites",
   "buyTicket": "Buy Ticket",
   "eventDescription": "Event Description",
+    "reserve": "Reserve (free)",
   "agenda": "Agenda",
   "location": "Location",
+  "Legend": "Legend",
+  "standardView": "Standard",
+  "satelliteView": "Satellite",
   "organizer": "Organizer",
   "loading": "Loading...",
   "eventNotFound": "Event not found.",
@@ -73,7 +80,10 @@
   "cancel": "Cancel",
   "failedToUpdateFavorite": "Failed to update favorite",
   "backToEvents": "Back to events",
+
   "profile": {
+  "language": "Language",
+  "myReservations": "Reservations",
   "notLoggedIn": "You're not logged in",
   "loginPrompt": "Please log in to view your profile.",
   "loginNow": "Log in now",
@@ -122,7 +132,8 @@
   "notLoggedIn": "You are not logged in.",
   "success": "Success",
   "passwordChanged": "Password changed successfully.",
-  "changeFailed": "Password change failed."
+  "changeFailed": "Password change failed.",
+  "currentPasswordIncorrect":"Current password is incorrect"
 },
 
 "personalInfo": {
@@ -137,9 +148,9 @@
   "uploadFailed": "Failed to upload image.",
   "title": "Personal Information",
   "firstName": "First Name",
-  "firstNamePlaceholder": "John",
+  "firstNamePlaceholder": "First Name",
   "lastName": "Last Name",
-  "lastNamePlaceholder": "Doe",
+  "lastNamePlaceholder": "Last Name",
   "email": "Email",
   "emailPlaceholder": "example@email.com",
   "phone": "Phone Number",
@@ -188,6 +199,7 @@
 },
 "aboutEvent": "About Event",
   "freeEvent": "Free Event",
+  "freeResources":"Resources",
 "search": {
   "header": "Search Events",
   "placeholder": "Search by title or description...",
@@ -220,6 +232,9 @@
   "noResources": "No available resoursces for this event."
 },
 "cart": {
+   "fetchMyTicketsFailed": "Failed to fetch your existing tickets.",
+  "purchaseFailed": "Ticket purchase failed: {{error}}",
+  "fetchAfterPurchaseFailed": "Failed to fetch tickets after purchase.",
     "viewTicket": "View Ticket",
   "backToEvents": "Back to Events",
   "title": "Your Cart",
@@ -231,6 +246,7 @@
   "purchase": "Purchase",
   "purchasing": "Purchasing...",
   "confirmTitle": "Purchase Confirmation",
+  "confirmTitle2": "Reservation Confirmation",
   "confirmMessage": "Are you sure you want to complete the purchase?",
   "cancel": "Cancel",
   "successTitle": "Success",
@@ -240,7 +256,10 @@
   "genericError": "An error occurred during purchase.",
   "fetchError": "Failed to load data.",
   "ok": "OK",
-  "free": "Free"
+  "free": "Free",
+  "reserveBtn":"Reserve",
+  "confirmReserveMessage":"Are you sure you want to reserve resources?",
+  "resourceReservedMessage":"Resources were successfully reserved"
 },
 
   "ticketDetails": {
@@ -259,7 +278,8 @@
   "buttons": {
     "download": "Download",
     "share": "Share",
-    "backToEvents": "Back to Events"
+    "backToEvents": "Back to Events",
+    "backToMyTickets": "Back to My Tickets"
   },
   "qr": {
     "savedTitle": "Saved!",
@@ -277,13 +297,109 @@
     "price": "Price",
     "purchasedOn": "Purchased on",
     "noTickets": "You currently have no purchased tickets."
+  },
+"time":"Time",
+"pins": {
+  "title": "Pins",
+  "noPins": "No pins for this event.",
+  "category": "Category"
+},
+"errors": {
+  "failedToLoadAgenda": "Failed to load agenda.",
+  "failedToLoadPins": "Failed to load pins.",
+  "failedToLoadResources": "Failed to load resources."
+},
+"common": {
+  "ok": "OK",
+  "retry": "Retry",
+  "close": "Close",
+  "yes": "Yes",
+  "no": "No",
+  "loadingData": "Loading data...",
+  "somethingWentWrong": "Something went wrong",
+  "noData": "No data available."
+},
+"days": {
+  "monday": "Monday",
+  "tuesday": "Tuesday",
+  "wednesday": "Wednesday",
+  "thursday": "Thursday",
+  "friday": "Friday",
+  "saturday": "Saturday",
+  "sunday": "Sunday"
+},
+"map": {
+  "pins": {
+    "Booth": "Booth",
+    "Stage": "Stage",
+    "Entrance": "Entrance",
+    "Exit": "Exit",
+    "FirstAid": "First Aid",
+    "Food": "Food",
+    "Drink": "Drink",
+    "Restroom": "Restroom",
+    "Info": "Info",
+    "Security": "Security",
+    "Parking": "Parking",
+    "LostAndFound": "Lost & Found",
+    "Unknown": "Unknown category"
+  }
+},
+  "category": {
+    "music": "Music",
+    "sports": "Sports",
+    "entertainment": "Entertainment",
+    "protest": "Protest",
+    "charity": "Charity",
+    "business": "Business",
+    "culture": "Culture",
+    "other": "Other"
+  },
+  
+ "myReservations": {
+    "title": "My Reservations",
+    "resource": "Resource",
+    "quantity": "Quantity",
+    "reservedOn": "Reserved on",
+    "noReservations": "You have no reservations yet."
+  }
+  ,
+  "forgotPasswordTitle": "Forgot Password",
+  "forgotPasswordSubtitle": "Enter your email to receive a password reset link.",
+  "sendResetLink": "Send Reset Link",
+  "resetLinkSent": "Password reset link has been sent to your email."
+ ,
+
+  "reservationDetails": {
+    "noReservations": "You have no reservations for this event.",
+    "youHaveTickets": "You have tickets",
+    "ticket": "ticket",
+    "tickets": "tickets",
+    "category": "Category",
+    "description": "Description",
+    "quantity": "Quantity",
+    "reservedAt": "Reserved at",
+    "categoryNames": {
+      "Undefined": "Undefined",
+      "Equipment": "Equipment",
+      "Furniture": "Furniture",
+      "Electrical": "Electrical",
+      "Sanitation": "Sanitation",
+      "FoodAndBeverage": "Food & Beverage",
+      "Medical": "Medical",
+      "Security": "Security",
+      "Merchandise": "Merchandise",
+      "Transportation": "Transportation",
+      "Technology": "Technology"
+    },
+    "availabilityNames": {
+      "Available": "Available",
+      "Unavailable": "Unavailable",
+      "Booked": "Booked"
+    
   }
 
-
-
-
-
-
+    }
 
 }
 

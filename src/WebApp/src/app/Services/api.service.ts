@@ -44,6 +44,10 @@ import { EventResourceApiResponse } from "../Interfaces/EventResourceApiResponse
 import { PendingRequest } from "../Interfaces/PendingRequestApiResponse";
 import { EventResourceCalendarResponse } from "../Interfaces/EventResourceCalendarResponse";
 import { environment } from "../../environments/environment";
+import { TicketSales } from "../Models/TicketSales";
+import { RegResponse } from "../Interfaces/RegResponse";
+import { RegResponseDto } from "../Models/RegResponseDto";
+import { ResetPasswordDto } from "../Models/ResetPasswordDto";
 
 // Match Backend.Models.Dto.EventDto
 export interface EventDto {
@@ -76,12 +80,15 @@ export interface EventsSubeventsActivitiesDto {
 
 // Your frontend models (can keep same shape but camelCase)
 export interface Activity {
-  id: number;
+  id: number;             // maps to activityId
+  eventId: number;        // new
   title: string;
   description: string;
   startDateTime: Date;
   endDateTime: Date;
+  category: number;       // new
 }
+
 
 export interface Subevent {
   id: number;
@@ -100,32 +107,36 @@ export function mapBackendResponse(
     (e) => e.parentEventId === mainEventId
   );
 
-  const mainEventActivities = backendData.activities
-    .filter((a) => a.eventId === mainEventId)
+const mainEventActivities = backendData.activities
+  .filter((a) => a.eventId === mainEventId)
+  .map((a) => ({
+    id: a.activityId,
+    eventId: a.eventId,
+    title: a.title,
+    description: a.description,
+    startDateTime: new Date(a.startDate),
+    endDateTime: new Date(a.endDate),
+    category: Number(a.category) // convert if needed
+  }));
+
+const subevents = subeventsDtos.map((sub) => ({
+  id: sub.eventId,
+  title: sub.title,
+  description: sub.description,
+  startDateTime: new Date(sub.startDate),
+  endDateTime: new Date(sub.endDate),
+  activities: backendData.activities
+    .filter((a) => a.eventId === sub.eventId)
     .map((a) => ({
       id: a.activityId,
+      eventId: a.eventId,
       title: a.title,
       description: a.description,
       startDateTime: new Date(a.startDate),
       endDateTime: new Date(a.endDate),
-    }));
-
-  const subevents = subeventsDtos.map((sub) => ({
-    id: sub.eventId,
-    title: sub.title,
-    description: sub.description,
-    startDateTime: new Date(sub.startDate),
-    endDateTime: new Date(sub.endDate),
-    activities: backendData.activities
-      .filter((a) => a.eventId === sub.eventId)
-      .map((a) => ({
-        id: a.activityId,
-        title: a.title,
-        description: a.description,
-        startDateTime: new Date(a.startDate),
-        endDateTime: new Date(a.endDate),
-      })),
-  }));
+      category: Number(a.category)
+    })),
+}));
 
   return {
     subevents,
@@ -148,8 +159,26 @@ export interface GeocodingResult {
 export class ApiService{
     
     private apiUrl = environment.apiUrl;
+    private baseApiUrl = environment.backendBaseUrl
 
     constructor(private http: HttpClient) {}
+
+    getUserRole(): Observable<{ role: string }>{
+        return this.http.get<{ role: string }>(`${this.apiUrl}/User/role`);
+    }
+
+  resetPassword(data: ResetPasswordDto): Observable<any> {
+    return this.http.post(`${this.baseApiUrl}/auth/reset-password`, data).pipe(
+        catchError(this.handleError)
+    );
+  }
+
+  forgotPassword(email: string): Observable<any> {
+    const body = { email: email };
+    return this.http.post(`${this.baseApiUrl}/auth/forgot-password`, body).pipe(
+        catchError(this.handleError)
+    );
+  }
 
 // services/api.service.ts
 
@@ -455,6 +484,31 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
 
     }
 
+
+    updateActivity(activityId: number, activityDto: ActivityDto): Observable<SuccessfulMessageResponse> {
+        
+        const dtoWithId = new ActivityDto(
+            activityDto.getEventId(),
+            activityDto.getTitle(),
+            activityDto.getStartDate(),
+            activityDto.getEndDate(),
+            activityDto.getDescription(),
+            activityDto.getCategory(),
+            activityDto.getActivityId()
+        );
+      return this.http.put<SuccessfulMessageResponse>(`${this.apiUrl}/Organizer/activity`, dtoWithId).pipe(
+        catchError(this.handleError)
+      );
+    }
+
+    // **Updated: Delete an activity**
+    deleteActivity(activityId: number): Observable<SuccessfulMessageResponse> {
+      // Backend expects the ID in the request body, not as a URL parameter
+      return this.http.delete<SuccessfulMessageResponse>(`${this.apiUrl}/Organizer/activity`, { body: activityId }).pipe(
+        catchError(this.handleError)
+      );
+    }
+
     createActivity(activity : ActivityDto) : Observable<any>{
         return this.http.post<any>(
             `${this.apiUrl}/Organizer/activity`,
@@ -548,7 +602,7 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
         return this.http.get<EventApiResponse[]>(`${this.apiUrl}/Organizer/events?id=${organizerId}`).pipe(
             map(data => 
                 data.map(event => {
-                    //console.log(data)
+                    ////console.log(data)
                     const organizer = event.organizer
                     ?  new User(
                         event.organizer.userId,
@@ -597,7 +651,7 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
         return this.http.get<EventApiResponse[]>(`${this.apiUrl}/Organizer/upcoming-events?id=${organizerId}`).pipe(
             map(data => 
                 data.map(event => {
-                    //console.log(data)
+                    ////console.log(data)
                     const organizer = event.organizer
                     ?  new User(
                         event.organizer.userId,
@@ -713,18 +767,21 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
         )
     }
 
-    register(data : RegisterDto): Observable<UserDto>{
+    register(data : RegisterDto): Observable<RegResponseDto>{
 
-        return this.http.post<UserDtoResponse>(`${this.apiUrl}/User/register-web`, data).pipe(
+        return this.http.post<RegResponse>(`${this.apiUrl}/User/register-web`, data).pipe(
 
             map(data => {
-                //console.log('Raw backend response Register:', data);
-                return new UserDto(
-                data.userId,
-                data.username,
-                data.email,
-                data.role,
-                data.isActive
+                return new RegResponseDto(
+                data.message,
+                new UserDto(
+                    data.user.userId,
+                    data.user.username,
+                    data.user.email,
+                    data.user.role,
+                    data.user.isActive,
+                ),
+                data.requiresEmailVerification
             );
         }),
             
@@ -755,7 +812,12 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
             catchError(this.handleError)
         )
     }
-
+    removePicture()
+    {
+        return this.http.delete<{ message: string }>(`${this.apiUrl}/User/delete-profile-picture` ).pipe(
+            catchError(this.handleError)
+        )
+    }
     getSupplier() : Observable<SupplierDto>{
         return this.http.get<SupplierDtoResponse>(`${this.apiUrl}/Supplier/profile`).pipe(
             map(data => {
@@ -776,14 +838,17 @@ requestResource(resourceDto: EventResourceDto): Observable<any> {
 
     changeUserPass(data : ChangePasswordDto)
     {
-        return this.http.put(`${this.apiUrl}/User/change-password`, data, { responseType: 'text' as const }).pipe(
+        return this.http.put<SuccessfulMessageResponse>(`${this.apiUrl}/User/change-password`, data).pipe(
   catchError(this.handleError)
 );
 
     }
 
-
-
+    getTicketSales(eventId : number){
+        return this.http.get<TicketSales>(`${this.apiUrl}/Organizer/events/${eventId}/ticket-sales`).pipe(
+            catchError(this.handleError)
+        )
+    }
     updateOrg(data : OrganizerDto): Observable<string>{
         return this.http.post<SuccessfulMessageResponse>(`${this.apiUrl}/Organizer/update-organizer`,data).pipe(
             map(data => data.message),

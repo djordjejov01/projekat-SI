@@ -2,15 +2,15 @@
     <div id="leftside">
         <img src="./assets/logo91.png" alt="syncup logo" id="logo">
         <p routerLink="/home">{{ 'HOME' | translate }}</p>
-        <a href="http://softeng.pmf.kg.ac.rs:11061/SyncUp.apk" id="daa">Get Android App</a>
+        <a href="http://softeng.pmf.kg.ac.rs:11061/SyncUp.apk" id="daa">{{'GETANDROIDAPP' | translate}}</a>
     </div>
     <div id="rightside">
-        <select (change)="changeLanguage($event)">
-            <option value="sr">Srpski</option>
-            <option value="en">English</option>
-        </select>
+            <select [(ngModel)]="currentLanguage" (change)="changeLanguage($event)">
+                <option value="sr" >Srpski</option>
+                <option value="en">English</option>
+            </select>
         <p>|</p>
-        <p id="dashboard" *ngIf="isLoggedIn" [routerLink]="dashboardRoute"> Dashboard </p>
+        <p id="dashboard" *ngIf="isLoggedIn" [routerLink]="dashboardRoute"> {{'DASHBOARD' | translate}} </p>
         <ng-container  *ngIf="!isLoggedIn">
             <p id="login" routerLink="/login">{{ 'LOGIN' | translate }}</p>
             <p>/</p>

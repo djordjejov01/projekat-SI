@@ -1,6 +1,4 @@
-// requests.component.ts
-
-import { Component, OnInit, OnChanges, Input, Output, EventEmitter, SimpleChanges } from "@angular/core";
+import { Component, OnChanges, Input, Output, EventEmitter, SimpleChanges } from "@angular/core";
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from "primeng/button";
 import { DialogModule } from "primeng/dialog";
@@ -8,6 +6,7 @@ import { TableModule } from 'primeng/table';
 import { MessageService } from 'primeng/api';
 import { PendingRequest } from "../../../../Interfaces/PendingRequestApiResponse";
 import { ApiService } from '../../../../Services/api.service';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 enum EventResourceStatus {
   Pending,
@@ -22,18 +21,16 @@ enum EventResourceStatus {
     DialogModule,
     TableModule,
     ButtonModule,
+    TranslateModule
   ],
   templateUrl: './requests.component.html',
   styleUrl: './requests.component.css',
-  providers: [MessageService] // Add MessageService provider
+  providers: [MessageService]
 })
-
-
-// Implement the OnChanges lifecycle hook
 export class RequestsComponent implements OnChanges {
 
   @Input() visible: boolean = false;
-  @Output() visibleChange = new EventEmitter<boolean>(); // Add this line
+  @Output() visibleChange = new EventEmitter<boolean>();
   @Input() supplierId: number | null = null;
   @Output() modalClosed = new EventEmitter<void>();
   @Output() requestProcessed = new EventEmitter<void>();
@@ -44,12 +41,11 @@ export class RequestsComponent implements OnChanges {
 
   constructor(
     private apiService: ApiService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private translate: TranslateService
   ) {}
 
- ngOnChanges(changes: SimpleChanges): void {
-    // Check if the 'visible' property has changed and is now true
-    // and if the 'supplierId' has a valid value.
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes['visible'] && changes['visible'].currentValue === true && this.supplierId) {
       this.fetchPendingRequests();
     }
@@ -66,60 +62,77 @@ export class RequestsComponent implements OnChanges {
       next: (data) => {
         this.pendingRequests = data;
         this.loading = false;
-        //console.log('Fetched pending requests:', this.pendingRequests);
-        this.pendingRequestCount.emit(this.pendingRequests.length); 
+        this.pendingRequestCount.emit(this.pendingRequests.length);
       },
       error: (error) => {
         console.error('Error fetching pending requests:', error);
-        this.messageService.add({severity: 'error', summary: 'Error', detail: 'Could not load pending requests.'});
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.instant('ERROR'),
+          detail: this.translate.instant('REQUESTS.ERROR_FETCH'),
+          life: 3000
+        });
         this.loading = false;
       }
     });
   }
 
   closeModal(): void {
-    this.visibleChange.emit(false); // Emit the change to the parent
+    this.visibleChange.emit(false);
     this.modalClosed.emit();
   }
 
-  openModal()
-  {
+  openModal(): void {
     this.visible = true;
   }
 
-// Update the approveRequest method
   approveRequest(request: PendingRequest): void {
     this.loading = true;
-    this.apiService.updateEventResourceStatus(request.id, EventResourceStatus.Approved)
-      .subscribe({
-        next: (response) => {
-          this.messageService.add({severity: 'success', summary: 'Success', detail: 'Request approved!'});
-          // After success, re-fetch the pending requests to update the table
-          this.fetchPendingRequests();
-          this.requestProcessed.emit();
-        },
-        error: (err) => {
-          this.messageService.add({severity: 'error', summary: 'Error', detail: err.error || 'Failed to approve request.'});
-          this.loading = false;
-        }
-      });
+    this.apiService.updateEventResourceStatus(request.id, EventResourceStatus.Approved).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translate.instant('SUCCESS'),
+          detail: this.translate.instant('REQUESTS.APPROVED'),
+          life: 3000
+        });
+        this.fetchPendingRequests();
+        this.requestProcessed.emit();
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.instant('ERROR'),
+          detail: err.error || this.translate.instant('REQUESTS.APPROVE_FAILED'),
+          life: 3000
+        });
+        this.loading = false;
+      }
+    });
   }
 
-  // Update the declineRequest method
   declineRequest(request: PendingRequest): void {
     this.loading = true;
-    this.apiService.updateEventResourceStatus(request.id, EventResourceStatus.Declined)
-      .subscribe({
-        next: (response) => {
-          this.messageService.add({severity: 'success', summary: 'Success', detail: 'Request declined!'});
-          // After success, re-fetch the pending requests to update the table
-          this.fetchPendingRequests();
-          this.requestProcessed.emit();
-        },
-        error: (err) => {
-          this.messageService.add({severity: 'error', summary: 'Error', detail: err.error || 'Failed to decline request.'});
-          this.loading = false;
-        }
-      });
+    this.apiService.updateEventResourceStatus(request.id, EventResourceStatus.Declined).subscribe({
+      next: () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translate.instant('SUCCESS'),
+          detail: this.translate.instant('REQUESTS.DECLINED'),
+          life: 3000
+        });
+        this.fetchPendingRequests();
+        this.requestProcessed.emit();
+      },
+      error: (err) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translate.instant('ERROR'),
+          detail: err.error || this.translate.instant('REQUESTS.DECLINE_FAILED'),
+          life: 3000
+        });
+        this.loading = false;
+      }
+    });
   }
 }

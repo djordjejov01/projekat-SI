@@ -16,9 +16,12 @@ import { Router } from '@angular/router';
 import { MenuBarComponent } from '../organizer-page/menu-bar/menu-bar.component';
 import { SupplierDto } from '../../Models/SupplierDto';
 import { environment } from '../../../environments/environment';
+import { LanguageService } from '../../Services/LanguageService';
+import { FormsModule } from '@angular/forms';
+import { OrganizerDto } from '../../Models/OrganizerDto';
 @Component({
   selector: 'app-supplier-page',
-  imports: [RouterModule, ConfirmDialogModule, ToastModule, TranslateModule, Toast, MenuBarComponent],
+  imports: [RouterModule, ConfirmDialogModule, ToastModule, TranslateModule, Toast, MenuBarComponent,FormsModule],
   templateUrl: './supplier-page.component.html',
   styleUrl: './supplier-page.component.css'
 })
@@ -26,6 +29,7 @@ export class SupplierPageComponent implements OnInit{
   defaultImage = `${environment.backendBaseUrl}/images/default-pfp.png`;
   previewUrl: string | ArrayBuffer | null = null;
   username : string;
+  public currentLanguage: string;
   constructor(
     private sessionService: SessionService,
     private translate: TranslateService,
@@ -35,10 +39,31 @@ export class SupplierPageComponent implements OnInit{
     private categoryService: CategoryService,
     private apiService: ApiService,
     private sharedService: SharedService,
-    private router: Router) { }
+    private router: Router,
+    private languageService : LanguageService) { }
 
     currSupplier : SupplierDto;
     getSupplierCall() {
+      const userRole = this.authService.getUserRole();
+      
+      if (userRole === 'Supplier') {
+        this.apiService.getSupplier().subscribe({
+          next: (response: SupplierDto) => {
+            this.currSupplier = response;
+            this.previewUrl = this.currSupplier.getImage();
+          },
+          error: (errorResponse) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Error',
+              detail: errorResponse.message,
+              life: 3000
+            });
+          }
+        });
+      }
+    }
+    /*getSupplierCall() {
         this.apiService.getSupplier().subscribe({
     
           next: (response: SupplierDto) => {
@@ -55,7 +80,7 @@ export class SupplierPageComponent implements OnInit{
           }
     
         })
-      }
+      }*/
       ngAfterContentInit(): void {
     this.cd.detectChanges();
     const shouldShowWelcome = sessionStorage.getItem('showWelcome') === 'true';
@@ -64,8 +89,8 @@ export class SupplierPageComponent implements OnInit{
       if (name) {
         this.messageService.add({
           severity: 'success',
-          summary: 'Welcome',
-          detail: `Welcome back, ${name}!`,
+           summary: this.translate.instant('welcome.title'),
+          detail: this.translate.instant('welcome.back')+`, ${name}!`,
           life: 3000
         });
       }
@@ -73,6 +98,8 @@ export class SupplierPageComponent implements OnInit{
     }
   }
     ngOnInit(): void {
+       const savedLang = this.languageService.language();
+      this.currentLanguage = savedLang || 'en';
         this.username = this.authService.getUserName();
         this.getSupplierCall();
 
@@ -89,11 +116,21 @@ export class SupplierPageComponent implements OnInit{
     this.sessionService.logoutWithConfirmation();
   }
 
-  changeLanguage(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const lang = selectElement.value;
-    this.translate.use(lang);
-  }
+changeLanguage(event: Event) {
+  const selectElement = event.target as HTMLSelectElement;
+  const lang = selectElement.value;
+
+   // Update the currentLanguage property
+    this.currentLanguage = lang;
+
+  // 1. Tell the LanguageService to save the new language to localStorage
+  this.languageService.setLanguage(lang);
+
+  // 2. Tell the frontend translation service to switch languages for the UI
+  this.translate.use(lang);
+
+  this.sharedService.notifyLangChange();
+}
 
   myProfile(){
     this.router.navigate(["/supplier/my-profile"],{
