@@ -15,7 +15,7 @@ import * as Animatable from 'react-native-animatable';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../config';
-
+import { apiCall } from '../../config';
 
 export default function TokenPurchaseScreen() {
   const [amount, setAmount] = useState('');
@@ -24,40 +24,50 @@ export default function TokenPurchaseScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const handlePurchase = async () => {
-    const parsedAmount = parseInt(amount, 10);
-    if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      Alert.alert(`${t('error')}`, `${t('payment.errorNumber')}`);
-      return;
-    }
+  const parsedAmount = parseInt(amount, 10);
+  if (isNaN(parsedAmount) || parsedAmount <= 0) {
+    Alert.alert(`${t('error')}`, `${t('payment.errorNumber')}`);
+    return;
+  }
 
-    try {
-      setProcessing(true);
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulacija animacije
+  try {
+    setProcessing(true);
+    await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulacija animacije
 
-      setLoading(true);
-      const token = await AsyncStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/Credit/add`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(parsedAmount),
-      });
+    setLoading(true);
+    const token = await AsyncStorage.getItem('token');
+    const response = await apiCall(`${API_URL}/api/Credit/add`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(parsedAmount),
+    });
 
-      if (response.ok) {
-        Alert.alert(`${t('payment.success')}`, `${parsedAmount} ${t('payment.success2')}`);
-        setAmount('');
+    if (response.ok) {
+      const data = await response.json();
+      Alert.alert(
+        `${t('payment.success')}`,
+        `${parsedAmount} ${t('payment.success2')}`
+      );
+      setAmount('');
+    } else {
+      const errorText = await response.text(); // pročitaj poruku sa backa
+      if (errorText.includes("Credit cannot exceed")) {
+        Alert.alert(`${t('error')}`, `${t('payment.moneyError')}`);
       } else {
         Alert.alert(`${t('error')}`, `${t('payment.errorPayment')}`);
       }
-    } catch (error) {
-      Alert.alert(`${t('error')}`, `${t('payment.errorServer')}`);
-    } finally {
-      setLoading(false);
-      setProcessing(false);
     }
-  };
+  } catch (error) {
+    Alert.alert(`${t('error')}`, `${t('payment.errorServer')}`);
+  } finally {
+    setLoading(false);
+    setProcessing(false);
+  }
+};
+
 
   return (
     <View style={styles.container}>

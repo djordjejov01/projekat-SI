@@ -12,22 +12,27 @@ import { EventPinDto } from '../../../Models/EventPinDto';
 import { forkJoin } from 'rxjs';
 import { AgendaSectionComponent } from './agenda-section/agenda-section.component';
 import { ResourceAllocationComponent } from './resource-allocation/resource-allocation.component';
+import { TicketSales } from '../../../Models/TicketSales';
+import { environment } from '../../../../environments/environment';
+import { DialogModule } from 'primeng/dialog';
+import { ButtonModule } from 'primeng/button';
+import { TranslateModule,TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-event-management',
-  imports: [EventBasicInfoComponent,EventManagementHeaderComponent,CommonModule,TicketSectionComponent,MapSectionComponent,AgendaSectionComponent,ResourceAllocationComponent],
+  imports: [TranslateModule,DialogModule,ButtonModule,EventBasicInfoComponent,EventManagementHeaderComponent,CommonModule,TicketSectionComponent,MapSectionComponent,AgendaSectionComponent,ResourceAllocationComponent],
   templateUrl: './event-management.component.html',
-  styleUrl: './event-management.component.css'
+  styleUrls: ['./event-management.component.css']
 })
 export class EventManagementComponent implements OnInit{
 
   eventBasicInfo: EventBasicInfo | null = null;
   editMode = false;
-
+  backendBaseUrl = environment.backendBaseUrl;
   subevents : Subevent[] = [];
   activities : Activity[] = [];
   pins: EventPinDto[] = [];
-
+  ticketSales : TicketSales;
   constructor(
     private route : ActivatedRoute,
     private messageService : MessageService,
@@ -39,6 +44,8 @@ export class EventManagementComponent implements OnInit{
       const id = Number(params.get('eventId'));
       if(!isNaN(id)){
         this.loadEvent(id);
+
+        
       }
       else{
 
@@ -56,6 +63,15 @@ export class EventManagementComponent implements OnInit{
       next: (data) =>{
         this.eventBasicInfo = data;
         this.loadAgenda();
+        this.apiService.getTicketSales(this.eventBasicInfo.getEventID()).subscribe({
+        next: (response) => {
+          this.ticketSales = response;
+          ////console.log(this.ticketSales);
+        },
+        error: () => {
+          
+        }
+      });
       },
       error: (errorResponse) => {
           this.messageService.add({
@@ -66,7 +82,17 @@ export class EventManagementComponent implements OnInit{
         }
     })
   }
+  selectedTicket: any;
+  showBuyersModal: boolean = false;
+    openBuyersModal(ticket: any) {
+    this.selectedTicket = ticket;
+    this.showBuyersModal = true;
+  }
 
+  closeBuyersModal() {
+    this.showBuyersModal = false;
+    this.selectedTicket = null;
+  }
   loadAgenda(){
       this.apiService.getAgenda(this.eventBasicInfo.getEventID()).subscribe({
         next: ({subevents, activities}) => {
@@ -75,15 +101,15 @@ export class EventManagementComponent implements OnInit{
 
           this.loadAllPins(this.eventBasicInfo.getEventID(), subevents)
 
-          //console.log(subevents)
-          //console.log(activities)
+          ////console.log(subevents)
+          ////console.log(activities)
         },
           error: err => {
             this.messageService.add({
               severity: 'error',
               summary: 'Error loading agenda',
               detail: err.message || 'Unknown error',
-              life: 5000
+              life: 3000
             });
           }
       })

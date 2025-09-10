@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
+import { apiCall } from '../../config';
 import {
   View,
   Text,
@@ -27,7 +28,8 @@ type TicketType = {
 export default function TicketDetails() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { ticketIDs, validationTokens, eventName, eventID, purchasedAt, ticketTypes } = useLocalSearchParams();
+  const { ticketIDs, validationTokens, eventName, eventID, purchasedAt, ticketTypes, from } = useLocalSearchParams();
+
 
   const [fullName, setFullName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -57,9 +59,17 @@ export default function TicketDetails() {
     console.error('Invalid ticketTypes param', error);
   }
 
-  const formattedDate = purchasedAt
-    ? new Date(purchasedAt as string).toLocaleString()
-    : '';
+ // Parsiramo purchasedAt niz
+   let purchasedDates: string[] = [];
+if (purchasedAt) {
+  try {
+    purchasedDates = JSON.parse(purchasedAt as string);
+  } catch {
+    purchasedDates = [purchasedAt as string]; // fallback za jedan datum
+  }
+}
+
+
 
   // Funkcija za pronalazenje imena tipa karte
   const getTicketTypeName = (id: number): string => {
@@ -77,7 +87,7 @@ export default function TicketDetails() {
           return;
         }
 
-        const res = await fetch(`${API_URL}/api/MobileUser/profile`, {
+        const res = await apiCall(`${API_URL}/api/MobileUser/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -172,9 +182,7 @@ export default function TicketDetails() {
         <Text style={styles.eventName}>{displayEventName}</Text>
       </TouchableOpacity>
 
-      <Text style={styles.detail}>
-        {t('ticketDetails.purchasedAt')}: {formattedDate}
-      </Text>
+
 
       <Text style={[styles.detail, { marginBottom: 16 }]}>
         {t('ticketDetails.purchasedBy')}:{' '}
@@ -184,67 +192,71 @@ export default function TicketDetails() {
       </Text>
 
       {/* QR kodovi */}
-      {ids.map((id, index) => {
-        const token = tokens[index];
-        return (
-          <View key={index} style={styles.ticketCard}>
-            <Text style={styles.ticketLabel}>
-              🎫 {t('ticketDetails.ticket')} #{index + 1}
-            </Text>
-            
+    {ids.map((id, index) => {
+      const token = tokens[index];
+      const purchaseDate = purchasedDates[index]
+        ? new Date(purchasedDates[index]).toLocaleString()
+        : t('ticketDetails.unknownDate');
 
-            {token ? (
-              <QRCode
-                value={`${API_URL}/api/TicketValidation/validate/${id}/${token}`}
-                size={250}
-                backgroundColor="white"
-                color="black"
-                getRef={(ref) => (svgRefs.current[index] = ref)}
-              />
-            ) : (
-              <Text style={styles.errorText}>
-                {t('ticketDetails.qrError')}
-              </Text>
-            )}
-            <View style={styles.cardDetails}>
+
+
+      return (
+        <View key={index} style={styles.ticketCard}>
+          <Text style={styles.ticketLabel}>
+            🎫 {t('ticketDetails.ticket')} #{index + 1}
+          </Text>
+
+          {token ? (
+            <QRCode
+              value={`${API_URL}/api/TicketValidation/validate/${id}/${token}`}
+              size={250}
+              backgroundColor="white"
+              color="black"
+              getRef={(ref) => (svgRefs.current[index] = ref)}
+            />
+          ) : (
+            <Text style={styles.errorText}>{t('ticketDetails.qrError')}</Text>
+          )}
+
+          <View style={styles.cardDetails}>
             <Text style={styles.detail}>
-              {t('ticketDetails.purchasedAt')}: {formattedDate}
+              {t('ticketDetails.purchasedAt')}: {purchaseDate}
             </Text>
             {!loading && (
               <Text style={styles.detail}>
-                {t('ticketDetails.purchasedBy')}:{' '}
-                <Text style={{ fontWeight: '600' }}>
-                  {fullName ?? t('ticketDetails.unknownUser')}
-                </Text>
+                {t('ticketDetails.purchasedBy')}: <Text style={{ fontWeight: '600' }}>{fullName ?? t('ticketDetails.unknownUser')}</Text>
               </Text>
             )}
           </View>
 
-            <View style={styles.actions}>
-              <TouchableOpacity
-                onPress={() => downloadQR(index)}
-                style={styles.button}
-              >
-                <Text style={styles.buttonText}>📥 {t('buttons.download')}</Text>
-              </TouchableOpacity>
+          <View style={styles.actions}>
+            <TouchableOpacity onPress={() => downloadQR(index)} style={styles.button}>
+              <Text style={styles.buttonText}>📥 {t('buttons.download')}</Text>
+            </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => shareQR(index)}
-                style={styles.buttonSecondary}
-              >
-                <Text style={styles.buttonText}>📤 {t('buttons.share')}</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity onPress={() => shareQR(index)} style={styles.buttonSecondary}>
+              <Text style={styles.buttonText}>📤 {t('buttons.share')}</Text>
+            </TouchableOpacity>
           </View>
-        );
-      })}
+        </View>
+      );
+    })}
+
 
       <TouchableOpacity
         style={styles.backToEventsButton}
-        onPress={() => router.replace('/(tabs)/events')}
+        onPress={() => {
+          if (from === 'reservationDetails') router.back();
+          else if (from === 'myTickets') router.replace('../profile/myTickets');
+          else router.replace('/(tabs)/events'); 
+        }}
       >
-        <Text style={styles.backToEventsText}>{t('buttons.backToEvents')}</Text>
+        <Text style={styles.backToEventsText}>
+          {from === 'reservationDetails' ? t('buttons.back') :
+          from === 'myTickets' ? t('buttons.backToMyTickets') : t('buttons.backToEvents')}
+        </Text>
       </TouchableOpacity>
+
     </ScrollView>
   );
 }
@@ -262,6 +274,41 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#1e1e1e',
   },
+  actions: {
+  flexDirection: 'row',
+  marginTop: 22,
+  justifyContent: 'space-between',
+  width: '100%',
+},
+button: {
+  flex: 1,
+  backgroundColor: '#5C5EE0',
+  paddingVertical: 12,
+  borderRadius: 10,
+  marginHorizontal: 5,
+  alignItems: 'center',
+  shadowColor: '#5c5ee0',
+  shadowOpacity: 0.35,
+  shadowRadius: 8,
+  shadowOffset: { width: 0, height: 3 },
+  maxWidth: 160, 
+},
+buttonSecondary: {
+  flex: 1,
+  backgroundColor: '#6B7280',
+  paddingVertical: 12,
+  borderRadius: 10,
+  marginHorizontal: 5,
+  alignItems: 'center',
+  maxWidth: 160,
+},
+buttonText: {
+  color: '#fff',
+  fontWeight: '700',
+  fontSize: 16,
+  textAlign: 'center',
+},
+
   eventName: {
     fontSize: 20,
     fontWeight: '700',
@@ -297,42 +344,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     width: '100%',
   },
-  actions: {
-    flexDirection: 'row',
-    marginTop: 22,
-    justifyContent: 'center',
-    gap: 18,
-  },
-  button: {
-    backgroundColor: '#5C5EE0',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginHorizontal: 5,
-    shadowColor: '#5c5ee0',
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-  },
-  buttonSecondary: {
-    backgroundColor: '#6B7280',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginHorizontal: 5,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 16,
-  },
   backToEventsButton: {
     backgroundColor: '#1A56DB',
     paddingVertical: 16,
     paddingHorizontal: 26,
     borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 30,
+    marginBottom: 50,
     marginTop: 12,
     shadowColor: '#1a56db',
     shadowOpacity: 0.4,

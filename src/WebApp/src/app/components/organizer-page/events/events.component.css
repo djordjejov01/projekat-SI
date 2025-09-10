@@ -2,6 +2,9 @@ main{
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    transition: 0.8s;
 }
 
 h1{
@@ -12,6 +15,7 @@ h1{
 
 .title{
     width: 100%;
+    
 }
 
 #ae{
@@ -26,6 +30,7 @@ h1{
     border: 2px solid #636AE8;
     text-align: center;
     max-width: 200px;
+    transition: 0.8s;
 }
 
 #ae:hover{
@@ -37,42 +42,58 @@ h1{
     align-items: center;
     justify-content: center;
     gap:3px;
+    transition: 0.8s;
 }
 
 #infocards{
-    width: 100%;
     display: flex;
-    justify-content: space-between;
+    flex-direction: row;
+    justify-content: center;
     flex-wrap: wrap;
+    align-items: center;
+    gap:20px;
+    transition: 0.8s;
+}
+#ftwo{
+    gap:20px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    transition: 0.8s;
 }
 #graphs{
-        display: flex;
+    display: flex;
     flex-direction: column;
     flex-wrap: wrap;
     width: 100%;
     gap:50px;
     margin-top: 50px;
+    transition: 0.8s;
 }
 
 #group{
 display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
   gap:50px;
+  max-height: 400px;
+  transition: 0.8s;
 
 }
 .chart-box {
   flex: 1 1 47.5%;     
-  min-width: 320px;
-  max-width: 840px;
+  
   border: 1px solid #EBEBEA;
   border-radius: 12px;
   padding: 1rem;
-  box-sizing: border-box;
-  height: 420px;       
+  box-sizing: border-box;      
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: 0.8s;
 }
 
 .pad{
@@ -92,8 +113,8 @@ display: flex;
     padding-right: 30px;
     border: 1px solid rgb(226, 226, 226);
     border-radius: 10px;
-    min-width: 17vw;
     flex-wrap: wrap;
+    transition: 0.8s;
 }
 
 
@@ -115,10 +136,9 @@ display: flex;
     border: 1px solid #EBEBEAFF;
     border-radius: 12px;
     margin: 2rem;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    overflow-x: auto; 
+    transition: 0.8s;
+
 }
 
 .events-table h1{
@@ -204,6 +224,9 @@ display: flex;
 
     @media screen and (max-width: 960px) {
         :host ::ng-deep {
+            .p-datatable-customers {
+            overflow-x: auto;
+        }
             .p-datatable {
                 &.p-datatable-customers {
                     .p-datatable-thead > tr > th,
@@ -240,3 +263,121 @@ display: flex;
             }
         }
     }
+
+@media screen and (max-width: 1800px) {
+#infocards{
+    flex-direction: column;
+    max-height: 2000px;
+    transition: 0.8s;
+}
+#group{
+    flex-direction: column;
+    max-height: 2000px;
+    transition: 0.8s;
+}
+.chart-box{
+    max-width: 650px;
+    transition: 0.8s;
+}
+main{
+    margin-top:80px;
+    margin-left: 120px;
+    transition: 0.8s;
+}
+.title{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.events-table{
+    max-width: 800px;
+    scale:0.8;
+    transition: 0.8s;
+    
+}
+
+}
+
+@media screen and (max-width: 1200px) {
+#infocards{
+    flex-direction: column;
+    max-height: 2000px;
+    transition: 0.8s;
+}
+#group{
+    flex-direction: column;
+    max-height: 2000px;
+    transition: 0.8s;
+}
+.chart-box{
+    max-width: 650px;
+    transition: 0.8s;
+}
+main{
+    margin-left: -100px;
+    transition: 0.8s;
+}
+
+}
+
+@media screen and (max-width: 975px) {
+
+#ftwo{
+    flex-direction: column;
+    transition: 0.8s;
+}
+
+#graphs{
+    scale:0.7;
+    transition: 0.8s;
+}
+
+.events-table{
+    max-width: 600px;
+    scale:0.8;
+    transition: 0.8s;
+}
+
+
+}
+.line{
+    display: flex;
+    justify-content: space-between;
+}
+@media screen and (max-width: 555px) {
+
+main{
+    
+    transition: 0.8s;
+}
+#infocards{
+    scale: 0.8;
+    transition: 0.8s;
+}
+.events-table{
+    max-width: 500px;
+    transition: 0.8s;
+}
+.line{
+    display: block;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+}
+
+@media screen and (max-width: 437px) {
+    .events-table{
+    max-width: 300px;
+    transition: 0.8s;
+}
+main{
+    margin-left: -65px;
+    transition: 0.8s;
+}
+}
+
+.pad{
+    display: flex;
+    flex-direction: column;
+    gap:10px;
+}

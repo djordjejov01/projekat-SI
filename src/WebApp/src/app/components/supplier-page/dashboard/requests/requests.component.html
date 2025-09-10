@@ -2,8 +2,8 @@
 <p-dialog
   [modal]="true"
   [(visible)]="visible"
-   [style]="{ width: '75vw', minHeight: '300px' }" 
-  (onHide)="closeModal()" 
+  [style]="{ width: '75vw', minHeight: '300px' }"
+  (onHide)="closeModal()"
   [closable]="false"
   [dismissableMask]="false"
   [closeOnEscape]="false"
@@ -11,14 +11,14 @@
   <ng-template pTemplate="header">
     <div class="flex justify-between items-start w-full">
       <div class="formTitle">
-        <h3>Review your requests.</h3>
-        <p>Review your requests and allow organizers to allocate your resources.</p>
+        <h3>{{ 'REQUESTS.TITLE' | translate }}</h3>
+        <p>{{ 'REQUESTS.SUBTITLE' | translate }}</p>
       </div>
       <button
         type="button"
         class="p-dialog-header-icon p-link p-button-rounded p-button-text exit-button"
         (click)="closeModal()"
-        pTooltip="Close"
+        pTooltip="{{ 'COMMON.CLOSE' | translate }}"
         tooltipPosition="left"
       >
         <i class="pi pi-times"></i>
@@ -28,24 +28,24 @@
 
   <div>
     <p-table 
-      [value]="pendingRequests" 
-      [loading]="loading" 
-      [paginator]="true" 
+      [value]="pendingRequests"
+      [loading]="loading"
+      [paginator]="true"
       [rows]="10"
       [showCurrentPageReport]="true"
       [rowsPerPageOptions]="[5, 10, 25, 50]"
-      currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+      currentPageReportTemplate="{{ 'TABLE.SHOWING' | translate:{ first: '{first}', last: '{last}', totalRecords: '{totalRecords}' } }}"
       [rowHover]="true"
       dataKey="id"
     >
       <ng-template pTemplate="header">
         <tr>
-          <th style="min-width: 12rem">Resource Name</th>
-          <th style="min-width: 8rem">Quantity</th>
-          <th style="min-width: 12rem">Event Title</th>
-          <th style="min-width: 10rem">Organizer</th>
-          <th style="min-width: 15rem">Requested Dates</th>
-          <th style="width: 10rem">Actions</th>
+          <th style="min-width: 12rem">{{ 'REQUESTS.TABLE.RESOURCE' | translate }}</th>
+          <th style="min-width: 8rem">{{ 'REQUESTS.TABLE.QUANTITY' | translate }}</th>
+          <th style="min-width: 12rem">{{ 'REQUESTS.TABLE.EVENT' | translate }}</th>
+          <th style="min-width: 10rem">{{ 'REQUESTS.TABLE.ORGANIZER' | translate }}</th>
+          <th style="min-width: 15rem">{{ 'REQUESTS.TABLE.DATES' | translate }}</th>
+          <th style="width: 10rem">{{ 'REQUESTS.TABLE.ACTIONS' | translate }}</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-request>
@@ -56,18 +56,22 @@
           <td>{{ request.organizerUsername }}</td>
           <td>
             <ng-container *ngIf="request.startDateTimeBooked != null && request.endDateTimeBooked != null">
-                {{ request.startDateTimeBooked | date:'short' }} - {{ request.endDateTimeBooked | date:'short' }}
+              {{ request.startDateTimeBooked | date:'short' }} - {{ request.endDateTimeBooked | date:'short' }}
             </ng-container>
             <ng-template #nonReservable>
-                N/A
+              {{ 'COMMON.NA' | translate }}
             </ng-template>
           </td>
           <td>
             <div class="flex gap-2">
-              <button pButton type="button" icon="pi pi-check" label="Approve" 
-                      class="p-button-success p-button-sm" (click)="approveRequest(request)"></button>
-              <button pButton type="button" icon="pi pi-times" label="Decline" 
-                      class="p-button-danger p-button-sm" (click)="declineRequest(request)"></button>
+              <button pButton type="button" icon="pi pi-check"
+                      [label]="'COMMON.APPROVE' | translate"
+                      class="p-button-success p-button-sm"
+                      (click)="approveRequest(request)"></button>
+              <button pButton type="button" icon="pi pi-times"
+                      [label]="'COMMON.DECLINE' | translate"
+                      class="p-button-danger p-button-sm"
+                      (click)="declineRequest(request)"></button>
             </div>
           </td>
         </tr>
@@ -77,9 +81,9 @@
           <td colspan="6" class="text-center py-8">
             <div class="flex flex-col items-center justify-center gap-4">
               <i class="pi pi-box text-4xl text-gray-400"></i>
-              <h2 class="text-xl font-semibold text-gray-700">No Pending Requests</h2>
+              <h2 class="text-xl font-semibold text-gray-700">{{ 'REQUESTS.EMPTY.TITLE' | translate }}</h2>
               <p class="text-gray-500 max-w-md text-center">
-                You currently have no pending resource allocation requests to review.
+                {{ 'REQUESTS.EMPTY.DESCRIPTION' | translate }}
               </p>
             </div>
           </td>

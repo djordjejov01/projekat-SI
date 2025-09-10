@@ -2,10 +2,12 @@ using Backend.Helpers;
 using Backend.Models;
 using Backend.Models.Dto;
 using Backend.Services;
+using Backend.Services.Email;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Localization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -23,11 +25,15 @@ namespace Backend.Controllers
         private readonly IUserService _userService;
         private readonly IConfiguration _config;
         private readonly AppDbContext _context;
-        public UserController(IUserService userService, IConfiguration config, AppDbContext context)
+        private readonly IWebHostEnvironment _env;
+        private readonly IStringLocalizer<SharedResource> _localizer;
+        public UserController(IUserService userService, IConfiguration config, AppDbContext context, IWebHostEnvironment env, IStringLocalizer<SharedResource> localizer)
         {
             _userService = userService;
             _config = config;
             _context = context;
+            _env = env;
+            _localizer = localizer;
         }
 
         [HttpPost("register")]
@@ -37,16 +43,21 @@ namespace Backend.Controllers
                 return BadRequest(ModelState);
 
             if (registerDto.Password != registerDto.ConfirmPassword)
-                return BadRequest(new { message = "Password and password confirmation do not match." });
+                return BadRequest(new { message = _localizer["user.password_mismatch"].ToString() });
 
             
             if (registerDto.Role != UserRole.Organizer && registerDto.Role != UserRole.Supplier && registerDto.Role != UserRole.MobileUser)
-                return BadRequest(new { message = "Role not allowed for public registration." });
+                return BadRequest(new { message = _localizer["user.role_not_allowed"].ToString() });
 
             try
             {
                 var user = await _userService.RegisterAsync(registerDto);
-                return Ok(user);
+
+                return Ok(new{
+                    message = _localizer["user.registration_success_verify"].ToString(),
+                    user = user,
+                    requiresEmailVerification = true
+                });
             }
             catch (System.Exception ex)
             {
@@ -61,15 +72,19 @@ namespace Backend.Controllers
                 return BadRequest(ModelState);
 
             if (registerDto.Password != registerDto.ConfirmPassword)
-                return BadRequest(new { message = "Password and confirmation password do not match." });
+                return BadRequest(new { message = _localizer["user.password_mismatch"].ToString() });
 
             if (registerDto.Role != UserRole.Organizer && registerDto.Role != UserRole.Supplier)
-                return BadRequest(new { message = "Role not allowed for public registration." });
+                return BadRequest(new { message = _localizer["user.role_not_allowed"].ToString() });
 
             try
             {
                 var user = await _userService.RegisterWebAsync(registerDto);
-                return Ok(user);
+                return Ok(new{
+                    message = _localizer["user.registration_success_verify"].ToString(),
+                    user = user,
+                    requiresEmailVerification = true
+                });
             }
             catch (Exception ex)
             {
@@ -83,9 +98,14 @@ namespace Backend.Controllers
             try
             {
                 var user = await _userService.LoginAsync(loginDto);
+                if (!user.IsEmailVerified)
+                {
+                    return BadRequest(new { message = _localizer["user.email_not_verified"].ToString() });
+                }
                 var claims = new[]
                 {
                     new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+                    new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                     new Claim(ClaimTypes.Name, user.Username),
                     new Claim(ClaimTypes.Email, user.Email),    
                     new Claim(ClaimTypes.Role, user.Role.ToString()),
@@ -138,23 +158,23 @@ namespace Backend.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var user =await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
             if (user == null)
-                return NotFound("User not found.");
+                return NotFound(new { message = _localizer["user.not_found"].ToString() });
 
             
             if (CommonHelpers.HashPassword(dto.CurrentPassword) != user.Password)
-                return BadRequest("The current password is incorrect.");
+                return BadRequest(new { message = _localizer["user.current_password_incorrect"].ToString() });
 
             
             if (string.IsNullOrWhiteSpace(dto.NewPassword) || dto.NewPassword.Length < 8 ||
                 !dto.NewPassword.Any(char.IsUpper) ||
                 !dto.NewPassword.Any(char.IsLower) ||
                 !dto.NewPassword.Any(char.IsDigit))
-                return BadRequest("The new password must be at least 8 characters long and include an uppercase letter, a lowercase letter, and a number.");
+                return BadRequest(new { message = _localizer["user.password_policy_failed"].ToString() });
 
             
             user.Password = CommonHelpers.HashPassword(dto.NewPassword);
             await _context.SaveChangesAsync();
-            return Ok("Password changed successfully.");
+            return Ok(new { message = _localizer["user.password_changed"].ToString() });
         }
 
         [Authorize]
@@ -167,6 +187,60 @@ namespace Backend.Controllers
                 return NotFound();
 
             return Ok(new { role = user.Role.ToString() });
+        }
+
+        [Authorize(Roles = "Organizer,Supplier,Admin")]
+        [HttpDelete("delete-profile-picture")]
+        public async Task<IActionResult> DeleteProfilePicture()
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+            
+                
+            
+            if (user == null)
+                return NotFound(new { message = _localizer["user.not_found"].ToString() });
+
+            const string defaultImagePath = "images/default-pfp.png";
+            if (user.ProfilePicture == defaultImagePath)
+            {
+                return Ok();
+            }
+
+            if (!string.IsNullOrEmpty(user.ProfilePicture))
+            {
+                // Assume user.ProfilePicture is stored like "/profile-images/filename.jpg"
+                var relativePath = user.ProfilePicture.TrimStart('/');
+                var absolutePath = Path.Combine(_env.WebRootPath, relativePath);
+
+                if (System.IO.File.Exists(absolutePath))
+                {
+                    try
+                    {
+                        System.IO.File.Delete(absolutePath);
+                    }
+                    catch (Exception ex)
+                    {
+                        return StatusCode(500, new { message = string.Format(_localizer["common.image_delete_error"].ToString(), ex.Message) });
+                    }
+                }
+
+                
+            }
+          
+            user.ProfilePicture = defaultImagePath;
+            if (user.Role == UserRole.Organizer)
+            {
+                var organizer = await _context.Organizers.FirstOrDefaultAsync(s => s.Id == userId);
+                organizer.Image = defaultImagePath;
+            }
+            else if(user.Role == UserRole.Supplier)
+            {
+                var supplier = await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == userId);
+                supplier.Image = defaultImagePath;
+            }
+            await _context.SaveChangesAsync();
+            return Ok(new { message = _localizer["user.profile_picture_deleted"].ToString(),imageUrl=defaultImagePath });
         }
 
     }

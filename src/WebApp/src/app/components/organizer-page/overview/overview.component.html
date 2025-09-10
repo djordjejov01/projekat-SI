@@ -2,10 +2,17 @@
     <app-newest-event *ngIf="allEvents && allEvents.length > 0; else noEvents" image="./assets/ne.jpg"
         [title]="allEvents[0].getTitle()" [location]="allEvents[0].getLocation()"
         [time]="allEvents[0].getStartDateTime().toString()" [desc]="allEvents[0].getDescription()" [event]="allEvents[0]"></app-newest-event>
-    <ng-template #noEvents>
-        <p>No events found.</p>
-        <button id="ae" (click) = "createEvent()"><i class="pi pi-plus"></i>{{'ADDEV' | translate }}</button>
-    </ng-template>
+<ng-template #noEvents>
+  <div class="no-events-container">
+    <div class="no-events-content">
+      <h2>{{ 'NO_EVENTS' | translate }}</h2>
+      <button (click)="createEvent()" class="create-event-button">
+        <i class="pi pi-plus"></i>
+        <span>{{'ADDEV' | translate }}</span>
+      </button>
+    </div>
+  </div>
+</ng-template>
     <div id="botside" *ngIf="allEvents && allEvents.length > 0">
         <div id="ls">
             <div id="timeline">
@@ -13,13 +20,14 @@
                 <div id="linija"></div>
             </div>
             <div id="leftside">
+                
                 <div id="track">
                     <h2>{{'UPEV' | translate }}</h2>
                     <select name="Status" id="selStatus" (change)="changeStatus($event)">
-                        <option value="-1">All</option>
-                        <option value="0">Draft</option>
-                        <option value="1">Published</option>
-                        <option value="2">Canceled</option>
+                        <option value="-1">{{'ALL' | translate }}</option>
+                        <option value="0">{{'DRAFT' | translate }}</option>
+                        <option value="1">{{'PUBLISHED' | translate }}</option>
+                        <option value="2">{{'CANCELED' | translate }}</option>
                     </select>
                     <button id="ae" (click) = "createEvent()"><i class="pi pi-plus"></i>{{'ADDEV' | translate }}</button>
                 </div>

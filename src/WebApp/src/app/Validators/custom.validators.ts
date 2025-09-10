@@ -2,12 +2,15 @@ import { AbstractControl, FormGroup, ValidationErrors, ValidatorFn } from "@angu
 
 export class CustomValidators{
 
-    static passwordsMatch(group : AbstractControl): ValidationErrors | null{
-        const password = group.get('password')?.value;
-        const confirm = group.get('confirm')?.value;
+// In CustomValidators.ts
+static passwordsMatch(passwordKey: string, confirmPasswordKey: string) {
+  return (group: AbstractControl): ValidationErrors | null => {
+    const password = group.get(passwordKey)?.value;
+    const confirm = group.get(confirmPasswordKey)?.value;
 
-        return password === confirm ? null : {passwordsDontMatch: true}
-    }
+    return password === confirm ? null : { passwordsDontMatch: true };
+  };
+}
     
     static startBeforeEndDates(startKey : string, endKey: string) : ValidatorFn {
         return (group: AbstractControl) : ValidationErrors | null => {
@@ -41,6 +44,27 @@ export class CustomValidators{
     now.setSeconds(0, 0);
 
     return selectedDate < now ? { pastDate: true } : null;
+    }
+
+     static dateWithinRange(minDate: Date, maxDate: Date): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const selectedDate = control.value;
+
+            // Don't validate if the control is empty
+            if (!selectedDate) {
+                return null;
+            }
+
+            const date = new Date(selectedDate);
+            const min = new Date(minDate);
+            const max = new Date(maxDate);
+
+            // A null min or max date means there's no limit on that side
+            const isBeforeMin = min && date < min;
+            const isAfterMax = max && date > max;
+
+            return (isBeforeMin || isAfterMax) ? { dateOutOfRange: true } : null;
+        };
     }
 
 }

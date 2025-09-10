@@ -34,6 +34,8 @@
   "invalidEmail": "Neispravan format email adrese",
   "invalidPassword": "Neispravna lozinka.",
   "loginError": "Greška pri prijavi",
+  "mobileroleLogin":"Dozvoljen je pristup samo mobilnim korisnicima",
+  "accountNotVerified":"Nalog nije verifikovan",
   "genericError": "Nešto je pošlo po zlu",
   "noToken": "Token nije primljen sa servera.",
   "googleUserInfoFailed": "Neuspešno učitavanje Google korisnika",
@@ -53,11 +55,15 @@
   "addToFavorites": "Dodaj u omiljene",
   "removeFromFavorites": "Ukloni iz omiljenih",
   "buyTicket": "Kupi kartu",
+  "reserve":"Rezerviši(besplatno)",
   "eventDescription": "Opis događaja",
   "agenda": "Program",
   "success": "Uspešno",
-  "accountCreated": "Nalog je uspešno kreiran!",
+  "accountCreated": "Nalog je uspešno kreiran, verifikujte ga putem email-a!",
   "location": "Lokacija",
+    "Legend": "Legenda",
+  "standardView": "Standardna",
+  "satelliteView": "Satelitska",
   "organizer": "Organizator",
   "loading": "Učitavanje...",
   "eventNotFound": "Događaj nije pronađen.",
@@ -73,6 +79,8 @@
     "guest_mode": "Gost režim"
   },
   "profile": {
+    "language": "Jezik",
+     "myReservations":  "Rezervacije",
   "notLoggedIn": "Niste ulogovani",
   "loginPrompt": "Molimo Vas da se ulogujete kako biste videli svoj profil.",
   "loginNow": "Uloguj se",
@@ -95,6 +103,8 @@
   "payment": "Uplata novca"
 },
   "aboutEvent": "O događaju",
+      "price": "Cena",
+  "freeResources":"Resursi",
 "aboutScreen": {
   "heading": "O nama",
   "description": "SyncUp je vaš idealan saputnik za događaje. Pomažemo ljudima da pronađu, prisustvuju i budu informisani o događajima koje vole – od koncerata i IT okupljanja do radionica i umetničkih festivala.",
@@ -122,7 +132,8 @@
   "notLoggedIn": "Niste prijavljeni.",
   "success": "Uspeh",
   "passwordChanged": "Lozinka je uspešno promenjena.",
-  "changeFailed": "Promena lozinke nije uspela."
+  "changeFailed": "Promena lozinke nije uspela.",
+  "currentPasswordIncorrect":"Trenutna šifra je nepravilna"
 },
 "personalInfo": {
   "permissionDenied": "Pristup galeriji nije dozvoljen.",
@@ -136,9 +147,9 @@
   "uploadFailed": "Otpremanje slike nije uspelo.",
   "title": "Lični podaci",
   "firstName": "Ime",
-  "firstNamePlaceholder": "Jovan",
+  "firstNamePlaceholder": "Ime",
   "lastName": "Prezime",
-  "lastNamePlaceholder": "Jović",
+  "lastNamePlaceholder": "Prezime",
   "email": "Email",
   "emailPlaceholder": "primer@email.com",
   "phone": "Broj telefona",
@@ -150,6 +161,8 @@
   "updated": "Vaši podaci su uspešno sačuvani.",
   "updateFailed": "Nije uspelo ažuriranje profila."
 },
+"time":"Vreme"
+,
 "search": {
   "header": "Pretraga događaja",
   "placeholder": "Pretraga po nazivu ili opisu...",
@@ -188,6 +201,9 @@
   "noResources": "Nema dostupnih resursa za ovaj događaj"
 },
 "cart": {
+   "fetchMyTicketsFailed": "Neuspešno dohvaćanje postojećih karata.",
+  "purchaseFailed": "Kupovina ulaznica nije uspela: {{error}}",
+  "fetchAfterPurchaseFailed": "Neuspešno dohvaćanje karata nakon kupovine.",
     "viewTicket": "Vidi kartu",
   "backToEvents": "Nazad na događaje",
   "title": "Vaša korpa",
@@ -199,6 +215,7 @@
   "purchase": "Kupi",
   "purchasing": "Kupovina...",
   "confirmTitle": "Potvrda kupovine",
+  "confirmTitle2": "Potvrda rezervacije",
   "confirmMessage": "Da li ste sigurni da želite da obavite kupovinu?",
   "cancel": "Otkaži",
   "successTitle": "Uspešno",
@@ -208,7 +225,10 @@
   "genericError": "Greška prilikom kupovine.",
   "fetchError": "Neuspešno učitavanje podataka.",
   "ok": "U redu",
-  "free": "Besplatno"
+  "free": "Besplatno",
+  "reserveBtn":"Rezerviši",
+  "confirmReserveMessage":"Da li ste sigurni da želite da rezervišete resurse?",
+  "resourceReservedMessage":"Resursi su uspešno rezervisani."
 }
 ,
   "auth": {
@@ -243,7 +263,8 @@
   "buttons": {
     "download": "Preuzmi",
     "share": "Podeli",
-      "backToEvents": "Nazad na događaje"
+      "backToEvents": "Nazad na događaje",
+      "backToMyTickets": "Nazad na moje karte"
   },
   "qr": {
     "savedTitle": "Sačuvano!",
@@ -275,14 +296,79 @@
 "errorPayment":"Došlo je do greške prilikom uplate",
 "errorServer":"Došlo je do greške prilikom povezivanja na server"
 }
+,
+"map": {
+  "pins": {
+    "Booth": "Štand",
+    "Stage": "Bina",
+    "Entrance": "Ulaz",
+    "Exit": "Izlaz",
+    "FirstAid": "Prva pomoć",
+    "Food": "Hrana",
+    "Drink": "Piće",
+    "Restroom": "Toalet",
+    "Info": "Info",
+    "Security": "Obezbeđenje",
+    "Parking": "Parking",
+    "LostAndFound": "Izgubljeno-nađeno",
+    "Unknown": "Nepoznata kategorija"
+  }
+}
+,
+"category": {
+    "music": "Muzika",
+    "sports": "Sport",
+    "entertainment": "Zabava",
+    "protest": "Protest",
+    "charity": "Humanitarno",
+    "business": "Biznis",
+    "culture": "Kultura",
+    "other": "Ostalo"
+  },
+   
+  "myReservations": {
+    "title": "Moje rezervacije",
+    "resource": "Resurs",
+    "quantity": "Količina",
+    "reservedOn": "Rezervisano",
+    "noReservations": "Još uvek nemate rezervacije."
+  }
+  ,
+  "forgotPasswordTitle": "Zaboravljena lozinka",
+  "forgotPasswordSubtitle": "Unesite svoj email da biste dobili link za resetovanje lozinke.",
+  "sendResetLink": "Pošalji link",
+  "resetLinkSent": "Link za resetovanje lozinke je poslat na vaš email."
 
+,
+  "reservationDetails": {
+    "noReservations": "Nemate rezervacije za ovaj događaj.",
+    "youHaveTickets": "Imate karte",
+    "ticket": "kartu",
+    "tickets": "karte",
+    "category": "Kategorija",
+    "description": "Opis",
+    "quantity": "Količina",
+    "reservedAt": "Rezervisano",
+    "categoryNames": {
+      "Undefined": "Nedefinisano",
+      "Equipment": "Oprema",
+      "Furniture": "Nameštaj",
+      "Electrical": "Električni uređaji",
+      "Sanitation": "Sanitarije",
+      "FoodAndBeverage": "Hrana i piće",
+      "Medical": "Medicinska oprema",
+      "Security": "Bezbednost",
+      "Merchandise": "Merchandise / Suveniri",
+      "Transportation": "Transport",
+      "Technology": "Tehnologija"
+    },
+    "availabilityNames": {
+      "Available": "Dostupno",
+      "Unavailable": "Nedostupno",
+      "Booked": "Rezervisano"
+    }
 
-
-
-
-
-
-
+  }
 
 }
 

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnDestroy, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidators } from '../../../../../Validators/custom.validators';
 import { FormValidationService } from '../../../../../Services/FormValidationService';
@@ -12,21 +12,33 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { EventPinDto } from '../../../../../Models/EventPinDto';
 import { PinCategoryService } from '../../../../../Services/PinCategoryService';
-import { Observable, take } from 'rxjs';
+import { take, Subscription } from 'rxjs';
 import { ApiService } from '../../../../../Services/api.service';
 import { MessageService } from 'primeng/api';
 import { IDeactivate } from '../../../../../Interfaces/IDeactivate';
 import { ConfirmationDialogService } from '../../../../../Services/confirmation-dialog.service';
 import { DropdownModule } from 'primeng/dropdown';
 import { environment } from '../../../../../../environments/environment';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-pin-modal',
-  imports: [ReactiveFormsModule,DialogModule,FloatLabelModule,ButtonModule,SelectModule,CommonModule,InputTextModule,TextareaModule,DropdownModule],
+  imports: [
+    ReactiveFormsModule,
+    DialogModule,
+    FloatLabelModule,
+    ButtonModule,
+    SelectModule,
+    CommonModule,
+    InputTextModule,
+    TextareaModule,
+    DropdownModule,
+    TranslateModule
+  ],
   templateUrl: './pin-modal.component.html',
-  styleUrl: './pin-modal.component.css'
+  styleUrls: ['./pin-modal.component.css']
 })
-export class PinModalComponent implements OnInit,IDeactivate{
+export class PinModalComponent implements OnInit, OnDestroy, IDeactivate {
 
   @Output() pinSaved = new EventEmitter<EventPinDto>();
   @Input() eventId!: number;
@@ -34,45 +46,62 @@ export class PinModalComponent implements OnInit,IDeactivate{
   pinForm!: FormGroup;
   lat!: number;
   lon!: number;
-  editingPin : EventPinDto | null = null;
+  editingPin: EventPinDto | null = null;
 
-  pinTypeOptions : any[] = [];
+  pinTypeOptions: { label: string, value: number, icon: string }[] = [];
+  private languageSubscription!: Subscription;
 
   constructor(
-    private formValidationService : FormValidationService,
-    private pinCategoryService : PinCategoryService,
-    private apiService : ApiService,
-    private messageService : MessageService,
-    private confirmationDialogService : ConfirmationDialogService) {}
-
+    private formValidationService: FormValidationService,
+    private pinCategoryService: PinCategoryService,
+    private apiService: ApiService,
+    private messageService: MessageService,
+    private confirmationDialogService: ConfirmationDialogService,
+    private translate: TranslateService
+  ) {}
 
   ngOnInit(): void {
-
-      this.pinForm = new FormGroup({
-        title: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
-        description: new FormControl('', [CustomValidators.noWhitespaceValidator]),
-        type: new FormControl('', [Validators.required])
-      });
-    
+    this.initForm();
   }
 
-  open(lat: number, lon: number, pinToEdit? : EventPinDto){
-    this.lat = lat,
-    this.lon = lon,
+  ngOnDestroy(): void {
+    if (this.languageSubscription) {
+      this.languageSubscription.unsubscribe();
+    }
+  }
+
+  private initForm() {
+    this.pinForm = new FormGroup({
+      title: new FormControl('', [Validators.required, CustomValidators.noWhitespaceValidator]),
+      description: new FormControl('', [CustomValidators.noWhitespaceValidator]),
+      type: new FormControl('', [Validators.required])
+    });
+  }
+
+  open(lat: number, lon: number, pinToEdit?: EventPinDto) {
+    this.lat = lat;
+    this.lon = lon;
     this.visible = true;
 
     this.pinCategoryService.loadCategoriesIfEmpty()
       .pipe(take(1))
       .subscribe(categories => {
-        this.pinTypeOptions = categories.map(cat => ({
-          label: cat.name,
-          value: cat.id,
-          icon: `${environment.backendBaseUrl}/pins/${cat.id}.png` // Use the environment variable here
-        }));
+        // Unsubscribe from the old subscription if it exists
+        if (this.languageSubscription) {
+          this.languageSubscription.unsubscribe();
+        }
+
+        // Create a new subscription to handle language changes for category labels
+        this.languageSubscription = this.translate.stream('PIN.TYPES').subscribe(() => {
+          this.pinTypeOptions = categories.map(cat => ({
+            label: this.translate.instant(`PIN.TYPES.${cat.name.toUpperCase()}`),
+            value: cat.id,
+            icon: `${environment.backendBaseUrl}/pins/${cat.id}.png`
+          }));
+        });
       });
 
-    // then patch values if editing
-    if(pinToEdit){
+    if (pinToEdit) {
       this.pinForm.patchValue({
         title: pinToEdit.getLabel(),
         description: pinToEdit.getDescription(),
@@ -84,13 +113,16 @@ export class PinModalComponent implements OnInit,IDeactivate{
     }
   }
 
-  savePin(){
-    if(this.pinForm.invalid){
-      this.formValidationService.showValidationErrors(this.pinForm,'Pin Form');
+  savePin() {
+    if (this.pinForm.invalid) {
+      this.formValidationService.showValidationErrors(
+        this.pinForm,
+        this.translate.instant('PIN.FORM')
+      );
       return;
     }
 
-    const {title, type, description} = this.pinForm.value
+    const { title, type, description } = this.pinForm.value;
 
     const pinToSave = new EventPinDto(
       this.eventId,
@@ -100,66 +132,65 @@ export class PinModalComponent implements OnInit,IDeactivate{
       new Date(),
       type,
       description
-    )
+    );
 
-    if(this.editingPin){
-      pinToSave.setId(this.editingPin.getId())
+    if (this.editingPin) {
+      pinToSave.setId(this.editingPin.getId());
 
       this.apiService.updateMapPin(pinToSave).subscribe({
         next: (message) => {
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Pin Updated',
-              detail: message,
-              life: 3000
-            });
-            this.pinSaved.emit();
-            this.cancel();
-          },
-          error: (err) => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Update Failed',
-              detail: err.message || 'Unknown error',
-              life: 3000
-            });
-          }
-      });
-    }else {
-      this.apiService.createMapPin(pinToSave).subscribe({
-        next: (message) => {
           this.messageService.add({
             severity: 'success',
-            summary: 'Pin Saved',
+            summary: this.translate.instant('PIN.UPDATED'),
             detail: message,
             life: 3000
           });
-          this.pinSaved.emit(); // Notify parent to reload pins
+          this.pinSaved.emit();
           this.cancel();
         },
         error: (err) => {
           this.messageService.add({
             severity: 'error',
-            summary: 'Save Failed',
-            detail: err.message || 'Unknown error',
+            summary: this.translate.instant('PIN.UPDATE_FAILED'),
+            detail: err.message || this.translate.instant('PIN.UNKNOWN_ERROR'),
+            life: 3000
+          });
+        }
+      });
+    } else {
+      this.apiService.createMapPin(pinToSave).subscribe({
+        next: (message) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translate.instant('PIN.SAVED'),
+            detail: message,
+            life: 3000
+          });
+          this.pinSaved.emit();
+          this.cancel();
+        },
+        error: (err) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: this.translate.instant('PIN.SAVE_FAILED'),
+            detail: err.message || this.translate.instant('PIN.UNKNOWN_ERROR'),
             life: 3000
           });
         }
       });
     }
-
   }
 
-  cancel(){
+  cancel() {
     this.pinForm.reset();
     this.editingPin = null;
     this.visible = false;
   }
 
-    async onCancleClick(){
+  async onCancleClick() {
     const canLeave = await this.canExit();
-    if(canLeave){
-      this.cancel()
+    if (canLeave) {
+      this.cancel();
     }
   }
 
@@ -167,16 +198,12 @@ export class PinModalComponent implements OnInit,IDeactivate{
     return this.pinTypeOptions.find(o => o.value === id)?.label || '';
   }
 
-
-  canExit () : boolean | Observable<boolean> | Promise<boolean>{
-    
-    return (this.pinForm.dirty || this.pinForm.touched) ? this.confirmationDialogService.confirm(
-        'You have unsaved changes. Are you sure you want to close the modal?',
-            'Unsaved Changes'
-      )
-    : true;
-    
+  canExit(): boolean | Promise<boolean> {
+    return (this.pinForm.dirty || this.pinForm.touched)
+      ? this.confirmationDialogService.confirm(
+          this.translate.instant('PIN.UNSAVED_CHANGES'),
+          this.translate.instant('PIN.UNSAVED_TITLE')
+        )
+      : true;
   }
-  
-
 }

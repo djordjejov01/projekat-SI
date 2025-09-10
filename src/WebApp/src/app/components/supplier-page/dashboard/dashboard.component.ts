@@ -19,7 +19,7 @@ import { PinCategoryService } from '../../../Services/PinCategoryService';
 import { ResourceModalComponent } from './resource-modal/resource-modal.component';
 import { ResourceAvailabilityService } from '../../../Services/ResourceAvailabilityService';
 import { ResourceCategoryService } from '../../../Services/ResourceCategoryService';
-import { take } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { ApiService } from '../../../Services/api.service';
 import { ResourceDto } from '../../../Models/ResourceDto';
 import { AuthService } from '../../../Services/auth.service';
@@ -28,11 +28,13 @@ import { CategoryService } from '../../../Services/EventCategoryService';
 import { ConfirmationDialogService } from '../../../Services/confirmation-dialog.service';
 import { RequestsComponent } from './requests/requests.component';
 import { EventResourceCalendarResponse } from '../../../Interfaces/EventResourceCalendarResponse';
+import { TranslateModule,TranslateService } from '@ngx-translate/core';
+import { SharedService } from '../../../Services/shared.service';
 @Component({
   selector: 'app-dashboard',
-  imports: [RequestsComponent, TableModule, ButtonModule, IconField, InputIcon, FormsModule, MultiSelect, TooltipModule, InputTextModule, CommonModule, ChartModule, ResourceModalComponent, IconFieldModule, InputIconModule],
+  imports: [TranslateModule,RequestsComponent, TableModule, ButtonModule, IconField, InputIcon, FormsModule, MultiSelect, TooltipModule, InputTextModule, CommonModule, ChartModule, ResourceModalComponent, IconFieldModule, InputIconModule],
   templateUrl: './dashboard.component.html',
-  styleUrl: './dashboard.component.css'
+  styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
 
@@ -89,9 +91,11 @@ resourceTypeOptions = [
     private apiService: ApiService,
     private authService: AuthService,
     private messageService: MessageService,
-    private confirmationDialogService: ConfirmationDialogService
+    private confirmationDialogService: ConfirmationDialogService,
+    private translate: TranslateService,
+    private sharedEvents: SharedService
   ) { }
-
+  private destroy$ = new Subject<void>();
   ngOnInit(): void {
 
     this.currentSupplierId = this.authService.getUserId();
@@ -115,8 +119,19 @@ resourceTypeOptions = [
 
     this.fetchResources();
     this.fetchPendingRequestsCount();
-  }
 
+    if(!this.locked)
+          {
+            this.sharedEvents.langChange$
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(() => {
+            this.locked = true;
+            this.ngOnInit();
+            // Ažuriraj grafikone
+          });
+          }
+  }
+locked = false;
   getBooked() {
     this.apiService.getBookedResources().subscribe({
 
@@ -127,7 +142,7 @@ resourceTypeOptions = [
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: errorResponse.message,
+          detail: this.translate.instant('Error'),
           life: 3000
         });
       }
@@ -140,7 +155,7 @@ resourceTypeOptions = [
       next: (response: ResourceDto[]) => {
         this.resources = response;
         this.availableResources = this.resources.filter(x => x.getIsAvailable() == 0);
-        //console.log(this.resources)
+        ////console.log(this.resources)
         this.initChart()
       },
 
@@ -148,7 +163,7 @@ resourceTypeOptions = [
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: errorResponse.message,
+          detail: this.translate.instant('Error'),
           life: 3000
         });
       }
@@ -245,7 +260,7 @@ resourceTypeOptions = [
           },
           title: {
             display: true,
-            text: 'Resource Category Distribution',
+            text: this.translate.instant('ResourceCategoryDistribution'),
             color: textColor,
             font: { size: 16 }
           }
@@ -291,18 +306,18 @@ resourceTypeOptions = [
 
 
   getAvailabilityName(value: ResourceAvailability): string {
-    return this.availabilityLabels[value] ?? 'Unknown';
+    return this.availabilityLabels[value] ?? this.translate.instant('Unknown');
   }
 
   getTypeName(value: boolean): string {
-    return value ? 'Exhaustible' : 'Inexhaustible';
+    return value ? this.translate.instant('Exhaustible') : this.translate.instant('Inexhaustible');
   }
 
 
   // 4. For Category (lookup from resourceCategoryOptions)
   getCategoryName(value: number): string {
     const category = this.resourceCategoryOptions.find(c => c.value === value);
-    return category ? category.name : 'Unknown';
+    return category ? category.name : this.translate.instant('Unknown');
   }
 
   getAvailabilityClass(status: ResourceAvailability): string {
@@ -337,9 +352,10 @@ resourceTypeOptions = [
 
   getResourceCategoryChartData(resources: ResourceDto[]): { labels: string[], counts: number[] } {
     const countsMap: Record<string, number> = {};
-
+    //this.translate.instant(`RESOURCE_CATEGORIES.${category.name.toUpperCase()}`)
     for (const resource of resources) {
-      const categoryName = this.resourceCategoryService.getCategoryName(resource.getCategory()) ?? 'Unknown';
+      let categoryName = this.resourceCategoryService.getCategoryName(resource.getCategory()) ?? this.translate.instant('Unknown');
+      categoryName = this.translate.instant(`RESOURCE_CATEGORIES.${categoryName.toUpperCase()}`)
       countsMap[categoryName] = (countsMap[categoryName] || 0) + 1;
     }
 
@@ -361,30 +377,33 @@ resourceTypeOptions = [
   }
 
   deleteResource(resource: ResourceDto) {
+  this.confirmationDialogService
+    .confirm(this.translate.instant('RESOURCE_DASHBOARD.CONFIRM_DELETE', { resourceName: resource.getName() }))
+    .then(confirmed => {
 
-    this.confirmationDialogService
-      .confirm(`Are you sure you want to delete the resource "${resource.getName()}"?`)
-      .then(confirmed => {
+      if (!confirmed) return;
 
-        if (!confirmed) return;
+      this.apiService.deleteResource(resource.getResourceID()).subscribe({
+        next: (msg) => {
+          this.fetchResources();
+          this.messageService.add({ 
+            severity: 'success', 
+            summary: this.translate.instant('RESOURCE_DASHBOARD.DELETED'), 
+            detail: msg 
+          });
+        },
+        error: (errorResponse) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: this.translate.instant('RESOURCE_DASHBOARD.ERROR'),
+            detail: errorResponse.message,
+            life: 3000
+          });
+        }
+      });
+    });
+}
 
-        this.apiService.deleteResource(resource.getResourceID()).subscribe({
-          next: (msg) => {
-            this.fetchResources();
-            this.messageService.add({ severity: 'success', summary: 'Deleted', detail: msg });
-          },
-          error: (errorResponse) => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Error',
-              detail: errorResponse.message,
-              life: 3000
-            });
-          }
-        });
-      })
-
-  }
 
   openRequestsModal(): void {
     this.isRequestsModalVisible = true;

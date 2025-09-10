@@ -32,8 +32,6 @@ namespace Backend.Services
                     foreach (var id in endedIds)
                     {
                         await organizerService.DeallocateEventResourcesForPublishedEvent(id);
-                        var ev = await context.Events.FirstAsync(e => e.EventID == id, stoppingToken);
-                        ev.Status = EventStatus.Finished;
 
                         var subEventIds = await context.Events
                             .Where(e => e.ParentEventId == id && e.Status == EventStatus.Published)
@@ -43,13 +41,8 @@ namespace Backend.Services
                         foreach (var subId in subEventIds)
                         {
                             await organizerService.DeallocateEventResourcesForPublishedEvent(subId);
-                            var subEv = await context.Events.FirstAsync(e => e.EventID == subId, stoppingToken);
-                            subEv.Status = EventStatus.Finished;
                         }
                     }
-
-                    if (endedIds.Count > 0)
-                        await context.SaveChangesAsync(stoppingToken);
                 }
                 catch { /* log if you have a logger */ }
 

@@ -1,4 +1,4 @@
-﻿using Backend.Helpers;
+using Backend.Helpers;
 using Backend.Models;
 using Backend.Models.Dto;
 using Backend.Services;
@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using System.Security.Claims;
 
 namespace Backend.Controllers
@@ -17,12 +18,14 @@ namespace Backend.Controllers
         private readonly IEventService _eventService;
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env;
-        public EventsController(AppDbContext context, IEventService eventService, IWebHostEnvironment env)
+        private readonly IStringLocalizer<SharedResource> _localizer;
+        public EventsController(AppDbContext context, IEventService eventService, IWebHostEnvironment env, IStringLocalizer<SharedResource> localizer)
         {
             _context = context;
             _env = env;
             _eventService = eventService;
             _env = env;
+            _localizer = localizer;
         }
 
         [AllowAnonymous]
@@ -30,7 +33,7 @@ namespace Backend.Controllers
         public async Task<ActionResult<IEnumerable<EventListDto>>> GetAllEvents()
         {
             var events = await _context.Events
-                .Where(e => e.Status == EventStatus.Published)
+                .Where(e => e.Status == EventStatus.Published && e.EndDate > DateTime.UtcNow)
                 .OrderBy(e => e.StartDate)
                 .Select(e => new EventListDto
                 {
@@ -38,9 +41,9 @@ namespace Backend.Controllers
                     Title = e.Title,
                     Location = e.Location,
                     StartDate = e.StartDate,
-                    EndDate=e.EndDate,
+                    EndDate = e.EndDate,
                     ImageUrl = e.ImageUrl,
-                    Category=e.Category,
+                    Category = e.Category,
                     AttendingCount = _context.UserTickets.Count(ut => ut.Ticket.EventID == e.EventID),
                     ParentEventId = e.ParentEventId
                 })
@@ -63,7 +66,7 @@ namespace Backend.Controllers
                     Title = e.Title,
                     Location = e.Location,
                     StartDate = e.StartDate,
-                    EndDate=e.EndDate,
+                    EndDate = e.EndDate,
                     ImageUrl = e.ImageUrl,
                     Category = e.Category,
                     AttendingCount = _context.UserTickets
@@ -80,7 +83,7 @@ namespace Backend.Controllers
         [HttpGet("Details")]
         public async Task<ActionResult<EventDetailsDto>> GetEventDetails(int id)
         {
-            
+
             var eventEntity = await _context.Events
                 .Include(e => e.Organizer)
                 .FirstOrDefaultAsync(e => e.EventID == id);
@@ -88,7 +91,7 @@ namespace Backend.Controllers
             if (eventEntity == null || eventEntity.Status != EventStatus.Published)
                 return NotFound();
 
-            
+
             var agenda = await _context.EventActivities
                 .Where(a => a.EventID == id)
                 .OrderBy(a => a.StartTime)
@@ -98,16 +101,16 @@ namespace Backend.Controllers
                     Description = a.Description,
                     StartTime = a.StartTime,
                     EndTime = a.EndTime,
-                    Category=a.Category,
+                    Category = a.Category,
                 })
                 .ToListAsync();
 
-            
+
             var attendingCount = await _context.UserTickets
                 .Include(ut => ut.Ticket)
                 .CountAsync(ut => ut.Ticket.EventID == id);
 
-            
+
             bool isFavorite = false;
             if (User.Identity.IsAuthenticated)
             {
@@ -139,7 +142,7 @@ namespace Backend.Controllers
                 IsFavorite = isFavorite,
                 Capacity = eventEntity.NumberOfPeople,
                 Agenda = agenda,
-                Category=eventEntity.Category,
+                Category = eventEntity.Category,
                 MinPrice = minPrice,
                 MaxPrice = maxPrice
 
@@ -151,12 +154,12 @@ namespace Backend.Controllers
         [HttpGet("subevents-activities/{eventId}")]
         public async Task<ActionResult<EventsSubeventsActivitiesDto>> GetSubeventsAndActivities(int eventId)
         {
-            
+
             var mainEvent = await _context.Events.AsNoTracking().FirstOrDefaultAsync(e => e.EventID == eventId);
             if (mainEvent == null || mainEvent.Status != EventStatus.Published)
                 return NotFound();
 
-            
+
             var subevents = await _context.Events
                 .AsNoTracking()
                 .Where(e => e.ParentEventId == eventId && e.Status == EventStatus.Published)
@@ -173,7 +176,7 @@ namespace Backend.Controllers
                 })
                 .ToListAsync();
 
-            
+
             var eventIds = subevents.Select(s => s.EventId).Append(eventId).ToList();
 
             var activities = await _context.EventActivities
@@ -207,19 +210,20 @@ namespace Backend.Controllers
             string ImageName = await CommonHelpers.SaveImageAsync(model.Image, _env);
             Event o = _context.Events.Where(o => o.EventID == model.Id).First();
             if (o is null)
-                return BadRequest("ERROR!");
-            await CommonHelpers.RemovePhoto(o.ImageUrl, _env);
+                return BadRequest(_localizer["common.unexpected_error"].ToString());
+            if(o.ImageUrl != "images/default-image.png")
+                await CommonHelpers.RemovePhoto(o.ImageUrl, _env);
             o.ImageUrl = ImageName;
             _context.Events.Update(o);
             _context.SaveChanges();
-            return Ok(new {imageUrl = ImageName});
+            return Ok(new { imageUrl = ImageName });
         }
 
         [AllowAnonymous]
         [HttpGet("search")]
         public async Task<ActionResult<List<EventListDto>>> SearchEvents([FromQuery] string? name, [FromQuery] string? category,
             [FromQuery] string? location, [FromQuery] bool? isFree,
-            [FromQuery] DateTime? startDate,[FromQuery] DateTime? endDate,
+            [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate,
             [FromQuery] bool? hasTickets, [FromQuery] string? sortOrder, [FromQuery] string? sortBy)
         {
             EventCategory? categoryEnum = null;
@@ -231,10 +235,10 @@ namespace Backend.Controllers
                 }
                 else
                 {
-                    return BadRequest("Unknown category.");
+                    return BadRequest(_localizer["events.unknown_category"].ToString());
                 }
             }
-            var events = await _eventService.SearchEventsAsync(name, categoryEnum,location,isFree,startDate,endDate,hasTickets,sortOrder,sortBy);
+            var events = await _eventService.SearchEventsAsync(name, categoryEnum, location, isFree, startDate, endDate, hasTickets, sortOrder, sortBy);
             return Ok(events);
 
         }
@@ -263,7 +267,7 @@ namespace Backend.Controllers
                 .FirstOrDefaultAsync(e => e.EventID == eventId && e.OrganizerID == userId);
 
             if (eventEntity == null)
-                return NotFound("You do not have access to this event.");
+                return NotFound(_localizer["organizer.no_access_event"].ToString());
 
             var attendingCount = await _context.UserTickets
                 .Include(ut => ut.Ticket)
@@ -282,7 +286,7 @@ namespace Backend.Controllers
                 AttendingCount = attendingCount,
                 ImageUrl = eventEntity.ImageUrl,
                 status = eventEntity.Status,
-                ParentEventId=eventEntity.ParentEventId
+                ParentEventId = eventEntity.ParentEventId
             };
 
             return Ok(dto);

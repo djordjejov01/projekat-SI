@@ -25,7 +25,7 @@ export class AddData {
         window.location.reload()
       },
       error: (err) => {
-        //console.log('Adding player failed',err);
+        ////console.log('Adding player failed',err);
       } 
      })
 
