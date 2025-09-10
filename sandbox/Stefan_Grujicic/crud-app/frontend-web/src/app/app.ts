@@ -62,7 +62,7 @@ export class App {
   readAll(){
     this.animeService.getAnimes().subscribe(data => {
       this.animes = data;
-      //console.log(data)
+      ////console.log(data)
     });
     
   }

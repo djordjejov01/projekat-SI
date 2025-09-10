@@ -31,7 +31,7 @@
       [eventBasicInfo]="eventBasicInfo">
     </app-resource-allocation>
 
-    <div id="tssec">
+    <div id="tssec" *ngIf="eventBasicInfo.getParentEventId() == 0">
       <h1 id="tsh1">{{ 'TICKET_SALES.TITLE' | translate }}</h1>
       <div id="tSales" *ngFor="let ticket of ticketSales">
         <div id="tRow">
@@ -79,7 +79,7 @@
         </ng-container>
       </p-dialog>
 
-      <p style="margin-left: 15px;" *ngIf="!ticketSales || ticketSales.length === 0">
+      <p style="margin-left: 15px; padding-bottom: 50px;" *ngIf="!ticketSales || ticketSales.length === 0">
         {{ 'TICKET_SALES.NO_TICKETS' | translate }}
       </p>
     </div>

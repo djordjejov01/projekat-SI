@@ -22,6 +22,6 @@ export class LanguageService {
   setLanguage(lang: string): void {
     this._language.set(lang);
     localStorage.setItem('user-language', lang);
-    console.log(`Language changed to: ${lang}`);
+    //console.log(`Language changed to: ${lang}`);
   }
 }

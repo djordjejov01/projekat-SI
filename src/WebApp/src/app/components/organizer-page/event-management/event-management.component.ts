@@ -66,7 +66,7 @@ export class EventManagementComponent implements OnInit{
         this.apiService.getTicketSales(this.eventBasicInfo.getEventID()).subscribe({
         next: (response) => {
           this.ticketSales = response;
-          console.log(this.ticketSales);
+          ////console.log(this.ticketSales);
         },
         error: () => {
           
@@ -101,8 +101,8 @@ export class EventManagementComponent implements OnInit{
 
           this.loadAllPins(this.eventBasicInfo.getEventID(), subevents)
 
-          //console.log(subevents)
-          //console.log(activities)
+          ////console.log(subevents)
+          ////console.log(activities)
         },
           error: err => {
             this.messageService.add({

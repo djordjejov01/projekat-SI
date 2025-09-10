@@ -7,7 +7,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { DatePickerModule } from 'primeng/datepicker';
 import { InputNumber } from 'primeng/inputnumber';
 import { CommonModule } from '@angular/common';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { LangChangeEvent, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { ButtonModule } from 'primeng/button';
 import { FileUpload } from 'primeng/fileupload';
 import { CustomValidators } from '../../../Validators/custom.validators';
@@ -57,20 +57,16 @@ export class CreateEventComponent implements OnInit, IDeactivate, OnDestroy {
     private confirmationDialogService: ConfirmationDialogService,
     private categoryService: CategoryService,
     private fromValidationService: FormValidationService,
-    private router: Router) { }
-
+    private router: Router,
+  private translate: TranslateService) { }
+    private langSub: Subscription | undefined;
   ngOnInit(): void {
     this.minDate = new Date();
 
-    this.categoryService.loadCategoriesIfEmpty()
-      .pipe(take(1))
-      .subscribe(categories => {
-        this.categories = categories.map(cat => ({
-          label: cat.name,
-          value: cat.id
-        }));
-      });
-
+      this.loadLocalizedCategories();
+      this.langSub = this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+            this.loadLocalizedCategories();
+          });
     const currentLang = this.translateService.currentLang || 'en';
     if (currentLang === 'sr') {
       this.currencyCode = 'RSD';
@@ -267,7 +263,17 @@ export class CreateEventComponent implements OnInit, IDeactivate, OnDestroy {
     const location = event.value;
     this.eventForm.patchValue({ location: location.display_name });
   }
-
+  private loadLocalizedCategories() {
+    this.categoryService.loadCategoriesIfEmpty()
+      .pipe(take(1))
+      .subscribe(categories => {
+        this.categories = categories.map(cat => ({
+          label: this.translate.instant(`CATEGORYS.${cat.name.toUpperCase()}`),
+          value: cat.id,
+          code: cat.name
+        }));
+      });
+    }
   submitForm(): void {
     if (this.eventForm.invalid) {
       this.fromValidationService.showValidationErrors(
