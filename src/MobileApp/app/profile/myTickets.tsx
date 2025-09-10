@@ -8,10 +8,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useRouter } from 'expo-router';
 import { API_URL } from '../../config';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { apiCall } from '../../config';
 
 type PurchasedTicket = {
   ticketID: number;
@@ -31,7 +32,7 @@ type GroupedTicket = {
   price: number;
   quantity: number;
   eventID: number; 
-  purchasedAt: string;
+  purchasedAt: string[];
   ticketIDs: number[];
 };
 
@@ -40,10 +41,12 @@ export default function ProfileTickets() {
   const [ticketsData, setTicketsData] = useState<PurchasedTicket[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { from } = useLocalSearchParams();
   const { t } = useTranslation();
 
   useEffect(() => {
     const fetchTickets = async () => {
+      setLoading(true);
       const token = await AsyncStorage.getItem('token');
       if (!token) {
         setLoading(false);
@@ -51,7 +54,7 @@ export default function ProfileTickets() {
       }
 
       try {
-        const res = await fetch(`${API_URL}/api/ticket/tickets/my`, {
+        const res = await apiCall(`${API_URL}/api/ticket/tickets/my`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -59,10 +62,9 @@ export default function ProfileTickets() {
 
         if (res.ok) {
           const data: PurchasedTicket[] = await res.json();
-          setTicketsData(data); // čuvamo sve originalne karte
+          setTicketsData(data);
 
           const grouped: { [key: string]: GroupedTicket } = {};
-
           data.forEach((ticket) => {
             const key = `${ticket.eventName}_${ticket.ticketType}`;
             if (!grouped[key]) {
@@ -72,25 +74,23 @@ export default function ProfileTickets() {
                 price: ticket.price,
                 quantity: 1,
                 eventID: ticket.eventID ?? 0,
-                purchasedAt: ticket.purchasedAt,
+                purchasedAt: [ticket.purchasedAt],
                 ticketIDs: [ticket.userTicketID],
               };
             } else {
               grouped[key].quantity += 1;
               grouped[key].ticketIDs.push(ticket.userTicketID);
+              grouped[key].purchasedAt.push(ticket.purchasedAt);
             }
           });
 
           const groupedArray = Object.values(grouped);
+          groupedArray.sort(
+              (a, b) => new Date(b.purchasedAt[b.purchasedAt.length - 1]).getTime()
+                      - new Date(a.purchasedAt[a.purchasedAt.length - 1]).getTime()
+            );
 
-
-        groupedArray.sort((a, b) => {
-          const dateA = new Date(a.purchasedAt).getTime();
-          const dateB = new Date(b.purchasedAt).getTime();
-          return dateB - dateA; 
-        });
-
-        setGroupedTickets(groupedArray);
+          setGroupedTickets(groupedArray);
 
         } else {
           console.warn('Failed to fetch tickets');
@@ -110,7 +110,6 @@ export default function ProfileTickets() {
       style={styles.ticketItem}
       activeOpacity={0.7}
       onPress={() => {
-        // Skupi sve token-e za karte u grupi
         const ticketTokens: string[] = item.ticketIDs.map(id => {
           const original = ticketsData.find(t => t.userTicketID === id);
           return original?.validationToken || '';
@@ -120,11 +119,11 @@ export default function ProfileTickets() {
           pathname: '../event/ticketDetails',
           params: {
             ticketIDs: JSON.stringify(item.ticketIDs),
-            validationTokens: JSON.stringify(ticketTokens), // prosleđujemo token-e
+            validationTokens: JSON.stringify(ticketTokens),
             eventName: item.eventName,
             ticketType: item.ticketType,
             eventID: item.eventID,
-            purchasedAt: item.purchasedAt,
+            purchasedAt: JSON.stringify(item.purchasedAt),
             price: item.price.toString(),
             from: 'myTickets', 
           },
@@ -133,7 +132,7 @@ export default function ProfileTickets() {
     >
       <Text style={styles.title}>{item.eventName}</Text>
       <View style={styles.row}>
-        <Text style={styles.label}>{t('profileTickets.ticketType')}:</Text>
+        <Text style={styles.label}>{t('profileTickets.ticketType') || 'Ticket Type'}:</Text>
         <Text style={styles.value}>{item.ticketType}</Text>
       </View>
       <View style={styles.row}>
@@ -147,52 +146,51 @@ export default function ProfileTickets() {
       <View style={styles.row}>
         <Text style={styles.label}>{t('profileTickets.purchasedOn')}:</Text>
         <Text style={styles.value}>
-          {new Date(item.purchasedAt).toLocaleString()}
+          {new Date(item.purchasedAt[item.purchasedAt.length - 1]).toLocaleString()}
         </Text>
       </View>
     </TouchableOpacity>
   );
 
-  if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="#7069E1" />
-      </View>
-    );
-  }
-
-  if (groupedTickets.length === 0) {
-    return (
-      <View style={styles.center}>
-        <Text style={styles.emptyText}>{t('profileTickets.noTickets')}</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
         <TouchableOpacity
-          onPress={() => router.push('/(tabs)/profile')}
+          onPress={() => {
+            if (from === 'profile') router.replace('/profile');
+            else router.back();
+          }}
           style={styles.backButton}
           activeOpacity={0.7}
         >
           <Ionicons name="arrow-back" size={28} color='black' />
         </TouchableOpacity>
-        <Text style={styles.header}>{t('profileTickets.title')}</Text>
+        <Text style={styles.header}>{t('profileTickets.title') || 'My Tickets'}</Text>
       </View>
 
-      <FlatList
-        data={groupedTickets}
-        keyExtractor={(item, index) =>
-          item.ticketIDs.length > 0
-            ? item.ticketIDs.join('-')
-            : `${item.eventName}-${item.ticketType}-${index}`
-        }
-        renderItem={renderItem}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
-        showsVerticalScrollIndicator={false}
-      />
+      {loading ? (
+        <View style={styles.center}>
+          <ActivityIndicator size="large" color="#7069E1" />
+        </View>
+      ) : (
+        groupedTickets.length === 0 ? (
+          <View style={styles.center}>
+            <Text style={styles.emptyText}>{t('profileTickets.noTickets')}</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={groupedTickets}
+            keyExtractor={(item, index) =>
+              item.ticketIDs.length > 0
+                ? item.ticketIDs.join('-')
+                : `${item.eventName}-${item.ticketType}-${index}`
+            }
+            renderItem={renderItem}
+            contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
+            showsVerticalScrollIndicator={false}
+          />
+        )
+      )}
     </View>
   );
 }

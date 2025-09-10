@@ -15,7 +15,7 @@ import * as Animatable from 'react-native-animatable';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { API_URL } from '../../config';
-
+import { apiCall } from '../../config';
 
 export default function TokenPurchaseScreen() {
   const [amount, setAmount] = useState('');
@@ -36,7 +36,7 @@ export default function TokenPurchaseScreen() {
 
     setLoading(true);
     const token = await AsyncStorage.getItem('token');
-    const response = await fetch(`${API_URL}/api/Credit/add`, {
+    const response = await apiCall(`${API_URL}/api/Credit/add`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

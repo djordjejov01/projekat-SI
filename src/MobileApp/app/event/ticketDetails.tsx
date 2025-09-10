@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'expo-router';
+import { apiCall } from '../../config';
 import {
   View,
   Text,
@@ -58,9 +59,17 @@ export default function TicketDetails() {
     console.error('Invalid ticketTypes param', error);
   }
 
-  const formattedDate = purchasedAt
-    ? new Date(purchasedAt as string).toLocaleString()
-    : '';
+ // Parsiramo purchasedAt niz
+   let purchasedDates: string[] = [];
+if (purchasedAt) {
+  try {
+    purchasedDates = JSON.parse(purchasedAt as string);
+  } catch {
+    purchasedDates = [purchasedAt as string]; // fallback za jedan datum
+  }
+}
+
+
 
   // Funkcija za pronalazenje imena tipa karte
   const getTicketTypeName = (id: number): string => {
@@ -78,7 +87,7 @@ export default function TicketDetails() {
           return;
         }
 
-        const res = await fetch(`${API_URL}/api/MobileUser/profile`, {
+        const res = await apiCall(`${API_URL}/api/MobileUser/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -173,9 +182,7 @@ export default function TicketDetails() {
         <Text style={styles.eventName}>{displayEventName}</Text>
       </TouchableOpacity>
 
-      <Text style={styles.detail}>
-        {t('ticketDetails.purchasedAt')}: {formattedDate}
-      </Text>
+
 
       <Text style={[styles.detail, { marginBottom: 16 }]}>
         {t('ticketDetails.purchasedBy')}:{' '}
@@ -185,75 +192,71 @@ export default function TicketDetails() {
       </Text>
 
       {/* QR kodovi */}
-      {ids.map((id, index) => {
-        const token = tokens[index];
-        return (
-          <View key={index} style={styles.ticketCard}>
-            <Text style={styles.ticketLabel}>
-              🎫 {t('ticketDetails.ticket')} #{index + 1}
-            </Text>
-            
+    {ids.map((id, index) => {
+      const token = tokens[index];
+      const purchaseDate = purchasedDates[index]
+        ? new Date(purchasedDates[index]).toLocaleString()
+        : t('ticketDetails.unknownDate');
 
-            {token ? (
-              <QRCode
-                value={`${API_URL}/api/TicketValidation/validate/${id}/${token}`}
-                size={250}
-                backgroundColor="white"
-                color="black"
-                getRef={(ref) => (svgRefs.current[index] = ref)}
-              />
-            ) : (
-              <Text style={styles.errorText}>
-                {t('ticketDetails.qrError')}
-              </Text>
-            )}
-            <View style={styles.cardDetails}>
+
+
+      return (
+        <View key={index} style={styles.ticketCard}>
+          <Text style={styles.ticketLabel}>
+            🎫 {t('ticketDetails.ticket')} #{index + 1}
+          </Text>
+
+          {token ? (
+            <QRCode
+              value={`${API_URL}/api/TicketValidation/validate/${id}/${token}`}
+              size={250}
+              backgroundColor="white"
+              color="black"
+              getRef={(ref) => (svgRefs.current[index] = ref)}
+            />
+          ) : (
+            <Text style={styles.errorText}>{t('ticketDetails.qrError')}</Text>
+          )}
+
+          <View style={styles.cardDetails}>
             <Text style={styles.detail}>
-              {t('ticketDetails.purchasedAt')}: {formattedDate}
+              {t('ticketDetails.purchasedAt')}: {purchaseDate}
             </Text>
             {!loading && (
               <Text style={styles.detail}>
-                {t('ticketDetails.purchasedBy')}:{' '}
-                <Text style={{ fontWeight: '600' }}>
-                  {fullName ?? t('ticketDetails.unknownUser')}
-                </Text>
+                {t('ticketDetails.purchasedBy')}: <Text style={{ fontWeight: '600' }}>{fullName ?? t('ticketDetails.unknownUser')}</Text>
               </Text>
             )}
           </View>
 
-            <View style={styles.actions}>
-              <TouchableOpacity
-                onPress={() => downloadQR(index)}
-                style={styles.button}
-              >
-                <Text style={styles.buttonText}>📥 {t('buttons.download')}</Text>
-              </TouchableOpacity>
+          <View style={styles.actions}>
+            <TouchableOpacity onPress={() => downloadQR(index)} style={styles.button}>
+              <Text style={styles.buttonText}>📥 {t('buttons.download')}</Text>
+            </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => shareQR(index)}
-                style={styles.buttonSecondary}
-              >
-                <Text style={styles.buttonText}>📤 {t('buttons.share')}</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity onPress={() => shareQR(index)} style={styles.buttonSecondary}>
+              <Text style={styles.buttonText}>📤 {t('buttons.share')}</Text>
+            </TouchableOpacity>
           </View>
-        );
-      })}
+        </View>
+      );
+    })}
+
 
       <TouchableOpacity
-  style={styles.backToEventsButton}
-  onPress={() => {
-    if (from === 'myTickets') {
-      router.replace('../profile/myTickets');
-    } else {
-      router.replace('/(tabs)/events'); 
-    }
-  }}
->
-  <Text style={styles.backToEventsText}>
-    {from === 'myTickets' ? t('buttons.backToMyTickets') : t('buttons.backToEvents')}
-  </Text>
-</TouchableOpacity>
+        style={styles.backToEventsButton}
+        onPress={() => {
+          if (from === 'reservationDetails') router.back();
+          else if (from === 'myTickets') router.replace('../profile/myTickets');
+          else router.replace('/(tabs)/events'); 
+        }}
+      >
+        <Text style={styles.backToEventsText}>
+          {from === 'reservationDetails' ? t('buttons.back') :
+          from === 'myTickets' ? t('buttons.backToMyTickets') : t('buttons.backToEvents')}
+        </Text>
+      </TouchableOpacity>
+
     </ScrollView>
   );
 }

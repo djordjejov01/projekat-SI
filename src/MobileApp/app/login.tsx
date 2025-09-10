@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { useFavorites } from './context/FavoriteContext';
 import { API_URL } from '../config';
+import { apiCall } from '../config';
 import {
   View,
   Text,
@@ -46,7 +47,7 @@ export default function LoginScreen() {
     }
 
     try {
-      const response = await fetch(`${API_URL}/api/User/login`, {
+      const response = await apiCall(`${API_URL}/api/User/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -72,7 +73,7 @@ export default function LoginScreen() {
       }
 
       // 🔐 Proveri rolu korisnika koristeći dobijeni token
-      const roleResponse = await fetch(`${API_URL}/api/User/role`, {
+      const roleResponse = await apiCall(`${API_URL}/api/User/role`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${data.token}`,
@@ -130,7 +131,10 @@ export default function LoginScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-
+      <TouchableOpacity
+                onPress={() => router.push('./forgot-password')} >
+       <Text style={styles.forgot}>{t('forgotPassword')}</Text>
+        </TouchableOpacity>
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
         <Text style={styles.loginText}>{t('login')}</Text>
       </TouchableOpacity>
