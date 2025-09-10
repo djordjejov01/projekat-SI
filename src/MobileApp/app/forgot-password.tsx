@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { API_URL } from '../config';
-import { apiCall } from '../config';
+import { API_URL, apiCall } from '../config';
 import { useTranslation } from 'react-i18next';
+import { useRouter } from 'expo-router';
 
 export default function ForgotPasswordScreen() {
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
+  const router = useRouter();
 
   const handleForgotPassword = async () => {
     if (!email.includes('@')) {
@@ -15,12 +16,11 @@ export default function ForgotPasswordScreen() {
     }
 
     try {
-     const response = await apiCall(`${API_URL}/auth/forgot-password`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    });
-
+      const response = await apiCall(`${API_URL}/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -35,6 +35,11 @@ export default function ForgotPasswordScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Strelica za povratak */}
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Text style={styles.backArrow}>‹</Text>
+      </TouchableOpacity>
+
       <Text style={styles.title}>{t('forgotPasswordTitle')}</Text>
       <Text style={styles.subtitle}>{t('forgotPasswordSubtitle')}</Text>
 
@@ -56,15 +61,45 @@ export default function ForgotPasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, justifyContent: 'center', backgroundColor: '#F9FAFB' },
-  title: { fontSize: 28, fontWeight: '700', color: '#111827', marginBottom: 12, textAlign: 'center' },
-  subtitle: { fontSize: 16, color: '#6B7280', marginBottom: 24, textAlign: 'center' },
+  container: { flex: 1, padding: 24, backgroundColor: '#F9FAFB' },
+  backButton: {
+    marginTop: 20,
+    marginBottom: 10,
+    alignSelf: 'flex-start',
+    padding: 8,
+  },
+  backArrow: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginBottom: 24,
+    textAlign: 'center',
+  },
   input: {
-    height: 50, backgroundColor: '#fff', borderRadius: 12, paddingHorizontal: 16,
-    fontSize: 16, marginBottom: 16, borderWidth: 1, borderColor: '#E5E7EB',
+    height: 50,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   button: {
-    backgroundColor: '#3B82F6', paddingVertical: 14, borderRadius: 12,
+    backgroundColor: '#3B82F6',
+    paddingVertical: 14,
+    borderRadius: 12,
     alignItems: 'center',
   },
   buttonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
