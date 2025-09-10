@@ -22,8 +22,8 @@
               <i class="pi pi-calendar-clock" style="color: #636AE8"></i>
               <span>
                 {{ subevent.title }}
-                {{ subevent.startDateTime | date: 'HH:mm' }} -
-                {{ subevent.endDateTime | date: 'HH:mm' }}
+                {{ subevent.startDateTime | date: 'MM/dd/yy HH:mm' }} -
+                {{ subevent.endDateTime | date: 'MM/dd/yy HH:mm' }}
               </span>
             </span>
             <button
@@ -71,7 +71,7 @@
                 </p-accordion-header>
                 <p-accordion-content>
                   <ol>
-                    <li>{{ 'AGENDA.SCHEDULED_FOR' | translate }}: {{ activity.startDateTime | date: 'HH:mm' }} - {{ activity.endDateTime | date: 'HH:mm' }}</li>
+                    <li>{{ 'AGENDA.SCHEDULED_FOR' | translate }}: {{ activity.startDateTime | date: 'MM/dd/yy HH:mm' }} - {{ activity.endDateTime | date: 'MM/dd/yy HH:mm' }}</li>
                     <li>{{ 'AGENDA.DESCRIPTION' | translate }}: {{ activity.description }}</li>
                   </ol>
                 </p-accordion-content>
@@ -113,7 +113,7 @@
         </p-accordion-header>
         <p-accordion-content>
           <ol>
-            <li>{{ 'AGENDA.SCHEDULED_FOR' | translate }}: {{ activity.startDateTime | date: 'HH:mm' }} - {{ activity.endDateTime | date: 'HH:mm' }}</li>
+            <li>{{ 'AGENDA.SCHEDULED_FOR' | translate }}: {{ activity.startDateTime | date: 'MM/dd/yy HH:mm' }} - {{ activity.endDateTime | date: 'MM/dd/yy HH:mm' }}</li>
             <li>{{ 'AGENDA.DESCRIPTION' | translate }}: {{ activity.description }}</li>
           </ol>
         </p-accordion-content>
